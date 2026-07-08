@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Quantum RNG — Coin Flip{% endblock %}
+
+{% block content %}
+
+<section class="quick-rolls">
+    <h1>Coin Flip</h1>
+
+    {% if random_results %}
+        <div class="results-container">
+            <h3>Results ({{ coin }} flips)</h3>
+            <div class="coin-results">
+                {% for r in random_results %}
+                    <div class="coin-result">
+                        {% if r.result == 1 %}
+                            <span>Heads</span>
+                        {% else %}
+                            <span>Tails</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" class="rng-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="number" id="coin" name="coin"
+                   placeholder="Number of coins (max 6)"
+                   min="1" max="6"  required>
+
+            <div class="btn-row" style="margin-top: 30px">
+                <button type="submit" name="action" value="generate">Generate</button>
+                <a href="{% url 'main_page' %}" style="margin-left: 50px" >Back</a>
+            </div>
+        </div>
+    </form>
+</section>
+
+<style>
+.results-container {
+    margin: 1.5rem auto;
+    text-align: center;
+}
+
+.coin-results {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.coin-result {
+    padding: 1rem 1.3rem;
+    border-radius: 12px;
+    font-family: "Orbitron", sans-serif;
+    background: rgba(0,200,255,0.1);
+    border: 1.5px solid rgba(0,200,255,0.4);
+    color: #bfe9ff;
+    font-size: 1.2rem;
+    box-shadow: 0 0 10px rgba(0,200,255,0.2);
+}
+
+  .rng-form .input-group {
+      flex-direction: column;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      justify-content: center;
+      align-items: center;
+  }
+
+</style>
+
+{% endblock %}

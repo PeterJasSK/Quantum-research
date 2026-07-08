@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Your RNG History</h2>
+
+<div class="history-list">
+{% for item in page_obj %}
+    <div class="history-card {{ item.generator_type }}">
+        <div class="history-header">
+            -----------------------------------------------<br>
+            <h3><strong class="history-type">{{ item.generator_type|title }}</strong></h3>
+            <span class="history-date">{{ item.timestamp }}</span>
+        </div>
+
+        <div class="history-body" style="display: flex ; flex-direction: row">
+            <div class="history-section">
+                <strong>Parameters</strong>
+                <ul>
+                    {% for key, value in item.params.items %}
+                        <li><span>{{ key|capfirst }}</span>: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="history-section" style="margin-left: 3rem">
+                <strong>Result</strong>
+
+                {% if item.result|length and item.result.0.result %}
+                    <ul class="result-list">
+                        {% for r in item.result %}
+                            <li>
+                                <strong>{{ r.result }}</strong>
+                                <small>
+                                    bits={{ r.raw_bits }},
+                                    used={{ r.used_bit }},
+                                    shot={{ r.current_shot }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="single-result">
+                        {{ item.result.result }}
+                        <small>
+                            (bits={{ item.result.raw_bits }},
+                             used={{ item.result.used_bit }},
+                             shot={{ item.result.current_shot }})
+                        </small>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p>No history yet.</p>
+{% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}

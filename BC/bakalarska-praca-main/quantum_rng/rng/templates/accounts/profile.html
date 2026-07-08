@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Profile: {{ user.username }}</h1>
+
+<div style="display: flex ; flex-direction: row ">
+    <div>
+        <h3>Profile Details</h3>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>First name:</strong> {{ user.first_name }}</p>
+        <p><strong>Last name:</strong> {{ user.last_name }}</p>
+        <p><strong>User type:</strong> {{ user.profile.user_type }}</p>
+        <p><strong>Token balance:</strong> {{ user.profile.token }}</p>
+    </div>
+    <div style="margin-left: 4rem">
+        <a href="{% url 'history_page' %}">View History</a>
+        {% if user.profile.user_type == "admin" %}
+            <p>
+                <a href="{% url 'administration_page' %}" class="glow-btn">
+                    Admin Panel
+                </a>
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+
+
+<hr>
+
+
+
+
+<form method="post">
+    {% csrf_token %}
+
+    <fieldset class="profile-fieldset">
+        <legend>User Information</legend>
+        {{ user_form.as_p }}
+    </fieldset>
+
+    {% if is_admin %}
+        <fieldset class="profile-fieldset admin-fieldset">
+            <legend>Admin Editable Fields</legend>
+            {{ profile_form.as_p }}
+        </fieldset>
+    {% endif %}
+
+
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
+
+{% endblock %}

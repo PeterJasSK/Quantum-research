@@ -1,0 +1,43 @@
+\chapter{Výskumné zámery}\label{ch:ciele}
+
+Hlavným cieľom tejto práce je \textbf{preskúmať, ako sa teoretické vlastnosti kvantovej náhodnosti, odvodené z Bellových experimentov a teórie kvantovej informatiky}, prejavia v praktickej implementácii kvantového generátora náhodných čísel. Pri formulácii teoretického základu vychádzam z dostupnej literatúry a jej tvrdenia ďalej parafrázujem~\cite{PhysicsPhysiqueFizika.1.195, nielsen_chuang_2010}. Práca spája teoretický rámec s experimentom realizovaným na reálnom kvantovom počítači.
+
+Na naplnenie tohto cieľa boli definované nasledovné čiastkové ciele:
+
+
+\section{Teoretický základ kvantovej náhodnosti}\label{sec:teoreticka-analyza}
+\begin{itemize}
+  \item Parafrázne spracovať princípy kvantovej mechaniky, ktoré umožňujú generovanie skutočne náhodných čísel, najmä koncepty kvantového prepletenia a Bellových stavov~\cite{shalm2015strong}.
+  \item Vysvetliť význam von Neumannovej entropie ako miery kvantovej náhodnosti a ukázať, že ideálne prepletený Bellov pár predstavuje maximálny zdroj kvantovej entropie~\cite{nielsen_chuang_2010}.
+  \item Porovnať existujúce fyzikálne zdroje náhodnosti dostupné online (napr. atmosférický šum, vákuové fluktuácie) s kvantovým zdrojom náhodnosti z Bellových meraní~\cite{randomorg, quantum_numbers_anu}.
+\end{itemize}
+
+\section{Výber a implementácia experimentálnej platformy}\label{sec:vyber-platformy}
+\begin{itemize}
+  \item Vybrať vhodný kvantový počítač dostupný prostredníctvom platformy \textit{Amazon Braket}, konkrétne systém \textbf{IQM Emerald} využívajúci supravodivé transmonové qubity~\cite{IQMEmerald}.
+  \item Implementovať kvantový obvod generujúci Bellove páry a realizujúci merania potrebné na tvorbu náhodných bitov~\cite{nielsen_chuang_2010}.
+  \item Vytvoriť aplikáciu umožňujúcu vykonávanie experimentov, spracovanie nameraných výsledkov a archiváciu dát v cloudovom prostredí~\cite{rubio2017beginning}.
+\end{itemize}
+
+\section{Analýza a testovanie generovaných dát}\label{sec:analyza-testovanie}
+
+\begin{itemize}
+
+  \item Zo získaných meraní vytvoriť súbory náhodných bitov v štandardizovanom formáte a analyzovať ich štatistické vlastnosti pomocou vybraných testov inšpirovaných metodikou \textbf{NIST STS}~\cite{NIST_SP800-22}, konkrétne testu vyváženosti bitov, testu behov bitov a testu kumulatívneho súčtu.
+
+  \item Vykonať analýzu stability bitového toku pomocou segmentovej analýzy rozdelenia sekvencie a rovnakú analýzu zopakovať aj po extrakcii entropie pomocou kryptografickej hašovacej funkcie MD5.
+
+  \item Posúdiť nepredvídateľnosť generovaných sekvencií pomocou princípov \textbf{next-bit testu} podľa Bluma a Micali~\cite{BlumMicali1984} využitím modelu predikcie nasledujúceho bitu a \textbf{Markovovho testu}.
+
+  \item Porovnať získané výsledky s teoretickým modelom ideálnej kvantovej náhodnosti a zhodnotiť, či analyzované sekvencie vykazujú vlastnosti očakávané od fyzikálneho zdroja entropie.
+
+\end{itemize}
+
+\section{Porovnanie výsledkov s teóriou}\label{sec:porovnanie}
+\begin{itemize}
+  \item Porovnať výsledky experimentu s teoretickým modelom kvantovej náhodnosti.
+  \item Diskutovať rozdiely medzi kvantovým generátorom a existujúcimi fyzikálnymi zdrojmi náhodnosti z hľadiska kvality a praktickej použiteľnosti~\cite{Bastos2020_ON_PRNG}.
+  \item Navrhnúť možnosti ďalšieho smerovania výskumu v oblasti kvantového generovania náhodných čísel.
+\end{itemize}
+
+Zámerom práce je teda nielen demonštrovať funkčný kvantový generátor náhodných čísel na reálnom zariadení, ale aj \textbf{experimentálne overiť}, že náhodnosť predpovedaná teóriou Bellových stavov možno pozorovať a kvantifikovať v praxi~\cite{PhysicsPhysiqueFizika.1.195}.

@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block title %}Q.R.N.G. - Home{% endblock %}
+
+{% block content %}
+<!--<h2 class="page-title">Quantum Random Number Generator</h2>-->
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<div class="hero-container">
+
+    <div class="hero-text">
+        <h1>Quantum <span>random</span></h1>
+        <h1><span>number</span> Generator</h1>
+        <p>
+            Albert Einstein once said, “God doesn’t play dice with the universe.”<br>
+            Good thing we are engineers.<br>
+            And so we say watch <a href="{% url 'dice_page' %}"><u>this</u></a>.
+<!--            And so now you can play dice with the universe.-->
+        </p>
+
+        <br><br>
+        <button class="huge-btn" onclick="document.getElementById('introduction').scrollIntoView({behavior: 'smooth'});">
+            Discover More
+        </button>
+    </div>
+
+    <div class="hero-image-box">
+        <img src="../static/QuantumComputer.png" alt="Quantum Device">
+    </div>
+</div>
+
+<div class="qrng-menu" style="margin-top: 70px">
+
+    <a class="qrng-menu-item"  href="{% url 'dice_page' %}">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="61" height="60" viewBox="0 0 61 60" fill="none">
+                <path d="M29.7375 2.933C30.2092 2.66507 30.7908 2.66507 31.2625 2.93302L53.9502 15.817C54.4219 16.0849 54.7127 16.5801 54.7127 17.116V42.884C54.7127 43.4197 54.4219 43.915 53.9502 44.183L31.2625 57.067C30.7908 57.335 30.2092 57.335 29.7375 57.067L7.04985 44.183C6.57802 43.915 6.28735 43.4197 6.28735 42.884V17.116C6.28735 16.5801 6.57802 16.0849 7.04985 15.817L29.7375 2.933Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M43.2083 37.5H17.7916L30.5 17.5L43.2083 37.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6.35413 16.25L30.5 17.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M6.35413 16.25L17.7916 37.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M54.6459 16.25L43.2084 37.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M54.6458 16.25L30.5 17.4999V2.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M54.6459 43.75L43.2084 37.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M6.35413 43.75L17.7916 37.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M17.7916 37.5L30.5 57.5L43.2083 37.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div>
+            <h3>Play dice</h3>
+            <p>let's play some dice</p>
+        </div>
+    </a>
+
+    <div class="qrng-divider"></div>
+
+    <a class="qrng-menu-item"  href="{% url 'generator_page' %}">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="61" viewBox="0 0 54 61" fill="none">
+            <path d="M27 7.625V53.375" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M47.25 9.15V51.85C47.25 52.6923 46.6456 53.375 45.9 53.375H8.1C7.35442 53.375 6.75 52.6923 6.75 51.85V9.15C6.75 8.30777 7.35442 7.625 8.1 7.625H45.9C46.6456 7.625 47.25 8.30777 47.25 9.15Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.5 30.5L16.875 25.4166L20.25 30.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M33.75 30.5L37.125 35.5833L40.5 30.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div>
+            <h3>Generator</h3>
+            <p>choose any range to generate</p>
+        </div>
+    </a>
+
+    <div class="qrng-divider"></div>
+
+    <a class="qrng-menu-item" href="{% url 'coin_page' %}">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 62 62" fill="none">
+            <path d="M23.2989 23.25C23.2665 22.8237 23.25 22.3929 23.25 21.9583C23.25 12.6845 30.7678 5.16663 40.0417 5.16663C49.3156 5.16663 56.8333 12.6845 56.8333 21.9583C56.8333 31.2322 49.3156 38.75 40.0417 38.75C39.6072 38.75 39.1763 38.7334 38.75 38.7011" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21.9584 56.8333C12.6846 56.8333 5.16669 49.3156 5.16669 40.0417C5.16669 30.7678 12.6846 23.25 21.9584 23.25C31.2323 23.25 38.75 30.7678 38.75 40.0417C38.75 49.3156 31.2323 56.8333 21.9584 56.8333Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M56.8334 43.9166C56.8334 48.197 53.3637 51.6666 49.0834 51.6666H43.9167M43.9167 51.6666L49.0834 46.5M43.9167 51.6666L49.0834 56.8333" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5.16669 18.0833C5.16669 13.8031 8.63649 10.3333 12.9167 10.3333H18.0834M18.0834 10.3333L12.9167 15.5M18.0834 10.3333L12.9167 5.16663" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div>
+            <h3>Coin flip</h3>
+            <p>Most random coin flip in the universe</p>
+        </div>
+
+    </a>
+</div>
+
+
+<div class="hero-container" id="introduction" style="margin-top: 60px" >
+    <div class="hero-left">
+        <h1 class="hero-title">INTRODUCTION</h1>
+        <h1 class="hero-title"><span>Random numbers</span></h1>
+    </div>
+
+    <div class="hero-right">
+        <p>
+            Quantum RNG is an experimental project that demonstrates the generation
+            of true quantum randomness using real quantum hardware. Instead of relying
+            on traditional pseudo-random algorithms, this system obtains random values
+            from the fundamental indeterminacy of quantum measurements.
+        </p>
+    </div>
+</div>
+
+
+<div class="hero-container" style="margin-top: 60px">
+    <div class="hero-right">
+        <div class="hero-image-box">
+            <img src="../static/chip.png" alt="Quantum Device">
+        </div>
+    </div>
+    <div class="hero-left" >
+        <h1 class="hero-title">Quatum Computer Used</h1>
+        <div class="hero-right">
+            <p>
+                The project currently uses the IQM Emerald system, a 54-qubit IQM Crystal
+                Quantum Processing Unit built on superconducting transmon qubits.
+                The qubits are arranged in a square lattice and interconnected through
+                tunable couplers, enabling high connectivity and precise control of entanglement.
+                The hardware supports arbitrary X and Y rotations as native single-qubit
+                gates, while the CZ gate serves as its native two-qubit operation.
+                This configuration provides a versatile and stable platform for generating
+                quantum randomness through controlled measurements and entangled states.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="hero-container" style="margin-top: 60px">
+    <div class="hero-left">
+        <h1 class="hero-title">How It Works</h1>
+    </div>
+
+    <div class="hero-right">
+        <p>
+            The generator leverages quantum superposition and measurement
+            to produce unbiased random bits. Each value is derived from the
+            collapse of a qubit’s state on an actual quantum processor — accessed through
+            Amazon Braket. These results are then processed, stored in a local database,
+            and made accessible via this web interface.
+        </p>
+    </div>
+</div>
+
+
+
+<style>
+
+
+
+
+/*  .huge-btn {*/
+/*    width: 90%;*/
+/*    font-size: 1.3rem;  !* very large text for mobile *!*/
+/*    max-width: 250px;*/
+/*    max-height: 25px;*/
+/*}*/
+
+
+
+
+  .hero-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;   /* makes it responsive */
+    margin-top: 2rem;
+}
+
+    .hero-text h1 {
+        font-size: 3rem;
+        margin: 0;
+        color: #00AAFF;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+    }
+
+    .hero-text span {
+        color: white;
+    }
+
+    .hero-text p {
+        font-size: 1.1rem;
+        color: #ccc;
+        line-height: 1.5rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+
+    /* Image Container */
+    .hero-image-box {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        border-radius: 3rem 3rem 3rem 10rem;
+        overflow: hidden;
+        border: 8px solid rgba(0,170,255,0.2);
+        box-shadow: 0 0 30px rgba(0,170,255,0.4),
+                    0 0 60px rgba(0,170,255,0.2) inset;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(4px);
+    }
+
+    /* Image fits inside shape */
+    .hero-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Mobile layout */
+    @media (max-width: 800px) {
+        .hero-container {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hero-image-box {
+            width: 300px;
+            height: 300px;
+            border-radius: 2rem 2rem 2rem 6rem;
+        }
+
+        .hero-text h1 {
+            font-size: 2.3rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-image-box {
+            width: 250px;
+            height: 250px;
+            border-radius: 2rem;
+        }
+    }
+
+    .qrng-menu {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        background: linear-gradient(90deg, #0c0f1d, #10142a);
+        border-radius: 80px;
+        padding: 2.2rem 3rem;
+        border: 1px solid rgba(0,200,255,0.25);
+        box-shadow: 0 0 35px rgba(0,200,255,0.15);
+        backdrop-filter: blur(10px);
+        width: 100%;
+        max-width: 1100px;
+        margin: 2rem auto;
+        overflow: hidden;
+    }
+
+    /* Layout inside each item */
+.qrng-menu-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    padding: 1rem 1rem;
+    text-align: left;
+    font-family: "Orbitron", sans-serif;
+    color: #fff;
+    transition: 0.25s ease;
+    border-radius: 20px;
+    min-height: 100px;
+}
+
+
+
+/* icon size */
+.qrng-menu-icon img {
+    width: 34px;
+    height: 34px;
+    filter: drop-shadow(0 0 4px rgba(0,200,255,0.4));
+}
+
+/* text block */
+.qrng-menu-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* heading */
+.qrng-menu-text h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.35rem;
+    color: #00c8ff;
+}
+
+/* sub text */
+.qrng-menu-text p {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: rgba(230, 244, 255, 0.78);
+}
+
+/* Hover glow */
+.qrng-menu-item:hover {
+    background: rgba(0,200,255,0.08);
+    box-shadow: inset 0 0 20px rgba(0,200,255,0.25);
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+    .qrng-menu {
+        display: none;   /* 🔥 Hides on phones/tablets */
+    }
+
+    /*.qrng-menu-item {*/
+    /*    padding: 0.8rem 1rem;*/
+    /*    min-height: 90px;*/
+    /*    gap: 0.75rem;*/
+    /*}*/
+
+
+    /*.qrng-menu-icon img {*/
+    /*    width: 26px;*/
+    /*    height: 26px;*/
+    /*}*/
+
+    /*.qrng-menu-text h3 {*/
+    /*    font-size: 1.15rem;*/
+    /*}*/
+
+    /*.qrng-menu-text p {*/
+    /*    font-size: 0.85rem;*/
+    /*}*/
+
+    /*.qrng-divider {*/
+    /*    height: 1px;*/
+    /*    width: 100%;*/
+    /*    margin: 0.6rem 0;*/
+    /*}*/
+}
+
+
+ /*left */
+.hero-left {
+    flex: 1;
+}
+
+ /*headline styling */
+.hero-title {
+    font-family: "Orbitron", sans-serif;
+    font-size: clamp(1rem, 3vw, 2rem);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+    line-height: 0.88;
+    color: #e2f8ff;
+}
+
+.hero-title span {
+    color: #00c8ff;
+    text-shadow: 0 0 16px rgba(0,200,255,0.6);
+}
+
+/* right column */
+.hero-right {
+    flex: 1;
+    max-width: 550px;
+}
+
+.hero-right p {
+    font-family: "Inter", sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.55;
+    color: rgba(220, 240, 255, 0.82);
+    margin: 0;
+    padding-top: 0.4rem;
+}
+
+/* 📱 Mobile layout */
+@media (max-width: 900px) {
+    .hero-container {
+        flex-direction: column;
+    }
+
+    .hero-right {
+        max-width: 100%;
+    }
+
+    .hero-title {
+        line-height: 1;
+    }
+}
+
+
+
+</style>
+{% endblock %}

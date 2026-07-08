@@ -1,0 +1,8 @@
+# List of packages to install. One package on one line.
+# Packages are for distribution Fedora 40.
+
+# If you need to install specific LaTeX style, use following syntax:
+# tex(inconsolata.sty)
+
+# If you need to install standard Linux package, name it:
+# mc

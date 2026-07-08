@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Charts - Quantum RNG{% endblock %}
+
+{% block content %}
+<h2>Statistical Charts</h2>
+
+    <h2>Next-Bit Test (5-Fold Cross-Validation)</h2>
+
+    <img src="data:image/png;base64,{{ nextBitTestAnalyzeChart }}" alt="Next-Bit Test Chart" style="max-width:100%; margin-bottom:20px;"/>
+
+    <table style="border-collapse: collapse; width: 60%;">
+        <thead>
+            <tr>
+                <th style="border:1px solid #ccc; padding:6px;">Fold</th>
+                <th style="border:1px solid #ccc; padding:6px;">Accuracy</th>
+                <th style="border:1px solid #ccc; padding:6px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fold, acc in nextBitTestAnalyze.items %}
+            <tr>
+                <td style="border:1px solid #ccc; padding:6px;">{{ fold }}</td>
+                <td style="border:1px solid #ccc; padding:6px;">{{ acc|floatformat:5 }}</td>
+                <td style="border:1px solid #ccc; padding:6px;">
+                    {% if acc > 0.55 %}
+                        <span style="color:red; font-weight:bold;">Fail</span>
+                    {% else %}
+                        <span style="color:green; font-weight:bold;">Pass</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p style="font-style: italic; margin-top:10px;">
+    Accuracy above 0.55 indicates that the model can predict the next bit better than chance → sequence is partially predictable.
+    Passing the test (accuracy ≤ 0.55) suggests that bits are unpredictable.
+    </p>
+
+
+    <h2>Dieharder Approximation Tests</h2>
+
+    <!-- Chart -->
+    <img src="data:image/png;base64,{{ dieharderAnalyzeChart }}" alt="Dieharder Tests Chart" style="max-width:100%; margin-bottom:20px;"/>
+
+    <!-- Table -->
+    <table style="border-collapse: collapse; width: 60%;">
+        <thead>
+            <tr>
+                <th style="border:1px solid #ccc; padding:6px;">Test</th>
+                <th style="border:1px solid #ccc; padding:6px;">p-value</th>
+                <th style="border:1px solid #ccc; padding:6px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test, p in dieharderAnalyze.items %}
+            <tr>
+                <td style="border:1px solid #ccc; padding:6px;">{{ test|capfirst }}</td>
+                <td style="border:1px solid #ccc; padding:6px;">{{ p|floatformat:5 }}</td>
+                <td style="border:1px solid #ccc; padding:6px;">
+                    {% if p < 0.01 %}
+                        <span style="color:red; font-weight:bold;">Fail</span>
+                    {% else %}
+                        <span style="color:green; font-weight:bold;">Pass</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Explanation -->
+    <div style="margin-top: 15px; line-height: 1.6;">
+        <p><strong>Explanation of tests:</strong></p>
+        <ul>
+            <li>
+                <strong>Birthday Spacings:</strong> Checks for repeated "birthdays" in the sequence.
+                Too many collisions indicate non-random spacing patterns.
+            </li>
+            <li>
+                <strong>Overlapping Permutations:</strong> Examines all overlapping sequences of length 4 bits.
+                Counts how often each possible 4-bit pattern occurs.
+                Unequal counts indicate local correlations or repeating patterns.
+            </li>
+        </ul>
+        <p style="font-style: italic;">
+            Passing both tests suggests that the bitstream is statistically balanced in spacing and local permutations.
+            These are approximations of the original Dieharder tests for quick assessment.
+        </p>
+    </div>
+
+
+
+    <h3>NIST Bitstream Analysis</h3>
+
+    <img src="data:image/png;base64,{{ nistAnalyzeChart }}" alt="NIST Tests Chart"/>
+
+    <h2>NIST Tests</h2>
+    <table style="border-collapse: collapse; width: 60%;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ccc; padding: 8px;">Test</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">p-value</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test, p in nistAnalyze.items %}
+                {% if test in "frequency,runs,cusum" %}
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ test|capfirst }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ p|floatformat:5 }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">
+                        {% if p < 0.01 %}
+                            <span style="color:red; font-weight:bold;">Fail</span>
+                        {% else %}
+                            <span style="color:green; font-weight:bold;">Pass</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 15px; line-height: 1.6;">
+        <p><strong>Explanation of the tests:</strong></p>
+        <ul>
+            <li>
+                <strong>Frequency (Monobit) Test:</strong> This test checks whether the number of 0s and 1s in the bitstream are approximately equal.
+                A balanced number indicates that the sequence does not have a bias toward one bit.
+                A very low p-value (below 0.01) would indicate a significant imbalance.
+            </li>
+            <li>
+                <strong>Runs Test:</strong> This test examines the occurrence of consecutive sequences of identical bits, called "runs".
+                It measures whether the number of runs of various lengths matches what is expected in a random sequence.
+                Long runs or too few runs would result in a low p-value, indicating non-randomness.
+            </li>
+            <li>
+                <strong>Cumulative Sums (Cusum) Test:</strong> This test tracks the cumulative sum of bits, assigning +1 for 1s and -1 for 0s, and checks whether this cumulative sum deviates too far from zero.
+                It helps detect persistent bias that may build up over the bitstream. A low p-value indicates that the sequence tends to drift in one direction instead of fluctuating randomly.
+            </li>
+        </ul>
+        <p style="font-style: italic;">
+            Passing all three tests suggests that the bitstream is statistically balanced, has normal run lengths, and does not show persistent bias.
+            These tests measure basic randomness properties; <strong>they do not guarantee cryptographic security or high unpredictability.</strong>
+        </p>
+    </div>
+
+
+
+
+<!--stats : <br>-->
+<!--total number of bits {{ bias.total }} <br>-->
+<!--number of 1 :  {{ bias.zeros }} number od 0 : {{ bias.ones }} <br>-->
+<!--proportion 1 : {{ bias.p0 }} proportion 0 : {{ bias.p1 }}  bias : {{ bias.bias}}-->
+<!--<br>-->
+
+    <h1>Bitstream Split Analysis with md5 whitening</h1>
+    <img src="data:image/png;base64,{{ analysisExtracted.chart }}" alt="Bitstream chart">
+
+    <h1>Bitstream Split Analysis</h1>
+    <img src="data:image/png;base64,{{ analysis.chart }}" alt="Bitstream chart">
+
+    <h2>Data Table</h2>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Split</th>
+            <th>Total</th>
+            <th>Zeros</th>
+            <th>Ones</th>
+            <th>p0</th>
+            <th>p1</th>
+            <th>Bias</th>
+        </tr>
+        {% for row in analysis.data %}
+        <tr>
+            <td>{{ row.split }}</td>
+            <td>{{ row.total }}</td>
+            <td>{{ row.zeros }}</td>
+            <td>{{ row.ones }}</td>
+            <td>{{ row.p0|floatformat:2 }}</td>
+            <td>{{ row.p1|floatformat:2 }}</td>
+            <td>{{ row.bias|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+<br>
+
+{% if error %}
+  <div class="alert">{{ error }}</div>
+{% else %}
+  {% if chart1 %}
+    <img src="data:image/png;base64,{{ chart1 }}" alt="Dice distribution">
+  {% endif %}
+  {% if chart2 %}
+    <img src="data:image/png;base64,{{ chart2 }}" alt="4-bit distribution">
+  {% endif %}
+{% endif %}
+
+{% endblock %}

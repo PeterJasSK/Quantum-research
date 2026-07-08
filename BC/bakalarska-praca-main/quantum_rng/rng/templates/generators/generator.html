@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Generator{% endblock %}
+
+{% block content %}
+
+<div style="display: flex ; flex-direction: row ; align-content: center">
+    <h1> Generator</h1>
+    {% if random_result %}
+        <span id="rolling-num" style="font-size: 50px ; min-width: 100px ; margin-left: 20px">{{ random_result.result }}</span>
+        <p style="min-font-size: 70px">(Bits used: {{ random_result.raw_bits }} ({{ random_result.bits_needed }} bits) , Shot index: {{ random_result.current_shot }})</p>
+
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const finalNumber = {{ random_result.result }}
+                const minVal = {{ from_val }}
+                const maxVal = {{ to_val }}
+                const display = document.getElementById("rolling-num");
+
+                let counter = minVal;
+                let steps = 0;
+                const maxSteps = 20;
+                let speed = 40;
+
+                function roll() {
+                    if (steps >= maxSteps) {
+                        display.textContent = finalNumber;
+                        display.style.opacity = 1;
+                        display.style.transform = "scale(1)";
+                        return;
+                    }
+                    display.textContent = counter;
+                    counter = (counter + 1 > maxVal) ? minVal : counter + 1;
+                    steps++;
+                    speed += 20;
+                    display.style.opacity = 0.6 + Math.random() * 0.4;
+                    setTimeout(roll, speed);
+                }
+                roll();
+            });
+          </script>
+    {% endif %}
+</div>
+
+<section class="rng-section">
+  <form method="post" class="rng-form">
+      {% csrf_token %}
+      <div class="input-group">
+<!--          <label for="from_val">From:</label>-->
+          <input type="number" id="from_val" name="from_val" placeholder="From : " required>
+
+
+<!--          <label for="to_val">To:</label>-->
+          <input type="number" id="to_val" name="to_val" placeholder="To : " required>
+
+          <div style="margin-top: 50px">
+                <button type="submit" name="action" value="generate" class="glow-btn">Generate </button>
+                <a href="{% url 'main_page' %}" class="glow-btn" style="margin-left: 50px"> Back </a>
+          </div>
+      </div>
+  </form>
+
+
+</section>
+
+
+
+<style>
+    /* --- Custom Range Form --- */
+  .rng-form .input-group {
+      flex-direction: column;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      justify-content: center;
+      align-items: center;
+  }
+</style>
+
+{% endblock %}

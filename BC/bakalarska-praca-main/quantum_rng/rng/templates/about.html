@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}About - Quantum RNG{% endblock %}
+
+{% block content %}
+    <h2 class="about-title">About Quantum RNG</h2>
+
+    <p class="intro-text">
+        <strong>Quantum RNG</strong> is an experimental project that demonstrates the generation of
+        <span class="highlight">true quantum randomness</span> using real quantum hardware.
+        Instead of relying on traditional pseudo-random algorithms, this system obtains random values
+        from the fundamental indeterminacy of quantum measurements.
+    </p>
+
+    <div class="about-section">
+        <h3>⚛️ How It Works</h3>
+        <p>
+            The generator leverages <span class="highlight">quantum superposition and measurement</span>
+            to produce unbiased random bits. Each value is derived from the collapse of a qubit’s state
+            on an actual quantum processor — accessed through
+            <span class="highlight">Amazon Braket</span>. These results are then processed, stored in
+            a local database, and made accessible via this web interface and API.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h3>🧩 Quantum Hardware & Platform</h3>
+        <p>
+            The project currently uses the <span class="highlight">IQM Emerald</span> system, a 54-qubit
+            <strong>IQM Crystal Quantum Processing Unit</strong> built on
+            <span class="highlight">superconducting transmon qubits</span>.
+            The qubits are arranged in a <strong>square lattice</strong> and interconnected through
+            <em>tunable couplers</em>, enabling high connectivity and precise control of entanglement.
+            The hardware supports <strong>arbitrary X and Y rotations</strong> as native single-qubit gates,
+            while the <strong>CZ gate</strong> serves as its native two-qubit operation.
+            This configuration provides a versatile and stable platform for generating quantum randomness
+            through controlled measurements and entangled states.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h3>🎯 Project Goals</h3>
+        <ul>
+            <li>Demonstrate the use of cloud-based quantum computing for random-number generation.</li>
+            <li>Compare quantum randomness to classical pseudo-random algorithms.</li>
+            <li>Provide a web-based interface for testing, analysis, and visualization of results.</li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <h3>🧠 Background</h3>
+        <p>
+            The concept of true randomness in quantum mechanics is deeply tied to
+            <span class="highlight">Bell’s Theorem</span> and experimental demonstrations of
+            <em>quantum entanglement</em>. Unlike deterministic classical systems,
+            quantum events are intrinsically unpredictable — making them ideal for
+            <span class="highlight">cryptography</span>, <span class="highlight">simulation</span>,
+            and <span class="highlight">secure key generation</span>.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h3>🧠 Technology Stack</h3>
+        <ul>
+            <li><strong>Django</strong> – backend logic and database management</li>
+            <li><strong>Amazon Braket SDK</strong> – access to real quantum hardware</li>
+            <li><strong>Matplotlib</strong> – visualizing quantum measurement distributions</li>
+            <li><strong>SQLite</strong> – local result storage</li>
+        </ul>
+    </div>
+
+    <div class="about-section credits">
+        <p>
+            Created as part of a bachelor's thesis on <em>quantum random number generation</em>.
+            <br>Author: <strong>Peter Jaš</strong>
+            <br>Year: <strong>2025</strong>
+        </p>
+    </div>
+
+<style>
+    .about-container {
+        color: #e0f7ff;
+        background: #0a0f1c;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(0, 170, 255, 0.2);
+        font-family: 'Orbitron', 'Rajdhani', 'Segoe UI', sans-serif;
+    }
+
+    .about-title {
+        color: #4dcfff;
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 10px #00aaff;
+    }
+
+    .intro-text {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        text-align: justify;
+    }
+
+    .highlight {
+        color: #4dcfff;
+        font-weight: bold;
+    }
+
+    .about-section {
+        margin-bottom: 2rem;
+    }
+
+    .about-section h3 {
+        color: #79e3ff;
+        border-left: 4px solid #00aaff;
+        padding-left: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .about-section ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .about-section li {
+        margin: 0.5rem 0;
+        background: rgba(0, 170, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: background 0.3s;
+    }
+
+    .about-section li:hover {
+        background: rgba(0, 170, 255, 0.25);
+    }
+
+    .credits {
+        text-align: center;
+        border-top: 1px solid rgba(0, 170, 255, 0.3);
+        padding-top: 1rem;
+        font-size: 0.9rem;
+        color: #9bdfff;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .about-container {
+            padding: 1.2rem;
+        }
+        .about-title {
+            font-size: 1.8rem;
+        }
+        .intro-text {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,140 @@
+% !TEX root = ../thesis.tex
+
+\chapter{\LaTeX{} 101}\label{app:latex.101}
+
+\section{Základy písania}
+
+Odseky textu oddeľujte jednoducho prázdnym riadkom. To, že prvý odsek v~kapitole nie je odsadený, je štandardný typografický postup a nie je potrebné ho meniť.
+
+Časť textu môžeme \emph{mierne zvýrazniť} pomocou príkazu \verb|\emph{}|. Prípadne použiť \textbf{tučné písmo} príkazom \verb|\textbf{}|.
+
+Na vytvorenie zoznamu sa používa prostredie \texttt{itemize}:
+
+\begin{itemize}
+  \item raz,
+  \item dva,
+  \item tri.
+\end{itemize}
+
+Zoznam môže byť aj číslovaný ak vymeníme \texttt{itemize} za \texttt{enumerate}:
+
+\begin{enumerate}
+  \item raz,
+  \item dva,
+  \item tri.
+\end{enumerate}
+
+
+\section{Členenie textu}
+
+Na definovanie kapitol a podkapitol sa používajú príkazy
+\begin{itemize}
+  \item \verb|\chapter{}|,
+  \item \verb|\section{}|,
+  \item \verb|\subsection{}|.
+\end{itemize}
+
+Hlbšie úrovne vnorenia sa neodporúča používať. Tak isto neodporúčame mnohonásobne vnorené zoznamy.
+
+Ak za príkaz pridáte hviezdičku kapitola nebude číslovaná a ani sa nezobrazí v~obsahu. Neodporúčame to však používať mimo príloh.
+
+
+\section{Obrázky}
+
+Na vkladanie obrázkov sa používa prostredie \texttt{figure}:
+
+\begin{lstlisting}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/tugboat}
+  \caption{\LaTeX{} Friendly Zone \label{o:latex_friendly_zone}}
+\end{figure}
+\end{lstlisting}
+
+Výsledkom bude obrázok \ref{o:latex_friendly_zone}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/tugboat}
+  \caption{\LaTeX{} Friendly Zone \label{o:latex_friendly_zone}}
+\end{figure}
+
+
+Na samotné vloženie obrázka sa používa príkaz \verb|\includegraphics{}|. \LaTeX{} podporuje bežné formáty ako PNG a JPEG. Pre vektorovú grafiku je vhodné použiť formát PDF.
+
+Každý obrázok by mal mať popis, ktorý je uvedený v~\emph{caption}. A~čo je veľmi dôležité, na každý obrázok by mal byť odkaz v~texte. Na to použite príkazy \verb|\label{}| a \verb|\ref{}|. Prvý definuje názov, ktorým sa na obrázok odkazujete, druhý vytvorí odkaz na obrázok. Napríklad, obrázok \ref{o:latex_friendly_zone} zobrazuje prostredie priateľské pre používateľov \LaTeX-u.
+
+\LaTeX{} má vstavené pravidlá pre umiestnenie obrázkov. Štandardne ich umiestni na vrch stránky, na ktorej sú definované, aby text nebol prerušený. Môžete však použiť voliteľné parametre, aby ste ovplyvnili umiestnenie obrázka. Napríklad \texttt{[!ht]} znamená, že obrázok sa má, ak je to možné, umiestniť presne tam, kde je definovaný, inak na vrchu stránky:
+
+\begin{lstlisting}
+\begin{figure}[!ht]
+\end{lstlisting}
+
+
+\section{Tabuľky}
+
+Tabuľky sa vkladajú do prostredí \texttt{table} a \texttt{tabular}
+
+\begin{table}[!ht]
+	\caption{Kódy krajín podľa štandardov ISO}\label{t:1}
+	\smallskip
+	\centering
+
+	\begin{tabular}{llll}
+		\toprule
+		Názov krajiny & Alpha 2 & Alpha 3 & Numeric\\
+		\midrule
+		Afghanistan & AF & AFG & 004\\
+		Alandské Ostrovy & AX & ALA & 248\\
+		Albánsko & AL & ALB & 008\\
+		Alžírsko & DZ & DZA & 012\\
+		Americká Samoa & AS & ASM & 016\\
+		Andorra & AD & AND & 020\\
+		Angola & AO & AGO & 024\\
+		\toprule
+	\end{tabular}
+\end{table}
+
+Pre sadzbu profesionálne vyzerajúcich tabuliek odporúčame použiť balík \emph{booktabs}\footnote{\url{https://en.wikibooks.org/wiki/LaTeX/Tables\#Professional_tables}}.
+
+
+\section{Výpisy kódu}
+
+Pre výpisy kódu sa používa prostredie \texttt{lstlisting}:
+
+\begin{lstlisting}[language=C,caption={Program, ktorý pozdraví celý svet}, label={l:hello_world}]
+#include <stdio.h>
+int main() {
+    /* Print Hello, World! */
+    printf("Hello, World!\n");
+    return 0;
+}
+\end{lstlisting}
+
+Výpisy môžu mať voliteľný nadpis, ktorý sa zobrazí nad výpisom. Tak isto je možné im definovať \texttt{label}, na ktorý sa môžete odkazovať (viď výpis \ref{l:hello_world}).
+
+Obsah výpisu môže byť tiež načítaný zo súboru pomocou príkazu:
+
+\lstinputlisting[caption={Riešenie problému Schody},language=C]{listings/stairs.c}
+
+
+\section{Citácie}
+
+Na citovanie literatúry sa používa balík \emph{biblatex}. Citácie sa vkladajú pomocou príkazu \verb|\cite{}|. Napríklad, \cite{Beel2010} je článok, ktorý popisuje štruktúru záverečnej práce.
+
+Bibliografické záznamy sú definované v~súbore \texttt{bibliography.bib}. Každý záznam má unikátny identifikátor, ktorý sa používa na citovanie. Napríklad, záznam \texttt{Beel2010} vyzerá nasledovne:
+
+
+\begin{lstlisting}[breaklines=true, prebreak=\mbox{\textcolor{red}{$\hookleftarrow$}}]
+@online{Beel2010,
+  title  = {How to write a thesis (Bachelor, Master, or PhD) and which software tools to use},
+  url    = {https://isg.beel.org/blog/2010/03/02/how-to-write-a-phd-thesis/},
+  author = {Joeran Beel},
+  year   = {2010},
+  urldate = {2024-09-26}
+}
+\end{lstlisting}
+
+Za znakom \texttt{@} je uvedený typ záznamu, v~tomto prípade \texttt{online}. Iné typy záznamov môžu byť napríklad \texttt{article}, \texttt{book}, \texttt{inproceedings}, a pod. Každý záznam má povinné a nepovinné položky. Pre viac informácií o~formáte záznamov v~bibliografickom súbore odporúčame pozrieť stránku \emph{The 14 BibTeX entry types}\footnote{\url{https://www.bibtex.com/e/entry-types/}}.
+
+Pri online zdrojoch nezabudnite uviesť dátum prístupu v~položke \texttt{urldate}, keďže také zdroje sa môžu časom meniť.

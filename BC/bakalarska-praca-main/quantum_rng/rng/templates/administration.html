@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<h3>Statistics</h3>
+<p><strong>Total Users:</strong> {{ user_count }}</p>
+<p><strong>Total QRNG BITS generated:</strong> {{ total_bits }}</p>
+<p><strong>Total Used Bits:</strong> {{ total_used_bits }}</p>
+<p><strong>Bits Left:</strong> {{ bits_left }}</p>
+
+<hr>
+
+<h2>Load new numbers</h2>
+
+<div style="display: flex ; flex-direction: row ; justify-content: space-between">
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="load">Load Local Results</button>
+    </form>
+
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="reset">Reset the used bits</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="users">Users</button>
+    </form>
+</div>
+
+{% endblock %}

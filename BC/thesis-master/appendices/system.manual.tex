@@ -1,0 +1,134 @@
+% !TEX root = ../thesis.tex
+
+\chapter{Systémová príručka}\label{ch:system.manual}
+
+Táto kapitola je určená správcom systému a vývojárom, ktorí potrebujú
+nainštalovať, nakonfigurovať a spustiť webovú aplikáciu kvantového generátora
+náhodných čísel. Príručka predpokladá základnú znalosť príkazového riadku
+a prostredia jazyka Python.
+
+% -----------------------------------------------------------------------
+\section{Požiadavky na systém}\label{sec:system.requirements}
+
+Pred inštaláciou aplikácie je potrebné mať na cieľovom počítači nainštalované
+\textbf{Python~3.10} alebo novší vrátane správcu balíčkov \texttt{pip}.
+
+% -----------------------------------------------------------------------
+\section{Štruktúra projektu}\label{sec:project.structure}
+
+Zdrojový kód aplikácie je uložený v adresári
+\texttt{bakalarska-praca-main/quantum\_rng}.
+Všetky príkazy uvedené v tejto kapitole sa vykonávajú z tohto koreňového
+adresára projektu, pokiaľ nie je uvedené inak.
+
+% -----------------------------------------------------------------------
+\section{Inicializácia databázy}\label{sec:db.migrate}
+
+Prvým krokom je vytvorenie databázovej schémy pomocou zabudovaného
+migračného systému Django. Príkaz \texttt{migrate} aplikuje všetky dostupné
+migrácie a vytvorí potrebné tabuľky:
+
+\begin{verbatim}
+python manage.py migrate
+\end{verbatim}
+
+Po úspešnom dokončení je databáza pripravená na ďalšie kroky.
+
+% -----------------------------------------------------------------------
+\section{Vytvorenie správcovského účtu}\label{sec:superuser}
+
+Administrátorský účet sa vytvára interaktívnym príkazom:
+
+\begin{verbatim}
+python manage.py createsuperuser
+\end{verbatim}
+
+Systém postupne vyzve na zadanie prihlasovacieho mena, e-mailovej adresy
+a hesla. Príklad úspešného priebehu:
+
+\begin{verbatim}
+Username: admin
+Email address: admin@example.com
+Password: ********
+Password (again): ********
+Superuser created successfully.
+\end{verbatim}
+
+Takto vytvorený účet má plný prístup k administrátorskému rozhraniu
+aplikácie.
+
+% -----------------------------------------------------------------------
+\section{Spustenie vývojového servera}\label{sec:runserver}
+
+Po inicializácii databázy a vytvorení správcovského účtu je možné spustiť
+zabudovaný vývojový server príkazom:
+
+\begin{verbatim}
+python manage.py runserver
+\end{verbatim}
+
+Aplikácia je následne dostupná v prehliadači na adrese
+\texttt{http://127.0.0.1:8000/}.
+
+% -----------------------------------------------------------------------
+\section{Prvotné prihlásenie a nastavenie profilu}\label{sec:first.login}
+
+Po spustení servera je potrebné prihlásiť sa do aplikácie pomocou účtu
+vytvoreného v predchádzajúcom kroku. Po prihlásení systém presmeruje
+používateľa na stránku profilu (\texttt{/accounts/profile/}), kde je možné
+vyplniť základné údaje.
+
+Rola \textbf{admin} sa nastavuje v kolónke \emph{Profil} v sekcii \emph{Admin Editable Fields}.
+Používateľom s rolou administrátora je následne sprístupnený odkaz
+\emph{Admin Panel} v navigácii aplikácie.
+
+% -----------------------------------------------------------------------
+\section{Načítanie vzorových dát}\label{sec:load.data}
+
+Administrátorský panel je dostupný na adrese \texttt{/administration/}.
+Nachádza sa v ňom tlačidlo \textbf{Load Local Results}, ktoré načíta
+vzorové výsledky uložené z kvantového počítača do lokálnej databázy.
+Po úspešnom načítaní sú tieto dáta dostupné vo všetkých sekciách
+aplikácie, vrátane štatistických grafov a histórie generovania.
+
+% -----------------------------------------------------------------------
+
+\section{Prehľad URL adries aplikácie}\label{sec:url.overview}
+
+Aplikácia poskytuje nasledujúce URL adresy:
+
+\begin{itemize}
+  \item \texttt{/} -- hlavná stránka aplikácie,
+  \item \texttt{/coin/} -- generátor náhodného hodu mincou,
+  \item \texttt{/dice/} -- generátor náhodného hodu kockou,
+  \item \texttt{/generator/} -- všeobecný generátor náhodných čísel
+  v zadanom rozsahu,
+  \item \texttt{/charts/} -- štatistické grafy a vyhodnotenie generátora,
+  \item \texttt{/about/} -- informačná stránka o projekte,
+  \item \texttt{/administration/} -- administrátorský panel
+  (prístup len pre administrátorov),
+  \item \texttt{/accounts/profile/} -- profil prihláseného používateľa,
+  \item \texttt{/accounts/history/} -- história generovania náhodných čísel.
+\end{itemize}
+
+% -----------------------------------------------------------------------
+\section{Postup inštalácie -- zhrnutie}\label{sec:install.summary}
+
+Pre prehľadnosť uvádzame celý postup inštalácie a spustenia v postupnosti
+krokov:
+
+\begin{enumerate}
+  \item Prejdite do adresára projektu:
+  \texttt{cd bakalarska-praca-main/quantum\_rng}
+  \item Inicializujte databázu:
+  \texttt{python manage.py migrate}
+  \item Vytvorte správcovský účet:
+  \texttt{python manage.py createsuperuser}
+  \item Spustite vývojový server:
+  \texttt{python manage.py runserver}
+  \item Otvorte prehliadač na adrese \texttt{http://127.0.0.1:8000/}
+  a prihláste sa.
+  \item Nastavte rolu \emph{admin} v sekcii profilu.
+  \item V administrátorskom paneli (\texttt{/administration/}) načítajte
+  vzorové dáta tlačidlom \textbf{Load Local Results}.
+\end{enumerate}

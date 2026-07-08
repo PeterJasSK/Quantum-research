@@ -1,0 +1,36 @@
+(base) peter@home:~/PycharmProjects/IBMQuantumProject$ python ErrorDetectionVSRawBits/qrng_bell_pairs.py 240000
+Backend : ibm_fez  (156 qubits, {'family': 'Heron', 'revision': '2'})
+Healthy qubits : 124 / 156
+Bell pairs     : 43  (from 103 healthy couplers)
+Bits/shot = 43  ->  BELL needs 23,256 shots for 1,000,000 bits  (policy=discard)
+Running 240,000 shots ...
+  job 1: d96e8qotcv6s73djlt50 (50,000 shots) ... done (qpu 15.00s)
+  job 2: d96e9eqf47jc73a5g8p0 (50,000 shots) ... done (qpu 15.00s)
+  job 3: d96ea4t2su3c739grkvg (50,000 shots) ... done (qpu 15.00s)
+  job 4: d96ecnaf47jc73a5gd90 (50,000 shots) ... done (qpu 15.00s)
+  job 5: d96eeat2su3c739grq40 (40,000 shots) ... done (qpu 13.00s)
+
+--- DONE ---
+Bits           : 10,016,243   bias 0.0175
+Forbidden 01/10: 2.94 %
+QPU seconds    : 73.00   (~$116.80 PAYG; free on Open plan)
+Shots for 1M   : 23,256
+Raw       -> qrng_output/bell_ibm_fez_20260707-134857_raw.json
+Processed -> qrng_output/bell_ibm_fez_20260707-134857_processed.txt
+
+
+
+(base) peter@home:~/PycharmProjects/IBMQuantumProject$ python ErrorDetectionVSRawBits/qrng_noise_hadamard.py 85000
+Backend : ibm_fez  (156 qubits, {'family': 'Heron', 'revision': '2'})
+Healthy qubits : 124 / 156
+Bits/shot = 124  ->  NOISE needs 8,065 shots for 1,000,000 bits
+Running 85,000 shots ...
+  job 1: d96efosqp3as739qgks0 (50,000 shots) ... done (qpu 15.00s)
+  job 2: d96egngtcv6s73djm7e0 (35,000 shots) ... done (qpu 11.00s)
+
+--- DONE ---
+Bits           : 10,540,000   bias 0.0018
+QPU seconds    : 26.00   (~$41.60 PAYG; free on Open plan)
+Shots for 1M   : 8,065
+Raw       -> qrng_output/noise_ibm_fez_20260707-135456_raw.json
+Processed -> qrng_output/noise_ibm_fez_20260707-135456_processed.txt

@@ -1,0 +1,48 @@
+% !TEX root = ../thesis.tex
+
+\chapter{Záver}\label{ch:summary}
+
+Cieľom tejto práce bolo analyzovať problematiku generovania náhodných čísel so zameraním na kvantové zdroje náhodnosti,
+navrhnúť a implementovať kvantový generátor náhodných bitov a následne vyhodnotiť kvalitu jeho výstupu pomocou štatistických metód.
+Podobne ako Albert Einstein vo svojom diele \textit{Relativita: špeciálna a všeobecná teória} zdôrazňuje, že vedecké poznanie vzniká na
+základe empirických pozorovaní a ich systematického usporiadania do teórie vybudovanej na malom počte základných axióm, pričom pravdivosť
+takejto teórie spočíva v jej schopnosti vysvetliť a prepojiť veľké množstvo jednotlivých javov \cite{einsteinRelativity},
+aj v tejto práci sme vychádzali zo súboru teoretických poznatkov a experimentálnych meraní.
+Tieto merania boli zamerané na široký rozsah prejavov náhodnosti a umožnili prepojiť teoretické modely kvantovej mechaniky s reálnymi dátami získanými z kvantového systému.
+Na základe získaných výsledkov možno konštatovať, že je objektívne možné vytvoriť kvantový generátor náhodných čísel.
+Takýto generátor môže využívať procesy založené na Bellových pároch, ktoré boli historicky predmetom diskusie.
+Einstein sám vyjadril skepticizmus voči kvantovej náhodnosti známym výrokom „Boh nehrá kocky s vesmírom“.
+V rámci tejto práce bolo preto vytvorené aj webové rozhranie simulujúce hod kockou,
+ktoré využíva fundamentálnu entropiu kvantových procesov a náhodnosť vyplývajúcu z korelácií Bellových párov.
+
+V teoretickej časti práce boli najskôr predstavené základné princípy generovania náhodných čísel v informatike a kryptografii.
+Bola vykonaná analýza rozdielov medzi pseudonáhodnými generátormi a fyzikálnymi zdrojmi náhodnosti.
+Zatiaľ čo pseudonáhodné generátory poskytujú deterministické sekvencie závislé od počiatočného stavu,
+fyzikálne generátory využívajú skutočné náhodné javy, čím poskytujú vyššiu mieru nepredikovateľnosti.
+
+V praktickej časti práce bol navrhnutý koncept kvantového generátora náhodných bitov.
+Návrh zahŕňal definovanie kvantového zapojenia, výber vhodných qubitov a spôsob ich merania.
+Súčasťou riešenia bol aj návrh spracovania nameraných dát, vrátane mapovania výsledkov merania na klasické bity a aplikácie metód na zníženie biasu a extrakciu entropie.
+
+
+Na základe navrhnutého riešenia bol implementovaný systém na generovanie náhodných čísel, ktorý zahŕňa zber dát z kvantovej platformy,
+ich spracovanie do bitového toku a následnú analýzu. Implementácia bola navrhnutá tak, aby umožňovala opakované merania a flexibilné vyhodnocovanie získaných výsledkov.
+Súčasťou riešenia bolo aj vytvorenie používateľského rozhrania kvantového generátora náhodných čísel,
+ktoré predstavuje praktickú a funkčnú časť projektu a umožňuje priamu interakciu s generovanými dátami.
+
+Vyhodnotenie kvality generovaného bitového toku bolo vykonané pomocou viacerých štatistických metód. Analýza distribúcie bitov preukázala, že podiel núl a jednotiek je blízky ideálnemu rovnomernému rozdeleniu. Výsledky štatistických testov neodhalili významné odchýlky od náhodnosti. Testy predikovateľnosti ukázali, že generovaný bitový tok nevykazuje štruktúru, ktorú by bolo možné efektívne využiť na predpoveď ďalších bitov. Tieto výsledky naznačujú, že navrhnutý systém produkuje kvalitné náhodné sekvencie.
+
+
+Na základe uvedených výsledkov možno konštatovať, že hlavné ciele práce boli splnené. Bola vykonaná analýza problematiky, navrhnutý a implementovaný kvantový generátor náhodných bitov a jeho výstup bol úspešne vyhodnotený. Prínosom práce je najmä praktická implementácia systému využívajúceho kvantové zariadenie a komplexné vyhodnotenie jeho vlastností.
+
+
+Napriek dosiahnutým výsledkom existujú viaceré otvorené otázky a možnosti ďalšieho výskumu. Kvalita generovaných dát je do určitej miery ovplyvnená vlastnosťami kvantového hardvéru, ako sú šum, decoherencia a chybovosť merania. V budúcnosti by bolo vhodné zamerať sa na využitie pokročilejších metód korekcie chýb alebo sofistikovanejších extraktorov entropie.
+
+Zaujímavým smerom ďalšieho výskumu je porovnanie rôznych kvantových platforiem a ich vplyvu na kvalitu generovanej náhodnosti,
+ako aj možnosť kombinácie kvantových a klasických generátorov do hybridných systémov.
+Ďalšou perspektívou je optimalizácia navrhnutého riešenia z hľadiska výkonnosti a jeho praktického nasadenia v kryptografických aplikáciách.
+Súčasťou ďalšieho výskumu je tiež návrh a analýza vlastných optimalizovaných kvantových zapojení, ktoré by boli efektívnejšie a zároveň nezávislé od
+konkrétnej kvantovej platformy.
+
+Na záver možno konštatovať, že kvantové generátory náhodných čísel predstavujú perspektívnu oblasť výskumu s významným potenciálom využitia v oblasti bezpečnosti a kryptografie. Navrhnuté riešenie potvrdzuje, že aj s využitím dostupných kvantových zariadení je možné generovať kvalitné náhodné dáta a efektívne ich analyzovať.
+

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<button type="button" onclick="history.back()">
+    Back
+</button>
+
+<h2>Users Administration</h2>
+
+{% for u in users %}
+<fieldset class="profile-fieldset {% if u.profile.user_type == 'admin' %}admin-fieldset{% endif %}">
+    <legend>{{ u.username }}</legend>
+
+    <div style="display: flex ; flex-direction: row">
+        <div>
+            <p><strong>Email:</strong> {{ u.email|default:"—" }}</p>
+            <p><strong>Joined:</strong> {{ u.date_joined|date:"Y-m-d H:i" }}</p>
+        </div>
+        <div style="margin-left: 4rem ">
+              <form method="post" style="display: flex ; flex-direction: row">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+
+                    <p>
+                        <label>User type</label>
+                        <select name="user_type">
+                            <option value="standard" {% if u.profile.user_type == "standard" %}selected{% endif %}>
+                                Standard
+                            </option>
+                            <option value="admin" {% if u.profile.user_type == "admin" %}selected{% endif %}>
+                                Admin
+                            </option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label>Token</label>
+                        <input
+                            type="number"
+                            name="token"
+                            value="{{ u.profile.token }}"
+                            min="0"
+                        >
+                    </p>
+
+                    <button type="submit">Update User</button>
+                </form>
+        </div>
+    </div>
+</fieldset>
+{% empty %}
+<p>No users found.</p>
+{% endfor %}
+
+{% endblock %}

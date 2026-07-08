@@ -1,0 +1,79 @@
+% !TEX root = thesis.tex
+
+%% Document Metadata
+
+%% The location of your Assignment Statement (scanned as image)
+\thesisspec{figures/zadavaci-list.png}
+
+\title{Quantum Random Number Generator}{Generovanie náhodných čísel pomocou kvantového počítača}
+\thesis{Bachelors thesis}{Bakalárska práca}  % typ prace
+
+\author{Peter}{Jaš}
+\supervisor{Ing. Miroslav Murin}   % thesis supervisor
+% \consultant{Donald E. Knuth}  % thesis consultant
+% \consultantsaffiliation{Stanford University}{Stanfordská univerzita}  % affiliation of the consultant
+ \college{Technical University of Košice}{Technická univerzita v Košiciach}  % univerzita
+% \faculty{Faculty of Electrical Engineering and informatics}{Fakulta elektrotechniky a informatiky}  % fakulta
+ \department{Department of Computers and Informatics}{Katedra počítačov a informatiky}  % katedra
+ \departmentacr{DCI}{KPI}  % skratka katedry
+\submissiondate{29}{5}{2026}
+ \fieldofstudy{Informatika}
+ \studyprogramme{Informatika}  % iba názov bez číselného kódu
+% \city{}{Košice}  % mesto
+
+\keywords{%
+% english
+  quantum computing, random number generation, quantum randomness, Bell pairs,
+  qubit entanglement, QRNG, entropy extraction, next-bit test
+}{%
+% slovak
+  kvantové počítače, generovanie náhodných čísel, kvantová náhodnosť, Bellove páry,
+  prepletenie qubitov, QRNG, extrakcia entropie, test nasledujúceho bitu
+}
+
+ \declaration{
+    Vyhlasujem, že som záverečnú prácu vypracoval(a) samostatne s použitím uvedenej odbornej literatúry, ako aj s využitím nástrojov generatívnej umelej inteligencie v súlade s Metodickým pokynom o záverečných a kvalifikačných prácach a Etickým kódexom študenta Technickej univerzity v Košiciach. Umelá inteligencia bola použitá ako podporný nástroj bez porušenia zásad akademickej etiky a autorskej integrity.
+ }
+
+\abstract{%
+% english
+  This thesis presents a quantum random number generator (Q.R.N.G.) based on Bell
+  pair measurements. Entangled qubit pairs prepared through Hadamard and CNOT gates produce
+  correlated measurement outcomes used as a source of random bits, which are
+  stored in a database and exposed through a Django web application. Output quality
+  was evaluated using NIST-inspired tests, next-bit prediction, and Markov
+  analysis — the generator passed all tests with no detectable deterministic
+  structure. The thesis also examines the
+  impact of hardware imperfections such as decoherence and measurement bias, and
+  demonstrates that entropy extraction via MD5 hashing reduces local imbalances
+  without introducing artificial randomness.
+}{%
+% slovak
+  Táto práca sa zaoberá generovaním náhodných čísel pomocou kvantového počítača
+  so zameraním na praktickú využiteľnosť kvantového prepletenia ako zdroja
+  skutočnej náhodnosti. Bol navrhnutý a implementovaný kvantový generátor
+  náhodných čísel založený na meraniach Bellových párov. Generátor využíva dvojice
+  prepletených qubitov pripravených pomocou Hadamardovej a CNOT brány, pričom
+  výsledné bity sú ukladané do databázy a sprístupnené cez webovú aplikáciu
+  postavenú na frameworku Django. Kvalita výstupu bola overená testami
+  inšpirovanými metodikou NIST, testom predikcie nasledujúceho bitu a Markovovým
+  testom. Generátor úspešne prešiel všetkými testami bez detekovateľnej
+  deterministickej štruktúry. Práca sa venuje aj vplyvu nedokonalostí
+  kvantového hardvéru, ako sú decoherencia a bias merania, a preukazuje, že
+  extrakcia entropie pomocou hašovacej funkcie MD5 redukuje lokálne nerovnováhy
+  bez umelého zvyšovania entropie.
+}
+
+\acknowledgment{
+  Na tomto mieste by som sa rád poďakoval svojmu vedúcemu práce, Ing. Miroslavovi Murinovi, za jeho čas a odborné vedenie počas riešenia mojej záverečnej práce.
+  Rovnako by som sa rád poďakoval svojim rodičom a priateľom za ich podporu a povzbudzovanie počas celého môjho štúdia.
+  Osobitná vďaka patrí Jakubovi Novákovi za inšpiratívny nápad a prof. Leonardovi Francovi z Univerzity v Málage za cenné rady ohľadom systematického hodnotenia náhodnosti a štruktúrovania vedeckej práce.
+}
+
+
+% Uncomment the following line for the printer-friendly version of the thesis.
+% When defined, final PDF will not contain colored links, which is useful for printing.
+% WARNING: Uncomment ONLY when used manually without the Docker image for building the thesis. By uncommenting this line, you will manually override the printable flag and behavior of the Docker image will not work as expected.
+% If you want to use the Docker image for building the document, please do not uncomment this line.
+%\def\printable{}
+
