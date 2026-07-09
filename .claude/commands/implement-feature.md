@@ -1,6 +1,10 @@
 Execute an approved feature plan.  Reads the plan, runs a foreground exploration agent,
-implements layer-by-layer in the main context, writes tests, and does a sanity-check
-review against the plan before handing back.
+implements layer-by-layer in the main context, and does a sanity-check review against the
+plan before handing back.
+
+> **No tests (project directive).** Do **not** write, create, or run automated tests of any
+> kind — no test files, no test suites, no test commands.  Verify the work manually (run the
+> app, hit `/docs`, `curl` the endpoints) as the plan's verification section describes.
 
 Input: path to a plan file under `tasks/plans/`.  Example:
   /implement-feature tasks/plans/feature-17879-completed-cases.md
@@ -54,7 +58,6 @@ Work through the §6 File Plan in dependency order — typically:
 5. Twig templates (`templates/`)
 6. Frontend assets (`assets/` — Stimulus controllers, Sass)
 7. Console commands / fixtures (`src/Command/`)
-8. Tests last (see §5)
 
 After each layer:
 
@@ -75,28 +78,14 @@ If something surfaces that the plan did not anticipate (a hidden caller, a misal
 status enum, an existing migration in the way), **stop and report**.  Do not invent
 scope.  The plan is the contract.
 
-## 5. Tests
-Follow the plan's §11 (or §10/§11 in the template) and `CLAUDE.md`'s testing rules:
+## 5. Verify manually (no tests)
+Do **not** write or run automated tests.  Verify the feature by exercising it by hand as the
+plan's verification section describes — run the app, open `/docs`, `curl` each endpoint for the
+happy path and the edge cases, and confirm each AC in §2 holds against the running code.
 
-- **Bug fixes:** write a failing regression test first, confirm it fails, then fix.
-- **New features:** write tests that cover the ACs from the issue.  Each AC in §2 must
-  map to a concrete test by the end.
-- Pick the right suite: Unit / Functional / API / Acceptance.  Mirror what comparable
-  features already test.
-
-Run only the targeted tests, not the full suite:
-
-```
-./ops compose exec cli vendor/bin/codecept run Unit tests/Unit/<path>
-./ops compose exec cli vendor/bin/codecept run Functional tests/Functional/<path>
-```
-
-Do **not** run `./ops test` — the output is too large for the main context.
-
-If a pre-existing test breaks as a mechanical consequence (renamed status, changed
-field, etc.) and that test is listed in §10a (Expected Test Impact), update it.  If a
-pre-existing test breaks and it is **not** in §10a, stop and report — it is a likely
-regression, not a planned change.
+Leave any pre-existing tests untouched.  If a legacy test would break as a mechanical
+consequence of this change, note it in the hand-back report but do not update or run it (unless
+the plan explicitly says otherwise).
 
 ## 6. Sanity-check review
 A simple pass before handing back.  Re-read the plan's §2 Acceptance Criteria table and
@@ -143,12 +132,12 @@ Produce a final report covering:
 
 Then say:
 
-> All targeted tests pass and `./ops cs` is clean.  Please run `./ops test` to confirm
-> no regressions before opening a PR.
+> Implemented and manually verified per the plan's verification section.  No automated tests
+> were written or run (project directive).
 
 ## 9. Rules
 - Do not start implementation if pre-flight fails — fix the plan or branch first.
-- Do not run `./ops test` from this command.
+- Do not write or run automated tests of any kind (project directive).  Verify manually.
 - Do not invent scope.  Anything not in the plan stops the work and gets surfaced.
 - Do not add Co-Authored-By lines to any commits (per `MEMORY.md`).
 - Do not write to `tasks/plans/` except to update the plan you are executing.

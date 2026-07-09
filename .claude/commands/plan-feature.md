@@ -1,6 +1,11 @@
 Draft a detailed implementation plan for one ticket inside an approved epic plan.
 The output is the contract `/implement-feature` will execute against.
 
+> **No tests (project directive).** Do **not** plan, design, or describe automated tests of any
+> kind in the plan — no test files, no test suites, no "Test impact" or "Testing approach"
+> sections, no per-AC test mapping. Plan production code + manual verification only. If a section
+> below asks for tests, skip it.
+
 Input: a GitHub issue number, optionally followed by the path to the owning epic plan
 if it can't be auto-discovered.  Examples:
   /plan-feature 17879
@@ -94,11 +99,9 @@ Rules while drafting:
   Open Questions and propose an answer.
 - **Stay in scope.**  If the ticket text or the epic's §9 brief defers something, list
   it in §3 Out of Scope.  Do not slip later-epic work into this plan.
-- **Test impact (§10a).**  Actively populate this.  Scan the existing test suites
-  (`project/tests/Unit`, `project/tests/Functional`, `project/tests/Api`,
-  `project/tests/Acceptance`) for tests that touch the entities, statuses, routes, or
-  templates this feature will change.  If you predict no existing tests break, say so
-  explicitly — do not leave it blank.
+- **No tests.**  Do not add a "Test impact" or "Testing approach" section, do not list
+  test files in the File Plan, and do not map ACs to tests.  Verification is manual only —
+  describe how to exercise the feature by hand (e.g. `/docs`, `curl`, running the app).
 - **Strict types and PSR-12.**  The plan's File Plan should reflect strict_types and
   full type hints everywhere; do not let an implementer infer it.
 - **No raw SQL.**  All DB access through Doctrine DBAL or table classes — call this

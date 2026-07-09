@@ -35,6 +35,16 @@ class PoolChunk:
     offset_in_chunk: int
 
 
+@dataclass
+class ApiKeyRow:
+    key_hash: str
+    owner: str
+    tier: str
+    daily_quota_bytes: int | None
+    revoked: bool
+    created_at: datetime
+
+
 def get_root_key() -> RootKeyRow | None:
     with connect() as conn, conn.cursor() as cur:
         cur.execute(
@@ -109,3 +119,28 @@ def advance_consumed_offset(chunk_id: int, new_offset: int) -> None:
             (new_offset, chunk_id),
         )
         conn.commit()
+
+
+def insert_api_key(
+    key_hash: str, owner: str, tier: str, daily_quota_bytes: int | None
+) -> None:
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO api_keys (key_hash, owner, tier, daily_quota_bytes) "
+            "VALUES (%s, %s, %s, %s)",
+            (key_hash, owner, tier, daily_quota_bytes),
+        )
+        conn.commit()
+
+
+def get_api_key_by_hash(key_hash: str) -> ApiKeyRow | None:
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT key_hash, owner, tier, daily_quota_bytes, revoked, created_at "
+            "FROM api_keys WHERE key_hash = %s",
+            (key_hash,),
+        )
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return ApiKeyRow(*row)
