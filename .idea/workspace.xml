@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/qrng-eaas/claude/plan-feature.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qrng-eaas/claude/resources/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qrng-eaas/claude/resources/dice.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qrng-eaas/claude/resources/img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qrng-eaas/claude/resources/main.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,24 +35,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/qrng-eaas/claude",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/claude&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
+      <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
+      <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/BC" />
     </key>
@@ -94,7 +105,8 @@
       <updated>1783530938915</updated>
       <workItem from="1783530940377" duration="1045000" />
       <workItem from="1783576762758" duration="696000" />
-      <workItem from="1783588115259" duration="628000" />
+      <workItem from="1783588115259" duration="730000" />
+      <workItem from="1783594979451" duration="3834000" />
     </task>
     <servers />
   </component>

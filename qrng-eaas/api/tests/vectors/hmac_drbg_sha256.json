@@ -1,0 +1,112 @@
+[
+  {
+    "count": 0,
+    "reseed": false,
+    "entropy_input": "ca851911349384bffe89de1cbdc46e6831e44d34a4fb935ee285dd14b71a7488",
+    "nonce": "659ba96c601dc69fc902940805ec0ca8",
+    "personalization_string": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "e528e9abf2dece54d47c7e75e5fe302149f817ea9fb4bee6f4199697d04d5b89d54fbb978a15b5c443c9ec21036d2460b6f73ebad0dc2aba6e624abf07745bc107694bb7547bb0995f70de25d6b29e2d3011bb19d27676c07162c8b5ccde0668961df86803482cb37ed6d5c0bb8d50cf1f50d476aa0458bdaba806f48be9dcb8"
+  },
+  {
+    "count": 1,
+    "reseed": false,
+    "entropy_input": "79737479ba4e7642a221fcfd1b820b134e9e3540a35bb48ffae29c20f5418ea3",
+    "nonce": "3593259c092bef4129bc2c6c9e19f343",
+    "personalization_string": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "cf5ad5984f9e43917aa9087380dac46e410ddc8a7731859c84e9d0f31bd43655b924159413e2293b17610f211e09f770f172b8fb693a35b85d3b9e5e63b1dc252ac0e115002e9bedfb4b5b6fd43f33b8e0eafb2d072e1a6fee1f159df9b51e6c8da737e60d5032dd30544ec51558c6f080bdbdab1de8a939e961e06b5f1aca37"
+  },
+  {
+    "count": 2,
+    "reseed": false,
+    "entropy_input": "b340907445b97a8b589264de4a17c0bea11bb53ad72f9f33297f05d2879d898d",
+    "nonce": "65cb27735d83c0708f72684ea58f7ee5",
+    "personalization_string": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "75183aaaf3574bc68003352ad655d0e9ce9dd17552723b47fab0e84ef903694a32987eeddbdc48efd24195dbdac8a46ba2d972f5808f23a869e71343140361f58b243e62722088fe10a98e43372d252b144e00c89c215a76a121734bdc485486f65c0b16b8963524a3a70e6f38f169c12f6cbdd169dd48fe4421a235847a23ff"
+  },
+  {
+    "count": 3,
+    "reseed": false,
+    "entropy_input": "8e159f60060a7d6a7e6fe7c9f769c30b98acb1240b25e7ee33f1da834c0858e7",
+    "nonce": "c39d35052201bdcce4e127a04f04d644",
+    "personalization_string": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "62910a77213967ea93d6457e255af51fc79d49629af2fccd81840cdfbb4910991f50a477cbd29edd8a47c4fec9d141f50dfde7c4d8fcab473eff3cc2ee9e7cc90871f180777a97841597b0dd7e779eff9784b9cc33689fd7d48c0dcd341515ac8fecf5c55a6327aea8d58f97220b7462373e84e3b7417a57e80ce946d6120db5"
+  },
+  {
+    "count": 4,
+    "reseed": false,
+    "entropy_input": "74755f196305f7fb6689b2fe6835dc1d81484fc481a6b8087f649a1952f4df6a",
+    "nonce": "c36387a544a5f2b78007651a7b74b749",
+    "personalization_string": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "b2896f3af4375dab67e8062d82c1a005ef4ed119d13a9f18371b1b873774418684805fd659bfd69964f83a5cfe08667ddad672cafd16befffa9faed49865214f703951b443e6dca22edb636f3308380144b9333de4bcb0735710e4d9266786342fc53babe7bdbe3c01a3addb7f23c63ce2834729fabbd419b47beceb4a460236"
+  },
+  {
+    "count": 0,
+    "reseed": true,
+    "entropy_input": "06032cd5eed33f39265f49ecb142c511da9aff2af71203bffaf34a9ca5bd9c0d",
+    "nonce": "0e66f71edc43e42a45ad3c6fc6cdc4df",
+    "personalization_string": "",
+    "entropy_input_reseed": "01920a4e669ed3a85ae8a33b35a74ad7fb2a6bb4cf395ce00334a9c9a5a5d552",
+    "additional_input_reseed": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "76fc79fe9b50beccc991a11b5635783a83536add03c157fb30645e611c2898bb2b1bc215000209208cd506cb28da2a51bdb03826aaf2bd2335d576d519160842e7158ad0949d1a9ec3e66ea1b1a064b005de914eac2e9d4f2d72a8616a80225422918250ff66a41bd2f864a6a38cc5b6499dc43f7f2bd09e1e0f8f5885935124"
+  },
+  {
+    "count": 1,
+    "reseed": true,
+    "entropy_input": "aadcf337788bb8ac01976640726bc51635d417777fe6939eded9ccc8a378c76a",
+    "nonce": "9ccc9d80c89ac55a8cfe0f99942f5a4d",
+    "personalization_string": "",
+    "entropy_input_reseed": "03a57792547e0c98ea1776e4ba80c007346296a56a270a35fd9ea2845c7e81e2",
+    "additional_input_reseed": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "17d09f40a43771f4a2f0db327df637dea972bfff30c98ebc8842dc7a9e3d681c61902f71bffaf5093607fbfba9674a70d048e562ee88f027f630a78522ec6f706bb44ae130e05c8d7eac668bf6980d99b4c0242946452399cb032cc6f9fd96284709bd2fa565b9eb9f2004be6c9ea9ff9128c3f93b60dc30c5fc8587a10de68c"
+  },
+  {
+    "count": 2,
+    "reseed": true,
+    "entropy_input": "62cda441dd802c7652c00b99cac3652a64fc75388dc9adcf763530ac31df9214",
+    "nonce": "5fdc897a0c1c482204ef07e0805c014b",
+    "personalization_string": "",
+    "entropy_input_reseed": "bd9bbf717467bf4b5db2aa344dd0d90997c8201b2265f4451270128f5ac05a1a",
+    "additional_input_reseed": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "7e41f9647a5e6750eb8acf13a02f23f3be77611e51992cedb6602c314531aff2a6e4c557da0777d4e85faefcb143f1a92e0dbac8de8b885ced62a124f0b10620f1409ae87e228994b830eca638ccdceedd3fcd07d024b646704f44d5d9c4c3a7b705f37104b45b9cfc2d933ae43c12f53e3e6f798c51be5f640115d45cf919a4"
+  },
+  {
+    "count": 3,
+    "reseed": true,
+    "entropy_input": "6bdc6ca8eef0e3533abd02580ebbc8a92f382c5b1c8e3eaa12566ecfb90389a3",
+    "nonce": "8f8481cc7735827477e0e4acb7f4a0fa",
+    "personalization_string": "",
+    "entropy_input_reseed": "72eca6f1560720e6bd1ff0152c12eeff1f959462fd62c72b7dde96abcb7f79fb",
+    "additional_input_reseed": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "d5a2e2f254b5ae65590d4fd1ff5c758e425be4bacdeede7989669f0a22d34274fdfc2bf87135e30abdae2691629c2f6f425bd4e119904d4785ecd9328f15259563e5a71f915ec0c02b66655471067b01016fdf934a47b017e07c21332641400bbe5719050dba22c020b9b2d2cdb933dbc70f76fec4b1d83980fd1a13c4565836"
+  },
+  {
+    "count": 4,
+    "reseed": true,
+    "entropy_input": "096ef37294d369face1add3eb8b425895e921626495705c5a03ee566b34158ec",
+    "nonce": "6e2e0825534d2989715cc85956e0148d",
+    "personalization_string": "",
+    "entropy_input_reseed": "1b4f7125f472c253837fa787d5acf0382a3b89c3f41c211d263052402dcc62c5",
+    "additional_input_reseed": "",
+    "additional_input_1": "",
+    "additional_input_2": "",
+    "returned_bits": "4541f24f759b5f2ac2b57b51125077cc740b3859a719a9bab1196e6c0ca2bd057af9d3892386a1813fc8875d8d364f15e7fd69d1cc6659470415278164df656295ba9cfcee79f6cbe26ee136e6b45ec224ad379c6079b10a2e0cb5f7f785ef0ab7a7c3fcd9cb6506054d20e2f3ec610cbba9b045a248af56e4f6d3f0c8d96a23"
+  }
+]

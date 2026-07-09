@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quantum RNG{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'img.png' %}">
+
+    <style>
+        /* ================= GLOBAL SAFETY ================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+            font-family: 'Orbitron', sans-serif;
+            background: radial-gradient(circle at center, #060c1f, #01040b);
+            color: #e3f6ff;
+        }
+
+        body.menu-open {
+            overflow: hidden;
+        }
+
+        /* ================= GENERAL PAGE LAYOUT ================= */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
+            backdrop-filter: blur(8px);
+        }
+
+        footer {
+            background: rgba(0, 10, 25, 0.8);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9em;
+            color: #7ad9ff;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        h1, h2, h3 {
+            color: #7ad9ff;
+            text-shadow: 0 0 10px #00aaff;
+        }
+
+        a {
+            color: #4dcfff;
+            text-decoration: none;
+        }
+
+        /* ================= BUTTONS & INPUTS (UNCHANGED) ================= */
+        button {
+            background: #00aaff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            color: #fff;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.6);
+            transition: all 0.3s ease;
+            min-width: 100px;
+            min-height: 60px;
+        }
+
+        button:hover {
+            background: #0077cc;
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.9);
+        }
+
+        input[type="number"] {
+            padding: 0.2rem 0.5rem;
+            border-radius: 35px;
+            font-size: 1.6rem;
+            border: 2px solid #00aaff;
+            background: #0a1b2f;
+            color: #c9efff;
+            width: 5rem;
+            min-width: 300px;
+            min-height: 70px;
+        }
+
+        fieldset {
+            border: 1.5px solid rgba(0, 170, 255, 0.35);
+            border-radius: 16px;
+            padding: 2.2rem 2rem 2rem;
+            margin-bottom: 2.5rem;
+            background: rgba(5, 15, 35, 0.65);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 18px rgba(0, 170, 255, 0.15), inset 0 0 25px rgba(0, 170, 255, 0.08);
+        }
+
+        legend {
+            padding: 0.4rem 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #7ad9ff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px #00aaff;
+            border-radius: 30px;
+            background: rgba(0, 15, 40, 0.9);
+            border: 1px solid rgba(0, 170, 255, 0.45);
+        }
+
+        select {
+            width: 100%;
+            padding: 0.7rem 1.2rem;
+            border-radius: 30px;
+            border: 2px solid rgba(0, 170, 255, 0.6);
+            background: linear-gradient(145deg, #0a1b2f, #061226);
+            color: #c9efff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ================= HEADER ================= */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(0,200,255,0.25);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .site-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(0, 170, 255, 0.7);
+        }
+
+        /* ================= DESKTOP NAV ================= */
+        .nav-links {
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        .nav-links a {
+            color: #bfe9ff;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            color: #4dcfff;
+            border-bottom: 2px solid #00aaff;
+        }
+
+        /* ================= MOBILE MENU TOGGLE ================= */
+        .menu-toggle {
+            display: none;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            color: #4dcfff;
+            cursor: pointer;
+            width: 50px;
+        }
+
+        /* ================= MOBILE MENU OVERLAY (NEW) ================= */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: radial-gradient(circle at top, #060c1f, #01040b);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        .mobile-menu.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .mobile-menu a {
+            font-size: 2rem;
+            color: #7ad9ff;
+            text-shadow: 0 0 12px #00aaff;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #4dcfff;
+            cursor: pointer;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            main {
+                padding: 1.2rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo-title">
+            <img src="{% static 'img.png' %}" class="site-logo" alt="">
+            <h1><a href="{% url 'main_page' %}">Q.R.N.G.</a></h1>
+        </div>
+
+        <nav class="nav-links">
+            <a href="{% url 'main_page' %}">Home</a>
+            <a href="{% url 'about_page' %}">About</a>
+            <a href="{% url 'generator_page' %}">Generator</a>
+            <a href="{% url 'charts_page' %}">Charts</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile_page' %}">Profile</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </nav>
+
+        <button class="menu-toggle" style="max-width: 50px" onclick="toggleMenu()">☰</button>
+    </div>
+</header>
+
+<nav id="mobileMenu" class="mobile-menu">
+    <button class="close-menu" onclick="toggleMenu()">✕</button>
+
+    <a href="{% url 'main_page' %}">Home</a>
+    <a href="{% url 'about_page' %}">About</a>
+    <a href="{% url 'generator_page' %}">Generator</a>
+    <a href="{% url 'dice_page' %}">Dice</a>
+    <a href="{% url 'coin_page' %}">Coin</a>
+    <a href="{% url 'charts_page' %}">Charts</a>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile_page' %}">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+</nav>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <p>Quantum Random Number Generator Project © 2025</p>
+</footer>
+
+<script>
+function toggleMenu() {
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("open");
+    document.body.classList.toggle("menu-open");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Play Dice{% endblock %}
+
+{% block content %}
+
+<section class="quick-rolls">
+    <h1>Roll Quantum Dice</h1>
+
+    <form method="post" class="dice-form">
+
+        {% if results %}
+            <div class="results-container">
+                <div class="dice-results">
+                    {% for r in results %}
+                        <div class="dice-result">
+                            {{ r.result }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% csrf_token %}
+
+        <!-- Dice Types -->
+        <div class="dice-types">
+            <label>
+                <input type="radio" name="dice_type" value="14" {% if dice_type == "14" %}checked{% endif %}>
+                4
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="16" {% if dice_type == "16" %}checked{% endif %}>
+                6
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="18" {% if dice_type == "18" %}checked{% endif %}>
+                8
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="110" {% if dice_type == "110" %}checked{% endif %}>
+                10
+            </label>
+        </div>
+
+        <div class="dice-types">
+            <label>
+                <input type="radio" name="dice_type" value="112" {% if dice_type == "112" %}checked{% endif %}>
+                12
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="120" {% if dice_type == "120" %}checked{% endif %}>
+                20
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="150" {% if dice_type == "150" %}checked{% endif %}>
+                50
+            </label>
+
+            <label>
+                <input type="radio" name="dice_type" value="1100" {% if dice_type == "1100" %}checked{% endif %}>
+                100
+            </label>
+        </div>
+
+        <!-- Dice Count -->
+        <div class="count-box">
+            <input type="number"
+                   name="count"
+                   min="1"
+                   max="6"
+                   placeholder="Number of dice (1-6)"
+                   value="{{ count|default:'' }}"
+                   required>
+        </div>
+
+            <div class="btn-row" style="margin-top: 30px">
+                <button type="submit" name="action" value="generate">Roll Dice</button>
+                <a href="{% url 'main_page' %}" style="margin-left: 50px" >Back</a>
+            </div>
+    </form>
+</section>
+
+
+<style>
+.dice-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    margin-top: 1rem;
+}
+
+/* Dice selection buttons */
+.dice-types {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
+}
+
+.dice-types label {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.1rem;
+    color: #bfe9ff;
+    cursor: pointer;
+    padding: 0.7rem 1.1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(0,200,255,0.35);
+    box-shadow: 0 0 10px rgba(0,200,255,0.2);
+    transition: 0.3s;
+}
+
+.dice-types label:hover {
+    background: rgba(0,200,255,0.12);
+    box-shadow: 0 0 18px rgba(0,200,255,0.4);
+}
+
+.dice-types input {
+    display: none;
+}
+
+/* Selected state */
+.dice-types input:checked + label,
+.dice-types label:has(input:checked) {
+    background: rgba(0,200,255,0.18);
+    border-color: rgba(0,200,255,0.7);
+    box-shadow: 0 0 20px rgba(0,200,255,0.6);
+}
+
+/* Results Layout */
+.results-container {
+    text-align: center;
+    margin: 1rem auto;
+}
+
+.dice-results {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+
+.dice-result {
+    padding: 1rem 1.4rem;
+    border-radius: 14px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.3rem;
+    color: #e8faff;
+    background: rgba(0,200,255,0.15);
+    border: 1px solid rgba(0,200,255,0.4);
+    box-shadow: 0 0 10px rgba(0,200,255,0.3);
+}
+
+.large {
+    padding: 0.9rem 2rem;
+    font-size: 1.15rem;
+}
+</style>
+
+{% endblock %}
