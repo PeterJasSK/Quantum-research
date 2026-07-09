@@ -32,41 +32,34 @@ The app needs a real Postgres (root key + entropy pool + API keys) and Redis (DR
 counter). If you don't have Neon/Upstash dev credentials, spin up disposable containers with
 Docker — this is exactly how EPIC 2 was verified.
 
-### 1. Start Postgres + Redis
-
-```bash
-docker run -d --rm --name qeaas-pg -e POSTGRES_PASSWORD=pw -e POSTGRES_DB=qeaas \
-  -p 55432:5432 postgres:16-alpine
-
-docker run -d --rm --name qeaas-redis -p 56379:6379 redis:7-alpine
-```
-
-`--rm` means both containers vanish when stopped — nothing to clean up later beyond
-`docker stop qeaas-pg qeaas-redis`.
-
-### 2. Apply the SQL migrations
+### 1. Start Postgres + Redis (one command)
 
 From `api/`:
 
 ```bash
-cat sql/001_entropy_core.sql | docker exec -i qeaas-pg psql -U postgres -d qeaas
-cat sql/002_api_keys.sql    | docker exec -i qeaas-pg psql -U postgres -d qeaas
+./scripts/dev_db_up.sh
 ```
 
-### 3. Configure the environment
+This starts two disposable containers (`qeaas-pg`, `qeaas-redis`, both `--rm` so they vanish
+on stop), waits for Postgres to actually be ready, and applies both SQL migrations. It prints
+the env vars to export.
 
-Export directly (simplest for a throwaway session) or put these in `api/.env` and pass
-`--env-file .env` to uvicorn:
+To skip the copy/paste, export them straight into your shell instead:
 
 ```bash
-export MASTER_KEY="00000000000000000000000000000000000000000000000000000000000000"  # 32 bytes hex, any value for local testing
-export DATABASE_URL="postgresql://postgres:pw@127.0.0.1:55432/qeaas"
-export REDIS_URL="redis://127.0.0.1:56379"
-export ADMIN_TOKEN="devtoken"
-export WEB_ORIGIN="http://localhost:3000"
+eval "$(./scripts/dev_db_up.sh --print-env)"
 ```
 
-### 4. Seed the entropy pool
+Running it again while the containers are still up will refuse (it tells you to run
+`dev_db_down.sh` first) rather than silently reusing/duplicating them.
+
+### 2. Configure the environment
+
+If you used `eval "$(...--print-env)"` above, skip this — it's already exported. Otherwise
+copy the block the plain `dev_db_up.sh` run printed, or put it in `api/.env` and pass
+`--env-file .env` to uvicorn.
+
+### 3. Seed the entropy pool
 
 The DRBG root key bootstraps itself from the pool on first use, and `/health` reports
 `quantum_entropy_level: "degraded"` below 64 KiB of pool bytes (gated routes 503 until then).
@@ -84,7 +77,7 @@ python scripts/ingest_bits.py /tmp/bits.txt seed
 (Real deployments ingest actual QRNG output; for local testing any `0/1` text works — it's
 only exercising the pipeline, not measuring quantumness.)
 
-### 5. Mint a dev API key
+### 4. Mint a dev API key
 
 `/v1/random/bytes` and `/v1/seed` require `X-API-Key`. There's no HTTP mint route yet
 (EPIC 3); use the CLI, which prints the plaintext key once:
@@ -94,13 +87,13 @@ python -m scripts.mint_key --owner devtest --tier default
 # api key for 'devtest' (tier=default): <plaintext key>  <-- copy this
 ```
 
-### 6. Start the app
+### 5. Start the app
 
 ```bash
 uvicorn main:app --port 8000
 ```
 
-### 7. Confirm it's actually working
+### 6. Confirm it's actually working
 
 ```bash
 curl -s http://127.0.0.1:8000/health          # {"status":"ok","quantum_entropy_level":"healthy",...}
@@ -108,7 +101,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8000/openapi.json   # 
 open http://127.0.0.1:8000/docs               # interactive Swagger UI, every route typed
 ```
 
-Then exercise the actual routes (replace `<key>` with the value from step 5):
+Then exercise the actual routes (replace `<key>` with the value from step 4):
 
 ```bash
 # public, ungated
@@ -140,7 +133,7 @@ Edge cases worth checking (each should return the flat `{"error": "<slug>"}` bod
 | `/v1/random/bytes` with a revoked key | `401 invalid_api_key` |
 | `/admin/ingest` with wrong `X-Admin-Token` | `401` |
 | `/admin/ingest` with a file > 10 MB | `413` |
-| pool below 64 KiB (skip step 4, or don't seed enough) | `/v1/random/bytes`, `/v1/seed` → `503` |
+| pool below 64 KiB (skip step 3, or don't seed enough) | `/v1/random/bytes`, `/v1/seed` → `503` |
 
 To revoke the test key and confirm the `401`:
 
@@ -148,11 +141,11 @@ To revoke the test key and confirm the `401`:
 docker exec qeaas-pg psql -U postgres -d qeaas -c "UPDATE api_keys SET revoked=true;"
 ```
 
-### 8. Tear down
+### 7. Tear down
 
 ```bash
 pkill -f "uvicorn main:app"
-docker stop qeaas-pg qeaas-redis
+./scripts/dev_db_down.sh
 ```
 
 ## Spikes
