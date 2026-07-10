@@ -271,8 +271,8 @@ domains, sidesteps both problems with zero code changes.
 
 | Project | Root directory | Domain (fill in once deployed) |
 |---|---|---|
-| `qeaas-api` | `qrng-eaas/api` | `https://qeaas-api-<random>.vercel.app` |
-| `qeaas-web` | `qrng-eaas/web` | `https://qeaas-web-<random>.vercel.app` |
+| `qeaas-api` | `qrng-eaas/api` | `https://quantum-research-api.vercel.app` |
+| `qeaas-web` | `qrng-eaas/web` | `https://eaas-two.vercel.app` |
 
 ### Env vars per project
 
@@ -309,8 +309,8 @@ editing one.
 ### Runbook: verify + seed a fresh deploy
 
 ```bash
-API=https://qeaas-api-<random>.vercel.app
-WEB=https://qeaas-web-<random>.vercel.app
+API=https://quantum-research-api.vercel.app
+WEB=https://eaas-two.vercel.app
 
 # 1. confirm the function is reachable at all
 curl -s "$API/health"   # quantum_entropy_level: "degraded" is expected pre-seed
