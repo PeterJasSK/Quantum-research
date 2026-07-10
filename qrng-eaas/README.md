@@ -41,7 +41,7 @@ From `api/`:
 ```
 
 This starts two disposable containers (`qeaas-pg`, `qeaas-redis`, both `--rm` so they vanish
-on stop), waits for Postgres to actually be ready, and applies both SQL migrations. It prints
+on stop), waits for Postgres to actually be ready, and applies all SQL migrations. It prints
 the env vars to export.
 
 To skip the copy/paste, export them straight into your shell instead:
@@ -79,12 +79,20 @@ only exercising the pipeline, not measuring quantumness.)
 
 ### 4. Mint a dev API key
 
-`/v1/random/bytes` and `/v1/seed` require `X-API-Key`. There's no HTTP mint route yet
-(EPIC 3); use the CLI, which prints the plaintext key once:
+`/v1/random/bytes` and `/v1/seed` require `X-API-Key`. Mint one with the CLI, which prints
+the plaintext key once:
 
 ```bash
 python -m scripts.mint_key --owner devtest --tier default
 # api key for 'devtest' (tier=default): <plaintext key>  <-- copy this
+```
+
+Or via the HTTP admin route (`X-Admin-Token` from step 2, `devtoken` for the throwaway
+backend):
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/admin/keys -H "X-Admin-Token: devtoken" \
+  -H 'content-type: application/json' -d '{"owner":"devtest","tier":"default"}'
 ```
 
 ### 5. Start the app
@@ -134,11 +142,18 @@ Edge cases worth checking (each should return the flat `{"error": "<slug>"}` bod
 | `/admin/ingest` with wrong `X-Admin-Token` | `401` |
 | `/admin/ingest` with a file > 10 MB | `413` |
 | pool below 64 KiB (skip step 3, or don't seed enough) | `/v1/random/bytes`, `/v1/seed` → `503` |
+| `/random` hammered past 60 req/min from one IP | `429 rate_limited` |
+| `/v1/random/bytes` past a key's daily quota | `429 quota_exceeded` |
+| `/admin/keys/revoke` with an unknown `key_hash` | `404 not_found` |
+
+Every `429` carries a `Retry-After` header (seconds).
 
 To revoke the test key and confirm the `401`:
 
 ```bash
-docker exec qeaas-pg psql -U postgres -d qeaas -c "UPDATE api_keys SET revoked=true;"
+python -m scripts.revoke_key --owner devtest
+# or: curl -s -X POST http://127.0.0.1:8000/admin/keys/revoke -H "X-Admin-Token: devtoken" \
+#       -H 'content-type: application/json' -d '{"key_hash":"<hash>"}'
 ```
 
 ### 7. Tear down
@@ -147,6 +162,45 @@ docker exec qeaas-pg psql -U postgres -d qeaas -c "UPDATE api_keys SET revoked=t
 pkill -f "uvicorn main:app"
 ./scripts/dev_db_down.sh
 ```
+
+## Anti-abuse & bit-drain (EPIC 3)
+
+"No one can raid my bits": every byte served by this API is **DRBG-derived**
+(`qeaas.keyed_drbg.output()`), never a raw QRNG bit. That single fact decouples request
+volume from pool consumption — the three defences below just bound *served output volume*
+and abuse visibility; the pool itself is protected separately by a reseed-frequency floor.
+
+1. **Public throttling (S3.1).** Anonymous `/random` and `/dice` are limited per IP to
+   **60 req/min** (`rl:ip:{ip}:{minute}`, atomic `INCR` + `EXPIRE 60`), and `/random` output
+   is additionally capped by a **global 5 MB/day** ceiling (`anon:daily:{day}`, atomic
+   `INCRBY` + `EXPIRE`). Over either → `429` with a `Retry-After` header.
+2. **Keyed throttling (S3.2).** `/v1/random/bytes` and `/v1/seed` enforce a per-key rate
+   limit and a per-key daily byte quota (`rl:key:{hash}:{minute}`, `quota:key:{hash}:{day}`),
+   both tier-driven:
+
+   | Tier | Daily quota | Rate limit |
+   |------|-------------|------------|
+   | `default` | 256 KB/day | 120 req/min |
+   | `iot` | 10 MB/day | 600 req/min |
+   | `trusted` | 500 MB/day | 1,200 req/min |
+
+   A key's explicit `daily_quota_bytes` (set at mint time) overrides the tier default;
+   `NULL` falls back to it. Over rate → `429 rate_limited`; over quota → `429 quota_exceeded`
+   (a rejected request's bytes are refunded via `DECRBY`, so it never burns quota it didn't
+   use).
+3. **Bit-drain protection (S3.3 — the actual worry).** `qeaas.keyed_drbg.maybe_reseed()`
+   rotates `root_key` from the pool on whichever comes first: a fixed 15-minute interval, or
+   an output-count limit — but the output-count branch is now additionally floored by
+   `RESEED_MIN_INTERVAL_SECONDS` (5 minutes), so no amount of request volume can rotate the
+   key (and pull pool bytes) faster than wall-clock time allows. Pool drain is a function of
+   *time*, never of *traffic*. `usage_log` records every keyed issue (`principal`, `endpoint`,
+   `nbytes`) for abuse spotting, and revocation (`POST /admin/keys/revoke` or
+   `scripts/revoke_key.py`) is instant — `require_api_key` reads the row fresh from Neon on
+   every request, no caching.
+
+All counters are atomic Redis ops only (`INCR`/`INCRBY`/`EXPIRE`/`DECRBY`) — no
+read-modify-write, serverless-safe. On a Redis outage, throttling **fails open** (logs a
+warning, allows the request); the reseed floor still guarantees the pool can't be drained.
 
 ## Spikes
 

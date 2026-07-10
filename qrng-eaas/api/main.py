@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import os
+import secrets
 import tempfile
 import time
 from pathlib import Path
@@ -9,13 +10,17 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from qeaas import db, dice, generation
-from qeaas.auth import require_admin, require_api_key
+from qeaas import db, dice, generation, ratelimit
+from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
 from qeaas.gate import entropy_level, require_entropy
 from qeaas.pool import ingest_bits_file, parse_bits_file
 from qeaas.schemas import (
     AdminIngestResponse,
+    AdminKeyRequest,
+    AdminKeyResponse,
+    AdminRevokeRequest,
+    AdminRevokeResponse,
     DiceRequest,
     DiceResponse,
     Format,
@@ -64,8 +69,16 @@ def health() -> HealthResponse:
 
 
 @app.get("/random")
-def random_endpoint(bytes: int = Query(default=32, ge=1, le=64)) -> RandomResponse:
-    """AC-2: anonymous, ungated -- dice must survive a `degraded` pool."""
+def random_endpoint(
+    request: Request, bytes: int = Query(default=32, ge=1, le=64)
+) -> RandomResponse:
+    """AC-2: anonymous, ungated -- dice must survive a `degraded` pool.
+
+    AC-1/AC-2: per-IP rate limit, then the global anon daily output ceiling.
+    """
+    ip = ratelimit.client_ip(request)
+    ratelimit.check_ip_rate(ip)
+    ratelimit.check_anon_daily(bytes)
     data = generation.random_bytes(bytes)
     return RandomResponse(
         bytes=bytes, format="base64", data=base64.b64encode(data).decode("ascii")
@@ -73,8 +86,9 @@ def random_endpoint(bytes: int = Query(default=32, ge=1, le=64)) -> RandomRespon
 
 
 @app.post("/dice")
-def dice_endpoint(body: DiceRequest) -> DiceResponse:
-    """AC-3: rejection-sampled dice rolls, ungated."""
+def dice_endpoint(request: Request, body: DiceRequest) -> DiceResponse:
+    """AC-3: rejection-sampled dice rolls, ungated. AC-1: per-IP rate limit."""
+    ratelimit.check_ip_rate(ratelimit.client_ip(request))
     rolls = dice.roll(body.sides, body.count)
     return DiceResponse(sides=body.sides, count=body.count, rolls=rolls)
 
@@ -85,22 +99,34 @@ def _issue_v1(size: int, fmt: str) -> V1RandomBytesResponse:
 
 @app.get(
     "/v1/random/bytes",
-    dependencies=[Depends(require_api_key), Depends(require_entropy)],
+    dependencies=[Depends(require_entropy)],
 )
 def v1_random_bytes(
-    size: int = Query(ge=32, le=4096), format: Format = "hex"
+    size: int = Query(ge=32, le=4096),
+    format: Format = "hex",
+    key: db.ApiKeyRow = Depends(require_api_key),
 ) -> V1RandomBytesResponse:
-    """AC-4: canonical dev endpoint. Real API-key hash validation; no quota check (EPIC 3)."""
-    return _issue_v1(size, format)
+    """AC-4: canonical dev endpoint. Per-key rate limit + daily quota, then usage log."""
+    ratelimit.enforce_key(key, size)
+    response = _issue_v1(size, format)
+    db.insert_usage_log(key.key_hash, "/v1/random/bytes", size)
+    return response
 
 
 @app.get(
     "/v1/seed",
-    dependencies=[Depends(require_api_key), Depends(require_entropy)],
+    dependencies=[Depends(require_entropy)],
 )
-def seed(bytes: int = Query(ge=32, le=4096), format: Format = "hex") -> V1RandomBytesResponse:
+def seed(
+    bytes: int = Query(ge=32, le=4096),
+    format: Format = "hex",
+    key: db.ApiKeyRow = Depends(require_api_key),
+) -> V1RandomBytesResponse:
     """AC-5: alias of `/v1/random/bytes` -- shares the same service function so it cannot drift."""
-    return _issue_v1(bytes, format)
+    ratelimit.enforce_key(key, bytes)
+    response = _issue_v1(bytes, format)
+    db.insert_usage_log(key.key_hash, "/v1/seed", bytes)
+    return response
 
 
 @app.post("/v1/verify")
@@ -142,6 +168,28 @@ async def admin_ingest(file: UploadFile) -> AdminIngestResponse:
         bytes_added=len(plaintext),
         pool_bytes_remaining=db.pool_bytes_remaining(),
     )
+
+
+@app.post("/admin/keys", dependencies=[Depends(require_admin)])
+def admin_mint_key(body: AdminKeyRequest) -> AdminKeyResponse:
+    """AC-9: HTTP mint route (EPIC 2 Q4 carry-over); same logic as `scripts/mint_key.py`."""
+    key = secrets.token_urlsafe(32)
+    db.insert_api_key(hash_api_key(key), body.owner, body.tier, body.daily_quota_bytes)
+    return AdminKeyResponse(
+        api_key=key,
+        owner=body.owner,
+        tier=body.tier,
+        daily_quota_bytes=body.daily_quota_bytes,
+    )
+
+
+@app.post("/admin/keys/revoke", dependencies=[Depends(require_admin)])
+def admin_revoke_key(body: AdminRevokeRequest) -> AdminRevokeResponse:
+    """AC-8: instant revocation -- `require_api_key` reads the row fresh every request."""
+    revoked = db.revoke_api_key(body.key_hash)
+    if not revoked:
+        raise ApiError(404, "not_found")
+    return AdminRevokeResponse(key_hash=body.key_hash, revoked=True)
 
 
 @app.post("/v1/kem/keypair", dependencies=[Depends(require_entropy)])

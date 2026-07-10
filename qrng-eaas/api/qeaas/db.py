@@ -144,3 +144,29 @@ def get_api_key_by_hash(key_hash: str) -> ApiKeyRow | None:
         if row is None:
             return None
         return ApiKeyRow(*row)
+
+
+def get_api_key_hashes_by_owner(owner: str) -> list[str]:
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT key_hash FROM api_keys WHERE owner = %s", (owner,))
+        return [key_hash for (key_hash,) in cur.fetchall()]
+
+
+def revoke_api_key(key_hash: str) -> bool:
+    """AC-8: revocation is instant -- `require_api_key` reads this row fresh every request."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "UPDATE api_keys SET revoked = true WHERE key_hash = %s", (key_hash,)
+        )
+        conn.commit()
+        return cur.rowcount == 1
+
+
+def insert_usage_log(principal: str, endpoint: str, nbytes: int) -> None:
+    """AC-8: abuse-spotting log, written for keyed issues (Q7)."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO usage_log (principal, endpoint, nbytes) VALUES (%s, %s, %s)",
+            (principal, endpoint, nbytes),
+        )
+        conn.commit()

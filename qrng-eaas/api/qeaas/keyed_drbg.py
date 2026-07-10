@@ -7,6 +7,11 @@ HMAC-DRBG instance per call: output(n) = HMAC-DRBG(root_key, counter, n).
 `root_key` itself is rotated ("reseeded") from the QRNG pool on a fixed
 schedule -- see the constants below. QRNG bits seed a standards DRBG; they
 do not "defeat quantum attackers."
+
+Served bytes are always DRBG output, never raw pool bits, so request volume
+alone cannot drain the pool -- reseeds are additionally floored at
+`RESEED_MIN_INTERVAL_SECONDS` (AC-7), so even unlimited traffic against the
+output-count branch cannot accelerate pool drain below wall-clock time.
 """
 
 from __future__ import annotations
@@ -20,9 +25,11 @@ from qeaas.redis_client import incr_counter
 # Low-water mark on the pool -- below this, /health reports "degraded" (AC-9).
 THRESHOLD = 64 * 1024
 
-# Reseed fires on whichever comes first (AC-7).
+# Reseed fires on whichever comes first (AC-7), but the output-limit branch is
+# additionally floored so heavy traffic alone cannot pull the schedule forward.
 RESEED_INTERVAL_SECONDS = 15 * 60
 RESEED_OUTPUT_LIMIT = 100_000
+RESEED_MIN_INTERVAL_SECONDS = 5 * 60
 RESEED_PULL_BYTES = 32
 
 _cache: dict | None = None
@@ -56,7 +63,11 @@ def maybe_reseed() -> None:
     """AC-7, AC-8: rotate `root_key` from the pool when the interval elapses."""
     cache = _load_cache()
     elapsed = time.time() - cache["rotated_at_ts"]
-    due = elapsed >= RESEED_INTERVAL_SECONDS or cache["outputs_since_reseed"] >= RESEED_OUTPUT_LIMIT
+    output_limit_hit = (
+        cache["outputs_since_reseed"] >= RESEED_OUTPUT_LIMIT
+        and elapsed >= RESEED_MIN_INTERVAL_SECONDS
+    )
+    due = elapsed >= RESEED_INTERVAL_SECONDS or output_limit_hit
     if not due:
         return
 

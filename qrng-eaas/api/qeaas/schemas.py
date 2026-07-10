@@ -66,3 +66,25 @@ class AdminIngestResponse(BaseModel):
     ingested: bool
     bytes_added: int
     pool_bytes_remaining: int
+
+
+class AdminKeyRequest(BaseModel):
+    owner: str
+    tier: str = "default"
+    daily_quota_bytes: int | None = None
+
+
+class AdminKeyResponse(BaseModel):
+    api_key: str
+    owner: str
+    tier: str
+    daily_quota_bytes: int | None
+
+
+class AdminRevokeRequest(BaseModel):
+    key_hash: str
+
+
+class AdminRevokeResponse(BaseModel):
+    key_hash: str
+    revoked: bool
