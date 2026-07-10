@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/vercel.json" beforeDir="false" />
-    </list>
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +101,7 @@
       <workItem from="1783594979451" duration="3834000" />
       <workItem from="1783662802978" duration="9053000" />
       <workItem from="1783677986801" duration="606000" />
-      <workItem from="1783690696137" duration="2556000" />
+      <workItem from="1783690696137" duration="2892000" />
     </task>
     <servers />
   </component>
