@@ -4,13 +4,8 @@
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/qrng-eaas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/qeaas/dice.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/qeaas/dice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/qeaas/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/qeaas/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/vercel.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +41,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/claude&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -108,7 +104,9 @@
       <workItem from="1783576762758" duration="696000" />
       <workItem from="1783588115259" duration="730000" />
       <workItem from="1783594979451" duration="3834000" />
-      <workItem from="1783662802978" duration="8311000" />
+      <workItem from="1783662802978" duration="9053000" />
+      <workItem from="1783677986801" duration="606000" />
+      <workItem from="1783690696137" duration="2556000" />
     </task>
     <servers />
   </component>

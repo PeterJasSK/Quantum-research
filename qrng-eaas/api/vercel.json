@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "main.py": {
+      "runtime": "python3.13"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/main.py" }
+  ]
+}

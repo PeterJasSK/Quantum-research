@@ -259,6 +259,103 @@ API_KEY=<key> api/venv/bin/python api/scripts/kem_roundtrip.py
 # OK: QRNG-seeded ML-KEM-768 keypair round-trips (ss=32B)
 ```
 
+## Deployment (EPIC 6)
+
+Production is **two separate Vercel projects**, not one monorepo project — a deliberate
+deviation from the build plan's "Next.js + FastAPI in one Vercel project (Services)" phrasing
+(see `claude/plans/feature-epic6-deployment.md` §5 Decision 1). The old repo-level
+`qrng-eaas/vercel.json` rewrote `/api/(.*)` → `/api/main.py`, but `main.py`'s routes are bare
+(`/health`, `/dice`, …, no `/api` prefix) and `GET /dice` (web page) vs `POST /dice` (API route)
+collide on one domain — path-based rewrites can't route by HTTP method. Two projects, two
+domains, sidesteps both problems with zero code changes.
+
+| Project | Root directory | Domain (fill in once deployed) |
+|---|---|---|
+| `qeaas-api` | `qrng-eaas/api` | `https://qeaas-api-<random>.vercel.app` |
+| `qeaas-web` | `qrng-eaas/web` | `https://qeaas-web-<random>.vercel.app` |
+
+### Env vars per project
+
+**`qeaas-api`:**
+
+| Key | Value |
+|---|---|
+| `DATABASE_URL` | Neon **pooled** connection string |
+| `REDIS_URL` | Upstash `rediss://` (TLS) connection string |
+| `MASTER_KEY` | fresh `secrets.token_hex(32)` — never the `.env.example` placeholder |
+| `ADMIN_TOKEN` | fresh `secrets.token_urlsafe(32)` — never the `.env.example` placeholder |
+| `WEB_ORIGIN` | the `qeaas-web` domain above, no trailing slash |
+
+**`qeaas-web`:**
+
+| Key | Value |
+|---|---|
+| `NEXT_PUBLIC_API_BASE` | the `qeaas-api` domain above |
+
+Env var changes only apply to new deployments — redeploy from the **Deployments** tab after
+editing one.
+
+### One-time provisioning
+
+1. Neon: new project → **Connection string** with **Pooled connection** toggled on → run
+   `api/sql/001_entropy_core.sql`, `002_api_keys.sql`, `003_usage_log.sql` in that order via
+   the dashboard SQL Editor.
+2. Upstash: new **Regional** Redis database → copy the `rediss://` (TCP) connection string,
+   not the REST URL.
+3. Import the repo into Vercel twice (once per project above), setting **Root Directory** per
+   project. `qrng-eaas/api/vercel.json` pins the Python 3.13 runtime and rewrites every path to
+   `main.py`; it must exist and be committed before the first `qeaas-api` deploy.
+
+### Runbook: verify + seed a fresh deploy
+
+```bash
+API=https://qeaas-api-<random>.vercel.app
+WEB=https://qeaas-web-<random>.vercel.app
+
+# 1. confirm the function is reachable at all
+curl -s "$API/health"   # quantum_entropy_level: "degraded" is expected pre-seed
+
+# 2. seed the production entropy pool from real QRNG output (convert the `bits:`-prefixed
+#    processed files to the plain 0/1 contract first — see feature-epic6-deployment.md §6
+#    Phase 6 for the exact conversion script), then ingest each as its own admin call:
+curl -s -X POST "$API/admin/ingest" -H "X-Admin-Token: <ADMIN_TOKEN>" -F "file=@/tmp/prod_bits_fez.txt"
+curl -s -X POST "$API/admin/ingest" -H "X-Admin-Token: <ADMIN_TOKEN>" -F "file=@/tmp/prod_bits_marrakesh.txt"
+curl -s "$API/health"   # should now read "healthy"
+
+# 3. mint a production API key (shown once)
+curl -s -X POST "$API/admin/keys" -H "X-Admin-Token: <ADMIN_TOKEN>" \
+  -H 'content-type: application/json' -d '{"owner":"prod-smoke-test","tier":"default"}'
+
+# 4. full endpoint sweep against production (same shapes as the local smoke test above)
+KEY=<key from step 3>
+curl -s "$API/random?bytes=32"
+curl -s -X POST "$API/dice" -H 'content-type: application/json' -d '{"sides":6,"count":2}'
+curl -s -H "X-API-Key: $KEY" "$API/v1/random/bytes?size=64&format=hex"
+curl -s -H "X-API-Key: $KEY" "$API/v1/seed?bytes=64"
+curl -s -X POST "$API/v1/kem/keypair" -H "X-API-Key: $KEY" -H 'content-type: application/json' -d '{}'
+curl -s -X POST "$API/v1/verify" -H 'content-type: application/json' -d '{"request_id":"abc"}'
+
+# 5. confirm state survives across separate serverless invocations (not just within one
+#    process, the way local uvicorn trivially does) — pool_bytes_remaining should never
+#    reset upward between two calls minutes apart, and drbg_reseeds should be a small
+#    positive integer, not stuck at 0
+curl -s "$API/health" | python3 -c "import json,sys; print(json.load(sys.stdin)['pool_bytes_remaining'])"
+# wait a minute, hit a few keyed routes, then re-run the line above
+```
+
+Open `$WEB` on your phone too — confirm the explainer loads, the health badge is green, and
+`/dice` rolls without a page reload.
+
+### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| API build fails mentioning `pycryptodome` or a compiler error | native wheel unavailable for Vercel's Python 3.13 runtime | pin the latest compatible `pycryptodome`; if it still fails, this needs its own ticket (swap to `cryptography`), not a mid-deploy improvisation |
+| `curl .../health` 404s | `qrng-eaas/api/vercel.json` missing or not committed before the first deploy | add it, commit, push |
+| Every `fetch()` fails with CORS in the browser console | `WEB_ORIGIN` doesn't exactly match the web project's URL | fix the env var, redeploy `qeaas-api` |
+| `/admin/*` returns `401` | wrong/missing `X-Admin-Token`, or it doesn't match Vercel's stored value | re-check Phase 3's saved value; regenerate + re-save + redeploy if unsure |
+| env var change doesn't seem to take effect | Vercel only applies env var changes to new deployments | trigger a redeploy from the **Deployments** tab |
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen
