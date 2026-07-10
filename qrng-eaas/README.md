@@ -202,6 +202,58 @@ All counters are atomic Redis ops only (`INCR`/`INCRBY`/`EXPIRE`/`DECRBY`) — n
 read-modify-write, serverless-safe. On a Redis outage, throttling **fails open** (logs a
 warning, allows the request); the reseed floor still guarantees the pool can't be drained.
 
+## ML-KEM consumer (EPIC 4)
+
+The **crypto payload**: `/v1/kem/*` turns QRNG entropy into working post-quantum key material.
+Repeat the honest framing here too — QRNG does not "defeat quantum attackers." It supplies
+entropy that seeds a standards DRBG (`qeaas.generation.random_bytes`, the same choke point
+`/v1/random/bytes` uses — raw QRNG bits are never served, decision #2), which in turn seeds
+**ML-KEM-768** (FIPS 203). The quantum part is the *entropy source*; the quantum *resistance*
+comes from ML-KEM.
+
+**`kyber-py` is educational and not constant-time** — correct for a thesis demo, not
+production. A production deployment would swap to `liboqs` on a persistent host (a
+non-serverless target, since `liboqs` needs a native build step).
+
+Both routes are gated (`503 low_quantum_entropy` while degraded), API-keyed (`401` for a
+missing/bad/revoked key), and throttled exactly like `/v1/random/bytes` (per-key rate limit +
+daily quota, `429 rate_limited` / `429 quota_exceeded`); every issue is recorded in
+`usage_log`.
+
+**`POST /v1/kem/keypair`** — QRNG-seeded ML-KEM-768 keygen. `public_key` (`ek`, base64) is
+always returned; `secret_key` (`dk`) is returned only in the demo flow (`include_secret_key`),
+with a loud "demo only" note — real keygen happens client-side in production, and the secret
+key never leaves the holder.
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/v1/kem/keypair -H "X-API-Key: <key>" \
+  -H 'content-type: application/json' -d '{}'
+curl -s -X POST http://127.0.0.1:8000/v1/kem/keypair -H "X-API-Key: <key>" \
+  -H 'content-type: application/json' -d '{"include_secret_key":true}'
+```
+
+**`POST /v1/kem/encapsulate`** — encapsulate against a supplied `public_key`. `ciphertext` is
+always returned; `shared_secret` and an illustrative HKDF-derived `demo_key` are returned only
+with `include_shared_secret` (the encapsulator legitimately knows the shared secret, but the
+default response stays a pure `{ciphertext}`). There is **no** server-side decapsulate route —
+decapsulation happens client-side, on the holder of `dk`.
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/v1/kem/encapsulate -H "X-API-Key: <key>" \
+  -H 'content-type: application/json' \
+  -d '{"public_key":"<ek from the keypair call>","include_shared_secret":true}'
+```
+
+A malformed or wrong-length `public_key` → `422 bad_request`.
+
+**Round-trip proof (AC-6):** `keygen -> encaps -> decaps` recovers the same shared secret,
+verified end-to-end against the running API (no server-side decaps oracle involved):
+
+```bash
+API_KEY=<key> api/venv/bin/python api/scripts/kem_roundtrip.py
+# OK: QRNG-seeded ML-KEM-768 keypair round-trips (ss=32B)
+```
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import os
 import secrets
 import tempfile
@@ -10,7 +11,7 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from qeaas import db, dice, generation, ratelimit
+from qeaas import db, dice, generation, kem, ratelimit
 from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
 from qeaas.gate import entropy_level, require_entropy
@@ -25,6 +26,10 @@ from qeaas.schemas import (
     DiceResponse,
     Format,
     HealthResponse,
+    KemEncapsulateRequest,
+    KemEncapsulateResponse,
+    KemKeypairRequest,
+    KemKeypairResponse,
     RandomResponse,
     V1RandomBytesResponse,
     VerifyRequest,
@@ -192,6 +197,70 @@ def admin_revoke_key(body: AdminRevokeRequest) -> AdminRevokeResponse:
     return AdminRevokeResponse(key_hash=body.key_hash, revoked=True)
 
 
-@app.post("/v1/kem/keypair", dependencies=[Depends(require_entropy)])
-def kem_keypair_stub() -> dict[str, bool]:
-    return {"stub": True}
+_DEMO_SECRET_KEY_NOTE = (
+    "demo only -- in production the keypair is generated client-side and the "
+    "secret key never leaves the holder"
+)
+_DEMO_SHARED_SECRET_NOTE = (
+    "demo only -- decapsulation happens client-side on the holder of the "
+    "secret key; this response is for local round-trip verification"
+)
+
+
+@app.post(
+    "/v1/kem/keypair",
+    dependencies=[Depends(require_entropy)],
+)
+def kem_keypair(
+    body: KemKeypairRequest,
+    key: db.ApiKeyRow = Depends(require_api_key),
+) -> KemKeypairResponse:
+    """AC-1/2/3/7: QRNG-seeded ML-KEM-768 keygen. `ek` always; `dk` demo-only."""
+    ratelimit.enforce_key(key, kem.KEYGEN_QUOTA_COST)
+    ek, dk = kem.generate_keypair()
+    meta = generation.new_issue_meta()
+    response = KemKeypairResponse(
+        **meta,
+        algorithm=kem.ALGORITHM,
+        format="base64",
+        public_key=base64.b64encode(ek).decode("ascii"),
+        secret_key=base64.b64encode(dk).decode("ascii")
+        if body.include_secret_key
+        else None,
+        note=_DEMO_SECRET_KEY_NOTE if body.include_secret_key else None,
+    )
+    db.insert_usage_log(key.key_hash, "/v1/kem/keypair", kem.KEYGEN_SEED_BYTES)
+    return response
+
+
+@app.post(
+    "/v1/kem/encapsulate",
+    dependencies=[Depends(require_entropy)],
+)
+def kem_encapsulate(
+    body: KemEncapsulateRequest,
+    key: db.ApiKeyRow = Depends(require_api_key),
+) -> KemEncapsulateResponse:
+    """AC-4/7: QRNG-seeded encapsulation against a supplied `ek`."""
+    ratelimit.enforce_key(key, kem.ENCAPS_QUOTA_COST)
+    try:
+        ek = base64.b64decode(body.public_key, validate=True)
+    except (binascii.Error, ValueError):
+        raise ApiError(422, "bad_request")
+    shared_secret, ciphertext = kem.encapsulate(ek)
+    meta = generation.new_issue_meta()
+    response = KemEncapsulateResponse(
+        **meta,
+        algorithm=kem.ALGORITHM,
+        format="base64",
+        ciphertext=base64.b64encode(ciphertext).decode("ascii"),
+        shared_secret=base64.b64encode(shared_secret).decode("ascii")
+        if body.include_shared_secret
+        else None,
+        demo_key=base64.b64encode(kem.derive_demo_key(shared_secret)).decode("ascii")
+        if body.include_shared_secret
+        else None,
+        note=_DEMO_SHARED_SECRET_NOTE if body.include_shared_secret else None,
+    )
+    db.insert_usage_log(key.key_hash, "/v1/kem/encapsulate", kem.ENCAPS_SEED_BYTES)
+    return response

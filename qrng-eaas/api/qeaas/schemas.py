@@ -88,3 +88,37 @@ class AdminRevokeRequest(BaseModel):
 class AdminRevokeResponse(BaseModel):
     key_hash: str
     revoked: bool
+
+
+class KemKeypairRequest(BaseModel):
+    include_secret_key: bool = False
+
+
+class KemKeypairResponse(BaseModel):
+    request_id: str
+    algorithm: Literal["ML-KEM-768"]
+    format: Literal["base64"]
+    public_key: str
+    secret_key: str | None = None
+    entropy_epoch: int
+    timestamp: datetime
+    receipt: str | None = None
+    note: str | None = None
+
+
+class KemEncapsulateRequest(BaseModel):
+    public_key: str
+    include_shared_secret: bool = False
+
+
+class KemEncapsulateResponse(BaseModel):
+    request_id: str
+    algorithm: Literal["ML-KEM-768"]
+    format: Literal["base64"]
+    ciphertext: str
+    shared_secret: str | None = None
+    demo_key: str | None = None
+    entropy_epoch: int
+    timestamp: datetime
+    receipt: str | None = None
+    note: str | None = None
