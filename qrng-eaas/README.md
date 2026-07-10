@@ -116,6 +116,11 @@ Then exercise the actual routes (replace `<key>` with the value from step 4):
 curl -s "http://127.0.0.1:8000/random?bytes=32"
 curl -s -X POST http://127.0.0.1:8000/dice -H 'content-type: application/json' \
   -d '{"sides":6,"count":2}'
+# { "sides":6, "count":2, "rolls":[3,6], "format":"base64",
+#   "bytes_used":"<base64>", "bytes_count":2 }
+# bytes_used/bytes_count (EPIC 5 Q2) are every DRBG byte drawn for the roll,
+# accepted and rejected -- the honest provenance behind the toggle in /dice on
+# the web app. Still DRBG output, never raw QRNG bits (decision #2).
 
 # key-gated (canonical dev endpoint + alias)
 curl -s -H "X-API-Key: <key>" "http://127.0.0.1:8000/v1/random/bytes?size=64&format=hex"

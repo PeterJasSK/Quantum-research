@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg-deep: #01040b;
+  --color-bg: #060c1f;
+  --color-text: #e3f6ff;
+  --color-heading: #7ad9ff;
+  --color-accent: #4dcfff;
+  --color-primary: #00aaff;
+  --color-primary-hover: #0077cc;
+  --color-border: rgba(0, 170, 255, 0.35);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-bg-deep);
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, var(--color-bg), var(--color-bg-deep));
+  color: var(--color-text);
+  font-family: var(--font-orbitron), sans-serif;
+}
+
+@utility glow {
+  text-shadow: 0 0 10px var(--color-primary);
+}
+
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+  background: var(--color-primary);
+  color: var(--color-bg-deep);
+  box-shadow: 0 0 16px rgba(0, 170, 255, 0.5);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--color-primary-hover);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@utility panel {
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: rgba(6, 12, 31, 0.6);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 24px rgba(0, 170, 255, 0.08);
 }

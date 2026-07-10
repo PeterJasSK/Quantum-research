@@ -92,10 +92,21 @@ def random_endpoint(
 
 @app.post("/dice")
 def dice_endpoint(request: Request, body: DiceRequest) -> DiceResponse:
-    """AC-3: rejection-sampled dice rolls, ungated. AC-1: per-IP rate limit."""
+    """AC-3: rejection-sampled dice rolls, ungated. AC-1: per-IP rate limit.
+
+    EPIC 5 Q2: echoes every DRBG byte drawn for the roll (accepted + rejected)
+    so the web dice player's "bytes behind this roll" toggle is literal.
+    """
     ratelimit.check_ip_rate(ratelimit.client_ip(request))
-    rolls = dice.roll(body.sides, body.count)
-    return DiceResponse(sides=body.sides, count=body.count, rolls=rolls)
+    rolls, drawn = dice.roll(body.sides, body.count)
+    return DiceResponse(
+        sides=body.sides,
+        count=body.count,
+        rolls=rolls,
+        format="base64",
+        bytes_used=base64.b64encode(drawn).decode("ascii"),
+        bytes_count=len(drawn),
+    )
 
 
 def _issue_v1(size: int, fmt: str) -> V1RandomBytesResponse:

@@ -33,6 +33,9 @@ class DiceResponse(BaseModel):
     sides: int
     count: int
     rolls: list[int]
+    format: Literal["base64"]
+    bytes_used: str
+    bytes_count: int
 
 
 class V1RandomBytesResponse(BaseModel):

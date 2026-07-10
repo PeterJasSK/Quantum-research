@@ -3,9 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/qrng-eaas/api/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/qeaas/generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/qeaas/generation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/api/qeaas/dice.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/qeaas/dice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/qrng-eaas/api/qeaas/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/api/qeaas/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +108,7 @@
       <workItem from="1783576762758" duration="696000" />
       <workItem from="1783588115259" duration="730000" />
       <workItem from="1783594979451" duration="3834000" />
-      <workItem from="1783662802978" duration="4868000" />
+      <workItem from="1783662802978" duration="8311000" />
     </task>
     <servers />
   </component>
