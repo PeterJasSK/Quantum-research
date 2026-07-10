@@ -1,6 +1,8 @@
 {
   "functions": {
-    "main.py": {}
+    "main.py": {
+      "maxDuration": 10
+    }
   },
   "rewrites": [
     { "source": "/(.*)", "destination": "/main.py" }
