@@ -399,6 +399,40 @@ The sample files under `samples/` are regenerable scratch data (gitignored). The
 appendix — it is not auto-regenerated on every re-run; a fresher report is a deliberate manual
 re-run and a new commit.
 
+## Networking demonstration (EPIC 8)
+
+Where the QRNG→ML-KEM entropy chain plugs into networking: a two-role Server/Client
+handshake (QRNG-seeded ML-KEM-768 keygen + encaps → shared secret → HKDF → AES-GCM
+message exchange), runnable as a CLI script or interactively in the web app, plus an
+honest mapping to five real networking use cases. Full write-up:
+`shared/docs/networking-demo.md`.
+
+**CLI (rigorous, reproducible — independently verifies both parties agree on the shared
+secret):**
+
+```bash
+cd qrng-eaas/api
+API_KEY=<key> python -m scripts.kem_handshake --base-url http://localhost:8000
+# or: --base-url https://quantum-research-api.vercel.app
+```
+
+**Web demo** — `/demo` on the web app (`https://eaas-two.vercel.app/demo` in prod, or
+`http://localhost:3000/demo` locally): the same handshake, visualized live with no page
+reload, plus the five networking use-case mappings.
+
+**Provisioning `KEM_DEMO_API_KEY`** — the web demo's server-side proxy
+(`web/app/api/kem/*/route.ts`) needs a dedicated `iot`-tier API key so the browser
+never sees a key directly:
+
+```bash
+curl -s -X POST <base>/admin/keys -H "X-Admin-Token: <ADMIN_TOKEN>" \
+  -H 'content-type: application/json' -d '{"owner":"networking-demo","tier":"iot"}'
+```
+
+Set the plaintext `api_key` from the response as `KEM_DEMO_API_KEY`, and `API_ORIGIN`
+to the FastAPI base URL, in `web/.env.local` (local dev) and in the Vercel project env
+for `qeaas-web` (prod) — both are server-only, never `NEXT_PUBLIC_*`.
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen

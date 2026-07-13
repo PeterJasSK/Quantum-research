@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/#pipeline", label: "How it works" },
   { href: "/#api", label: "API" },
   { href: "/dice", label: "Dice" },
+  { href: "/demo", label: "Demo" },
 ];
 
 export default function Header() {

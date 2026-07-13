@@ -51,6 +51,20 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+// Same-origin Next route-handler proxies (e.g. /api/kem/*) -- never prefixed
+// with API_BASE, since that may point directly at FastAPI and would bypass
+// the proxy that keeps the API key server-only.
+async function requestJsonSameOrigin<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
+  const response = await fetch(path, init);
+  if (!response.ok) {
+    throw new ApiError(await parseErrorSlug(response));
+  }
+  return (await response.json()) as T;
+}
+
 export async function getHealth(): Promise<Health> {
   return requestJson<Health>("/health");
 }
@@ -63,5 +77,63 @@ export async function rollDice(
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ sides, count }),
+  });
+}
+
+export interface IssueMeta {
+  request_id: string;
+  entropy_epoch: number;
+  timestamp: string;
+  receipt: string | null;
+}
+
+export interface KemKeypair extends IssueMeta {
+  public_key: string;
+  algorithm: "ML-KEM-768";
+  format: "base64";
+}
+
+export interface KemEncapsulation extends IssueMeta {
+  ciphertext: string;
+  shared_secret: string;
+  demo_key: string;
+  note: string;
+  algorithm: "ML-KEM-768";
+  format: "base64";
+}
+
+export function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+export function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function kemKeypair(): Promise<KemKeypair> {
+  return requestJsonSameOrigin<KemKeypair>("/api/kem/keypair", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({}),
+  });
+}
+
+export async function kemEncapsulate(
+  publicKey: string,
+): Promise<KemEncapsulation> {
+  return requestJsonSameOrigin<KemEncapsulation>("/api/kem/encapsulate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      public_key: publicKey,
+      include_shared_secret: true,
+    }),
   });
 }
