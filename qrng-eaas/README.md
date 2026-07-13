@@ -460,6 +460,50 @@ output bytes themselves are never persisted anywhere.
   receipt's metadata is authentic, which is exactly what lets the service guarantee it never
   stored the bytes it issued.
 
+## Secure storage & the burn lifecycle (EPIC 10)
+
+The preloaded QRNG dataset lives **encrypted at rest**; keys derive from one env-held master
+key; raw bits and seeds are best-effort **burned** after use; only ciphertext + metadata persist.
+
+- **Master-key hierarchy.** One `MASTER_KEY` (256-bit, hex, env/KMS only -- never in Neon).
+  `pool.derive_subkey(name)` (HKDF-SHA256, RFC 5869 one-block Expand) derives four named
+  sub-keys, and only these four -- there are no sibling secrets:
+  ```
+  MASTER_KEY (env only)
+    |-- HKDF-SHA256
+        |-- "pool-encryption-key"      -> entropy_pool AES-256-GCM (EPIC 1)
+        |-- "api-key-pepper"           -> API key hashing (EPIC 3)
+        |-- "receipt-signing-key"      -> Ed25519 receipt signing (EPIC 9)
+        |-- "drbg-root-encryption-key" -> drbg_root.root_key AES-256-GCM (EPIC 10)
+  ```
+- **Encrypt at rest.** `entropy_pool` stores `ciphertext/nonce/tag` (AES-256-GCM per chunk) --
+  no plaintext-bytes column exists. `drbg_root.root_key` is likewise GCM ciphertext under
+  `drbg-root-encryption-key` (`sql/005_root_key_encryption.sql`); a pre-EPIC-10 plaintext row is
+  re-encrypted in place the first time it's read. GCM tamper detection is intrinsic: a flipped
+  ciphertext byte fails the tag check and `decrypt_chunk`/`decrypt_root_key` raise, failing closed.
+- **Decrypt -> use -> burn.** On reseed, `pool.pull_reseed_material` decrypts only the needed
+  slice, `keyed_drbg` uses it to encrypt-and-save the new root key, then `pool.burn()` zeroizes
+  the decrypted buffer in place. The warm in-process root-key cache is held as a `bytearray` and
+  burned before a forced reload. Admin ingest (`POST /admin/ingest`) parses the uploaded `0/1`
+  bytes entirely in memory (`pool.parse_bits_bytes` / `ingest_bits_bytes`) -- **no temp file, no
+  plaintext bits ever touch disk** -- and burns the upload buffer after the insert.
+- **Honesty caveat: best-effort, not guaranteed, zeroization.** CPython cannot guarantee
+  zeroization -- immutable `bytes`, garbage-collector copies, and no `mlock` mean some transient
+  copies of sensitive material (e.g. the `str` of `0/1` characters inside `parse_bits_bytes`, or
+  `bytes` objects returned by `await file.read()`) cannot be zeroized in place. Mitigations:
+  `bytearray` overwrites for anything long-lived, and serverless teardown (Vercel destroys the
+  function instance after the request, so in-process secrets are short-lived by design). We do
+  not overclaim guaranteed erasure.
+- **Persistence-invariant scan.** `python api/scripts/scan_persistence.py [--log-file PATH]` is a
+  read-only operational check (not a test suite) -- it inspects `information_schema` for
+  unexpected sensitive-looking columns, samples `entropy_pool.ciphertext` for high entropy and
+  absence of the master key, asserts `drbg_root.root_key` is GCM-ciphertext-shaped, and (with
+  `--log-file`) greps a log for the master key value or long `0/1` runs. Prints a PASS/FAIL table
+  and exits non-zero on any violation. Run it after ingest and after every deploy; also eyeball
+  the Vercel log stream for the master-key value after a deploy.
+- **`MASTER_KEY` rotation** (re-encrypting the pool, root key, and API-key hashes under a new
+  master) is noted as future production hardening -- not built here.
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen

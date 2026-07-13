@@ -37,21 +37,36 @@ _cache: dict | None = None
 
 def _bootstrap_root_key() -> None:
     material = pool.pull_reseed_material(RESEED_PULL_BYTES)
-    db.save_root_key(bytes(material), reseed_counter=0, outputs_since_reseed=0)
+    ciphertext, nonce, tag = pool.encrypt_root_key(bytes(material))
+    db.save_root_key(ciphertext, nonce, tag, reseed_counter=0, outputs_since_reseed=0)
     pool.burn(material)
 
 
 def _load_cache(force: bool = False) -> dict:
+    """S10.3a: burn the previous warm-cache root key before a forced reload (gap 6)."""
     global _cache
     if _cache is None or force:
+        if force and _cache is not None:
+            pool.burn(_cache["root_key"])
+
         row = db.get_root_key()
         if row is None:
             _bootstrap_root_key()
             row = db.get_root_key()
         assert row is not None
+
+        if row.nonce is None or row.tag is None:
+            # Legacy pre-EPIC-10 row: root_key is still plaintext. Re-encrypt in
+            # place on first read (Decision 6 / troubleshooting).
+            root_key = bytearray(row.root_key)
+            ciphertext, nonce, tag = pool.encrypt_root_key(bytes(root_key))
+            db.update_root_key_encryption(row.id, ciphertext, nonce, tag)
+        else:
+            root_key = pool.decrypt_root_key(row.root_key, row.nonce, row.tag)
+
         _cache = {
             "root_id": row.id,
-            "root_key": row.root_key,
+            "root_key": root_key,
             "reseed_counter": row.reseed_counter,
             "outputs_since_reseed": row.outputs_since_reseed,
             "rotated_at_ts": row.rotated_at.timestamp(),
@@ -72,8 +87,11 @@ def maybe_reseed() -> None:
         return
 
     material = pool.pull_reseed_material(RESEED_PULL_BYTES)
+    ciphertext, nonce, tag = pool.encrypt_root_key(bytes(material))
     db.save_root_key(
-        bytes(material),
+        ciphertext,
+        nonce,
+        tag,
         reseed_counter=cache["reseed_counter"] + 1,
         outputs_since_reseed=0,
     )

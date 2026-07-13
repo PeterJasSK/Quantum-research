@@ -21,6 +21,8 @@ def connect() -> psycopg.Connection:
 class RootKeyRow:
     id: int
     root_key: bytes
+    nonce: bytes | None
+    tag: bytes | None
     reseed_counter: int
     outputs_since_reseed: int
     rotated_at: datetime
@@ -58,7 +60,7 @@ class IssueLogRow:
 def get_root_key() -> RootKeyRow | None:
     with connect() as conn, conn.cursor() as cur:
         cur.execute(
-            "SELECT id, root_key, reseed_counter, outputs_since_reseed, rotated_at "
+            "SELECT id, root_key, nonce, tag, reseed_counter, outputs_since_reseed, rotated_at "
             "FROM drbg_root ORDER BY id DESC LIMIT 1"
         )
         row = cur.fetchone()
@@ -67,12 +69,29 @@ def get_root_key() -> RootKeyRow | None:
         return RootKeyRow(*row)
 
 
-def save_root_key(root_key: bytes, reseed_counter: int, outputs_since_reseed: int) -> None:
+def save_root_key(
+    root_key: bytes,
+    nonce: bytes,
+    tag: bytes,
+    reseed_counter: int,
+    outputs_since_reseed: int,
+) -> None:
+    """`root_key` is AES-256-GCM ciphertext under `drbg-root-encryption-key` (EPIC 10 Q1)."""
     with connect() as conn, conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO drbg_root (root_key, reseed_counter, outputs_since_reseed, rotated_at) "
-            "VALUES (%s, %s, %s, now())",
-            (root_key, reseed_counter, outputs_since_reseed),
+            "INSERT INTO drbg_root (root_key, nonce, tag, reseed_counter, outputs_since_reseed, rotated_at) "
+            "VALUES (%s, %s, %s, %s, %s, now())",
+            (root_key, nonce, tag, reseed_counter, outputs_since_reseed),
+        )
+        conn.commit()
+
+
+def update_root_key_encryption(root_id: int, root_key: bytes, nonce: bytes, tag: bytes) -> None:
+    """One-time legacy migration: re-encrypt a plaintext `root_key` row in place."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "UPDATE drbg_root SET root_key = %s, nonce = %s, tag = %s WHERE id = %s",
+            (root_key, nonce, tag, root_id),
         )
         conn.commit()
 
@@ -206,6 +225,39 @@ def get_issue_log(request_id: str) -> IssueLogRow | None:
         if row is None:
             return None
         return IssueLogRow(*row)
+
+
+def list_table_columns() -> dict[str, list[str]]:
+    """Read-only `information_schema` introspection for `scripts/scan_persistence.py`."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT table_name, column_name FROM information_schema.columns "
+            "WHERE table_schema = 'public' ORDER BY table_name, ordinal_position"
+        )
+        columns: dict[str, list[str]] = {}
+        for table_name, column_name in cur.fetchall():
+            columns.setdefault(table_name, []).append(column_name)
+        return columns
+
+
+def sample_entropy_pool(limit: int = 5) -> list[tuple[bytes, bytes, bytes]]:
+    """Read-only sample of `(ciphertext, nonce, tag)` for `scripts/scan_persistence.py`."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT ciphertext, nonce, tag FROM entropy_pool ORDER BY id DESC LIMIT %s",
+            (limit,),
+        )
+        return cur.fetchall()
+
+
+def sample_drbg_root(limit: int = 5) -> list[tuple[int, bytes, bytes | None, bytes | None]]:
+    """Read-only sample of `(id, root_key, nonce, tag)` for `scripts/scan_persistence.py`."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT id, root_key, nonce, tag FROM drbg_root ORDER BY id DESC LIMIT %s",
+            (limit,),
+        )
+        return cur.fetchall()
 
 
 def get_pool_source_labels() -> list[str]:

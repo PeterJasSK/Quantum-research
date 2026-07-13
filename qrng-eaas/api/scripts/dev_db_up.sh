@@ -57,6 +57,8 @@ log "Applying SQL migrations..."
 docker exec -i "$PG_NAME" psql -U postgres -d qeaas < sql/001_entropy_core.sql >&2
 docker exec -i "$PG_NAME" psql -U postgres -d qeaas < sql/002_api_keys.sql >&2
 docker exec -i "$PG_NAME" psql -U postgres -d qeaas < sql/003_usage_log.sql >&2
+docker exec -i "$PG_NAME" psql -U postgres -d qeaas < sql/004_provenance.sql >&2
+docker exec -i "$PG_NAME" psql -U postgres -d qeaas < sql/005_root_key_encryption.sql >&2
 
 if $PRINT_ENV; then
     cat <<EOF

@@ -4,9 +4,7 @@ import base64
 import binascii
 import os
 import secrets
-import tempfile
 import time
-from pathlib import Path
 
 from fastapi import Depends, FastAPI, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +13,7 @@ from qeaas import db, dice, generation, kem, ratelimit, receipts
 from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
 from qeaas.gate import entropy_level, require_entropy
-from qeaas.pool import ingest_bits_file, parse_bits_file
+from qeaas.pool import burn, ingest_bits_bytes
 from qeaas.schemas import (
     AdminIngestResponse,
     AdminKeyRequest,
@@ -176,26 +174,21 @@ async def admin_ingest(file: UploadFile) -> AdminIngestResponse:
     if not file.filename or not file.filename.endswith(".txt"):
         raise ApiError(422, "bad_request")
 
-    content = await file.read()
-    if len(content) > MAX_INGEST_BYTES:
+    upload = bytearray(await file.read())
+    if len(upload) > MAX_INGEST_BYTES:
+        burn(upload)
         raise ApiError(413, "file_too_large")
 
-    with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as tmp:
-        tmp.write(content)
-        tmp_path = Path(tmp.name)
-
     try:
-        try:
-            plaintext = parse_bits_file(tmp_path)
-        except ValueError:
-            raise ApiError(422, "bad_request")
-        ingest_bits_file(tmp_path, file.filename)
+        bytes_added = ingest_bits_bytes(bytes(upload), file.filename)
+    except ValueError:
+        raise ApiError(422, "bad_request")
     finally:
-        tmp_path.unlink(missing_ok=True)
+        burn(upload)
 
     return AdminIngestResponse(
         ingested=True,
-        bytes_added=len(plaintext),
+        bytes_added=bytes_added,
         pool_bytes_remaining=db.pool_bytes_remaining(),
     )
 

@@ -51,15 +51,15 @@ def burn(buf: bytearray) -> None:
         buf[i] = 0
 
 
-def parse_bits_file(path: str | Path) -> bytes:
-    """AC-14: parse a `.txt` file of only `0`/`1` characters into packed bytes.
+def parse_bits_bytes(raw: bytes) -> bytes:
+    """AC-14: parse `0`/`1` character bytes (already in memory) into packed bytes.
 
     Stray whitespace/newlines are stripped. Any other character is rejected.
     Bits are packed MSB-first, 8 bits -> 1 byte; a trailing partial byte
-    (< 8 bits) is discarded.
+    (< 8 bits) is discarded. Never touches disk -- the caller may hold `raw`
+    in a `bytearray` and `burn()` it after this returns (S10.2a/S10.3a).
     """
-    raw = Path(path).read_text()
-    bits = "".join(raw.split())
+    bits = "".join(raw.decode("ascii").split())
 
     invalid = set(bits) - {"0", "1"}
     if invalid:
@@ -72,14 +72,47 @@ def parse_bits_file(path: str | Path) -> bytes:
         for bit in bits[i : i + 8]:
             byte = (byte << 1) | (1 if bit == "1" else 0)
         packed[i // 8] = byte
-    return bytes(packed)
+    result = bytes(packed)
+    burn(packed)
+    return result
+
+
+def parse_bits_file(path: str | Path) -> bytes:
+    """Dev-CLI convenience: read a `.txt` file the operator already holds on disk."""
+    return parse_bits_bytes(Path(path).read_bytes())
+
+
+def ingest_bits_bytes(raw: bytes, source_label: str = "") -> int:
+    """Parse, encrypt, and store in-memory QRNG bits as a new pool chunk.
+
+    No plaintext ever touches disk (S10.2a/AC-3). Returns the packed byte count.
+    """
+    plaintext = parse_bits_bytes(raw)
+    ciphertext, nonce, tag = encrypt_chunk(plaintext)
+    db.insert_pool_chunk(ciphertext, nonce, tag, len(plaintext), source_label)
+    return len(plaintext)
 
 
 def ingest_bits_file(path: str | Path, source_label: str = "") -> None:
-    """Parse, encrypt, and store a QRNG `.txt` file as a new pool chunk."""
-    plaintext = parse_bits_file(path)
-    ciphertext, nonce, tag = encrypt_chunk(plaintext)
-    db.insert_pool_chunk(ciphertext, nonce, tag, len(plaintext), source_label)
+    """Dev-CLI convenience: parse, encrypt, and store a QRNG `.txt` file from disk."""
+    ingest_bits_bytes(Path(path).read_bytes(), source_label)
+
+
+def encrypt_root_key(seed: bytes) -> tuple[bytes, bytes, bytes]:
+    """Encrypt a DRBG root-key seed with AES-256-GCM under `drbg-root-encryption-key`."""
+    key = derive_subkey("drbg-root-encryption-key")
+    nonce = os.urandom(_NONCE_LEN)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce, mac_len=_TAG_LEN)
+    ciphertext, tag = cipher.encrypt_and_digest(seed)
+    return ciphertext, nonce, tag
+
+
+def decrypt_root_key(ciphertext: bytes, nonce: bytes, tag: bytes) -> bytearray:
+    """Decrypt a DRBG root-key seed. Raises `ValueError` if the tag doesn't verify."""
+    key = derive_subkey("drbg-root-encryption-key")
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce, mac_len=_TAG_LEN)
+    plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+    return bytearray(plaintext)
 
 
 def pull_reseed_material(n: int = 32) -> bytearray:
