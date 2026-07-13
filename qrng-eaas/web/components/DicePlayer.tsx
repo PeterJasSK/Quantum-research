@@ -51,7 +51,7 @@ export default function DicePlayer() {
   }
 
   return (
-    <div className="panel mx-auto flex w-full max-w-xl flex-col gap-6 p-6">
+    <div className="panel mx-auto flex w-full max-w-xl flex-col gap-6 p-4 sm:p-6">
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <div>
           <p className="mb-2 text-sm text-text/80">Dice sides</p>
@@ -107,7 +107,7 @@ export default function DicePlayer() {
       </form>
 
       {error && (
-        <p role="alert" className="text-sm text-amber-300">
+        <p role="alert" className="text-sm text-warning">
           {error}
         </p>
       )}

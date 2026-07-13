@@ -14,10 +14,10 @@ function statusFor(health: Health | null, failed: boolean): Status {
 }
 
 const STYLES: Record<Status, string> = {
-  loading: "bg-white/10 text-text",
-  healthy: "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/40",
-  degraded: "bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40",
-  error: "bg-white/5 text-text/60",
+  loading: "bg-border/20 text-text",
+  healthy: "bg-success/20 text-success ring-1 ring-success/40",
+  degraded: "bg-warning/20 text-warning ring-1 ring-warning/40",
+  error: "bg-danger/10 text-text/60",
 };
 
 const LABELS: Record<Status, string> = {

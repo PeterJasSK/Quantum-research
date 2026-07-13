@@ -53,17 +53,17 @@ export default function VerifyReceipt() {
   }
 
   return (
-    <section id="verify" className="mx-auto max-w-3xl px-4 py-16">
-      <h2 className="glow mb-4 text-2xl font-semibold text-heading">
+    <section id="verify" className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+      <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
         Verify a receipt
       </h2>
-      <p className="mb-6 text-text/90">
+      <p className="mb-6 text-sm text-text/90 sm:text-base">
         Every developer/KEM issue ships a signed <code>receipt</code>. Paste
         one here — or just its <code>request_id</code> — to check its
         provenance without ever sending the value itself.
       </p>
 
-      <div className="panel flex flex-col gap-6 p-6">
+      <div className="panel flex flex-col gap-6 p-4 sm:p-6">
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-2 text-sm text-text/70">
             Paste a receipt or request ID
@@ -84,7 +84,7 @@ export default function VerifyReceipt() {
         </form>
 
         {error && (
-          <p role="alert" className="text-sm text-amber-300">
+          <p role="alert" className="text-sm text-warning">
             {error}
           </p>
         )}
@@ -98,7 +98,7 @@ export default function VerifyReceipt() {
             >
               <span
                 className={`pill w-fit px-4 py-1 text-sm font-semibold ${
-                  result.verified ? "" : "bg-amber-600"
+                  result.verified ? "" : "bg-warning"
                 }`}
               >
                 {result.verified ? "✓ verified" : "✗ not verified"}

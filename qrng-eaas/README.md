@@ -504,6 +504,30 @@ key; raw bits and seeds are best-effort **burned** after use; only ciphertext + 
 - **`MASTER_KEY` rotation** (re-encrypting the pool, root key, and API-key hashes under a new
   master) is noted as future production hardening -- not built here.
 
+## Design & theming (EPIC 11)
+
+- **Three themes, one token system.** `qrng-eaas/web/app/globals.css` defines every color as a
+  CSS custom property (`--color-bg`, `--color-text`, `--color-accent`, `--color-success`, etc.)
+  in the base Tailwind v4 `@theme` block (the `light` values), then overrides just those
+  properties per theme in `[data-theme="dark"]` and `[data-theme="quantum"]` blocks. Components
+  never hardcode colors — they consume the generated Tailwind utilities (`text-heading`,
+  `bg-primary`, `text-warning`, ...) so all three themes stay in sync automatically.
+- **`light`/`dark`** are built from `https://www.8888.sk/`'s shipped design language: navy
+  (`#052e44`/`#0a2540`/`#084666`) + mint accent (`#12eaa6`), `Inter`/`JetBrains Mono` typography,
+  large corner radii, and soft navy-tinted shadows. `light` is the literal palette; `dark` is the
+  same brand hue with navy surfaces and light text (8888.sk itself ships no dark mode).
+- **`quantum`** is the original neon-cyan/Orbitron look this app shipped with (EPIC 5) — preserved
+  byte-for-byte as a hidden third theme, never selected by `prefers-color-scheme` or the default
+  toggle.
+- **Switching themes.** [`next-themes`](https://github.com/pacocoursey/next-themes) drives
+  `data-theme` on `<html>`, resolves `system` to `light`/`dark` on first visit, and persists an
+  explicit choice to `localStorage` (`qeaas-theme`). The header's sun/moon `ThemeToggle` switches
+  between `light` and `dark`.
+- **Easter egg.** Tap or click the header logo 5× within 3 seconds to unlock `quantum` — a brief
+  toast confirms the unlock, a third (atom) segment appears in `ThemeToggle`, and the unlock
+  persists (`localStorage` key `qeaas-quantum-unlocked`) so the segment reappears on future
+  visits. See `qrng-eaas/web/lib/theme.ts` for the unlock/detection helpers.
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen

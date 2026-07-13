@@ -157,7 +157,7 @@ export default function KemHandshakeDemo() {
       </button>
 
       {error && (
-        <p role="alert" className="text-sm text-amber-300">
+        <p role="alert" className="text-sm text-warning">
           {error}
         </p>
       )}
@@ -259,7 +259,7 @@ export default function KemHandshakeDemo() {
             </form>
 
             {exchangeError && (
-              <p role="alert" className="mt-2 text-sm text-amber-300">
+              <p role="alert" className="mt-2 text-sm text-warning">
                 {exchangeError}
               </p>
             )}

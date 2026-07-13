@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { AnimatePresence, motion } from "framer-motion";
 import HealthBadge from "@/components/HealthBadge";
+import ThemeToggle from "@/components/ThemeToggle";
+import { unlockQuantum, useSecretTap } from "@/lib/theme";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -15,6 +18,8 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showUnlockToast, setShowUnlockToast] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -23,12 +28,38 @@ export default function Header() {
     };
   }, [menuOpen]);
 
+  const handleSecretTap = useSecretTap(5, 3000, () => {
+    unlockQuantum();
+    setTheme("quantum");
+    setShowUnlockToast(true);
+  });
+
+  useEffect(() => {
+    if (!showUnlockToast) return;
+    const timeout = setTimeout(() => setShowUnlockToast(false), 2000);
+    return () => clearTimeout(timeout);
+  }, [showUnlockToast]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-bg-deep/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-          <Image src="/logo.png" alt="Q-EaaS logo" width={32} height={32} priority />
-          <span className="glow text-lg font-semibold text-heading">Q-EaaS</span>
+        <Link
+          href="/"
+          className="flex items-center gap-2"
+          onClick={() => {
+            setMenuOpen(false);
+            handleSecretTap();
+          }}
+        >
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
+            style={{ background: "var(--color-primary)", color: "var(--color-bg-deep)" }}
+          >
+            Q
+          </span>
+          <span className="glow text-lg font-semibold tracking-tight text-heading">
+            Q&#8209;EaaS
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -42,6 +73,7 @@ export default function Header() {
             </Link>
           ))}
           <HealthBadge />
+          <ThemeToggle />
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
@@ -70,8 +102,22 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <ThemeToggle />
         </div>
       )}
+
+      <AnimatePresence>
+        {showUnlockToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="pointer-events-none fixed left-1/2 top-20 z-[60] -translate-x-1/2 rounded-full border border-border/60 bg-bg-deep/95 px-4 py-2 text-sm text-heading backdrop-blur"
+          >
+            Quantum mode unlocked
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

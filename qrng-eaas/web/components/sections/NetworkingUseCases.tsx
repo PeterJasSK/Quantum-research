@@ -28,17 +28,17 @@ const USE_CASES = [
 
 export default function NetworkingUseCases() {
   return (
-    <section className="mx-auto w-full max-w-2xl px-4 py-12">
-      <h2 className="glow mb-4 text-2xl font-semibold text-heading">
+    <section className="mx-auto w-full max-w-2xl px-4 py-10 sm:py-12">
+      <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
         Where this maps to networking
       </h2>
-      <p className="mb-6 text-text/90">
+      <p className="mb-6 text-sm text-text/90 sm:text-base">
         Honest framing: QRNG supplies entropy; ML-KEM supplies the quantum
         resistance. Five places that entropy plugs into networking —
         one sentence each, full write-up in{" "}
         <code>shared/docs/networking-demo.md</code>.
       </p>
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {USE_CASES.map((useCase) => (
           <div key={useCase.title} className="panel p-4">
             <p className="mb-1 text-sm font-semibold text-heading">

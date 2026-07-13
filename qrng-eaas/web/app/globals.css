@@ -1,14 +1,55 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "Fira Code", monospace;
+
+  --color-bg-deep: #f8fafc;
+  --color-bg: #ffffff;
+  --color-surface: #ecfdf5;
+  --color-text: #0a2540;
+  --color-heading: #052e44;
+  --color-accent: #12eaa6;
+  --color-primary: #084666;
+  --color-primary-hover: #052e44;
+  --color-border: rgba(8, 70, 102, 0.16);
+  --color-success: #0d9f6e;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
+}
+
+[data-theme="dark"] {
+  --color-bg-deep: #052e44;
+  --color-bg: #0a2540;
+  --color-surface: #084666;
+  --color-text: #e2e8f0;
+  --color-heading: #f8fafc;
+  --color-accent: #12eaa6;
+  --color-primary: #12eaa6;
+  --color-primary-hover: #0fcf93;
+  --color-border: rgba(18, 234, 166, 0.24);
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+}
+
+[data-theme="quantum"] {
   --color-bg-deep: #01040b;
   --color-bg: #060c1f;
+  --color-surface: #060c1f;
   --color-text: #e3f6ff;
   --color-heading: #7ad9ff;
   --color-accent: #4dcfff;
   --color-primary: #00aaff;
   --color-primary-hover: #0077cc;
   --color-border: rgba(0, 170, 255, 0.35);
+  --color-success: #4dcfff;
+  --color-warning: #ffcc66;
+  --color-danger: #ff6b6b;
+  --color-info: #4dcfff;
 }
 
 html {
@@ -20,11 +61,20 @@ body {
   min-height: 100vh;
   background: radial-gradient(circle at center, var(--color-bg), var(--color-bg-deep));
   color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+[data-theme="quantum"] body {
   font-family: var(--font-orbitron), sans-serif;
 }
 
 @utility glow {
   text-shadow: 0 0 10px var(--color-primary);
+}
+
+[data-theme="light"] .glow,
+[data-theme="dark"] .glow {
+  text-shadow: none;
 }
 
 @utility pill {
@@ -46,10 +96,28 @@ body {
   }
 }
 
+[data-theme="light"] .pill,
+[data-theme="dark"] .pill {
+  color: var(--color-bg);
+  box-shadow: 0 8px 32px rgba(8, 70, 102, 0.16);
+}
+
+[data-theme="dark"] .pill {
+  color: var(--color-bg-deep);
+}
+
 @utility panel {
   border-radius: 16px;
   border: 1px solid var(--color-border);
   background: rgba(6, 12, 31, 0.6);
   backdrop-filter: blur(12px);
   box-shadow: inset 0 0 24px rgba(0, 170, 255, 0.08);
+}
+
+[data-theme="light"] .panel,
+[data-theme="dark"] .panel {
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  box-shadow: 0 8px 32px rgba(8, 70, 102, 0.08);
+  backdrop-filter: blur(20px);
 }

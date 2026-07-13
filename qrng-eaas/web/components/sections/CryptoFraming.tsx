@@ -1,11 +1,11 @@
 export default function CryptoFraming() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16">
-      <div className="panel p-6">
-        <h2 className="glow mb-4 text-2xl font-semibold text-heading">
+    <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+      <div className="panel p-4 sm:p-6">
+        <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
           Entropy, not quantum resistance
         </h2>
-        <p className="mb-3 text-text/90">
+        <p className="mb-3 text-sm text-text/90 sm:text-base">
           QRNG does <strong>not</strong> &ldquo;defeat quantum attackers.&rdquo;
           It supplies high-quality <em>entropy</em> that seeds a standards
           DRBG, which in turn seeds post-quantum algorithms (ML-KEM) and

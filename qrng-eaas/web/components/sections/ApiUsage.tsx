@@ -200,11 +200,11 @@ const GETTING_STARTED = [
 
 export default function ApiUsage() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16">
-      <h2 className="glow mb-4 text-2xl font-semibold text-heading">
+    <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+      <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
         How to use the API
       </h2>
-      <p className="mb-10 text-text/90">
+      <p className="mb-8 text-sm text-text/90 sm:mb-10 sm:text-base">
         Every response is DRBG-derived — raw QRNG bits are never served. The
         anonymous endpoints need no key and are rate-limited. Developer
         endpoints need an <code>X-API-Key</code> minted by an admin and are
@@ -214,10 +214,10 @@ export default function ApiUsage() {
         Admin endpoints need an <code>X-Admin-Token</code>.
       </p>
 
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-8 sm:gap-10">
         {GROUPS.map((group) => (
           <div key={group.title}>
-            <h3 className="mb-4 text-lg font-semibold text-heading">
+            <h3 className="mb-4 text-base font-semibold text-heading sm:text-lg">
               {group.title}
             </h3>
             <div className="flex flex-col gap-4">
@@ -241,7 +241,7 @@ export default function ApiUsage() {
         ))}
 
         <div>
-          <h3 className="mb-4 text-lg font-semibold text-heading">
+          <h3 className="mb-4 text-base font-semibold text-heading sm:text-lg">
             Getting started with the API
           </h3>
           <ol className="flex flex-col gap-3 text-sm text-text/90">
@@ -256,8 +256,8 @@ export default function ApiUsage() {
           </ol>
         </div>
 
-        <div className="panel p-6">
-          <h3 className="mb-4 text-lg font-semibold text-heading">
+        <div className="panel p-4 sm:p-6">
+          <h3 className="mb-4 text-base font-semibold text-heading sm:text-lg">
             Rules of usage
           </h3>
           <ul className="flex list-disc flex-col gap-3 pl-5 text-sm text-text/90">
