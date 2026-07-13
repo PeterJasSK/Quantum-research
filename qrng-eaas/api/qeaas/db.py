@@ -45,6 +45,16 @@ class ApiKeyRow:
     created_at: datetime
 
 
+@dataclass
+class IssueLogRow:
+    request_id: str
+    principal: str
+    endpoint: str
+    size: int
+    epoch_id: int
+    ts: datetime
+
+
 def get_root_key() -> RootKeyRow | None:
     with connect() as conn, conn.cursor() as cur:
         cur.execute(
@@ -170,3 +180,38 @@ def insert_usage_log(principal: str, endpoint: str, nbytes: int) -> None:
             (principal, endpoint, nbytes),
         )
         conn.commit()
+
+
+def insert_issue_log(
+    request_id: str, principal: str, endpoint: str, size: int, epoch_id: int
+) -> None:
+    """AC-3: metadata-only provenance log -- no output bytes column exists (AC-8)."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO issue_log (request_id, principal, endpoint, size, epoch_id) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (request_id, principal, endpoint, size, epoch_id),
+        )
+        conn.commit()
+
+
+def get_issue_log(request_id: str) -> IssueLogRow | None:
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT request_id, principal, endpoint, size, epoch_id, ts "
+            "FROM issue_log WHERE request_id = %s",
+            (request_id,),
+        )
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return IssueLogRow(*row)
+
+
+def get_pool_source_labels() -> list[str]:
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT DISTINCT source_label FROM entropy_pool "
+            "WHERE source_label IS NOT NULL ORDER BY source_label"
+        )
+        return [label for (label,) in cur.fetchall()]

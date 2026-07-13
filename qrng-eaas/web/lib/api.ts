@@ -137,3 +137,21 @@ export async function kemEncapsulate(
     }),
   });
 }
+
+export interface VerifyResult {
+  request_id: string | null;
+  verified: boolean;
+  provenance: Record<string, unknown> | null;
+  note: string;
+}
+
+export async function verifyReceipt(input: {
+  receipt?: string;
+  request_id?: string;
+}): Promise<VerifyResult> {
+  return requestJson<VerifyResult>("/v1/verify", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}

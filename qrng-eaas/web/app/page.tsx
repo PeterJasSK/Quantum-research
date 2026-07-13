@@ -2,6 +2,7 @@ import Link from "next/link";
 import WhatIsQrng from "@/components/sections/WhatIsQrng";
 import PipelineDiagram from "@/components/sections/PipelineDiagram";
 import ApiUsage from "@/components/sections/ApiUsage";
+import VerifyReceipt from "@/components/sections/VerifyReceipt";
 import CryptoFraming from "@/components/sections/CryptoFraming";
 
 export default function Home() {
@@ -43,6 +44,7 @@ export default function Home() {
       <div id="api">
         <ApiUsage />
       </div>
+      <VerifyReceipt />
       <CryptoFraming />
     </>
   );

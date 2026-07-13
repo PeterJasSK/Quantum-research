@@ -126,9 +126,10 @@ curl -s -X POST http://127.0.0.1:8000/dice -H 'content-type: application/json' \
 curl -s -H "X-API-Key: <key>" "http://127.0.0.1:8000/v1/random/bytes?size=64&format=hex"
 curl -s -H "X-API-Key: <key>" "http://127.0.0.1:8000/v1/seed?bytes=64"
 
-# provenance stub
+# provenance: verify a signed receipt (paste one from a /v1/random/bytes response above)
 curl -s -X POST http://127.0.0.1:8000/v1/verify -H 'content-type: application/json' \
-  -d '{"request_id":"abc"}'
+  -d '{"receipt":"<receipt from a keyed issue response>"}'
+curl -s http://127.0.0.1:8000/v1/pubkey
 
 # admin-only pool refill
 echo -n "01010101" > /tmp/small.txt
@@ -298,8 +299,8 @@ editing one.
 ### One-time provisioning
 
 1. Neon: new project → **Connection string** with **Pooled connection** toggled on → run
-   `api/sql/001_entropy_core.sql`, `002_api_keys.sql`, `003_usage_log.sql` in that order via
-   the dashboard SQL Editor.
+   `api/sql/001_entropy_core.sql`, `002_api_keys.sql`, `003_usage_log.sql`, `004_provenance.sql`
+   in that order via the dashboard SQL Editor.
 2. Upstash: new **Regional** Redis database → copy the `rediss://` (TCP) connection string,
    not the REST URL.
 3. Import the repo into Vercel twice (once per project above), setting **Root Directory** per
@@ -333,6 +334,7 @@ curl -s -X POST "$API/dice" -H 'content-type: application/json' -d '{"sides":6,"
 curl -s -H "X-API-Key: $KEY" "$API/v1/random/bytes?size=64&format=hex"
 curl -s -H "X-API-Key: $KEY" "$API/v1/seed?bytes=64"
 curl -s -X POST "$API/v1/kem/keypair" -H "X-API-Key: $KEY" -H 'content-type: application/json' -d '{}'
+curl -s "$API/v1/pubkey"
 curl -s -X POST "$API/v1/verify" -H 'content-type: application/json' -d '{"request_id":"abc"}'
 
 # 5. confirm state survives across separate serverless invocations (not just within one
@@ -432,6 +434,31 @@ curl -s -X POST <base>/admin/keys -H "X-Admin-Token: <ADMIN_TOKEN>" \
 Set the plaintext `api_key` from the response as `KEM_DEMO_API_KEY`, and `API_ORIGIN`
 to the FastAPI base URL, in `web/.env.local` (local dev) and in the Vercel project env
 for `qeaas-web` (prod) — both are server-only, never `NEXT_PUBLIC_*`.
+
+## Provenance & verification (EPIC 9)
+
+Verify **provenance, not the secret**: every keyed/KEM issue (`/v1/random/bytes`, `/v1/seed`,
+`/v1/kem/keypair`, `/v1/kem/encapsulate`) ships a signed `receipt` alongside its data, but the
+output bytes themselves are never persisted anywhere.
+
+- **Signing key.** An Ed25519 key derived via `pool.derive_subkey("receipt-signing-key")` --
+  the third named sub-key off `MASTER_KEY`, alongside `pool-encryption-key`/`api-key-pepper`. No
+  new env var. The public key is published at `GET /v1/pubkey` for external, offline
+  verification (`{algorithm:"Ed25519", format:"base64", public_key}`).
+- **Receipts.** `qeaas/receipts.py` signs `(request_id, size, entropy_epoch, timestamp)` into a
+  compact `qeaas1.<payload>.<signature>` token (`receipt` field on every issue response).
+  `issue_log` (metadata only -- `request_id, principal, endpoint, size, epoch_id, ts`, **no
+  output bytes column**) is written alongside `usage_log` for every issue.
+- **`POST /v1/verify {request_id?, receipt?}`.** With a `receipt`, the signature is
+  cryptographically verified and the response resolves `entropy_epoch` plus the pool's
+  `qrng_source_labels` -- a real QRNG batch. With only a `request_id`, it's a plain `issue_log`
+  lookup (the response says so honestly). A tampered/forged receipt fails: `verified:false`,
+  `provenance:null`. Anonymous, but per-IP rate-limited like `/random`/`/dice`.
+- **Web "Verify a receipt" box.** A section on the explainer home page: paste a receipt or a
+  bare `request_id`, get back the resolved provenance, no page reload.
+- **Not an oracle.** `/v1/verify` never accepts or compares an output value -- it only proves a
+  receipt's metadata is authentic, which is exactly what lets the service guarantee it never
+  stored the bytes it issued.
 
 ## Spikes
 

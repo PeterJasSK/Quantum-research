@@ -65,6 +65,12 @@ class VerifyResponse(BaseModel):
     note: str
 
 
+class PubkeyResponse(BaseModel):
+    algorithm: Literal["Ed25519"]
+    format: Literal["base64"]
+    public_key: str
+
+
 class AdminIngestResponse(BaseModel):
     ingested: bool
     bytes_added: int

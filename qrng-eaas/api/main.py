@@ -11,7 +11,7 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from qeaas import db, dice, generation, kem, ratelimit
+from qeaas import db, dice, generation, kem, ratelimit, receipts
 from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
 from qeaas.gate import entropy_level, require_entropy
@@ -30,6 +30,7 @@ from qeaas.schemas import (
     KemEncapsulateResponse,
     KemKeypairRequest,
     KemKeypairResponse,
+    PubkeyResponse,
     RandomResponse,
     V1RandomBytesResponse,
     VerifyRequest,
@@ -126,6 +127,9 @@ def v1_random_bytes(
     ratelimit.enforce_key(key, size)
     response = _issue_v1(size, format)
     db.insert_usage_log(key.key_hash, "/v1/random/bytes", size)
+    db.insert_issue_log(
+        response.request_id, key.key_hash, "/v1/random/bytes", size, response.entropy_epoch
+    )
     return response
 
 
@@ -142,17 +146,27 @@ def seed(
     ratelimit.enforce_key(key, bytes)
     response = _issue_v1(bytes, format)
     db.insert_usage_log(key.key_hash, "/v1/seed", bytes)
+    db.insert_issue_log(
+        response.request_id, key.key_hash, "/v1/seed", bytes, response.entropy_epoch
+    )
     return response
 
 
 @app.post("/v1/verify")
-def verify(body: VerifyRequest) -> VerifyResponse:
-    """AC-6: unsigned provenance stub. Not a value-confirmation oracle. Real signing = EPIC 9."""
+def verify(request: Request, body: VerifyRequest) -> VerifyResponse:
+    """AC-4/5/6: verify provenance, not the secret. Anon, but per-IP rate-limited (Decision 6)."""
+    ratelimit.check_ip_rate(ratelimit.client_ip(request))
+    verified, provenance, note = receipts.verify(body.request_id, body.receipt)
     return VerifyResponse(
-        request_id=body.request_id,
-        verified=False,
-        provenance=None,
-        note="provenance verification is not yet implemented (EPIC 9)",
+        request_id=body.request_id, verified=verified, provenance=provenance, note=note
+    )
+
+
+@app.get("/v1/pubkey")
+def pubkey() -> PubkeyResponse:
+    """AC-1: published Ed25519 receipt-signing public key for external offline verification."""
+    return PubkeyResponse(
+        algorithm="Ed25519", format="base64", public_key=receipts.public_key_b64()
     )
 
 
@@ -229,7 +243,7 @@ def kem_keypair(
     """AC-1/2/3/7: QRNG-seeded ML-KEM-768 keygen. `ek` always; `dk` demo-only."""
     ratelimit.enforce_key(key, kem.KEYGEN_QUOTA_COST)
     ek, dk = kem.generate_keypair()
-    meta = generation.new_issue_meta()
+    meta = generation.new_issue_meta(kem.KEYGEN_SEED_BYTES)
     response = KemKeypairResponse(
         **meta,
         algorithm=kem.ALGORITHM,
@@ -241,6 +255,13 @@ def kem_keypair(
         note=_DEMO_SECRET_KEY_NOTE if body.include_secret_key else None,
     )
     db.insert_usage_log(key.key_hash, "/v1/kem/keypair", kem.KEYGEN_SEED_BYTES)
+    db.insert_issue_log(
+        response.request_id,
+        key.key_hash,
+        "/v1/kem/keypair",
+        kem.KEYGEN_SEED_BYTES,
+        response.entropy_epoch,
+    )
     return response
 
 
@@ -259,7 +280,7 @@ def kem_encapsulate(
     except (binascii.Error, ValueError):
         raise ApiError(422, "bad_request")
     shared_secret, ciphertext = kem.encapsulate(ek)
-    meta = generation.new_issue_meta()
+    meta = generation.new_issue_meta(kem.ENCAPS_SEED_BYTES)
     response = KemEncapsulateResponse(
         **meta,
         algorithm=kem.ALGORITHM,
@@ -274,4 +295,11 @@ def kem_encapsulate(
         note=_DEMO_SHARED_SECRET_NOTE if body.include_shared_secret else None,
     )
     db.insert_usage_log(key.key_hash, "/v1/kem/encapsulate", kem.ENCAPS_SEED_BYTES)
+    db.insert_issue_log(
+        response.request_id,
+        key.key_hash,
+        "/v1/kem/encapsulate",
+        kem.ENCAPS_SEED_BYTES,
+        response.entropy_epoch,
+    )
     return response
