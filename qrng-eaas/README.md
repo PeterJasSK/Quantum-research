@@ -356,6 +356,49 @@ Open `$WEB` on your phone too — confirm the explainer loads, the health badge 
 | `/admin/*` returns `401` | wrong/missing `X-Admin-Token`, or it doesn't match Vercel's stored value | re-check Phase 3's saved value; regenerate + re-save + redeploy if unsure |
 | env var change doesn't seem to take effect | Vercel only applies env var changes to new deployments | trigger a redeploy from the **Deployments** tab |
 
+## Seed-quality report (EPIC 7)
+
+Produces the statistical evidence (bias, NIST SP 800-22, next-bit ML predictability, Markov
+dependency) that the deployed service's `/v1/seed` output is indistinguishable from the OS
+CSPRNG, for the thesis appendix. Read-only against the live deployment; scripts and sample data
+live under `qrng-eaas/claude/validation/`.
+
+```bash
+cd qrng-eaas/claude/validation
+
+# 0. local tooling for the report only — separate from api/venv
+python3 -m venv .report-venv
+source .report-venv/bin/activate
+pip install -r requirements-report.txt
+
+# 1. mint a dedicated, higher-quota (iot tier, 10 MiB/day) API key for the pull —
+#    don't reuse the smoke-test key. Use the ADMIN_TOKEN already hardcoded in
+#    ../prod_seed/mint_prod_key.sh. The plaintext key is in the response's `api_key` field.
+curl -s -X POST https://quantum-research-api.vercel.app/admin/keys \
+  -H "X-Admin-Token: <token from ../prod_seed/mint_prod_key.sh>" \
+  -H 'content-type: application/json' \
+  -d '{"owner":"seed-quality-report","tier":"iot"}'
+
+# 2. pull ~1.5 MB from the deployed service, and an equal-size os.urandom baseline
+mkdir -p samples
+python3 pull_seed_sample.py \
+  --api-base https://quantum-research-api.vercel.app \
+  --api-key <key from step 1> \
+  --total-bytes 1572864 \
+  --out samples/service_sample.txt
+python3 pull_urandom_sample.py --total-bytes 1572864 --out samples/urandom_sample.txt
+
+# 3. run the existing, unmodified qrng_compare.py battery against both samples
+python3 ../../../ErrorDetectionVSRawBits/qrng_compare.py \
+  samples/service_sample.txt samples/urandom_sample.txt \
+  -o seed_quality_report.pdf
+```
+
+The sample files under `samples/` are regenerable scratch data (gitignored). The generated
+`seed_quality_report.pdf` is the committed, point-in-time deliverable referenced from the thesis
+appendix — it is not auto-regenerated on every re-run; a fresher report is a deliberate manual
+re-run and a new commit.
+
 ## Spikes
 
 - `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen

@@ -71,6 +71,12 @@ temp/
 # Vercel
 .vercel/
 
+# Prod seed scratch data (regenerable from ErrorDetectionVSRawBits/, not source)
+claude/prod_seed/
+
+# Seed-quality report samples (regenerable via pull_seed_sample.py / pull_urandom_sample.py, not source)
+claude/validation/samples/
+
 # Misc
 *.swp
 *.swo

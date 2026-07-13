@@ -1,0 +1,11 @@
+# local-only — never install into api/venv, never add to api/requirements.txt
+# (Vercel serverless deployment must stay pure-Python; these are native-wheel /
+# heavyweight deps for local report generation only).
+#
+# Pinned to the versions already proven against ErrorDetectionVSRawBits/qrng_compare.py
+# in this repo. Note: qrng_compare.py's own docstring mentions `nistrng`, but its NIST
+# SP 800-22 battery is implemented locally in nist_pure.py with no import of the
+# `nistrng` package — it is not an actual runtime dependency and is omitted here.
+numpy==2.1.3
+matplotlib==3.10.0
+scikit-learn==1.6.1
