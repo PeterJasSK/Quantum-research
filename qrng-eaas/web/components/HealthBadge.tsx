@@ -21,10 +21,10 @@ const STYLES: Record<Status, string> = {
 };
 
 const LABELS: Record<Status, string> = {
-  loading: "Quantum entropy: checking…",
-  healthy: "Quantum entropy: healthy",
-  degraded: "Quantum entropy: degraded",
-  error: "Quantum entropy: status unavailable",
+  loading: "Q.E. : checking…",
+  healthy: "Q.E. : healthy",
+  degraded: "Q.E. : degraded",
+  error: "Q.E. : status unavailable",
 };
 
 export default function HealthBadge() {
