@@ -3,7 +3,6 @@ import WhatIsQrng from "@/components/sections/WhatIsQrng";
 import PipelineDiagram from "@/components/sections/PipelineDiagram";
 import ApiUsage from "@/components/sections/ApiUsage";
 import VerifyReceipt from "@/components/sections/VerifyReceipt";
-import CryptoFraming from "@/components/sections/CryptoFraming";
 
 export default function Home() {
   return (
@@ -20,7 +19,6 @@ export default function Home() {
         <ApiUsage />
       </div>
       <VerifyReceipt />
-      <CryptoFraming />
     </>
   );
 }
