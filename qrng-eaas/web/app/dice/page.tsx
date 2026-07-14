@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function DicePage() {
   return (
-    <PageHero title="Play quantum dice">
+    <PageHero title="Play quantum dice" maxWidth="max-w-4xl">
       <p className="max-w-xl text-center text-sm text-text/90 sm:text-base">
         Every roll is sampled from the same quantum-seeded DRBG that powers
         the rest of this service — no page reload, no bias.

@@ -14,8 +14,8 @@ export default function WhatIsQrng() {
         Those raw quantum bits never leave this service directly. Instead they
         periodically reseed a standards-based DRBG (HMAC-DRBG, SP 800-90A),
         which stretches a finite quantum sample into effectively unlimited,
-        cryptographically strong output — the seeds, dice rolls, and key
-        material every endpoint on this site serves.
+        cryptographically strong output — served free over the API as seeds,
+        dice rolls, and key material for anyone who needs it.
       </p>
     </section>
   );

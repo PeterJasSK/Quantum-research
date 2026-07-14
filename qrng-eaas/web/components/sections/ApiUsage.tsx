@@ -1,3 +1,5 @@
+import { FiArrowDown, FiSend } from "react-icons/fi";
+
 interface Endpoint {
   method: string;
   path: string;
@@ -6,6 +8,8 @@ interface Endpoint {
   notes: string;
   curl: string;
 }
+
+const METHOD_ICON = { GET: FiArrowDown, POST: FiSend } as const;
 
 interface Group {
   title: string;
@@ -204,7 +208,7 @@ export default function ApiUsage() {
       <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
         How to use the API
       </h2>
-      <p className="mb-8 text-sm text-text/90 sm:mb-10 sm:text-base">
+      <p className="mb-8 max-w-3xl text-sm text-text/90 sm:mb-10 sm:text-base">
         Every response is DRBG-derived — raw QRNG bits are never served. The
         anonymous endpoints need no key and are rate-limited. Developer
         endpoints need an <code>X-API-Key</code> minted by an admin and are
@@ -220,22 +224,51 @@ export default function ApiUsage() {
             <h3 className="mb-4 text-base font-semibold text-heading sm:text-lg">
               {group.title}
             </h3>
-            <div className="flex flex-col gap-4">
-              {group.entries.map((entry) => (
-                <div key={`${entry.method} ${entry.path}`} className="panel p-4">
-                  <p className="mb-1 text-sm font-semibold text-heading">
-                    {entry.method} {entry.path}
-                  </p>
-                  <p className="mb-1 text-sm text-text/90">{entry.purpose}</p>
-                  <p className="mb-1 text-xs text-text/60">
-                    Params/body: {entry.params}
-                  </p>
-                  <p className="mb-3 text-xs text-text/60">{entry.notes}</p>
-                  <pre className="overflow-x-auto text-xs text-accent">
-                    <code>{entry.curl}</code>
-                  </pre>
-                </div>
-              ))}
+            <div className="flex flex-col gap-6">
+              {group.entries.map((entry) => {
+                const MethodIcon = METHOD_ICON[entry.method as keyof typeof METHOD_ICON] ?? FiSend;
+                return (
+                  <div
+                    key={`${entry.method} ${entry.path}`}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-border bg-surface/40 p-6 shadow-xl backdrop-blur-md transition-all hover:border-accent sm:p-8"
+                  >
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-accent/10 blur-[80px]"
+                    />
+                    <div className="relative">
+                      <div className="mb-6 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-deep/5 px-3 py-1 text-xs font-bold uppercase tracking-widest text-text/60">
+                          <MethodIcon size={14} />
+                          {entry.method}
+                        </span>
+                      </div>
+                      <p className="mb-2 break-all font-mono text-xl font-black text-heading transition-colors group-hover:text-accent sm:text-2xl">
+                        {entry.path}
+                      </p>
+                      <p className="mb-6 text-sm text-text/70">{entry.purpose}</p>
+                    </div>
+
+                    <div className="relative mt-auto rounded-2xl border border-border bg-bg-deep/5 p-4">
+                      <ul className="mb-3 flex flex-col gap-2 text-xs text-text/70">
+                        <li className="flex items-start gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                          <span className="break-words">
+                            Params/body: {entry.params}
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                          <span className="break-words">{entry.notes}</span>
+                        </li>
+                      </ul>
+                      <pre className="overflow-x-auto rounded-lg border border-border bg-bg-deep/10 p-3 text-xs text-accent">
+                        <code>{entry.curl}</code>
+                      </pre>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}

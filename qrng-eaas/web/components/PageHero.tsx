@@ -4,12 +4,16 @@ import type { ReactNode } from "react";
 export default function PageHero({
   title,
   children,
+  maxWidth = "max-w-3xl",
 }: {
   title: string;
   children: ReactNode;
+  maxWidth?: string;
 }) {
   return (
-    <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-12 sm:gap-8 sm:py-16">
+    <section
+      className={`mx-auto flex ${maxWidth} flex-col items-center gap-6 px-4 py-12 sm:gap-8 sm:py-16`}
+    >
       <Link
         href="/"
         className="self-start text-sm text-accent hover:underline"
