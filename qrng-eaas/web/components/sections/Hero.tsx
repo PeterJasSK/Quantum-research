@@ -19,19 +19,19 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="mx-auto flex max-w-3xl flex-col items-center gap-8 px-4 py-16 text-center sm:py-20"
+      className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-8 text-center sm:gap-8 sm:py-20"
     >
       <motion.div
         initial="hidden"
         animate="visible"
         custom={0}
         variants={fadeUp}
-        className="group inline-flex cursor-default items-center gap-2 rounded-full border border-border bg-surface px-5 py-2.5 shadow-sm backdrop-blur-md transition-colors"
+        className="group inline-flex cursor-default items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-sm backdrop-blur-md transition-colors sm:px-5 sm:py-2.5"
       >
         <span className="rounded-full bg-accent/10 p-1 text-accent transition-colors group-hover:bg-accent/20">
-          <FiShield size={16} />
+          <FiShield size={14} />
         </span>
-        <span className="text-xs font-bold uppercase tracking-widest text-text/70">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-text/70 sm:text-xs">
           Q-EaaS · Quantum Entropy API
         </span>
       </motion.div>
@@ -42,7 +42,7 @@ export default function Hero() {
           animate="visible"
           custom={0.1}
           variants={fadeUp}
-          className="mb-6 text-6xl font-black leading-[1.1] tracking-tighter text-heading drop-shadow-sm sm:text-7xl lg:text-[6.5rem]"
+          className="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-heading drop-shadow-sm sm:mb-6 sm:text-7xl lg:text-[6.5rem]"
         >
           QUANTUM
           <br />
@@ -63,7 +63,7 @@ export default function Hero() {
           animate="visible"
           custom={0.2}
           variants={fadeUp}
-          className="mx-auto max-w-2xl text-2xl font-bold leading-tight tracking-tight text-text/70 sm:text-3xl"
+          className="mx-auto max-w-2xl text-base font-bold leading-tight tracking-tight text-text/70 sm:text-3xl"
         >
           A free API for high-quality randomness.{" "}
           <span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-black text-transparent">
@@ -77,7 +77,7 @@ export default function Hero() {
         animate="visible"
         custom={0.3}
         variants={fadeUp}
-        className="max-w-lg text-lg font-medium leading-relaxed text-text/90 sm:text-xl"
+        className="hidden max-w-lg text-lg font-medium leading-relaxed text-text/90 sm:block sm:text-xl"
       >
         Real randomness created on quantum hardware, delivered over a simple
         API — free to use, for seeds, keys, and anything that needs genuine
@@ -89,11 +89,11 @@ export default function Hero() {
         animate="visible"
         custom={0.5}
         variants={fadeUp}
-        className="flex w-full flex-col gap-4 pt-2 sm:w-auto sm:flex-row"
+        className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4 sm:pt-2"
       >
         <Link
           href="/dice"
-          className="group relative flex h-14 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-primary px-8 text-lg font-bold text-bg shadow-xl transition-all hover:-translate-y-1 hover:shadow-accent/40 active:translate-y-0 active:scale-95 sm:w-auto"
+          className="group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-primary px-8 text-base font-bold text-bg shadow-xl transition-all hover:-translate-y-1 hover:shadow-accent/40 active:translate-y-0 active:scale-95 sm:h-14 sm:w-auto sm:text-lg"
         >
           <motion.span
             aria-hidden
@@ -110,7 +110,7 @@ export default function Hero() {
         </Link>
         <a
           href="#overview"
-          className="flex h-14 w-full items-center justify-center rounded-2xl border-2 border-border px-8 text-lg font-bold text-text/90 transition-all hover:border-accent hover:bg-surface sm:w-auto"
+          className="flex h-12 w-full items-center justify-center rounded-2xl border-2 border-border px-8 text-base font-bold text-text/90 transition-all hover:border-accent hover:bg-surface sm:h-14 sm:w-auto sm:text-lg"
         >
           Discover more
         </a>

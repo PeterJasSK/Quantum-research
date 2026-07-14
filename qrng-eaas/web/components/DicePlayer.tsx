@@ -148,24 +148,11 @@ export default function DicePlayer() {
       <div className="flex flex-col gap-6">
         {result ? (
           <>
-            <div className="panel border-2 border-accent/50 p-6 sm:p-8">
-              <p className="text-xs font-bold uppercase tracking-widest text-accent">
-                Total
-              </p>
-              <p className="glow mt-1 text-5xl font-black text-heading sm:text-6xl">
-                {sum}
-              </p>
-              <p className="mt-2 text-sm text-text/60">
-                {result.count}× d{result.sides}
-                {result.rolls.length > 1 && <> · average {avg.toFixed(2)}</>}
-              </p>
-            </div>
-
-            <div className="panel p-5 sm:p-6">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-text/60">
+            <div className="panel order-1 p-5 sm:order-2 sm:p-6">
+              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-text/60 sm:mb-4">
                 Individual rolls
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <AnimatePresence>
                   {result.rolls.map((value, index) => (
                     <motion.div
@@ -173,13 +160,26 @@ export default function DicePlayer() {
                       initial={{ opacity: 0, scale: 0.6, y: 8 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       transition={{ delay: index * 0.08 }}
-                      className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-bg-deep/5 text-2xl font-semibold text-heading"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-bg-deep/5 text-base font-semibold text-heading sm:h-16 sm:w-16 sm:rounded-2xl sm:text-2xl"
                     >
                       {value}
                     </motion.div>
                   ))}
                 </AnimatePresence>
               </div>
+            </div>
+
+            <div className="panel order-2 border-2 border-accent/50 p-6 sm:order-1 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-widest text-accent">
+                Total
+              </p>
+              <p className="glow mt-1 text-4xl font-black text-heading sm:text-6xl">
+                {sum}
+              </p>
+              <p className="mt-2 text-sm text-text/60">
+                {result.count}× d{result.sides}
+                {result.rolls.length > 1 && <> · average {avg.toFixed(2)}</>}
+              </p>
             </div>
 
             <button
