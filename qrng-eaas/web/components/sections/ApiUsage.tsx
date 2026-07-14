@@ -260,7 +260,7 @@ export default function ApiUsage() {
           <h3 className="mb-4 text-base font-semibold text-heading sm:text-lg">
             Rules of usage
           </h3>
-          <ul className="flex list-disc flex-col gap-3 pl-5 text-sm text-text/90">
+          <ul className="flex list-disc flex-col gap-3 break-words pl-5 text-sm text-text/90">
             <li>
               <strong>Anonymous:</strong> 60 requests/min per IP;{" "}
               <code>/random</code> capped at 64 bytes/request; global anon
