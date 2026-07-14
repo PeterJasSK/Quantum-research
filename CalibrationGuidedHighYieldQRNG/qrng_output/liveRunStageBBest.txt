@@ -1,0 +1,23 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/CalibrationGuidedHighYieldQRNG$ python3 code/stage_b_yield.py 20000 ibm_marrakesh --qubits 98,10,14,75,154 --depths 1,2,4,8
+Backend : ibm_marrakesh  (156 qubits, {'family': 'Heron', 'revision': '2'})
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Qubit subset (5): [98, 10, 14, 75, 154]
+Depth sweep: [1, 2, 4, 8]  ->  bits/shot at max depth = 40 (D7)
+
+--- depth k=1 ---
+  job 1: d9b950m6hjac73ffcna0 (20,000 shots) ... done (qpu 7.00s)
+
+--- depth k=2 ---
+  job 1: d9b976jv6alc73cso22g (20,000 shots) ... done (qpu 8.00s)
+
+--- depth k=4 ---
+  job 1: d9b97be6hjac73ffcpqg (20,000 shots) ... done (qpu 8.00s)
+
+--- depth k=8 ---
+  job 1: d9b97gnu62qs738ouvjg (20,000 shots) ... done (qpu 8.00s)
+
+--- DONE ---
+Total bits (all depths) : 1,500,000
+QPU seconds              : 31.00
+Raw       -> qrng_output/stageb_ibm_marrakesh_20260714-214816_raw.json
+Processed -> qrng_output/stageb_ibm_marrakesh_20260714-214816_processed.txt

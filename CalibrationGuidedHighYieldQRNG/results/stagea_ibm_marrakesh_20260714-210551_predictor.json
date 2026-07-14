@@ -1,0 +1,658 @@
+{
+  "features": [
+    "t1",
+    "t2",
+    "readout_error",
+    "sx_error",
+    "reset_error"
+  ],
+  "coefficients": {
+    "t1": 0.017703575750945118,
+    "t2": -0.012902816814416703,
+    "readout_error": -0.00045683935934482365,
+    "sx_error": -0.010308779101747143,
+    "reset_error": 0.0
+  },
+  "intercept": 0.8790749036592488,
+  "r_squared": 0.051342227253156736,
+  "target": "min_entropy_per_bit",
+  "ranked_qubits": [
+    {
+      "qubit": 98,
+      "predicted_quality": 0.9289725675860921
+    },
+    {
+      "qubit": 10,
+      "predicted_quality": 0.9285344440282945
+    },
+    {
+      "qubit": 14,
+      "predicted_quality": 0.926061250353211
+    },
+    {
+      "qubit": 75,
+      "predicted_quality": 0.9182178602502928
+    },
+    {
+      "qubit": 154,
+      "predicted_quality": 0.9159446587168656
+    },
+    {
+      "qubit": 0,
+      "predicted_quality": 0.914426125474116
+    },
+    {
+      "qubit": 86,
+      "predicted_quality": 0.9141301684206559
+    },
+    {
+      "qubit": 132,
+      "predicted_quality": 0.9133960662504685
+    },
+    {
+      "qubit": 42,
+      "predicted_quality": 0.9114152896995011
+    },
+    {
+      "qubit": 54,
+      "predicted_quality": 0.9098158783225523
+    },
+    {
+      "qubit": 122,
+      "predicted_quality": 0.9089247038448043
+    },
+    {
+      "qubit": 140,
+      "predicted_quality": 0.9084071801414516
+    },
+    {
+      "qubit": 147,
+      "predicted_quality": 0.9082069513286202
+    },
+    {
+      "qubit": 138,
+      "predicted_quality": 0.9060528311541675
+    },
+    {
+      "qubit": 17,
+      "predicted_quality": 0.9035586256111614
+    },
+    {
+      "qubit": 155,
+      "predicted_quality": 0.9011510006507795
+    },
+    {
+      "qubit": 21,
+      "predicted_quality": 0.9005416215541641
+    },
+    {
+      "qubit": 112,
+      "predicted_quality": 0.8985706263126413
+    },
+    {
+      "qubit": 32,
+      "predicted_quality": 0.8977780901960128
+    },
+    {
+      "qubit": 141,
+      "predicted_quality": 0.8971547366971937
+    },
+    {
+      "qubit": 53,
+      "predicted_quality": 0.8968763981531379
+    },
+    {
+      "qubit": 117,
+      "predicted_quality": 0.8968211405548903
+    },
+    {
+      "qubit": 93,
+      "predicted_quality": 0.8959433291683402
+    },
+    {
+      "qubit": 36,
+      "predicted_quality": 0.8957704625688087
+    },
+    {
+      "qubit": 67,
+      "predicted_quality": 0.8954590398462429
+    },
+    {
+      "qubit": 109,
+      "predicted_quality": 0.8952811185527381
+    },
+    {
+      "qubit": 136,
+      "predicted_quality": 0.8952395852489246
+    },
+    {
+      "qubit": 22,
+      "predicted_quality": 0.8947228359255016
+    },
+    {
+      "qubit": 118,
+      "predicted_quality": 0.8912011851772227
+    },
+    {
+      "qubit": 115,
+      "predicted_quality": 0.891047144015284
+    },
+    {
+      "qubit": 70,
+      "predicted_quality": 0.8905799496088336
+    },
+    {
+      "qubit": 41,
+      "predicted_quality": 0.8899929974438249
+    },
+    {
+      "qubit": 107,
+      "predicted_quality": 0.8894208242342073
+    },
+    {
+      "qubit": 8,
+      "predicted_quality": 0.8893420056334236
+    },
+    {
+      "qubit": 99,
+      "predicted_quality": 0.8893136273032857
+    },
+    {
+      "qubit": 151,
+      "predicted_quality": 0.8891085878679894
+    },
+    {
+      "qubit": 37,
+      "predicted_quality": 0.8888649714501431
+    },
+    {
+      "qubit": 126,
+      "predicted_quality": 0.8884412912438151
+    },
+    {
+      "qubit": 139,
+      "predicted_quality": 0.888254755734363
+    },
+    {
+      "qubit": 72,
+      "predicted_quality": 0.887818927710254
+    },
+    {
+      "qubit": 134,
+      "predicted_quality": 0.8877064343960035
+    },
+    {
+      "qubit": 74,
+      "predicted_quality": 0.8876042837487754
+    },
+    {
+      "qubit": 46,
+      "predicted_quality": 0.8874481886416309
+    },
+    {
+      "qubit": 125,
+      "predicted_quality": 0.8873709703456728
+    },
+    {
+      "qubit": 148,
+      "predicted_quality": 0.887043229093913
+    },
+    {
+      "qubit": 80,
+      "predicted_quality": 0.8869607382746452
+    },
+    {
+      "qubit": 15,
+      "predicted_quality": 0.8869218907887735
+    },
+    {
+      "qubit": 55,
+      "predicted_quality": 0.8868681514221809
+    },
+    {
+      "qubit": 120,
+      "predicted_quality": 0.8866523671632193
+    },
+    {
+      "qubit": 106,
+      "predicted_quality": 0.8858962882903256
+    },
+    {
+      "qubit": 19,
+      "predicted_quality": 0.8855839710919454
+    },
+    {
+      "qubit": 142,
+      "predicted_quality": 0.8847444367587628
+    },
+    {
+      "qubit": 96,
+      "predicted_quality": 0.8847162464339717
+    },
+    {
+      "qubit": 149,
+      "predicted_quality": 0.8847019537289684
+    },
+    {
+      "qubit": 6,
+      "predicted_quality": 0.8846748613394144
+    },
+    {
+      "qubit": 43,
+      "predicted_quality": 0.8844840501775342
+    },
+    {
+      "qubit": 3,
+      "predicted_quality": 0.8844115372227999
+    },
+    {
+      "qubit": 146,
+      "predicted_quality": 0.8838301519453086
+    },
+    {
+      "qubit": 30,
+      "predicted_quality": 0.8838191493856618
+    },
+    {
+      "qubit": 11,
+      "predicted_quality": 0.8833268746237329
+    },
+    {
+      "qubit": 38,
+      "predicted_quality": 0.882681313376286
+    },
+    {
+      "qubit": 78,
+      "predicted_quality": 0.8826101644092235
+    },
+    {
+      "qubit": 68,
+      "predicted_quality": 0.882090140860607
+    },
+    {
+      "qubit": 48,
+      "predicted_quality": 0.8820379303563963
+    },
+    {
+      "qubit": 31,
+      "predicted_quality": 0.8818433771205656
+    },
+    {
+      "qubit": 127,
+      "predicted_quality": 0.8816523644573765
+    },
+    {
+      "qubit": 5,
+      "predicted_quality": 0.8815275456340779
+    },
+    {
+      "qubit": 16,
+      "predicted_quality": 0.8814944008203883
+    },
+    {
+      "qubit": 65,
+      "predicted_quality": 0.8812733037905495
+    },
+    {
+      "qubit": 4,
+      "predicted_quality": 0.881177498667063
+    },
+    {
+      "qubit": 56,
+      "predicted_quality": 0.8810094616584159
+    },
+    {
+      "qubit": 143,
+      "predicted_quality": 0.880535826583682
+    },
+    {
+      "qubit": 110,
+      "predicted_quality": 0.8804172862183282
+    },
+    {
+      "qubit": 135,
+      "predicted_quality": 0.8800718334633404
+    },
+    {
+      "qubit": 57,
+      "predicted_quality": 0.8796923433624654
+    },
+    {
+      "qubit": 69,
+      "predicted_quality": 0.8796383460219309
+    },
+    {
+      "qubit": 66,
+      "predicted_quality": 0.8786127339948633
+    },
+    {
+      "qubit": 137,
+      "predicted_quality": 0.8784726299394114
+    },
+    {
+      "qubit": 73,
+      "predicted_quality": 0.8784413228159414
+    },
+    {
+      "qubit": 153,
+      "predicted_quality": 0.8783743099608567
+    },
+    {
+      "qubit": 111,
+      "predicted_quality": 0.8782153293592219
+    },
+    {
+      "qubit": 63,
+      "predicted_quality": 0.8776044670109892
+    },
+    {
+      "qubit": 79,
+      "predicted_quality": 0.8775709988544339
+    },
+    {
+      "qubit": 77,
+      "predicted_quality": 0.8771763532233108
+    },
+    {
+      "qubit": 12,
+      "predicted_quality": 0.8768499486034697
+    },
+    {
+      "qubit": 150,
+      "predicted_quality": 0.8760943924411111
+    },
+    {
+      "qubit": 124,
+      "predicted_quality": 0.8758555544143755
+    },
+    {
+      "qubit": 1,
+      "predicted_quality": 0.8758090233985194
+    },
+    {
+      "qubit": 58,
+      "predicted_quality": 0.8755005733297702
+    },
+    {
+      "qubit": 95,
+      "predicted_quality": 0.8753700029754226
+    },
+    {
+      "qubit": 76,
+      "predicted_quality": 0.8752414953437546
+    },
+    {
+      "qubit": 34,
+      "predicted_quality": 0.8750722507778527
+    },
+    {
+      "qubit": 97,
+      "predicted_quality": 0.875022560548011
+    },
+    {
+      "qubit": 131,
+      "predicted_quality": 0.8743201341856836
+    },
+    {
+      "qubit": 13,
+      "predicted_quality": 0.8743078627959736
+    },
+    {
+      "qubit": 33,
+      "predicted_quality": 0.8741688379442669
+    },
+    {
+      "qubit": 152,
+      "predicted_quality": 0.8739620655432981
+    },
+    {
+      "qubit": 144,
+      "predicted_quality": 0.8739618234943863
+    },
+    {
+      "qubit": 7,
+      "predicted_quality": 0.873719377025691
+    },
+    {
+      "qubit": 92,
+      "predicted_quality": 0.8736636744759162
+    },
+    {
+      "qubit": 105,
+      "predicted_quality": 0.8734856395258354
+    },
+    {
+      "qubit": 101,
+      "predicted_quality": 0.8729692166404628
+    },
+    {
+      "qubit": 104,
+      "predicted_quality": 0.8712540659521074
+    },
+    {
+      "qubit": 49,
+      "predicted_quality": 0.8704949491789339
+    },
+    {
+      "qubit": 85,
+      "predicted_quality": 0.8704395761564684
+    },
+    {
+      "qubit": 24,
+      "predicted_quality": 0.870424615945194
+    },
+    {
+      "qubit": 100,
+      "predicted_quality": 0.8703833782322852
+    },
+    {
+      "qubit": 102,
+      "predicted_quality": 0.870147613545596
+    },
+    {
+      "qubit": 123,
+      "predicted_quality": 0.8700305860099922
+    },
+    {
+      "qubit": 87,
+      "predicted_quality": 0.8693307358796799
+    },
+    {
+      "qubit": 64,
+      "predicted_quality": 0.8686691542052063
+    },
+    {
+      "qubit": 81,
+      "predicted_quality": 0.868313374923336
+    },
+    {
+      "qubit": 61,
+      "predicted_quality": 0.8682581230044852
+    },
+    {
+      "qubit": 94,
+      "predicted_quality": 0.868046649055779
+    },
+    {
+      "qubit": 2,
+      "predicted_quality": 0.8679381629330235
+    },
+    {
+      "qubit": 62,
+      "predicted_quality": 0.8679280760184955
+    },
+    {
+      "qubit": 47,
+      "predicted_quality": 0.8678556726653087
+    },
+    {
+      "qubit": 71,
+      "predicted_quality": 0.8678293887948276
+    },
+    {
+      "qubit": 52,
+      "predicted_quality": 0.8676607439060781
+    },
+    {
+      "qubit": 60,
+      "predicted_quality": 0.8675320775334995
+    },
+    {
+      "qubit": 130,
+      "predicted_quality": 0.8674937743123653
+    },
+    {
+      "qubit": 28,
+      "predicted_quality": 0.8672149052794996
+    },
+    {
+      "qubit": 116,
+      "predicted_quality": 0.8667067362403952
+    },
+    {
+      "qubit": 90,
+      "predicted_quality": 0.866365866605803
+    },
+    {
+      "qubit": 83,
+      "predicted_quality": 0.8660934017182741
+    },
+    {
+      "qubit": 103,
+      "predicted_quality": 0.8657842605640226
+    },
+    {
+      "qubit": 44,
+      "predicted_quality": 0.8657213432160755
+    },
+    {
+      "qubit": 25,
+      "predicted_quality": 0.8656092551510967
+    },
+    {
+      "qubit": 50,
+      "predicted_quality": 0.8654973585939282
+    },
+    {
+      "qubit": 89,
+      "predicted_quality": 0.8654661764222421
+    },
+    {
+      "qubit": 121,
+      "predicted_quality": 0.8653995008758535
+    },
+    {
+      "qubit": 145,
+      "predicted_quality": 0.8651611482801036
+    },
+    {
+      "qubit": 20,
+      "predicted_quality": 0.8650418747652628
+    },
+    {
+      "qubit": 133,
+      "predicted_quality": 0.8642672432688692
+    },
+    {
+      "qubit": 40,
+      "predicted_quality": 0.8639741649849274
+    },
+    {
+      "qubit": 27,
+      "predicted_quality": 0.8639591783104226
+    },
+    {
+      "qubit": 45,
+      "predicted_quality": 0.8630573750158226
+    },
+    {
+      "qubit": 129,
+      "predicted_quality": 0.8629130583797271
+    },
+    {
+      "qubit": 9,
+      "predicted_quality": 0.8624527128795962
+    },
+    {
+      "qubit": 23,
+      "predicted_quality": 0.8622390055215797
+    },
+    {
+      "qubit": 108,
+      "predicted_quality": 0.8621726972316224
+    },
+    {
+      "qubit": 84,
+      "predicted_quality": 0.8609704966896153
+    },
+    {
+      "qubit": 51,
+      "predicted_quality": 0.8606737555061194
+    },
+    {
+      "qubit": 59,
+      "predicted_quality": 0.8604236242349315
+    },
+    {
+      "qubit": 18,
+      "predicted_quality": 0.8598197376736127
+    },
+    {
+      "qubit": 128,
+      "predicted_quality": 0.8590918806635499
+    },
+    {
+      "qubit": 35,
+      "predicted_quality": 0.858965370099603
+    },
+    {
+      "qubit": 114,
+      "predicted_quality": 0.857142692234363
+    },
+    {
+      "qubit": 26,
+      "predicted_quality": 0.8570107739289179
+    },
+    {
+      "qubit": 88,
+      "predicted_quality": 0.8561473676211173
+    },
+    {
+      "qubit": 29,
+      "predicted_quality": 0.8559333977015089
+    },
+    {
+      "qubit": 39,
+      "predicted_quality": 0.854776438160079
+    },
+    {
+      "qubit": 91,
+      "predicted_quality": 0.8492781217654459
+    },
+    {
+      "qubit": 113,
+      "predicted_quality": 0.8171932602128714
+    },
+    {
+      "qubit": 119,
+      "predicted_quality": 0.7989736056218022
+    },
+    {
+      "qubit": 82,
+      "predicted_quality": 0.789034122840443
+    }
+  ],
+  "top_n": 10,
+  "selected_qubits": [
+    98,
+    10,
+    14,
+    75,
+    154,
+    0,
+    86,
+    132,
+    42,
+    54
+  ]
+}

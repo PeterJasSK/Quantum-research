@@ -1,0 +1,15 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/CalibrationGuidedHighYieldQRNG$ python code/stage_a_selection.py 65000 ibm_marrakesh --select all
+Backend : ibm_marrakesh  (156 qubits, {'family': 'Heron', 'revision': '2'})
+Selected qubits (all): 156 / 156
+Bits/shot = 156  ->  needs 6,411 shots for 1,000,000 bits (D7: max parallel, Hadamard-only)
+Running 65,000 shots ...
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+  job 1: d9b8hojv6alc73csnb30 (50,000 shots) ... done (qpu 16.00s)
+  job 2: d9b8i0bv6alc73csnbag (15,000 shots) ... done (qpu 6.00s)
+
+--- DONE ---
+Bits           : 10,140,000   bias 0.0073
+QPU seconds    : 22.00
+Shots for 1M   : 6,411
+Raw       -> qrng_output/stagea_ibm_marrakesh_20260714-210803_raw.json
+Processed -> qrng_output/stagea_ibm_marrakesh_20260714-210803_processed.txt

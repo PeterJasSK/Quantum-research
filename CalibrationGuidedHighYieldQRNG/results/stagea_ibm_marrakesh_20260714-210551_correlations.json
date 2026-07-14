@@ -1,0 +1,92 @@
+{
+  "t1": {
+    "global_bias": {
+      "rho": -0.21006877090099313,
+      "p_value": 0.008486062604726438
+    },
+    "min_entropy_per_bit": {
+      "rho": 0.20765473051921984,
+      "p_value": 0.009290779702253097
+    },
+    "nist_pass_rate": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "serial_correlation": {
+      "rho": -0.034943449427082406,
+      "p_value": 0.6649670108107602
+    }
+  },
+  "t2": {
+    "global_bias": {
+      "rho": 0.012430095394771785,
+      "p_value": 0.8776025027807474
+    },
+    "min_entropy_per_bit": {
+      "rho": -0.005171654608769387,
+      "p_value": 0.9489106084648375
+    },
+    "nist_pass_rate": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "serial_correlation": {
+      "rho": 0.0652433666086192,
+      "p_value": 0.41840111270198255
+    }
+  },
+  "readout_error": {
+    "global_bias": {
+      "rho": -0.05551017419689456,
+      "p_value": 0.49127851855931004
+    },
+    "min_entropy_per_bit": {
+      "rho": 0.05799039322826524,
+      "p_value": 0.4720916114367948
+    },
+    "nist_pass_rate": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "serial_correlation": {
+      "rho": -0.1073376811801675,
+      "p_value": 0.18229509924459858
+    }
+  },
+  "sx_error": {
+    "global_bias": {
+      "rho": -0.03631280035217673,
+      "p_value": 0.6526761505296426
+    },
+    "min_entropy_per_bit": {
+      "rho": 0.03627659004750362,
+      "p_value": 0.6529999822965609
+    },
+    "nist_pass_rate": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "serial_correlation": {
+      "rho": -0.07973725428924333,
+      "p_value": 0.3224259834425979
+    }
+  },
+  "reset_error": {
+    "global_bias": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "min_entropy_per_bit": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "nist_pass_rate": {
+      "rho": 0.0,
+      "p_value": 1.0
+    },
+    "serial_correlation": {
+      "rho": 0.0,
+      "p_value": 1.0
+    }
+  }
+}
