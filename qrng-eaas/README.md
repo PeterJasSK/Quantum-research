@@ -1,534 +1,441 @@
-# Quantum Entropy-as-a-Service (Q-EaaS)
+# Quantum Entropy-as-a-Service (Q-EaaS) — API Reference
 
-Monorepo: `/web` (Next.js App Router + Tailwind), `/api` (FastAPI), `/shared` (docs, diagrams, spikes).
-See `claude/QRNG_EaaS_BUILD_PLAN.md` for the full epic plan.
+FastAPI service that turns preloaded **QRNG (quantum random number generator)** bits into
+served randomness, dice rolls, cryptographic seeds, and post-quantum ML-KEM key material —
+each issue carrying a signed, offline-verifiable provenance receipt.
 
-## Local dev
+Monorepo layout: `api/` (this document — FastAPI service), `web/` (Next.js explainer + demo),
+`shared/` (docs, spikes), `claude/` (epic build plans). The web app is a thin client over the
+API; everything substantive happens here.
 
-**API** (from `api/`):
+> **Honest framing, stated once and meant everywhere.** QRNG does not "defeat quantum
+> attackers." Raw QRNG bits are *never served*. They are entropy that **seeds a standards
+> HMAC-DRBG** (NIST SP 800-90A). Every byte this API returns — `/random`, `/dice`, `/v1/seed`,
+> ML-KEM seeds — is DRBG output. The quantum part is the *entropy source*; any quantum
+> *resistance* comes from ML-KEM-768 (FIPS 203), not from the randomness being "quantum."
+
+---
+
+## 1. Architecture at a glance
 
 ```
-python -m venv venv
-source venv/bin/activate
+             ┌──────────── admin (X-Admin-Token) ────────────┐
+             │                                                │
+   QRNG .txt │  POST /admin/ingest                            │  POST /admin/keys
+  (0/1 bits) ▼                                                ▼  POST /admin/keys/revoke
+        ┌─────────────┐   AES-256-GCM    ┌───────────────────────────────┐
+        │ pool.parse  │ ───────────────▶ │  Postgres (Neon)              │
+        │ + encrypt   │                  │   entropy_pool  (ciphertext)  │
+        └─────────────┘                  │   drbg_root     (ciphertext)  │
+                                         │   api_keys / usage_log /      │
+                                         │   issue_log                   │
+                                         └───────────────┬───────────────┘
+                                                         │ decrypt slice on reseed
+                                                         ▼
+   client                    ┌───────────────────────────────────────┐
+  ─────────▶  entropy gate   │  keyed_drbg.output(n)                  │
+  request     (503 if low)   │   root_key  ← reseeded from pool       │
+             + rate limit ──▶│   counter   ← Redis atomic INCR        │──▶ HMAC-DRBG(SHA-256)
+             + API key       │   HMAC-DRBG(root_key, counter) → bytes │      = served bytes
+                             └───────────────────────────────────────┘
+                                                         │
+                             ┌───────────────────────────┴───────────┐
+                             │  Redis (Upstash)                       │
+                             │   drbg:counter   (output uniqueness)   │
+                             │   rl:* / quota:* / anon:* (throttling) │
+                             └────────────────────────────────────────┘
+```
+
+- **Stateless / serverless.** Each request opens a Postgres connection and closes it (`db.connect`);
+  there is no long-lived pool object. DRBG state is never read-modify-written per request — see §4.
+- **Two datastores, two different jobs** — see §3.
+- **CORS** is locked to the origins in `WEB_ORIGIN` (comma-separated).
+- Every response carries an **`X-Quantum-Entropy: healthy|degraded`** header (added by middleware
+  in `main.py`).
+
+Source map (`api/qeaas/`):
+
+| Module | Responsibility |
+|---|---|
+| `main.py` | FastAPI app, all route handlers, CORS, entropy header middleware |
+| `generation.py` | The single served-randomness choke point + provenance metadata builder |
+| `keyed_drbg.py` | Serverless-safe DRBG wrapper: reseed schedule, Redis-counter mixing |
+| `drbg.py` | Pure NIST SP 800-90A HMAC-DRBG (SHA-256) |
+| `pool.py` | Entropy pool: parse `0/1`, AES-256-GCM encrypt/decrypt, HKDF sub-keys, `burn()` |
+| `db.py` | Parameterized psycopg helpers for all five tables |
+| `redis_client.py` | Lazy Upstash client: atomic counter + rate-limit ops |
+| `gate.py` | Low-entropy gate (`entropy_level`, `require_entropy` dependency) |
+| `auth.py` | Admin-token guard, API-key hashing + validation |
+| `ratelimit.py` | Per-IP / per-key rate limits, anon daily ceiling, per-key quota |
+| `dice.py` | Rejection-sampled dice (no modulo bias) |
+| `kem.py` | QRNG-seeded ML-KEM-768 keygen + encapsulation |
+| `receipts.py` | Ed25519 receipt signing + verification |
+| `errors.py` | Flat `{"error": "<slug>"}` envelope for every failure |
+| `schemas.py` | Pydantic request/response models |
+
+---
+
+## 2. The randomness pipeline (what fires, in order)
+
+Every served byte flows through **one choke point**, `generation.random_bytes(n)` →
+`keyed_drbg.output(n)`. Nothing bypasses it.
+
+**A. Ingest (admin, offline of the request path).**
+`POST /admin/ingest` → `pool.ingest_bits_bytes()` → `pool.parse_bits_bytes()` packs the `0/1`
+text MSB-first into bytes (discarding a trailing partial byte, rejecting any non-`0/1` char) →
+`pool.encrypt_chunk()` AES-256-GCM-encrypts it → `db.insert_pool_chunk()` stores
+`(ciphertext, nonce, tag, plaintext_len, source_label)` in **`entropy_pool`**. Plaintext never
+touches disk; the upload buffer is `burn()`-ed.
+
+**B. Serve (per request).** `keyed_drbg.output(n)`:
+1. `maybe_reseed()` — loads the warm root-key cache (`_load_cache`), bootstrapping the root key
+   from the pool on very first use (`_bootstrap_root_key`). If the reseed schedule is due (§4),
+   `pool.pull_reseed_material(32)` decrypts the next unconsumed 32-byte slice from `entropy_pool`,
+   encrypts it as the new `drbg_root` row, advances `consumed_offset`, and `burn()`s the plaintext.
+2. `redis_client.incr_counter()` — atomic `INCR drbg:counter`, returns a **globally unique** integer.
+3. A fresh `HmacDrbg` is instantiated with the decrypted `root_key` and `generate(n, additional =
+   counter.to_bytes(8) + additional)` is called — the counter guarantees two concurrent requests
+   can never produce identical output even with identical root key.
+4. `db.bump_outputs_since_reseed()` increments the reseed odometer.
+
+**C. Wrap (per endpoint).** `generation.new_issue_meta(size)` mints a `request_id` (uuid4), reads
+`entropy_epoch` (= `drbg_root.reseed_counter`), timestamps, and calls `receipts.sign(...)` to
+produce the Ed25519 receipt. Keyed endpoints then write `db.insert_usage_log()` (abuse spotting)
+and `db.insert_issue_log()` (metadata-only provenance — **no output bytes are ever stored**).
+
+See the deep-dive comment at the end of this file / in the chat analysis for the exact call graph.
+
+---
+
+## 3. Why two databases
+
+They protect against **completely different failure modes** and have opposite consistency needs.
+
+### Postgres (Neon) — the durable secret store & audit ledger
+
+Holds everything that **must survive** and must be **transactional & durable**. Five tables:
+
+| Table | Holds | Notes |
+|---|---|---|
+| `entropy_pool` | AES-256-GCM ciphertext of QRNG bits + `nonce`, `tag`, `plaintext_len`, `consumed_offset`, `source_label` | The vault. No plaintext-bytes column exists. `consumed_offset` tracks how much of each chunk has been spent. |
+| `drbg_root` | AES-256-GCM ciphertext of the current DRBG root seed + `reseed_counter`, `outputs_since_reseed`, `rotated_at` | The live DRBG key, rotated ("reseeded") from the pool on schedule. `reseed_counter` == `entropy_epoch` in receipts and `drbg_reseeds` in `/health`. |
+| `api_keys` | `key_hash` (HMAC-SHA256, peppered), `owner`, `tier`, `daily_quota_bytes`, `revoked`, `created_at` | Plaintext keys never stored. Read fresh every request so revocation is instant. |
+| `usage_log` | `(ts, principal, endpoint, nbytes)` | Abuse-spotting ledger for keyed issues. Anon `/random`/`/dice` are **not** logged here. |
+| `issue_log` | `(request_id, principal, endpoint, size, epoch_id, ts)` | Metadata-only provenance. **No output-bytes column exists, ever** — verify provenance, not the secret. |
+
+Durability matters: lose the pool ciphertext or the root key and the service can no longer prove
+provenance or reseed. Postgres is ACID; this is where correctness lives.
+
+### Redis (Upstash) — the ephemeral atomic counter & throttle
+
+Holds **only fast, disposable, atomically-mutated counters** that would be a correctness hazard
+in Postgres under serverless concurrency:
+
+| Key | Purpose | Op |
+|---|---|---|
+| `drbg:counter` | **Output uniqueness.** Monotonic integer mixed into every DRBG call so two concurrent serverless invocations can't emit the same bytes. | `INCR` |
+| `rl:ip:{ip}:{minute}` | Per-IP rate limit (anon routes) | `INCR` + `EXPIRE 60` |
+| `rl:key:{hash}:{minute}` | Per-key rate limit | `INCR` + `EXPIRE 60` |
+| `anon:daily:{day}` | Global anon output ceiling (5 MB/day) | `INCRBY` + `EXPIRE`, `DECRBY` on refund |
+| `quota:key:{hash}:{day}` | Per-key daily byte quota | `INCRBY` + `EXPIRE`, `DECRBY` on refund |
+
+Why not put these in Postgres? On stateless serverless you cannot safely read-modify-write shared
+state per request — two concurrent requests would race. Redis `INCR`/`INCRBY` are **atomic**, so
+there is no read-modify-write. These values are *meant* to expire (per-minute, per-day) and losing
+them is harmless — throttling **fails open** on a Redis outage (logs a warning, allows the request),
+because the reseed-frequency floor (§4) still guarantees the pool can't be drained.
+
+**One-line summary:** Postgres = durable secrets + audit that must be correct forever; Redis =
+ephemeral atomic counters that must be fast and race-free but are disposable.
+
+---
+
+## 4. The DRBG & bit-drain protection
+
+- **HMAC-DRBG (SHA-256)**, NIST SP 800-90A §10.1.2 (`drbg.py`). Not thread-safe — each request gets
+  its own instance.
+- **Serverless-safe wrapper** (`keyed_drbg.py`): `output(n) = HMAC-DRBG(root_key, INCR(drbg:counter), n)`.
+- **Reseed schedule.** `root_key` rotates from the pool on whichever fires first:
+  - a fixed **15-minute** interval (`RESEED_INTERVAL_SECONDS`), **or**
+  - an output count ≥ `RESEED_OUTPUT_LIMIT` (100 000) **but only if** ≥ `RESEED_MIN_INTERVAL_SECONDS`
+    (5 minutes) has elapsed.
+  Each reseed pulls `RESEED_PULL_BYTES` (32) from the pool.
+- **Bit-drain is impossible via traffic.** Served bytes are always DRBG output, never raw pool bits,
+  and the 5-minute floor means no request volume can rotate the key faster than wall-clock time.
+  Pool drain is a function of *time*, never *traffic*.
+- **Low-entropy gate.** Below `THRESHOLD` (64 KiB) of unconsumed pool bytes, `/health` reports
+  `degraded` and all gated routes `503 low_quantum_entropy` (`gate.require_entropy`).
+
+---
+
+## 5. Cryptographic key hierarchy
+
+One env-held `MASTER_KEY` (256-bit hex). `pool.derive_subkey(name)` (HKDF-SHA256, RFC 5869
+one-block Expand) derives exactly four named sub-keys — there are no other secrets:
+
+```
+MASTER_KEY  (env / KMS only — never written to Postgres)
+  └── HKDF-SHA256
+       ├── "pool-encryption-key"       → entropy_pool  AES-256-GCM
+       ├── "drbg-root-encryption-key"  → drbg_root.root_key AES-256-GCM
+       ├── "api-key-pepper"            → API-key hashing  (HMAC-SHA256)
+       └── "receipt-signing-key"       → Ed25519 receipt signing seed
+```
+
+AES-256-GCM is authenticated: a flipped ciphertext byte fails the tag check and decryption raises —
+the service fails **closed** on tampered storage. Sensitive plaintext (decrypted slices, the warm
+root-key cache, upload buffers) is held in `bytearray` and best-effort `burn()`-ed after use (CPython
+cannot *guarantee* zeroization; serverless teardown keeps in-process secrets short-lived by design).
+
+---
+
+## 6. Authentication
+
+| Mechanism | Header | Applies to |
+|---|---|---|
+| **None (anonymous)** | — | `/health`, `/random`, `/dice`, `/v1/verify`, `/v1/pubkey` |
+| **API key** | `X-API-Key: <plaintext>` | `/v1/random/bytes`, `/v1/seed`, `/v1/kem/*` |
+| **Admin token** | `X-Admin-Token: <token>` | `/admin/*` |
+
+- API keys: `hash_api_key(key) = HMAC-SHA256(pepper, key)`; only the hash is stored. `require_api_key`
+  reads the row fresh every request, so `revoked = true` takes effect immediately. Missing header →
+  `401 missing_api_key`; unknown/revoked → `401 invalid_api_key`.
+- Admin token: constant-time compared (`hmac.compare_digest`) against `ADMIN_TOKEN`. Wrong/missing →
+  `401 unauthorized`.
+
+---
+
+## 7. Rate limits, quotas, tiers
+
+All counters are atomic Redis ops; **fail open** on a Redis error.
+
+- **Anon per-IP:** 60 req/min on `/random` and `/dice` (`ANON_IP_PER_MIN`).
+- **Anon global daily:** 5 MB/day output ceiling on `/random` (`ANON_DAILY_BYTES`).
+- **Per-key** (`/v1/*`), tier-driven:
+
+  | Tier | Daily quota | Rate limit |
+  |---|---|---|
+  | `default` | 256 KB/day | 120 req/min |
+  | `iot` | 10 MB/day | 600 req/min |
+  | `trusted` | 500 MB/day | 1 200 req/min |
+
+  A key's explicit `daily_quota_bytes` overrides the tier default; `NULL` falls back to it. Rate is
+  checked before quota (cheaper to reject). An over-quota request's bytes are **refunded** (`DECRBY`)
+  so a rejection never burns quota it didn't use.
+- Every `429` carries a `Retry-After` header (seconds until the window resets).
+
+---
+
+## 8. Error envelope
+
+Every failure returns a flat JSON body: `{"error": "<slug>"}` (see `errors.py`). Common slugs:
+
+| Status | Slug | Meaning |
+|---|---|---|
+| 401 | `unauthorized` / `missing_api_key` / `invalid_api_key` | auth failure |
+| 404 | `not_found` | e.g. revoke of an unknown key hash |
+| 413 | `file_too_large` | ingest upload > 10 MB |
+| 422 | `bad_request` | validation / malformed input (also FastAPI validation errors) |
+| 429 | `rate_limited` / `daily_limit_reached` / `quota_exceeded` | throttled (has `Retry-After`) |
+| 503 | `low_quantum_entropy` | pool below 64 KiB, gated route blocked |
+| 500 | `dice_sampling_failed` | rejection sampling exhausted its draw cap (extremely unlikely) |
+
+---
+
+## 9. Endpoint reference
+
+### `GET /health` — anonymous
+Liveness + pool/DRBG status. Never gated.
+```jsonc
+{ "status": "ok", "quantum_entropy_level": "healthy",  // or "degraded"
+  "pool_bytes_remaining": 699000, "drbg_reseeds": 3, "uptime": 1234.5 }
+```
+Fires: `db.get_root_key`, `db.pool_bytes_remaining`, `gate.entropy_level`.
+
+### `GET /random?bytes=<1..64>` — anonymous, ungated
+DRBG-derived random bytes, base64. Survives a `degraded` pool. Rate-limited per IP + anon daily.
+```jsonc
+{ "bytes": 32, "format": "base64", "data": "<base64>" }
+```
+Fires: `ratelimit.check_ip_rate` → `ratelimit.check_anon_daily` → `generation.random_bytes`.
+Errors: `422` (bytes out of range), `429 rate_limited` / `daily_limit_reached`.
+
+### `POST /dice` — anonymous, ungated
+Rejection-sampled dice (no modulo bias). Rate-limited per IP.
+Request: `{ "sides": 2..100 (default 6), "count": 1..6 (default 1) }`
+```jsonc
+{ "sides": 6, "count": 2, "rolls": [3, 6], "format": "base64",
+  "bytes_used": "<base64>", "bytes_count": 2 }
+```
+`bytes_used` / `bytes_count` echo **every DRBG byte drawn** for the roll — accepted *and* rejected —
+so the web dice player's "bytes behind this roll" toggle is literal. Still DRBG output, never raw
+QRNG bits. Fires: `ratelimit.check_ip_rate` → `dice.roll` (loops `keyed_drbg.output(1)`).
+Errors: `422` (out of range), `429`, `500 dice_sampling_failed`.
+
+### `GET /v1/random/bytes?size=<32..4096>&format=<hex|base64>` — API key, gated
+Canonical developer endpoint. Per-key rate limit + daily quota, then usage + issue logs.
+```jsonc
+{ "request_id": "…", "format": "hex", "data": "…",
+  "entropy_epoch": 3, "timestamp": "2026-…Z", "receipt": "qeaas1.<payload>.<sig>" }
+```
+Fires: `require_entropy` (gate) → `require_api_key` → `ratelimit.enforce_key` →
+`generation.issue_v1` (→ `random_bytes` + `new_issue_meta` + `receipts.sign`) →
+`db.insert_usage_log` + `db.insert_issue_log`.
+Errors: `401`, `429 rate_limited`/`quota_exceeded`, `503 low_quantum_entropy`, `422`.
+
+### `GET /v1/seed?bytes=<32..4096>&format=<hex|base64>` — API key, gated
+Alias of `/v1/random/bytes` — shares the exact same service function so the two cannot drift. Same
+response shape, same errors. (Only the query-param name differs: `bytes` vs `size`.)
+
+### `POST /v1/verify` — anonymous, per-IP rate-limited
+Verify **provenance, not the secret**. Request: `{ "request_id"?: str, "receipt"?: str }` (at least
+one required — else `422`).
+- With a `receipt`: signature is cryptographically verified; response resolves `size`,
+  `entropy_epoch`, `timestamp`, and the pool's `qrng_source_labels`.
+- With only a `request_id`: plain `issue_log` lookup (the `note` says so honestly).
+- Tampered/forged receipt → `verified: false`, `provenance: null`.
+```jsonc
+{ "request_id": "…", "verified": true,
+  "provenance": { "size": 64, "entropy_epoch": 3, "timestamp": "…",
+                  "qrng_source_labels": ["fez", "marrakesh"] },
+  "note": "receipt signature verified cryptographically" }
+```
+Fires: `ratelimit.check_ip_rate` → `receipts.verify` (→ `receipts.verify_receipt` and/or
+`db.get_issue_log`, `db.get_pool_source_labels`). **Never an oracle** — it never accepts or compares
+an output value.
+
+### `GET /v1/pubkey` — anonymous
+Published Ed25519 receipt-signing public key, for external **offline** verification.
+```jsonc
+{ "algorithm": "Ed25519", "format": "base64", "public_key": "<base64 32-byte raw>" }
+```
+
+### `POST /v1/kem/keypair` — API key, gated
+QRNG-seeded **ML-KEM-768** (FIPS 203) keygen. Request: `{ "include_secret_key"?: false }`.
+`public_key` (`ek`) always returned; `secret_key` (`dk`) only in the demo flow, with a loud
+"demo only" note (real keygen happens client-side; the secret key never leaves the holder).
+```jsonc
+{ "request_id": "…", "algorithm": "ML-KEM-768", "format": "base64",
+  "public_key": "<ek base64>", "secret_key": null,
+  "entropy_epoch": 3, "timestamp": "…", "receipt": "…", "note": null }
+```
+Fires: gate → `require_api_key` → `ratelimit.enforce_key` → `kem.generate_keypair`
+(`generation.random_bytes(64)` → `ML_KEM_768.key_derive`) → `new_issue_meta` → usage/issue logs.
+
+### `POST /v1/kem/encapsulate` — API key, gated
+Encapsulate against a supplied `public_key`. Request:
+`{ "public_key": "<ek base64>", "include_shared_secret"?: false }`.
+`ciphertext` always returned; `shared_secret` + an illustrative HKDF-derived `demo_key` only with
+`include_shared_secret`. There is **no server-side decapsulate route** — decapsulation is
+client-side, on the holder of `dk`.
+```jsonc
+{ "request_id": "…", "algorithm": "ML-KEM-768", "format": "base64",
+  "ciphertext": "<base64>", "shared_secret": null, "demo_key": null,
+  "entropy_epoch": 3, "timestamp": "…", "receipt": "…", "note": null }
+```
+Fires: gate → `require_api_key` → `ratelimit.enforce_key` → `kem.encapsulate`
+(`generation.random_bytes(32)` → `ML_KEM_768._encaps_internal`) → `new_issue_meta` → logs.
+Malformed/wrong-length `ek` → `422 bad_request`.
+> `kyber-py` is educational and **not constant-time** — correct for a thesis demo, not production
+> (which would use `liboqs` on a persistent host).
+
+### `POST /admin/ingest` — admin token
+Multipart `.txt` upload of `0`/`1` characters (≤ 10 MB) → refills the pool. Parses in memory,
+encrypts, stores; **no plaintext ever touches disk**; upload buffer is burned.
+```jsonc
+{ "ingested": true, "bytes_added": 87500, "pool_bytes_remaining": 786500 }
+```
+Fires: `require_admin` → `pool.ingest_bits_bytes` (→ `parse_bits_bytes` → `encrypt_chunk` →
+`db.insert_pool_chunk`) → `pool.burn`. Errors: `401`, `413 file_too_large`, `422` (non-`.txt` or
+non-`0/1` content).
+
+### `POST /admin/keys` — admin token
+Mint an API key (same logic as `scripts/mint_key.py`). The plaintext key is returned **once**.
+Request: `{ "owner": str, "tier"?: "default", "daily_quota_bytes"?: int|null }`.
+```jsonc
+{ "api_key": "<plaintext — shown once>", "owner": "devtest",
+  "tier": "default", "daily_quota_bytes": null }
+```
+Fires: `require_admin` → `secrets.token_urlsafe(32)` → `auth.hash_api_key` → `db.insert_api_key`.
+
+### `POST /admin/keys/revoke` — admin token
+Instant revocation. Request: `{ "key_hash": str }`.
+```jsonc
+{ "key_hash": "…", "revoked": true }
+```
+Fires: `require_admin` → `db.revoke_api_key`. Unknown hash → `404 not_found`.
+
+---
+
+## 10. Local development
+
+```bash
+cd api
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
+cp .env.example .env         # fill DATABASE_URL, REDIS_URL, MASTER_KEY, ADMIN_TOKEN
+```
+
+Every route touches Postgres and most touch Redis — with empty `.env` values every request 500s.
+For a disposable local backend (Docker Postgres + Redis, auto-applies all SQL migrations):
+
+```bash
+eval "$(./scripts/dev_db_up.sh --print-env)"    # starts qeaas-pg + qeaas-redis, exports env
 uvicorn main:app --reload --port 8000 --env-file .env
 ```
 
-That starts the app, but every route touches Postgres (`DATABASE_URL`) and most touch Redis
-(`REDIS_URL`) — without real values in `.env` every request 500s. See the next section for a
-throwaway local backend.
-
-**Web** (from `web/`):
-
-```
-npm install
-npm run dev
-```
-
-## Running the API locally against a real (throwaway) backend
-
-The app needs a real Postgres (root key + entropy pool + API keys) and Redis (DRBG output
-counter). If you don't have Neon/Upstash dev credentials, spin up disposable containers with
-Docker — this is exactly how EPIC 2 was verified.
-
-### 1. Start Postgres + Redis (one command)
-
-From `api/`:
+Seed the pool (any `0/1` text exercises the pipeline locally — real deploys ingest actual QRNG output):
 
 ```bash
-./scripts/dev_db_up.sh
-```
-
-This starts two disposable containers (`qeaas-pg`, `qeaas-redis`, both `--rm` so they vanish
-on stop), waits for Postgres to actually be ready, and applies all SQL migrations. It prints
-the env vars to export.
-
-To skip the copy/paste, export them straight into your shell instead:
-
-```bash
-eval "$(./scripts/dev_db_up.sh --print-env)"
-```
-
-Running it again while the containers are still up will refuse (it tells you to run
-`dev_db_down.sh` first) rather than silently reusing/duplicating them.
-
-### 2. Configure the environment
-
-If you used `eval "$(...--print-env)"` above, skip this — it's already exported. Otherwise
-copy the block the plain `dev_db_up.sh` run printed, or put it in `api/.env` and pass
-`--env-file .env` to uvicorn.
-
-### 3. Seed the entropy pool
-
-The DRBG root key bootstraps itself from the pool on first use, and `/health` reports
-`quantum_entropy_level: "degraded"` below 64 KiB of pool bytes (gated routes 503 until then).
-Feed it a `0`/`1` bits file:
-
-```bash
-python3 -c "
-import random
-random.seed(1)
-open('/tmp/bits.txt','w').write(''.join(random.choice('01') for _ in range(700000)))
-"
+python3 -c "import random; random.seed(1); open('/tmp/bits.txt','w').write(''.join(random.choice('01') for _ in range(700000)))"
 python scripts/ingest_bits.py /tmp/bits.txt seed
-```
-
-(Real deployments ingest actual QRNG output; for local testing any `0/1` text works — it's
-only exercising the pipeline, not measuring quantumness.)
-
-### 4. Mint a dev API key
-
-`/v1/random/bytes` and `/v1/seed` require `X-API-Key`. Mint one with the CLI, which prints
-the plaintext key once:
-
-```bash
-python -m scripts.mint_key --owner devtest --tier default
-# api key for 'devtest' (tier=default): <plaintext key>  <-- copy this
-```
-
-Or via the HTTP admin route (`X-Admin-Token` from step 2, `devtoken` for the throwaway
-backend):
-
-```bash
-curl -s -X POST http://127.0.0.1:8000/admin/keys -H "X-Admin-Token: devtoken" \
-  -H 'content-type: application/json' -d '{"owner":"devtest","tier":"default"}'
-```
-
-### 5. Start the app
-
-```bash
+python -m scripts.mint_key --owner devtest --tier default    # prints the plaintext key once
 uvicorn main:app --port 8000
 ```
 
-### 6. Confirm it's actually working
+Smoke test:
 
 ```bash
-curl -s http://127.0.0.1:8000/health          # {"status":"ok","quantum_entropy_level":"healthy",...}
-curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8000/openapi.json   # 200
-open http://127.0.0.1:8000/docs               # interactive Swagger UI, every route typed
+curl -s localhost:8000/health
+curl -s "localhost:8000/random?bytes=32"
+curl -s -X POST localhost:8000/dice -H 'content-type: application/json' -d '{"sides":6,"count":2}'
+curl -s -H "X-API-Key: <key>" "localhost:8000/v1/random/bytes?size=64&format=hex"
+open localhost:8000/docs     # interactive Swagger UI, every route typed
 ```
 
-Then exercise the actual routes (replace `<key>` with the value from step 4):
+Tear down: `pkill -f "uvicorn main:app" && ./scripts/dev_db_down.sh`.
 
-```bash
-# public, ungated
-curl -s "http://127.0.0.1:8000/random?bytes=32"
-curl -s -X POST http://127.0.0.1:8000/dice -H 'content-type: application/json' \
-  -d '{"sides":6,"count":2}'
-# { "sides":6, "count":2, "rolls":[3,6], "format":"base64",
-#   "bytes_used":"<base64>", "bytes_count":2 }
-# bytes_used/bytes_count (EPIC 5 Q2) are every DRBG byte drawn for the roll,
-# accepted and rejected -- the honest provenance behind the toggle in /dice on
-# the web app. Still DRBG output, never raw QRNG bits (decision #2).
+### Environment variables
 
-# key-gated (canonical dev endpoint + alias)
-curl -s -H "X-API-Key: <key>" "http://127.0.0.1:8000/v1/random/bytes?size=64&format=hex"
-curl -s -H "X-API-Key: <key>" "http://127.0.0.1:8000/v1/seed?bytes=64"
-
-# provenance: verify a signed receipt (paste one from a /v1/random/bytes response above)
-curl -s -X POST http://127.0.0.1:8000/v1/verify -H 'content-type: application/json' \
-  -d '{"receipt":"<receipt from a keyed issue response>"}'
-curl -s http://127.0.0.1:8000/v1/pubkey
-
-# admin-only pool refill
-echo -n "01010101" > /tmp/small.txt
-curl -s -X POST http://127.0.0.1:8000/admin/ingest -H "X-Admin-Token: devtoken" \
-  -F "file=@/tmp/small.txt"
-```
-
-Edge cases worth checking (each should return the flat `{"error": "<slug>"}` body):
-
-| Request | Expected |
+| Key | Purpose |
 |---|---|
-| `/random?bytes=65` | `422` |
-| `/dice {"sides":6,"count":7}` | `422` |
-| `/v1/random/bytes` with no `X-API-Key` | `401 missing_api_key` |
-| `/v1/random/bytes` with a revoked key | `401 invalid_api_key` |
-| `/admin/ingest` with wrong `X-Admin-Token` | `401` |
-| `/admin/ingest` with a file > 10 MB | `413` |
-| pool below 64 KiB (skip step 3, or don't seed enough) | `/v1/random/bytes`, `/v1/seed` → `503` |
-| `/random` hammered past 60 req/min from one IP | `429 rate_limited` |
-| `/v1/random/bytes` past a key's daily quota | `429 quota_exceeded` |
-| `/admin/keys/revoke` with an unknown `key_hash` | `404 not_found` |
-
-Every `429` carries a `Retry-After` header (seconds).
-
-To revoke the test key and confirm the `401`:
-
-```bash
-python -m scripts.revoke_key --owner devtest
-# or: curl -s -X POST http://127.0.0.1:8000/admin/keys/revoke -H "X-Admin-Token: devtoken" \
-#       -H 'content-type: application/json' -d '{"key_hash":"<hash>"}'
-```
-
-### 7. Tear down
-
-```bash
-pkill -f "uvicorn main:app"
-./scripts/dev_db_down.sh
-```
-
-## Anti-abuse & bit-drain (EPIC 3)
-
-"No one can raid my bits": every byte served by this API is **DRBG-derived**
-(`qeaas.keyed_drbg.output()`), never a raw QRNG bit. That single fact decouples request
-volume from pool consumption — the three defences below just bound *served output volume*
-and abuse visibility; the pool itself is protected separately by a reseed-frequency floor.
-
-1. **Public throttling (S3.1).** Anonymous `/random` and `/dice` are limited per IP to
-   **60 req/min** (`rl:ip:{ip}:{minute}`, atomic `INCR` + `EXPIRE 60`), and `/random` output
-   is additionally capped by a **global 5 MB/day** ceiling (`anon:daily:{day}`, atomic
-   `INCRBY` + `EXPIRE`). Over either → `429` with a `Retry-After` header.
-2. **Keyed throttling (S3.2).** `/v1/random/bytes` and `/v1/seed` enforce a per-key rate
-   limit and a per-key daily byte quota (`rl:key:{hash}:{minute}`, `quota:key:{hash}:{day}`),
-   both tier-driven:
-
-   | Tier | Daily quota | Rate limit |
-   |------|-------------|------------|
-   | `default` | 256 KB/day | 120 req/min |
-   | `iot` | 10 MB/day | 600 req/min |
-   | `trusted` | 500 MB/day | 1,200 req/min |
-
-   A key's explicit `daily_quota_bytes` (set at mint time) overrides the tier default;
-   `NULL` falls back to it. Over rate → `429 rate_limited`; over quota → `429 quota_exceeded`
-   (a rejected request's bytes are refunded via `DECRBY`, so it never burns quota it didn't
-   use).
-3. **Bit-drain protection (S3.3 — the actual worry).** `qeaas.keyed_drbg.maybe_reseed()`
-   rotates `root_key` from the pool on whichever comes first: a fixed 15-minute interval, or
-   an output-count limit — but the output-count branch is now additionally floored by
-   `RESEED_MIN_INTERVAL_SECONDS` (5 minutes), so no amount of request volume can rotate the
-   key (and pull pool bytes) faster than wall-clock time allows. Pool drain is a function of
-   *time*, never of *traffic*. `usage_log` records every keyed issue (`principal`, `endpoint`,
-   `nbytes`) for abuse spotting, and revocation (`POST /admin/keys/revoke` or
-   `scripts/revoke_key.py`) is instant — `require_api_key` reads the row fresh from Neon on
-   every request, no caching.
-
-All counters are atomic Redis ops only (`INCR`/`INCRBY`/`EXPIRE`/`DECRBY`) — no
-read-modify-write, serverless-safe. On a Redis outage, throttling **fails open** (logs a
-warning, allows the request); the reseed floor still guarantees the pool can't be drained.
-
-## ML-KEM consumer (EPIC 4)
-
-The **crypto payload**: `/v1/kem/*` turns QRNG entropy into working post-quantum key material.
-Repeat the honest framing here too — QRNG does not "defeat quantum attackers." It supplies
-entropy that seeds a standards DRBG (`qeaas.generation.random_bytes`, the same choke point
-`/v1/random/bytes` uses — raw QRNG bits are never served, decision #2), which in turn seeds
-**ML-KEM-768** (FIPS 203). The quantum part is the *entropy source*; the quantum *resistance*
-comes from ML-KEM.
-
-**`kyber-py` is educational and not constant-time** — correct for a thesis demo, not
-production. A production deployment would swap to `liboqs` on a persistent host (a
-non-serverless target, since `liboqs` needs a native build step).
-
-Both routes are gated (`503 low_quantum_entropy` while degraded), API-keyed (`401` for a
-missing/bad/revoked key), and throttled exactly like `/v1/random/bytes` (per-key rate limit +
-daily quota, `429 rate_limited` / `429 quota_exceeded`); every issue is recorded in
-`usage_log`.
-
-**`POST /v1/kem/keypair`** — QRNG-seeded ML-KEM-768 keygen. `public_key` (`ek`, base64) is
-always returned; `secret_key` (`dk`) is returned only in the demo flow (`include_secret_key`),
-with a loud "demo only" note — real keygen happens client-side in production, and the secret
-key never leaves the holder.
-
-```bash
-curl -s -X POST http://127.0.0.1:8000/v1/kem/keypair -H "X-API-Key: <key>" \
-  -H 'content-type: application/json' -d '{}'
-curl -s -X POST http://127.0.0.1:8000/v1/kem/keypair -H "X-API-Key: <key>" \
-  -H 'content-type: application/json' -d '{"include_secret_key":true}'
-```
-
-**`POST /v1/kem/encapsulate`** — encapsulate against a supplied `public_key`. `ciphertext` is
-always returned; `shared_secret` and an illustrative HKDF-derived `demo_key` are returned only
-with `include_shared_secret` (the encapsulator legitimately knows the shared secret, but the
-default response stays a pure `{ciphertext}`). There is **no** server-side decapsulate route —
-decapsulation happens client-side, on the holder of `dk`.
-
-```bash
-curl -s -X POST http://127.0.0.1:8000/v1/kem/encapsulate -H "X-API-Key: <key>" \
-  -H 'content-type: application/json' \
-  -d '{"public_key":"<ek from the keypair call>","include_shared_secret":true}'
-```
-
-A malformed or wrong-length `public_key` → `422 bad_request`.
-
-**Round-trip proof (AC-6):** `keygen -> encaps -> decaps` recovers the same shared secret,
-verified end-to-end against the running API (no server-side decaps oracle involved):
-
-```bash
-API_KEY=<key> api/venv/bin/python api/scripts/kem_roundtrip.py
-# OK: QRNG-seeded ML-KEM-768 keypair round-trips (ss=32B)
-```
-
-## Deployment (EPIC 6)
-
-Production is **two separate Vercel projects**, not one monorepo project — a deliberate
-deviation from the build plan's "Next.js + FastAPI in one Vercel project (Services)" phrasing
-(see `claude/plans/feature-epic6-deployment.md` §5 Decision 1). The old repo-level
-`qrng-eaas/vercel.json` rewrote `/api/(.*)` → `/api/main.py`, but `main.py`'s routes are bare
-(`/health`, `/dice`, …, no `/api` prefix) and `GET /dice` (web page) vs `POST /dice` (API route)
-collide on one domain — path-based rewrites can't route by HTTP method. Two projects, two
-domains, sidesteps both problems with zero code changes.
-
-| Project | Root directory | Domain (fill in once deployed) |
-|---|---|---|
-| `qeaas-api` | `qrng-eaas/api` | `https://quantum-research-api.vercel.app` |
-| `qeaas-web` | `qrng-eaas/web` | `https://eaas-two.vercel.app` |
-
-### Env vars per project
-
-**`qeaas-api`:**
-
-| Key | Value |
-|---|---|
-| `DATABASE_URL` | Neon **pooled** connection string |
+| `DATABASE_URL` | Neon **pooled** Postgres connection string |
 | `REDIS_URL` | Upstash `rediss://` (TLS) connection string |
-| `MASTER_KEY` | fresh `secrets.token_hex(32)` — never the `.env.example` placeholder |
-| `ADMIN_TOKEN` | fresh `secrets.token_urlsafe(32)` — never the `.env.example` placeholder |
-| `WEB_ORIGIN` | the `qeaas-web` domain above, no trailing slash |
+| `MASTER_KEY` | 256-bit hex (`secrets.token_hex(32)`) — root of the sub-key hierarchy (§5) |
+| `ADMIN_TOKEN` | Bearer token for `/admin/*` (`secrets.token_urlsafe(32)`) |
+| `WEB_ORIGIN` | Comma-separated CORS-allowed origins (default `http://localhost:3000`) |
 
-**`qeaas-web`:**
+Rate limits, quotas, tiers, and reseed timing are **module constants** (`ratelimit.py`,
+`keyed_drbg.py`), not env vars.
 
-| Key | Value |
+### Operational scripts (`api/scripts/`)
+
+| Script | Does |
 |---|---|
-| `NEXT_PUBLIC_API_BASE` | the `qeaas-api` domain above |
+| `ingest_bits.py` | Parse + encrypt + store a `0/1` `.txt` into the pool |
+| `mint_key.py` / `revoke_key.py` | CLI key lifecycle (mirrors the admin routes) |
+| `kem_roundtrip.py` / `kem_handshake.py` | Prove `keygen → encaps → decaps` recovers the same shared secret against the live API |
+| `scan_persistence.py` | Read-only invariant scan: no plaintext-sensitive columns/values persisted |
+| `dev_db_up.sh` / `dev_db_down.sh` | Disposable Docker Postgres + Redis for local dev |
 
-Env var changes only apply to new deployments — redeploy from the **Deployments** tab after
-editing one.
+---
 
-### One-time provisioning
+## 11. Deployment (summary)
 
-1. Neon: new project → **Connection string** with **Pooled connection** toggled on → run
-   `api/sql/001_entropy_core.sql`, `002_api_keys.sql`, `003_usage_log.sql`, `004_provenance.sql`
-   in that order via the dashboard SQL Editor.
-2. Upstash: new **Regional** Redis database → copy the `rediss://` (TCP) connection string,
-   not the REST URL.
-3. Import the repo into Vercel twice (once per project above), setting **Root Directory** per
-   project. `qrng-eaas/api/vercel.json` pins the Python 3.13 runtime and rewrites every path to
-   `main.py`; it must exist and be committed before the first `qeaas-api` deploy.
-
-### Runbook: verify + seed a fresh deploy
-
-```bash
-API=https://quantum-research-api.vercel.app
-WEB=https://eaas-two.vercel.app
-
-# 1. confirm the function is reachable at all
-curl -s "$API/health"   # quantum_entropy_level: "degraded" is expected pre-seed
-
-# 2. seed the production entropy pool from real QRNG output (convert the `bits:`-prefixed
-#    processed files to the plain 0/1 contract first — see feature-epic6-deployment.md §6
-#    Phase 6 for the exact conversion script), then ingest each as its own admin call:
-curl -s -X POST "$API/admin/ingest" -H "X-Admin-Token: <ADMIN_TOKEN>" -F "file=@/tmp/prod_bits_fez.txt"
-curl -s -X POST "$API/admin/ingest" -H "X-Admin-Token: <ADMIN_TOKEN>" -F "file=@/tmp/prod_bits_marrakesh.txt"
-curl -s "$API/health"   # should now read "healthy"
-
-# 3. mint a production API key (shown once)
-curl -s -X POST "$API/admin/keys" -H "X-Admin-Token: <ADMIN_TOKEN>" \
-  -H 'content-type: application/json' -d '{"owner":"prod-smoke-test","tier":"default"}'
-
-# 4. full endpoint sweep against production (same shapes as the local smoke test above)
-KEY=<key from step 3>
-curl -s "$API/random?bytes=32"
-curl -s -X POST "$API/dice" -H 'content-type: application/json' -d '{"sides":6,"count":2}'
-curl -s -H "X-API-Key: $KEY" "$API/v1/random/bytes?size=64&format=hex"
-curl -s -H "X-API-Key: $KEY" "$API/v1/seed?bytes=64"
-curl -s -X POST "$API/v1/kem/keypair" -H "X-API-Key: $KEY" -H 'content-type: application/json' -d '{}'
-curl -s "$API/v1/pubkey"
-curl -s -X POST "$API/v1/verify" -H 'content-type: application/json' -d '{"request_id":"abc"}'
-
-# 5. confirm state survives across separate serverless invocations (not just within one
-#    process, the way local uvicorn trivially does) — pool_bytes_remaining should never
-#    reset upward between two calls minutes apart, and drbg_reseeds should be a small
-#    positive integer, not stuck at 0
-curl -s "$API/health" | python3 -c "import json,sys; print(json.load(sys.stdin)['pool_bytes_remaining'])"
-# wait a minute, hit a few keyed routes, then re-run the line above
-```
-
-Open `$WEB` on your phone too — confirm the explainer loads, the health badge is green, and
-`/dice` rolls without a page reload.
-
-### Troubleshooting
-
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| API build fails mentioning `pycryptodome` or a compiler error | native wheel unavailable for Vercel's Python 3.13 runtime | pin the latest compatible `pycryptodome`; if it still fails, this needs its own ticket (swap to `cryptography`), not a mid-deploy improvisation |
-| `curl .../health` 404s | `qrng-eaas/api/vercel.json` missing or not committed before the first deploy | add it, commit, push |
-| Every `fetch()` fails with CORS in the browser console | `WEB_ORIGIN` doesn't exactly match the web project's URL | fix the env var, redeploy `qeaas-api` |
-| `/admin/*` returns `401` | wrong/missing `X-Admin-Token`, or it doesn't match Vercel's stored value | re-check Phase 3's saved value; regenerate + re-save + redeploy if unsure |
-| env var change doesn't seem to take effect | Vercel only applies env var changes to new deployments | trigger a redeploy from the **Deployments** tab |
-
-## Seed-quality report (EPIC 7)
-
-Produces the statistical evidence (bias, NIST SP 800-22, next-bit ML predictability, Markov
-dependency) that the deployed service's `/v1/seed` output is indistinguishable from the OS
-CSPRNG, for the thesis appendix. Read-only against the live deployment; scripts and sample data
-live under `qrng-eaas/claude/validation/`.
-
-```bash
-cd qrng-eaas/claude/validation
-
-# 0. local tooling for the report only — separate from api/venv
-python3 -m venv .report-venv
-source .report-venv/bin/activate
-pip install -r requirements-report.txt
-
-# 1. mint a dedicated, higher-quota (iot tier, 10 MiB/day) API key for the pull —
-#    don't reuse the smoke-test key. Use the ADMIN_TOKEN already hardcoded in
-#    ../prod_seed/mint_prod_key.sh. The plaintext key is in the response's `api_key` field.
-curl -s -X POST https://quantum-research-api.vercel.app/admin/keys \
-  -H "X-Admin-Token: <token from ../prod_seed/mint_prod_key.sh>" \
-  -H 'content-type: application/json' \
-  -d '{"owner":"seed-quality-report","tier":"iot"}'
-
-# 2. pull ~1.5 MB from the deployed service, and an equal-size os.urandom baseline
-mkdir -p samples
-python3 pull_seed_sample.py \
-  --api-base https://quantum-research-api.vercel.app \
-  --api-key <key from step 1> \
-  --total-bytes 1572864 \
-  --out samples/service_sample.txt
-python3 pull_urandom_sample.py --total-bytes 1572864 --out samples/urandom_sample.txt
-
-# 3. run the existing, unmodified qrng_compare.py battery against both samples
-python3 ../../../ErrorDetectionVSRawBits/qrng_compare.py \
-  samples/service_sample.txt samples/urandom_sample.txt \
-  -o seed_quality_report.pdf
-```
-
-The sample files under `samples/` are regenerable scratch data (gitignored). The generated
-`seed_quality_report.pdf` is the committed, point-in-time deliverable referenced from the thesis
-appendix — it is not auto-regenerated on every re-run; a fresher report is a deliberate manual
-re-run and a new commit.
-
-## Networking demonstration (EPIC 8)
-
-Where the QRNG→ML-KEM entropy chain plugs into networking: a two-role Server/Client
-handshake (QRNG-seeded ML-KEM-768 keygen + encaps → shared secret → HKDF → AES-GCM
-message exchange), runnable as a CLI script or interactively in the web app, plus an
-honest mapping to five real networking use cases. Full write-up:
-`shared/docs/networking-demo.md`.
-
-**CLI (rigorous, reproducible — independently verifies both parties agree on the shared
-secret):**
-
-```bash
-cd qrng-eaas/api
-API_KEY=<key> python -m scripts.kem_handshake --base-url http://localhost:8000
-# or: --base-url https://quantum-research-api.vercel.app
-```
-
-**Web demo** — `/demo` on the web app (`https://eaas-two.vercel.app/demo` in prod, or
-`http://localhost:3000/demo` locally): the same handshake, visualized live with no page
-reload, plus the five networking use-case mappings.
-
-**Provisioning `KEM_DEMO_API_KEY`** — the web demo's server-side proxy
-(`web/app/api/kem/*/route.ts`) needs a dedicated `iot`-tier API key so the browser
-never sees a key directly:
-
-```bash
-curl -s -X POST <base>/admin/keys -H "X-Admin-Token: <ADMIN_TOKEN>" \
-  -H 'content-type: application/json' -d '{"owner":"networking-demo","tier":"iot"}'
-```
-
-Set the plaintext `api_key` from the response as `KEM_DEMO_API_KEY`, and `API_ORIGIN`
-to the FastAPI base URL, in `web/.env.local` (local dev) and in the Vercel project env
-for `qeaas-web` (prod) — both are server-only, never `NEXT_PUBLIC_*`.
-
-## Provenance & verification (EPIC 9)
-
-Verify **provenance, not the secret**: every keyed/KEM issue (`/v1/random/bytes`, `/v1/seed`,
-`/v1/kem/keypair`, `/v1/kem/encapsulate`) ships a signed `receipt` alongside its data, but the
-output bytes themselves are never persisted anywhere.
-
-- **Signing key.** An Ed25519 key derived via `pool.derive_subkey("receipt-signing-key")` --
-  the third named sub-key off `MASTER_KEY`, alongside `pool-encryption-key`/`api-key-pepper`. No
-  new env var. The public key is published at `GET /v1/pubkey` for external, offline
-  verification (`{algorithm:"Ed25519", format:"base64", public_key}`).
-- **Receipts.** `qeaas/receipts.py` signs `(request_id, size, entropy_epoch, timestamp)` into a
-  compact `qeaas1.<payload>.<signature>` token (`receipt` field on every issue response).
-  `issue_log` (metadata only -- `request_id, principal, endpoint, size, epoch_id, ts`, **no
-  output bytes column**) is written alongside `usage_log` for every issue.
-- **`POST /v1/verify {request_id?, receipt?}`.** With a `receipt`, the signature is
-  cryptographically verified and the response resolves `entropy_epoch` plus the pool's
-  `qrng_source_labels` -- a real QRNG batch. With only a `request_id`, it's a plain `issue_log`
-  lookup (the response says so honestly). A tampered/forged receipt fails: `verified:false`,
-  `provenance:null`. Anonymous, but per-IP rate-limited like `/random`/`/dice`.
-- **Web "Verify a receipt" box.** A section on the explainer home page: paste a receipt or a
-  bare `request_id`, get back the resolved provenance, no page reload.
-- **Not an oracle.** `/v1/verify` never accepts or compares an output value -- it only proves a
-  receipt's metadata is authentic, which is exactly what lets the service guarantee it never
-  stored the bytes it issued.
-
-## Secure storage & the burn lifecycle (EPIC 10)
-
-The preloaded QRNG dataset lives **encrypted at rest**; keys derive from one env-held master
-key; raw bits and seeds are best-effort **burned** after use; only ciphertext + metadata persist.
-
-- **Master-key hierarchy.** One `MASTER_KEY` (256-bit, hex, env/KMS only -- never in Neon).
-  `pool.derive_subkey(name)` (HKDF-SHA256, RFC 5869 one-block Expand) derives four named
-  sub-keys, and only these four -- there are no sibling secrets:
-  ```
-  MASTER_KEY (env only)
-    |-- HKDF-SHA256
-        |-- "pool-encryption-key"      -> entropy_pool AES-256-GCM (EPIC 1)
-        |-- "api-key-pepper"           -> API key hashing (EPIC 3)
-        |-- "receipt-signing-key"      -> Ed25519 receipt signing (EPIC 9)
-        |-- "drbg-root-encryption-key" -> drbg_root.root_key AES-256-GCM (EPIC 10)
-  ```
-- **Encrypt at rest.** `entropy_pool` stores `ciphertext/nonce/tag` (AES-256-GCM per chunk) --
-  no plaintext-bytes column exists. `drbg_root.root_key` is likewise GCM ciphertext under
-  `drbg-root-encryption-key` (`sql/005_root_key_encryption.sql`); a pre-EPIC-10 plaintext row is
-  re-encrypted in place the first time it's read. GCM tamper detection is intrinsic: a flipped
-  ciphertext byte fails the tag check and `decrypt_chunk`/`decrypt_root_key` raise, failing closed.
-- **Decrypt -> use -> burn.** On reseed, `pool.pull_reseed_material` decrypts only the needed
-  slice, `keyed_drbg` uses it to encrypt-and-save the new root key, then `pool.burn()` zeroizes
-  the decrypted buffer in place. The warm in-process root-key cache is held as a `bytearray` and
-  burned before a forced reload. Admin ingest (`POST /admin/ingest`) parses the uploaded `0/1`
-  bytes entirely in memory (`pool.parse_bits_bytes` / `ingest_bits_bytes`) -- **no temp file, no
-  plaintext bits ever touch disk** -- and burns the upload buffer after the insert.
-- **Honesty caveat: best-effort, not guaranteed, zeroization.** CPython cannot guarantee
-  zeroization -- immutable `bytes`, garbage-collector copies, and no `mlock` mean some transient
-  copies of sensitive material (e.g. the `str` of `0/1` characters inside `parse_bits_bytes`, or
-  `bytes` objects returned by `await file.read()`) cannot be zeroized in place. Mitigations:
-  `bytearray` overwrites for anything long-lived, and serverless teardown (Vercel destroys the
-  function instance after the request, so in-process secrets are short-lived by design). We do
-  not overclaim guaranteed erasure.
-- **Persistence-invariant scan.** `python api/scripts/scan_persistence.py [--log-file PATH]` is a
-  read-only operational check (not a test suite) -- it inspects `information_schema` for
-  unexpected sensitive-looking columns, samples `entropy_pool.ciphertext` for high entropy and
-  absence of the master key, asserts `drbg_root.root_key` is GCM-ciphertext-shaped, and (with
-  `--log-file`) greps a log for the master key value or long `0/1` runs. Prints a PASS/FAIL table
-  and exits non-zero on any violation. Run it after ingest and after every deploy; also eyeball
-  the Vercel log stream for the master-key value after a deploy.
-- **`MASTER_KEY` rotation** (re-encrypting the pool, root key, and API-key hashes under a new
-  master) is noted as future production hardening -- not built here.
-
-## Design & theming (EPIC 11)
-
-- **Three themes, one token system.** `qrng-eaas/web/app/globals.css` defines every color as a
-  CSS custom property (`--color-bg`, `--color-text`, `--color-accent`, `--color-success`, etc.)
-  in the base Tailwind v4 `@theme` block (the `light` values), then overrides just those
-  properties per theme in `[data-theme="dark"]` and `[data-theme="quantum"]` blocks. Components
-  never hardcode colors — they consume the generated Tailwind utilities (`text-heading`,
-  `bg-primary`, `text-warning`, ...) so all three themes stay in sync automatically.
-- **`light`/`dark`** are built from `https://www.8888.sk/`'s shipped design language: navy
-  (`#052e44`/`#0a2540`/`#084666`) + mint accent (`#12eaa6`), `Inter`/`JetBrains Mono` typography,
-  large corner radii, and soft navy-tinted shadows. `light` is the literal palette; `dark` is the
-  same brand hue with navy surfaces and light text (8888.sk itself ships no dark mode).
-- **`quantum`** is the original neon-cyan/Orbitron look this app shipped with (EPIC 5) — preserved
-  byte-for-byte as a hidden third theme, never selected by `prefers-color-scheme` or the default
-  toggle.
-- **Switching themes.** [`next-themes`](https://github.com/pacocoursey/next-themes) drives
-  `data-theme` on `<html>`, resolves `system` to `light`/`dark` on first visit, and persists an
-  explicit choice to `localStorage` (`qeaas-theme`). The header's sun/moon `ThemeToggle` switches
-  between `light` and `dark`.
-- **Easter egg.** Tap or click the header logo 5× within 3 seconds to unlock `quantum` — a brief
-  toast confirms the unlock, a third (atom) segment appears in `ThemeToggle`, and the unlock
-  persists (`localStorage` key `qeaas-quantum-unlocked`) so the segment reappears on future
-  visits. See `qrng-eaas/web/lib/theme.ts` for the unlock/detection helpers.
-
-## Spikes
-
-- `shared/spikes/mlkem_seed_spike.py` — proves DRBG bytes deterministically drive ML-KEM-768 keygen
-  and that encaps/decaps round-trips (S0.2). Run with `api/venv/bin/python shared/spikes/mlkem_seed_spike.py`.
+Production is **two separate Vercel projects** (`qeaas-api` → `qrng-eaas/api`, `qeaas-web` →
+`qrng-eaas/web`), not one — `GET /dice` (web page) vs `POST /dice` (API) collide on one domain and
+path-based rewrites can't route by HTTP method. `qrng-eaas/api/vercel.json` pins the Python 3.13
+runtime and rewrites every path to `main.py`. Provision Neon (run `sql/001…005` in order), Upstash
+(regional, `rediss://` TCP URL), then set per-project env vars (§10). Full runbook, troubleshooting,
+and the EPIC 7–11 write-ups (seed-quality report, networking demo, provenance, secure-storage burn
+lifecycle, theming) live in `claude/plans/` and `shared/docs/`.

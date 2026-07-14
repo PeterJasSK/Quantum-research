@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { getHealth, type Health } from "@/lib/api";
 
-const POLL_MS = 20_000;
-
 type Status = "loading" | "healthy" | "degraded" | "error";
 
 function statusFor(health: Health | null, failed: boolean): Status {
@@ -47,12 +45,10 @@ export default function HealthBadge() {
     }
 
     poll();
-    const interval = setInterval(poll, POLL_MS);
     window.addEventListener("focus", poll);
 
     return () => {
       cancelled = true;
-      clearInterval(interval);
       window.removeEventListener("focus", poll);
     };
   }, []);

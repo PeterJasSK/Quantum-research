@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from qeaas import db, dice, generation, kem, ratelimit, receipts
 from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
-from qeaas.gate import entropy_level, require_entropy
+from qeaas.gate import entropy_level, prime_cache, require_entropy
 from qeaas.pool import burn, ingest_bits_bytes
 from qeaas.schemas import (
     AdminIngestResponse,
@@ -63,10 +63,11 @@ async def add_entropy_header(request: Request, call_next):
 @app.get("/health")
 def health() -> HealthResponse:
     root = db.get_root_key()
+    pool_bytes = db.pool_bytes_remaining()
     return HealthResponse(
         status="ok",
-        quantum_entropy_level=entropy_level(),
-        pool_bytes_remaining=db.pool_bytes_remaining(),
+        quantum_entropy_level=prime_cache(pool_bytes),
+        pool_bytes_remaining=pool_bytes,
         drbg_reseeds=root.reseed_counter if root else 0,
         uptime=time.time() - _started_at,
     )
