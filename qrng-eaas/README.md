@@ -1,5 +1,7 @@
 # Quantum Entropy-as-a-Service (Q-EaaS) — API Reference
 
+Want an API key? Email **peter.jas@cnl.sk**.
+
 FastAPI service that turns preloaded **QRNG (quantum random number generator)** bits into
 served randomness, dice rolls, cryptographic seeds, and post-quantum ML-KEM key material —
 each issue carrying a signed, offline-verifiable provenance receipt.
@@ -245,6 +247,7 @@ Every failure returns a flat JSON body: `{"error": "<slug>"}` (see `errors.py`).
 ## 9. Endpoint reference
 
 ### `GET /health` — anonymous
+Usage: uptime checks and monitoring dashboards — confirms the pool/DRBG isn't degraded before you rely on it for real traffic.
 Liveness + pool/DRBG status. Never gated.
 ```jsonc
 { "status": "ok", "quantum_entropy_level": "healthy",  // or "degraded"
@@ -253,6 +256,7 @@ Liveness + pool/DRBG status. Never gated.
 Fires: `db.get_root_key`, `db.pool_bytes_remaining`, `gate.entropy_level`.
 
 ### `GET /random?bytes=<1..64>` — anonymous, ungated
+Usage: quick no-signup random bytes for demos, small scripts, or anything lightweight that doesn't need a key.
 DRBG-derived random bytes, base64. Survives a `degraded` pool. Rate-limited per IP + anon daily.
 ```jsonc
 { "bytes": 32, "format": "base64", "data": "<base64>" }
@@ -261,6 +265,7 @@ Fires: `ratelimit.check_ip_rate` → `ratelimit.check_anon_daily` → `generatio
 Errors: `422` (bytes out of range), `429 rate_limited` / `daily_limit_reached`.
 
 ### `POST /dice` — anonymous, ungated
+Usage: fair dice rolls for tabletop bots and giveaways, where players can audit every DRBG byte drawn behind a roll.
 Rejection-sampled dice (no modulo bias). Rate-limited per IP.
 Request: `{ "sides": 2..100 (default 6), "count": 1..6 (default 1) }`
 ```jsonc
@@ -273,6 +278,7 @@ QRNG bits. Fires: `ratelimit.check_ip_rate` → `dice.roll` (loops `keyed_drbg.o
 Errors: `422` (out of range), `429`, `500 dice_sampling_failed`.
 
 ### `GET /v1/random/bytes?size=<32..4096>&format=<hex|base64>` — API key, gated
+Usage: the main developer integration — production-grade random bytes paired with a signed receipt to prove provenance later.
 Canonical developer endpoint. Per-key rate limit + daily quota, then usage + issue logs.
 ```jsonc
 { "request_id": "…", "format": "hex", "data": "…",
@@ -284,10 +290,12 @@ Fires: `require_entropy` (gate) → `require_api_key` → `ratelimit.enforce_key
 Errors: `401`, `429 rate_limited`/`quota_exceeded`, `503 low_quantum_entropy`, `422`.
 
 ### `GET /v1/seed?bytes=<32..4096>&format=<hex|base64>` — API key, gated
+Usage: functionally identical to `/v1/random/bytes` — pick whichever param name reads better in your integration code.
 Alias of `/v1/random/bytes` — shares the exact same service function so the two cannot drift. Same
 response shape, same errors. (Only the query-param name differs: `bytes` vs `size`.)
 
 ### `POST /v1/verify` — anonymous, per-IP rate-limited
+Usage: proving a given output really came from this service, useful for audits or disputes, without ever re-exposing the underlying bytes.
 Verify **provenance, not the secret**. Request: `{ "request_id"?: str, "receipt"?: str }` (at least
 one required — else `422`).
 - With a `receipt`: signature is cryptographically verified; response resolves `size`,
@@ -305,12 +313,14 @@ Fires: `ratelimit.check_ip_rate` → `receipts.verify` (→ `receipts.verify_rec
 an output value.
 
 ### `GET /v1/pubkey` — anonymous
+Usage: verifying receipts fully offline using the published signing key, with no call back to this service needed.
 Published Ed25519 receipt-signing public key, for external **offline** verification.
 ```jsonc
 { "algorithm": "Ed25519", "format": "base64", "public_key": "<base64 32-byte raw>" }
 ```
 
 ### `POST /v1/kem/keypair` — API key, gated
+Usage: generating post-quantum ML-KEM-768 key material for testing; real deployments should keygen client-side, this route is a demo path.
 QRNG-seeded **ML-KEM-768** (FIPS 203) keygen. Request: `{ "include_secret_key"?: false }`.
 `public_key` (`ek`) always returned; `secret_key` (`dk`) only in the demo flow, with a loud
 "demo only" note (real keygen happens client-side; the secret key never leaves the holder).
@@ -323,6 +333,7 @@ Fires: gate → `require_api_key` → `ratelimit.enforce_key` → `kem.generate_
 (`generation.random_bytes(64)` → `ML_KEM_768.key_derive`) → `new_issue_meta` → usage/issue logs.
 
 ### `POST /v1/kem/encapsulate` — API key, gated
+Usage: demoing the encapsulation half of ML-KEM-768 against a public key you already hold; no server-side decapsulation route exists.
 Encapsulate against a supplied `public_key`. Request:
 `{ "public_key": "<ek base64>", "include_shared_secret"?: false }`.
 `ciphertext` always returned; `shared_secret` + an illustrative HKDF-derived `demo_key` only with
@@ -340,6 +351,7 @@ Malformed/wrong-length `ek` → `422 bad_request`.
 > (which would use `liboqs` on a persistent host).
 
 ### `POST /admin/ingest` — admin token
+Usage: operators refilling the entropy pool from a fresh batch of raw QRNG bits, encrypted before it ever touches disk.
 Multipart `.txt` upload of `0`/`1` characters (≤ 10 MB) → refills the pool. Parses in memory,
 encrypts, stores; **no plaintext ever touches disk**; upload buffer is burned.
 ```jsonc
@@ -349,7 +361,16 @@ Fires: `require_admin` → `pool.ingest_bits_bytes` (→ `parse_bits_bytes` → 
 `db.insert_pool_chunk`) → `pool.burn`. Errors: `401`, `413 file_too_large`, `422` (non-`.txt` or
 non-`0/1` content).
 
+### `POST /admin/purge` — admin token
+Usage: operators wiping the entropy pool clean for rotation, incident response, or test resets — an irreversible action.
+Deletes all stored pool chunks. Irreversible — the pool must be re-ingested afterward.
+```jsonc
+{ "purged": true, "chunks_removed": 42, "pool_bytes_remaining": 0 }
+```
+Fires: `require_admin` → `db.purge_pool()`.
+
 ### `POST /admin/keys` — admin token
+Usage: operators provisioning a brand-new API key for a developer or customer, shown once at mint time.
 Mint an API key (same logic as `scripts/mint_key.py`). The plaintext key is returned **once**.
 Request: `{ "owner": str, "tier"?: "default", "daily_quota_bytes"?: int|null }`.
 ```jsonc
@@ -359,6 +380,7 @@ Request: `{ "owner": str, "tier"?: "default", "daily_quota_bytes"?: int|null }`.
 Fires: `require_admin` → `secrets.token_urlsafe(32)` → `auth.hash_api_key` → `db.insert_api_key`.
 
 ### `POST /admin/keys/revoke` — admin token
+Usage: operators killing a compromised or offboarded key immediately, effective on the very next request.
 Instant revocation. Request: `{ "key_hash": str }`.
 ```jsonc
 { "key_hash": "…", "revoked": true }

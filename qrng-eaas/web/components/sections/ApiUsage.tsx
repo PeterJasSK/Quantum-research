@@ -23,7 +23,7 @@ const GROUPS: Group[] = [
       {
         method: "GET",
         path: "/health",
-        purpose: "Liveness + entropy status",
+        purpose: "Usage: uptime checks and monitoring dashboards — confirms the pool/DRBG isn't degraded before you rely on it for real traffic.",
         params: "—",
         notes: "{status, quantum_entropy_level, pool_bytes_remaining, drbg_reseeds, uptime}",
         curl: `curl -s "<base>/health"`,
@@ -31,7 +31,7 @@ const GROUPS: Group[] = [
       {
         method: "GET",
         path: "/random?bytes=N",
-        purpose: "Small DRBG byte draw (powers dice)",
+        purpose: "Usage: quick no-signup random bytes for demos, small scripts, or anything lightweight that doesn't need a key.",
         params: "bytes 1–64 (default 32)",
         notes: "base64; anon daily ceiling applies",
         curl: `curl -s "<base>/random?bytes=32"`,
@@ -39,7 +39,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/dice",
-        purpose: "Rejection-sampled dice rolls",
+        purpose: "Usage: fair dice rolls for tabletop bots and giveaways, where players can audit every DRBG byte drawn behind a roll.",
         params: `{"sides":2–100, "count":1–6}`,
         notes: "echoes the DRBG bytes drawn",
         curl: `curl -s -X POST <base>/dice \\
@@ -54,7 +54,7 @@ const GROUPS: Group[] = [
       {
         method: "GET",
         path: "/v1/random/bytes?size=N&format=hex|base64",
-        purpose: "Canonical dev entropy",
+        purpose: "Usage: the main developer integration — production-grade random bytes paired with a signed receipt to prove provenance later.",
         params: "size 32–4096, format (default hex)",
         notes: "returns request_id, data, entropy_epoch, timestamp, receipt",
         curl: `curl -s "<base>/v1/random/bytes?size=32&format=hex" \\
@@ -63,7 +63,7 @@ const GROUPS: Group[] = [
       {
         method: "GET",
         path: "/v1/seed?bytes=N&format=hex|base64",
-        purpose: "Alias of the above",
+        purpose: "Usage: functionally identical to /v1/random/bytes — pick whichever param name reads better in your integration code.",
         params: "bytes 32–4096, format",
         notes: "same engine/limits (compat)",
         curl: `curl -s "<base>/v1/seed?bytes=32&format=hex" \\
@@ -72,7 +72,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/v1/kem/keypair",
-        purpose: "QRNG-seeded ML-KEM-768 keypair",
+        purpose: "Usage: generating post-quantum ML-KEM-768 key material for testing; real deployments should keygen client-side, this route is a demo path.",
         params: `{"include_secret_key": bool}`,
         notes: "public_key always; secret_key demo-only",
         curl: `curl -s -X POST <base>/v1/kem/keypair \\
@@ -81,7 +81,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/v1/kem/encapsulate",
-        purpose: "Encapsulate to an ek",
+        purpose: "Usage: demoing the encapsulation half of ML-KEM-768 against a public key you already hold; no server-side decapsulation route exists.",
         params: `{"public_key": b64, "include_shared_secret": bool}`,
         notes: "ciphertext always; shared_secret/demo_key demo-only",
         curl: `curl -s -X POST <base>/v1/kem/encapsulate \\
@@ -96,7 +96,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/v1/verify",
-        purpose: "Verify a receipt / resolve a request",
+        purpose: "Usage: proving a given output really came from this service, useful for audits or disputes, without ever re-exposing the underlying bytes.",
         params: `{"request_id": str} and/or {"receipt": str}`,
         notes: `{request_id, verified, provenance, note}; not a value oracle`,
         curl: `curl -s -X POST <base>/v1/verify \\
@@ -105,7 +105,7 @@ const GROUPS: Group[] = [
       {
         method: "GET",
         path: "/v1/pubkey",
-        purpose: "Published Ed25519 receipt-signing key",
+        purpose: "Usage: verifying receipts fully offline using the published signing key, with no call back to this service needed.",
         params: "—",
         notes: `{algorithm:"Ed25519", format:"base64", public_key}`,
         curl: `curl -s <base>/v1/pubkey`,
@@ -118,7 +118,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/admin/keys",
-        purpose: "Mint an API key",
+        purpose: "Usage: operators provisioning a brand-new API key for a developer or customer, shown once at mint time.",
         params: `{"owner", "tier"?, "daily_quota_bytes"?}`,
         notes: "returns the plaintext key once",
         curl: `curl -s -X POST <base>/admin/keys \\
@@ -128,7 +128,7 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/admin/keys/revoke",
-        purpose: "Revoke a key (instant)",
+        purpose: "Usage: operators killing a compromised or offboarded key immediately, effective on the very next request.",
         params: `{"key_hash"}`,
         notes: "takes effect on the next request",
         curl: `curl -s -X POST <base>/admin/keys/revoke \\
@@ -138,11 +138,20 @@ const GROUPS: Group[] = [
       {
         method: "POST",
         path: "/admin/ingest",
-        purpose: "Refill the entropy pool",
+        purpose: "Usage: operators refilling the entropy pool from a fresh batch of raw QRNG bits, encrypted before it ever touches disk.",
         params: "multipart .txt of 0/1, ≤10 MB",
         notes: "AES-256-GCM encrypted at rest",
         curl: `curl -s -X POST <base>/admin/ingest \\
   -H "X-Admin-Token: <token>" -F "file=@bits.txt"`,
+      },
+      {
+        method: "POST",
+        path: "/admin/purge",
+        purpose: "Usage: operators wiping the entropy pool clean for rotation, incident response, or test resets — an irreversible action.",
+        params: "—",
+        notes: "{purged, chunks_removed, pool_bytes_remaining}; irreversible, re-ingest after",
+        curl: `curl -s -X POST <base>/admin/purge \\
+  -H "X-Admin-Token: <token>"`,
       },
     ],
   },
@@ -216,6 +225,13 @@ export default function ApiUsage() {
         <strong>signed receipt</strong> you can check at{" "}
         <code>POST /v1/verify</code> without the value ever being stored.
         Admin endpoints need an <code>X-Admin-Token</code>.
+      </p>
+      <p className="mb-8 max-w-3xl text-sm text-text/90 sm:mb-10 sm:text-base">
+        Want an API key? Email{" "}
+        <a href="mailto:peter.jas@cnl.sk" className="text-accent underline">
+          peter.jas@cnl.sk
+        </a>
+        .
       </p>
 
       <div className="flex flex-col gap-8 sm:gap-10">
