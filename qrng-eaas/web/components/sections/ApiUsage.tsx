@@ -61,15 +61,6 @@ const GROUPS: Group[] = [
   -H "X-API-Key: <your-key>"`,
       },
       {
-        method: "GET",
-        path: "/v1/seed?bytes=N&format=hex|base64",
-        purpose: "Usage: functionally identical to /v1/random/bytes — pick whichever param name reads better in your integration code.",
-        params: "bytes 32–4096, format",
-        notes: "same engine/limits (compat)",
-        curl: `curl -s "<base>/v1/seed?bytes=32&format=hex" \\
-  -H "X-API-Key: <your-key>"`,
-      },
-      {
         method: "POST",
         path: "/v1/kem/keypair",
         purpose: "Usage: generating post-quantum ML-KEM-768 key material for testing; real deployments should keygen client-side, this route is a demo path.",

@@ -12,7 +12,7 @@ API; everything substantive happens here.
 
 > **Honest framing, stated once and meant everywhere.** QRNG does not "defeat quantum
 > attackers." Raw QRNG bits are *never served*. They are entropy that **seeds a standards
-> HMAC-DRBG** (NIST SP 800-90A). Every byte this API returns — `/random`, `/dice`, `/v1/seed`,
+> HMAC-DRBG** (NIST SP 800-90A). Every byte this API returns — `/random`, `/dice`, `/v1/random/bytes`,
 > ML-KEM seeds — is DRBG output. The quantum part is the *entropy source*; any quantum
 > *resistance* comes from ML-KEM-768 (FIPS 203), not from the randomness being "quantum."
 
@@ -196,7 +196,7 @@ cannot *guarantee* zeroization; serverless teardown keeps in-process secrets sho
 | Mechanism | Header | Applies to |
 |---|---|---|
 | **None (anonymous)** | — | `/health`, `/random`, `/dice`, `/v1/verify`, `/v1/pubkey` |
-| **API key** | `X-API-Key: <plaintext>` | `/v1/random/bytes`, `/v1/seed`, `/v1/kem/*` |
+| **API key** | `X-API-Key: <plaintext>` | `/v1/random/bytes`, `/v1/kem/*` |
 | **Admin token** | `X-Admin-Token: <token>` | `/admin/*` |
 
 - API keys: `hash_api_key(key) = HMAC-SHA256(pepper, key)`; only the hash is stored. `require_api_key`
@@ -288,11 +288,6 @@ Fires: `require_entropy` (gate) → `require_api_key` → `ratelimit.enforce_key
 `generation.issue_v1` (→ `random_bytes` + `new_issue_meta` + `receipts.sign`) →
 `db.insert_usage_log` + `db.insert_issue_log`.
 Errors: `401`, `429 rate_limited`/`quota_exceeded`, `503 low_quantum_entropy`, `422`.
-
-### `GET /v1/seed?bytes=<32..4096>&format=<hex|base64>` — API key, gated
-Usage: functionally identical to `/v1/random/bytes` — pick whichever param name reads better in your integration code.
-Alias of `/v1/random/bytes` — shares the exact same service function so the two cannot drift. Same
-response shape, same errors. (Only the query-param name differs: `bytes` vs `size`.)
 
 ### `POST /v1/verify` — anonymous, per-IP rate-limited
 Usage: proving a given output really came from this service, useful for audits or disputes, without ever re-exposing the underlying bytes.

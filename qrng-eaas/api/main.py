@@ -136,6 +136,7 @@ def v1_random_bytes(
 @app.get(
     "/v1/seed",
     dependencies=[Depends(require_entropy)],
+    include_in_schema=False,
 )
 def seed(
     bytes: int = Query(ge=32, le=4096),
