@@ -42,7 +42,7 @@ export default function Hero() {
           animate="visible"
           custom={0.1}
           variants={fadeUp}
-          className="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-heading drop-shadow-sm sm:mb-6 sm:text-7xl lg:text-[6.5rem]"
+          className="mb-3 text-5xl font-black leading-[1.1] tracking-tighter text-heading drop-shadow-sm sm:mb-6 sm:text-7xl lg:text-[6.5rem]"
         >
           QUANTUM
           <br />
@@ -63,7 +63,7 @@ export default function Hero() {
           animate="visible"
           custom={0.2}
           variants={fadeUp}
-          className="mx-auto max-w-2xl text-base font-bold leading-tight tracking-tight text-text/70 sm:text-3xl"
+          className="mx-auto max-w-2xl text-lg font-bold leading-tight tracking-tight text-text/70 sm:text-3xl"
         >
           A free API for high-quality randomness.{" "}
           <span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-black text-transparent">
