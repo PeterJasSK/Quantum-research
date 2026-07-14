@@ -18,6 +18,7 @@ from qeaas.schemas import (
     AdminIngestResponse,
     AdminKeyRequest,
     AdminKeyResponse,
+    AdminPurgeResponse,
     AdminRevokeRequest,
     AdminRevokeResponse,
     DiceRequest,
@@ -190,6 +191,17 @@ async def admin_ingest(file: UploadFile) -> AdminIngestResponse:
     return AdminIngestResponse(
         ingested=True,
         bytes_added=bytes_added,
+        pool_bytes_remaining=db.pool_bytes_remaining(),
+    )
+
+
+@app.post("/admin/purge", dependencies=[Depends(require_admin)])
+def admin_purge() -> AdminPurgeResponse:
+    """Delete all entropy_pool rows so the pool can be reseeded from scratch."""
+    chunks_removed = db.purge_pool()
+    return AdminPurgeResponse(
+        purged=True,
+        chunks_removed=chunks_removed,
         pool_bytes_remaining=db.pool_bytes_remaining(),
     )
 

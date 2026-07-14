@@ -77,6 +77,12 @@ class AdminIngestResponse(BaseModel):
     pool_bytes_remaining: int
 
 
+class AdminPurgeResponse(BaseModel):
+    purged: bool
+    chunks_removed: int
+    pool_bytes_remaining: int
+
+
 class AdminKeyRequest(BaseModel):
     owner: str
     tier: str = "default"

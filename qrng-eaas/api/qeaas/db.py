@@ -114,6 +114,16 @@ def pool_bytes_remaining() -> int:
         return int(remaining)
 
 
+def purge_pool() -> int:
+    """Delete all entropy_pool rows. Returns number of rows removed."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM entropy_pool")
+        (n,) = cur.fetchone()
+        cur.execute("TRUNCATE entropy_pool")
+        conn.commit()
+        return int(n)
+
+
 def insert_pool_chunk(
     ciphertext: bytes, nonce: bytes, tag: bytes, plaintext_len: int, source_label: str
 ) -> None:
