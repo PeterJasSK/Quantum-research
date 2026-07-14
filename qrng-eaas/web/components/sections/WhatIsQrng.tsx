@@ -18,7 +18,8 @@ export default function WhatIsQrng() {
             dice rolls, and key material for anyone who needs it.
           </p>
       </div>
-      <div className="panel p-4 sm:p-6">
+
+      <div className="panel mt-6 p-4 sm:p-6">
         <h3 className="mb-3 text-lg font-semibold text-heading">
           How the pool actually gets used
         </h3>
