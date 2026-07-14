@@ -9,13 +9,13 @@ export default function Home() {
     <>
       <Hero />
 
-      <div id="overview">
+      <div id="overview" className="scroll-mt-16">
         <WhatIsQrng />
       </div>
-      <div id="pipeline">
+      <div id="pipeline" className="scroll-mt-16">
         <PipelineDiagram />
       </div>
-      <div id="api">
+      <div id="api" className="scroll-mt-16">
         <ApiUsage />
       </div>
       <VerifyReceipt />
