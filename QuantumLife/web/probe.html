@@ -1,0 +1,12 @@
+<title>probe</title>
+<body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;padding:16px">
+<h1 style="color:#6dffb0">HEADER</h1>
+<div id="stage" style="width:min(92vw,860px);height:min(56vh,586px);background:red;position:relative">
+  <canvas id="c" style="width:100%;height:100%;background:blue"></canvas>
+</div>
+<div id="out" style="color:#fff;font:14px monospace"></div>
+<script>
+const s=document.getElementById('stage'),c=document.getElementById('c');
+const r=s.getBoundingClientRect();
+document.getElementById('out').textContent='stage '+Math.round(r.width)+'x'+Math.round(r.height)+' | canvas client '+c.clientWidth+'x'+c.clientHeight;
+</script>
