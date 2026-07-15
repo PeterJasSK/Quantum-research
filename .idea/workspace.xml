@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/components/HealthBadge.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/components/HealthBadge.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,18 +20,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "PeterJasSK"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;PeterJasSK&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/PeterJasSK/Quantum-research.git",
-    "accountId": "83d70c9a-2c19-44a8-97c2-6aef485bc7ab"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PeterJasSK/Quantum-research.git&quot;,
+    &quot;accountId&quot;: &quot;83d70c9a-2c19-44a8-97c2-6aef485bc7ab&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1,
   &quot;fromUser&quot;: false
@@ -48,7 +49,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/claude&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/CalibrationGuidedHighYieldQRNG&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -56,16 +57,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG" />
+      <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle" />
       <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
       <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/plan" />
+      <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans" />
+      <recent name="$PROJECT_DIR$/study-ideas/Networking" />
       <recent name="$PROJECT_DIR$/.claude/commands" />
       <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
-      <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/BC" />
     </key>
   </component>
   <component name="RunManager">
@@ -119,7 +122,11 @@
       <workItem from="1783690696137" duration="5504000" />
       <workItem from="1783754389515" duration="23000" />
       <workItem from="1783754813625" duration="613000" />
-      <workItem from="1783922148896" duration="21723000" />
+      <workItem from="1783922148896" duration="24954000" />
+      <workItem from="1784006146323" duration="8117000" />
+      <workItem from="1784015767877" duration="10610000" />
+      <workItem from="1784042463426" duration="13336000" />
+      <workItem from="1784091813028" duration="5170000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,77 @@
+{
+  "98": {
+    "usable_depth": 2,
+    "flagged": false,
+    "band": "best"
+  },
+  "10": {
+    "usable_depth": 8,
+    "flagged": false,
+    "band": "best"
+  },
+  "14": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "best"
+  },
+  "75": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "best"
+  },
+  "154": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "best"
+  },
+  "0": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "next"
+  },
+  "86": {
+    "usable_depth": 0,
+    "flagged": true,
+    "band": "next"
+  },
+  "132": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "next"
+  },
+  "42": {
+    "usable_depth": 2,
+    "flagged": false,
+    "band": "next"
+  },
+  "54": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "next"
+  },
+  "39": {
+    "usable_depth": 0,
+    "flagged": true,
+    "band": "worst"
+  },
+  "91": {
+    "usable_depth": 1,
+    "flagged": false,
+    "band": "worst"
+  },
+  "113": {
+    "usable_depth": 0,
+    "flagged": true,
+    "band": "worst"
+  },
+  "119": {
+    "usable_depth": 0,
+    "flagged": true,
+    "band": "worst"
+  },
+  "82": {
+    "usable_depth": 0,
+    "flagged": true,
+    "band": "worst"
+  }
+}

@@ -129,6 +129,45 @@ vs baseline is computed; and the `qrng_compare.py` PDF is generated.
 
 ---
 
+## EPIC 2 — Band-stratified evaluation (best / next / worst) `[MUST]`
+
+**Goal:** a run-time decision changed Stage B from *one* run on the top-5 qubits to *three* bands of
+five qubits each — **best-5, next-5, and the absolute worst-5** by the calibration ranking, all
+already on hardware. This epic re-analyses the existing bit files across the three bands. It exists
+because top-5-only could not test the study's central claim: selecting the winners and then
+correlating calibration-quality vs yield *within them* is range-restricted and returns a null by
+construction. Three bands restore range, add a control (worst-5), and turn a point estimate into a
+falsifiable gradient. **No new hardware runs; zero added `quantum_seconds`.**
+
+- **S2.1 Band registry & provenance**
+  - [ ] Explicit map of each canonical Stage-B `_raw.json` to `best`/`next`/`worst`; discard the
+        10-shot best-band probe (`…-214301`). Guard: each band's qubits equal its slice of the
+        run-time ranking.
+- **S2.2 Proper Stage-A quality for the join**
+  - [ ] Re-run Stage-A eval on the **65000-shot** run (`…-210803`), not the 100-shot probe
+        (`…-210551`) the run-time ranking used. Record R²; do **not** re-assign bands.
+- **S2.3 Band-aware Stage B evaluation**
+  - [ ] Score all three bands' per-qubit×depth streams; emit one combined 15-qubit table tagged
+        `band`, `usable_depth`, per-depth metrics, `predicted_quality`, `rank`.
+- **S2.4 Gradient / trend test (the reframed core)**
+  - [ ] Spearman(`predicted_quality`, `usable_depth`) and each raw calibration feature vs
+        `usable_depth` over the 15 qubits (the calibration→yield test EPIC 1 could not run).
+  - [ ] Ordered-groups trend across bands (Kruskal–Wallis + monotone best ≥ next ≥ worst) on usable
+        depth, min-entropy, |serial-corr|. Report either way.
+- **S2.5 Reframed headline**
+  - [ ] Per-band usable-bits/free-tier-minute; **best-vs-worst** and best-vs-next ratios; the reused
+        baseline-vs-best ratio; a `monotone_across_bands` flag; honest-failure verdict wording.
+- **S2.6 Band-stratified quality PDF**
+  - [ ] `qrng_compare.py` PDF twice: baseline vs best-band and baseline vs worst-band aggregate
+        streams — visual proof the best-band bits hold and worst-band bits degrade.
+
+**Done when:** the registry resolves three bands (probe discarded); Stage-A quality is re-fit on the
+65000-shot run; the combined 15-qubit table, the Spearman + calibration-vs-yield correlations, the
+ordered-band trend test, the per-band headline (best-vs-worst ratio + monotone flag), and both band
+PDFs all exist. Feature plan: `Plans/feature-epic2-band-stratified-evaluation.md`.
+
+---
+
 ## Write-up — thesis / science paper (not an engineering epic)
 
 **Goal:** turn EPIC 1's numbers into the thesis chapter / paper. No code.
@@ -176,9 +215,10 @@ A stream is **usable** when NIST ≥ 0.90 **AND** next-bit PASS **AND** Markov P
 ```
 EPIC 0  build Stage A circuit ──► [you run it] ──► per-qubit bits
                                                         │
-EPIC 1  evaluate Stage A ──► top-5 qubits ──► [you run Stage B on top-5] ──► depth bits
+EPIC 1  evaluate Stage A ──► ranking ──► [ran Stage B on 3 bands: best-5 / next-5 / worst-5]
                                                         │
-EPIC 1  evaluate Stage B ──► usable depth ──► join + headline ──► qrng_compare.py PDF
+EPIC 2  evaluate all 3 bands ──► gradient + ordered-trend test (calibration → usable depth)
+                                  ──► best-vs-worst headline ──► band PDFs (best & worst)
                                                         │
 Write-up  thesis / paper
 ```

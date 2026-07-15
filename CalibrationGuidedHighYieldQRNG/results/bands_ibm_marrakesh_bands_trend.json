@@ -1,0 +1,106 @@
+{
+  "gradient_over_15_qubits": {
+    "predicted_quality_vs_usable_depth": {
+      "rho": 0.6460582824697986,
+      "p_value": 0.009267970367762637
+    },
+    "t1_vs_usable_depth": {
+      "rho": 0.5653009971610737,
+      "p_value": 0.028086188301462967
+    },
+    "t2_vs_usable_depth": {
+      "rho": -0.20189321327181206,
+      "p_value": 0.4705548979784149
+    },
+    "readout_error_vs_usable_depth": {
+      "rho": -0.6691317925580056,
+      "p_value": 0.006371457213051842
+    },
+    "sx_error_vs_usable_depth": {
+      "rho": -0.7757380460336899,
+      "p_value": 0.0006763767809066824
+    },
+    "reset_error_vs_usable_depth": {
+      "rho": 0.0,
+      "p_value": 1.0
+    }
+  },
+  "ordered_band_trends": [
+    {
+      "outcome": "usable_depth",
+      "band_means": {
+        "best": 2.6,
+        "next": 1.0,
+        "worst": 0.2
+      },
+      "kruskal_h": 7.113043478260876,
+      "kruskal_p_value": 0.028537914595691334,
+      "monotone_best_ge_next_ge_worst": true,
+      "band_ordinal_spearman": {
+        "rho": -0.7020378500174637,
+        "p_value": 0.003526529584586222
+      }
+    },
+    {
+      "outcome": "min_entropy_per_bit_depth1",
+      "band_means": {
+        "best": 0.9857710807414634,
+        "next": 0.9574579872415461,
+        "worst": 0.7215190756678045
+      },
+      "kruskal_h": 5.539999999999999,
+      "kruskal_p_value": 0.06266200474215318,
+      "monotone_best_ge_next_ge_worst": true,
+      "band_ordinal_spearman": {
+        "rho": -0.5858449331643021,
+        "p_value": 0.021739976846648367
+      }
+    },
+    {
+      "outcome": "min_entropy_per_bit_depth8",
+      "band_means": {
+        "best": 0.9839445508742284,
+        "next": 0.9537951575279916,
+        "worst": 0.7088137823572634
+      },
+      "kruskal_h": 6.320000000000007,
+      "kruskal_p_value": 0.042425741080511226,
+      "monotone_best_ge_next_ge_worst": true,
+      "band_ordinal_spearman": {
+        "rho": -0.6425396041156861,
+        "p_value": 0.00978776645092025
+      }
+    },
+    {
+      "outcome": "abs_serial_correlation_depth1",
+      "band_means": {
+        "best": 0.004536074325698277,
+        "next": 0.004253565842956959,
+        "worst": 0.006616985809740494
+      },
+      "kruskal_h": 1.5200000000000031,
+      "kruskal_p_value": 0.46766642700990846,
+      "monotone_best_ge_next_ge_worst": false,
+      "band_ordinal_spearman": {
+        "rho": 0.264575131106459,
+        "p_value": 0.3406255508508734
+      }
+    },
+    {
+      "outcome": "abs_serial_correlation_depth8",
+      "band_means": {
+        "best": 0.0033583462302427098,
+        "next": 0.005255678038594325,
+        "worst": 0.05925646737442434
+      },
+      "kruskal_h": 8.340000000000003,
+      "kruskal_p_value": 0.015452260123909491,
+      "monotone_best_ge_next_ge_worst": false,
+      "band_ordinal_spearman": {
+        "rho": 0.7370307223679929,
+        "p_value": 0.0017193490109589041
+      }
+    }
+  ],
+  "monotone_across_bands": true
+}

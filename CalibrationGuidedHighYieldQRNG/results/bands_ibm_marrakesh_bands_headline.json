@@ -1,0 +1,28 @@
+{
+  "per_band": {
+    "best": {
+      "usable_bits_per_qubit_per_shot": 2.6,
+      "usable_bits_per_shot_total": 13.0,
+      "usable_bits_per_free_tier_minute": 503225.80645161297
+    },
+    "next": {
+      "usable_bits_per_qubit_per_shot": 1.0,
+      "usable_bits_per_shot_total": 5.0,
+      "usable_bits_per_free_tier_minute": 193548.3870967742
+    },
+    "worst": {
+      "usable_bits_per_qubit_per_shot": 0.2,
+      "usable_bits_per_shot_total": 1.0,
+      "usable_bits_per_free_tier_minute": 38709.67741935483
+    }
+  },
+  "best_vs_worst_ratio": 13.000000000000004,
+  "best_vs_next_ratio": 2.6,
+  "delta_usable_bits_per_shot_best_minus_worst": 12.0,
+  "baseline_vs_best": {
+    "baseline_bits_per_free_tier_minute": 27654545.454545453,
+    "ratio_best_over_baseline": 0.018196856906534328
+  },
+  "monotone_across_bands": true,
+  "verdict": "GAIN \u2014 calibration-selected best-band yields more usable bits/minute than worst-band"
+}
