@@ -1,0 +1,58 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife$ python code/research_qtree_brickwall.py --generations 6 --shots 4096 --seed 100 --repeats 3 --layers 0 --entangler brickwall --backend ibm_kingston --name bw_C_L2L
+Backend : ibm_kingston  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Entangler: brickwall
+Auto qubit chain (live calib): {'dead_avoided': [112, 113, 121, 146], 'twoq_err_mean': 0.01306, 'twoq_err_max': 1.0, 'readout_max': 0.09705, 'sx_max': 0.012288}
+
+=== repeat 1/3  (seed 100) ===
+  job 1: d9cu7n4inv1c73aoa32g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  0  depth    8  div 0.939  C0 0.2297  xi +0.070  qpu 3.00s
+  job 1: d9cua21htsac739c9970 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  1  depth    9  div 0.938  C0 0.2290  xi +0.014  qpu 3.00s
+  job 1: d9cuaganeu4c739mg2t0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  2  depth    9  div 0.837  C0 0.1979  xi +0.021  qpu 3.00s
+  job 1: d9cudb2neu4c739mg7ig (4,096 shots) ... done (qpu 0.00s)
+  seed 100 gen  3  depth    9  div 0.911  C0 0.2204  xi +0.044  qpu 0.00s
+  job 1: d9cuvnsjeosc73fgqrm0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  4  depth    9  div 0.950  C0 0.2331  xi +0.065  qpu 3.00s
+  job 1: d9cv2a4jeosc73fgqum0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  5  depth    9  div 0.816  C0 0.1919  xi +0.082  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/bw_C_L2L_ibm_kingston_seed100_20260717-110954_run.json
+
+=== repeat 2/3  (seed 101) ===
+  job 1: d9cv2oqneu4c739mh1f0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  0  depth    8  div 0.889  C0 0.2134  xi +0.051  qpu 3.00s
+  job 1: d9cveq9htsac739cauh0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  1  depth    9  div 0.957  C0 0.2355  xi +0.060  qpu 3.00s
+  job 1: d9cvf8cjeosc73fgrlo0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  2  depth    9  div 0.932  C0 0.2275  xi +0.060  qpu 3.00s
+  job 1: d9cvfg2neu4c739mhnr0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  3  depth    9  div 0.815  C0 0.1915  xi +0.082  qpu 3.00s
+  job 1: d9cvfqaneu4c739mhocg (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  4  depth    9  div 0.763  C0 0.1770  xi +0.080  qpu 3.00s
+  job 1: d9cvg6hhtsac739cb110 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  5  depth    9  div 0.816  C0 0.1920  xi +0.065  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/bw_C_L2L_ibm_kingston_seed101_20260717-113924_run.json
+
+=== repeat 3/3  (seed 102) ===
+  job 1: d9cvgj4inv1c73aobto0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  0  depth    8  div 0.873  C0 0.2085  xi +0.041  qpu 3.00s
+  job 1: d9cvgvaneu4c739mhq5g (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  1  depth    9  div 0.852  C0 0.2020  xi +0.065  qpu 3.00s
+  job 1: d9cvh2ineu4c739mhqag (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  2  depth    9  div 0.964  C0 0.2377  xi +0.066  qpu 3.00s
+  job 1: d9cvhccjeosc73fgrovg (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  3  depth    9  div 0.881  C0 0.2113  xi +0.101  qpu 3.00s
+  job 1: d9cvhp1htsac739cb38g (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  4  depth    9  div 0.782  C0 0.1821  xi +0.090  qpu 3.00s
+  job 1: d9cvi54inv1c73aobvo0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  5  depth    9  div 0.856  C0 0.2036  xi +0.056  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/bw_C_L2L_ibm_kingston_seed102_20260717-114334_run.json
+
+--- DONE ---
+Entangler    : brickwall
+Repeats      : 3  (seeds 100..102)
+logical depth: mean 9  (serial ~214, brickwall ~4)
+xi over gens : mean +0.062  (near 0 => no correlation)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/bw_C_L2L_ibm_kingston_20260717-114334_summary.json
+Compare brickwall vs serial (and vs --sim) at matched --seed/--repeats.
