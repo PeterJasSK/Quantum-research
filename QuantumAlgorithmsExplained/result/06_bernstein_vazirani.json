@@ -1,0 +1,16 @@
+{
+  "algorithm": "06 \u2014 Bernstein-Vazirani (secret=1011)",
+  "file": "06_bernstein_vazirani",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 5,
+  "timestamp_utc": "2026-07-17 13:46:03",
+  "note": "Single query returns the hidden string 1011 with certainty.",
+  "counts": {
+    "1011": 4096
+  },
+  "probabilities": {
+    "1011": 1.0
+  }
+}

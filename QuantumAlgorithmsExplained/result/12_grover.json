@@ -1,0 +1,30 @@
+{
+  "algorithm": "12 \u2014 Grover's Search (target=101)",
+  "file": "12_grover",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 3,
+  "timestamp_utc": "2026-07-17 13:46:13",
+  "note": "2 rounds amplify the target; 101 dominates the histogram.",
+  "counts": {
+    "000": 42,
+    "001": 22,
+    "010": 32,
+    "011": 40,
+    "100": 30,
+    "101": 3864,
+    "110": 37,
+    "111": 29
+  },
+  "probabilities": {
+    "000": 0.01025,
+    "001": 0.00537,
+    "010": 0.00781,
+    "011": 0.00977,
+    "100": 0.00732,
+    "101": 0.94336,
+    "110": 0.00903,
+    "111": 0.00708
+  }
+}

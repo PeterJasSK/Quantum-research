@@ -1,0 +1,16 @@
+{
+  "algorithm": "09 \u2014 Quantum Half-Adder (1 + 1)",
+  "file": "09_quantum_adder",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 4,
+  "timestamp_utc": "2026-07-17 13:46:08",
+  "note": "Reads carry=1 sum=0 (bitstring '10' = 2): 1+1=2.",
+  "counts": {
+    "10": 4096
+  },
+  "probabilities": {
+    "10": 1.0
+  }
+}

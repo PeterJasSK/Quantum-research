@@ -1,0 +1,18 @@
+{
+  "algorithm": "15 \u2014 Simon's Algorithm (period s=11)",
+  "file": "15_simon",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 4,
+  "timestamp_utc": "2026-07-17 13:46:16",
+  "note": "Only 00 and 11 appear (z.s=0). Solving gives s=11.",
+  "counts": {
+    "00": 2012,
+    "11": 2084
+  },
+  "probabilities": {
+    "00": 0.49121,
+    "11": 0.50879
+  }
+}

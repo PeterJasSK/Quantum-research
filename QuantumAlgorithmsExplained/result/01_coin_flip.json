@@ -1,0 +1,18 @@
+{
+  "algorithm": "01 \u2014 Quantum Coin Flip",
+  "file": "01_coin_flip",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 1,
+  "timestamp_utc": "2026-07-17 13:55:20",
+  "note": "One H gate gives a fair 50/50 random bit.",
+  "counts": {
+    "0": 2012,
+    "1": 2084
+  },
+  "probabilities": {
+    "0": 0.49121,
+    "1": 0.50879
+  }
+}

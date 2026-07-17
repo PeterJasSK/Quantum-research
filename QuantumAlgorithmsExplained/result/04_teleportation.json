@@ -1,0 +1,16 @@
+{
+  "algorithm": "04 \u2014 Quantum Teleportation",
+  "file": "04_teleportation",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 3,
+  "timestamp_utc": "2026-07-17 13:46:01",
+  "note": "q2 returns to 0 ~100% -> the secret state arrived intact.",
+  "counts": {
+    "0": 4096
+  },
+  "probabilities": {
+    "0": 1.0
+  }
+}

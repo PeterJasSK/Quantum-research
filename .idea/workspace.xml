@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/QuantumLife/circuit-d9ci6u4inv1c73anqj50.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/CONCLUSION_EPIC2.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/CONCLUSION_EPIC2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumLife/web/quantum_tree_pixel.html" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumLife/web/quantum_tree_pixel.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jsExamples/lesson.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,26 +52,27 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/CalibrationGuidedHighYieldQRNG&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/QuantumLife&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/QuantumLife" />
+      <recent name="$PROJECT_DIR$/QuantumLife/web" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG" />
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle" />
       <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
-      <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/QuantumAlgorithmsExplained/explenation" />
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/plan" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans" />
       <recent name="$PROJECT_DIR$/study-ideas/Networking" />
       <recent name="$PROJECT_DIR$/.claude/commands" />
-      <recent name="$PROJECT_DIR$/qrng-eaas/claude/resources" />
     </key>
   </component>
   <component name="RunManager">
@@ -127,6 +131,11 @@
       <workItem from="1784015767877" duration="10610000" />
       <workItem from="1784042463426" duration="13336000" />
       <workItem from="1784091813028" duration="5170000" />
+      <workItem from="1784137809841" duration="2809000" />
+      <workItem from="1784176181484" duration="53993000" />
+      <workItem from="1784284471714" duration="1701000" />
+      <workItem from="1784289256687" duration="554000" />
+      <workItem from="1784294124705" duration="3618000" />
     </task>
     <servers />
   </component>

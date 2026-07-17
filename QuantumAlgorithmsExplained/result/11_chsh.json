@@ -1,0 +1,17 @@
+{
+  "algorithm": "11 \u2014 CHSH / Bell inequality",
+  "file": "11_chsh",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots_per_setting": 8192,
+  "classical_bound": 2.0,
+  "quantum_max": 2.8284,
+  "correlations": {
+    "E(a0,b0)": 0.7104,
+    "E(a0,b1)": 0.7104,
+    "E(a1,b0)": 0.7104,
+    "E(a1,b1)": -0.7031
+  },
+  "S": 2.8345,
+  "note": "S ~ 2.83 beats the classical limit of 2 -> the correlations cannot come from any local hidden-variable theory."
+}

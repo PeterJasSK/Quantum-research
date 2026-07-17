@@ -1,0 +1,20 @@
+{
+  "algorithm": "10 \u2014 W State (3-qubit, single excitation)",
+  "file": "10_w_state",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 3,
+  "timestamp_utc": "2026-07-17 13:46:10",
+  "note": "Only 001/010/100 appear, each ~1/3: one shared excitation.",
+  "counts": {
+    "001": 1345,
+    "010": 1407,
+    "100": 1344
+  },
+  "probabilities": {
+    "001": 0.32837,
+    "010": 0.34351,
+    "100": 0.32812
+  }
+}

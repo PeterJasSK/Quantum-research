@@ -1,0 +1,16 @@
+{
+  "algorithm": "13 \u2014 QFT round trip (encode 5, QFT, inverse QFT)",
+  "file": "13_qft",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 3,
+  "timestamp_utc": "2026-07-17 13:46:14",
+  "note": "QFT then inverse-QFT recovers the input 101 exactly.",
+  "counts": {
+    "101": 4096
+  },
+  "probabilities": {
+    "101": 1.0
+  }
+}

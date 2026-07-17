@@ -1,0 +1,22 @@
+{
+  "algorithm": "08 \u2014 BB84 Quantum Key Distribution",
+  "file": "08_bb84",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "raw_qubits": 48,
+  "note": "Clean line -> 0% sifted-key errors. Eavesdropper -> ~25% errors (detected). That detectability is the security guarantee.",
+  "no_eavesdropper": {
+    "sifted_len": 26,
+    "errors": 0,
+    "error_rate": 0.0,
+    "alice_sifted_key": "10000101011111111010100001",
+    "bob_sifted_key": "10000101011111111010100001"
+  },
+  "with_eavesdropper": {
+    "sifted_len": 26,
+    "errors": 8,
+    "error_rate": 0.3077,
+    "alice_sifted_key": "10000101011111111010100001",
+    "bob_sifted_key": "10100101001000011110100101"
+  }
+}

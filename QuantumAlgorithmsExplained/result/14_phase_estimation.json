@@ -1,0 +1,16 @@
+{
+  "algorithm": "14 \u2014 Quantum Phase Estimation (T gate)",
+  "file": "14_phase_estimation",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 4,
+  "timestamp_utc": "2026-07-17 13:46:15",
+  "note": "Reads 001 = 1/8 = 0.125, the exact phase of the T gate.",
+  "counts": {
+    "001": 4096
+  },
+  "probabilities": {
+    "001": 1.0
+  }
+}

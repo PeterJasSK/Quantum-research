@@ -1,0 +1,16 @@
+{
+  "algorithm": "05 \u2014 Deutsch-Jozsa (balanced oracle)",
+  "file": "05_deutsch_jozsa",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 4,
+  "timestamp_utc": "2026-07-17 13:46:02",
+  "note": "Non-zero string with certainty => the function is BALANCED.",
+  "counts": {
+    "111": 4096
+  },
+  "probabilities": {
+    "111": 1.0
+  }
+}

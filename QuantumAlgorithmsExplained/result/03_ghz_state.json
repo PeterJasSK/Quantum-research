@@ -1,0 +1,18 @@
+{
+  "algorithm": "03 \u2014 GHZ State (3-qubit entanglement)",
+  "file": "03_ghz_state",
+  "backend": "qiskit StatevectorSampler (local, ideal, no noise)",
+  "seed": 1234,
+  "shots": 4096,
+  "num_qubits": 3,
+  "timestamp_utc": "2026-07-17 13:45:59",
+  "note": "All three qubits agree: only 000 and 111 appear.",
+  "counts": {
+    "000": 2012,
+    "111": 2084
+  },
+  "probabilities": {
+    "000": 0.49121,
+    "111": 0.50879
+  }
+}
