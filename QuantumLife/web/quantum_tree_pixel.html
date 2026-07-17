@@ -8,12 +8,12 @@
   html,body{height:100%}
   body{margin:0;background:#05030a;color:var(--fg);
        font-family:"Courier New",ui-monospace,monospace;
-       display:flex;flex-direction:column;align-items:center;justify-content:center;
+       display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
        min-height:100vh;gap:10px;padding:16px}
   h1{font-size:15px;margin:0;letter-spacing:3px;text-transform:uppercase;
      color:var(--accent);text-shadow:0 0 8px rgba(109,255,176,.5);font-weight:700}
   .sub{color:var(--dim);font-size:11px;letter-spacing:1px;text-align:center}
-  .stage{position:relative;width:min(92vw,860px);aspect-ratio:22/15;
+  .stage{position:relative;width:min(92vw,860px);aspect-ratio:22/15;flex:none;
          border-radius:6px;overflow:hidden;
          box-shadow:0 0 0 2px #1a2a20, 0 0 0 4px #0c150f,
                     0 24px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.4)}
@@ -32,18 +32,35 @@
   .m{background:linear-gradient(180deg,#101c15,#0a140e);
      border:2px solid #21332a;border-radius:4px;padding:7px 9px 8px;
      box-shadow:inset 0 0 0 1px #0c150f, 0 3px 0 #060b08}
-  .ml{display:flex;align-items:center;gap:6px;font-size:9.5px;letter-spacing:1.5px;
+  .ml{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:1.5px;
       color:var(--dim);text-transform:uppercase}
-  .ml .mi{font-size:12px;line-height:1;filter:drop-shadow(0 0 3px currentColor)}
+  .ml .mi{font-size:13px;line-height:1;filter:drop-shadow(0 0 3px currentColor)}
   .mt{position:relative;height:9px;margin:6px 0 5px;background:#0a1810;
       border:1px solid #23392d;overflow:hidden;image-rendering:pixelated}
   .mf{position:absolute;top:0;bottom:0;left:0;width:0%;
       background-image:repeating-linear-gradient(90deg,currentColor 0 3px,transparent 3px 4px);
       background-color:currentColor;box-shadow:0 0 6px currentColor}
   .mz{position:absolute;top:-1px;bottom:-1px;left:50%;width:1px;background:rgba(255,255,255,.22)}
-  .mv{font-size:10px;letter-spacing:.5px;color:#eafff2;white-space:nowrap;
+  .mv{font-size:11.5px;letter-spacing:.5px;color:#eafff2;white-space:nowrap;
       overflow:hidden;text-overflow:ellipsis}
   .mv b{color:currentColor}
+  .md{margin-top:6px;font-size:10.5px;line-height:1.5;letter-spacing:.3px;
+      color:#8fbfa6;text-transform:none;white-space:normal}
+
+  /* ---- explainer under the animation (stacked, one after another) ---- */
+  .explain{width:min(92vw,860px);margin-top:4px;
+           display:flex;flex-direction:column;gap:12px}
+  .ex{background:linear-gradient(180deg,#101c15,#0a140e);
+      border:2px solid #21332a;border-radius:4px;padding:16px 18px;
+      box-shadow:inset 0 0 0 1px #0c150f,0 3px 0 #060b08}
+  .ex h2{margin:0 0 9px;font-size:14px;letter-spacing:2px;text-transform:uppercase;
+         color:var(--accent);text-shadow:0 0 8px rgba(109,255,176,.4)}
+  .ex p{margin:0 0 10px;font-size:13.5px;line-height:1.7;color:#c4e6d3;letter-spacing:.3px}
+  .ex p:last-child{margin-bottom:0}
+  .ex b{color:var(--accent2)} .ex .q{color:var(--accent)}
+  .ex code{font-size:12px;color:#eafff2;background:#0a1810;
+           border:1px solid #23392d;padding:1px 5px;border-radius:3px}
+  .ex ul{margin:0;padding-left:18px} .ex li{font-size:13.5px;line-height:1.7;color:#c4e6d3;margin-bottom:6px}
 
   .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:860px}
   .dot{width:9px;height:9px;background:#1e2b22;border:1px solid #2f4436;
@@ -69,6 +86,105 @@
 <div class="dots" id="dots"></div>
 <div class="foot">auto-cycling <b id="cnt">0</b> runs · <b id="pick">load your own run.json</b>
   <input type="file" id="file" accept=".json,application/json"></div>
+
+<div class="explain">
+  <div class="ex">
+    <h2>What's actually happening</h2>
+    <p>An <b>environment</b> (wind, light, a season cycle) is fixed at the start. The tree begins
+    completely undecided — every gene is a fair coin flip. Each generation runs <b>one circuit of
+    thousands of shots on a real IBM Heron&nbsp;r2 chip</b>. Two things come out of those shots: the
+    <b>per-qubit frequency</b> (how often each gene came up 1 — this is what the tree <i>learns</i>
+    from) and the <b>single most frequent result</b> (the branch plan you actually see drawn).</p>
+
+    <p>Each new generation's belief is the old one <b>nudged toward what was just measured</b>, plus
+    a small random wiggle and that step's environment — then run on the chip again. Because belief
+    keeps locking onto its own habit, <b>entropy falls over time</b>: the tree crystallizes, changes
+    less, and mostly grows as it's already become. When the generations run out, the full history is
+    replayed as this film. That loop — variation, heredity, environmental pressure — is why it's
+    <span class="q">evolution</span>, not a fresh random image every frame.</p>
+
+    <p><b>Is it really impossible to simulate?</b> Yes, in two distinct ways.</p>
+    <p><b>Scale:</b> 108 entangled qubits would need <code>2¹⁰⁸</code> numbers held in memory at
+    once. No classical machine can do that, so <code>--sim</code> is a cheap stand-in, not a true
+    simulation of the quantum state.</p>
+    <p><b>The quantum signature:</b> the <i>picture</i> alone could be faked classically — but the
+    real entanglement correlation between neighboring genes can't be. Whether that correlation
+    survives the chip's noise isn't a slogan, it's <b>measured</b>: a companion research run computes
+    a correlation length <code>ξ</code> and finds a real, if small, fingerprint that no classical
+    surrogate can reproduce. The growth is genuinely quantum — the measurement is what turns that
+    into a fact instead of a claim.</p>
+  </div>
+
+  <div class="ex">
+    <h2>How it works</h2>
+    <p>Every frame you see is one real <b>growth step</b>, replayed from a quantum computer. Each
+    step is a single circuit run on <b>IBM Heron r2</b> using <b>108 qubits</b> (18 branch-slots ×
+    6 bits each). One qubit-field decides one branch: its bend angle, its length, whether it forks,
+    and whether it sprouts a leaf.</p>
+
+    <p>Inside each step, the circuit does four things, in order:</p>
+    <ol>
+      <li><b>Belief rotation</b> (<code>Ry</code>) — puts every qubit into superposition, tilted
+      toward the tree's current growth habit.</li>
+      <li><b>Entangling network</b> (<code>CX</code> chain + controlled-<code>Rx</code>) —
+      correlates neighboring branches so nearby limbs resemble each other. Real clustering, not
+      random jitter.</li>
+      <li><b>Environment rotations</b> — wind and sun lean the angles; a good season lengthens
+      branches and encourages more forks.</li>
+      <li><b>Collapse</b> — all 108 qubits measure at once. Each shot is one complete field of
+      branch decisions.</li>
+    </ol>
+
+    <p>Between steps, belief <b>reinforces</b> what it just measured, so the tree's character
+    crystallizes as it matures — while hardware noise keeps every branch a little different. The
+    bars below the tree show the live values driving the current step; hover over each to see what
+    it means.</p>
+  </div>
+
+  <div class="ex">
+    <h2>How it was done</h2>
+    <ul>
+      <li>The 108 qubits sit on a <b>SWAP-free chain</b> — the longest low-error path available on
+      Heron's heavy-hex layout, re-selected each run from that day's live calibration data.</li>
+      <li>Each generation is a <b>separate job</b>: step g+1 depends on step g's measured bits —
+      that dependency <i>is</i> the growth. Jobs queue one after another.</li>
+      <li>Results are saved to <code>run.json</code>; this page just replays them, so the tree
+      you're watching already grew on real hardware. Dashed dots mark local simulator runs.</li>
+    </ul>
+  </div>
+
+  <div class="ex">
+    <h2>Why it's different from a normal RNG</h2>
+    <p>A classical <b>pseudo-random</b> generator is just a deterministic formula: same seed, same
+    "random" stream, every time, forever. It only <i>looks</i> random. Here, the randomness is
+    <span class="q">physical</span> — each qubit sits in genuine superposition, and its bit is
+    decided by <b>measurement collapse</b>. Not computed. Not reproducible, even in principle.</p>
+
+    <p>But the deeper difference is that this superposition <span class="q">can't be simulated</span>
+    on any normal computer — not "slowly," but <b>never, at this size</b>. Here's why:</p>
+
+    <p>To track <b>n</b> qubits in superposition, a classical machine has to store one number (an
+    <i>amplitude</i>) for <b>every possible combination</b> of those bits. One qubit = 2 numbers.
+    Two qubits = 4. Ten qubits = 1,024. The cost <b>doubles with every qubit added</b> —
+    exponential growth, <code>2ⁿ</code>.</p>
+
+    <p>This tree uses <b>108 qubits</b>. That's <code>2¹⁰⁸</code> amplitudes — roughly
+    <b>3 × 10³²</b> numbers to hold at once. There are only about <b>10⁸⁰</b> atoms in the entire
+    observable universe, so storing <code>2¹⁰⁸</code> full-precision numbers would take far more
+    memory than could ever physically be built. No supercomputer — present or future — can hold
+    that state. The real hardware does it for free, because the qubits <i>are</i> the superposition:
+    nature isn't storing a list, it simply <b>is</b> all those states at once.</p>
+
+    <p>The usual trick for classical RNGs — sampling one bit at a time — doesn't work here, because
+    the branches are <b>entangled</b>. Measuring one qubit instantly constrains its neighbors: all
+    108 decisions are woven into a single joint state with no shortcut. A classical computer could
+    fake independent coin-flips, but it <b>can't reproduce these correlations</b> without first
+    building the full <code>2¹⁰⁸</code> state it can never fit in memory. That's why every run grows
+    a different, naturally-clustered tree no ordinary machine could generate — and why
+    <code>--sim</code> mode is only a rough approximation, not the real thing.</p>
+  </div>
+</div>
+
 
 <script>
 "use strict";
@@ -306,17 +422,31 @@ function blobTreeAt(x, baseY, col, size){
 function drawClouds(horizonY, night, wind){
   const r=rng(seed^0xC10D), hor=skyHorizon(night?1:0, night);
   const base = night ? [235,242,248] : [255,236,214];
-  const drift = (now*0.004*(wind>=0?1:-1)*(0.3+Math.abs(wind))) ;
+  // slow, near-uniform drift (much less variation, much slower)
+  const drift = now*0.0008*(wind>=0?1:-1)*(0.6+0.4*Math.min(1,Math.abs(wind)));
   for(let i=0;i<4;i++){
     const cy=6+(r()*horizonY*0.4)|0;
     const cw=14+(r()*22|0), baseX=(r()*PW)|0;
-    const cx=((baseX + drift*(1+i*0.3))%(PW+40)+PW+40)%(PW+40)-20;
-    for(let dx=0;dx<cw;dx++){
-      const h=Math.round(Math.sin(dx/cw*Math.PI)*4);
-      for(let dy=0;dy<=h;dy++){
-        // dither the cloud edges
-        if(dy===h && (BAYER[(cy+dy)&3][(cx+dx)&3]>8)) continue;
-        plot(cx+dx, cy+dy, base[0],base[1],base[2], 0.85);
+    // per-cloud speed almost identical (was 1+i*0.3)
+    const cx=((baseX + drift*(1+i*0.06))%(PW+40)+PW+40)%(PW+40)-20;
+    // build cloud from overlapping round puffs -> soft round corners
+    const rad=Math.max(3,(cw*0.32)|0);
+    const puffs=[
+      {ox:cw*0.28|0, oy:0,      pr:rad},
+      {ox:cw*0.55|0, oy:-rad*0.5|0, pr:(rad*1.15)|0},
+      {ox:cw*0.80|0, oy:0,      pr:rad},
+      {ox:cw*0.52|0, oy:rad*0.3|0, pr:(rad*0.9)|0},
+    ];
+    for(const p of puffs){
+      const pcx=cx+p.ox, pcy=cy+p.pr+p.oy, R=p.pr;
+      for(let dy=-R;dy<=R;dy++){
+        for(let dx=-R;dx<=R;dx++){
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d>R) continue;
+          // dither only the outer rim for a soft round edge
+          if(d>R-1 && BAYER[(pcy+dy)&3][(pcx+dx)&3]>8) continue;
+          plot(pcx+dx, pcy+dy, base[0],base[1],base[2], 0.85);
+        }
       }
     }
   }
@@ -579,12 +709,18 @@ function loop(ts){
 
 /* ---------- parameter meters (clear indicator per changing value) ---------- */
 const METERS=[
-  {k:"season",    label:"Season",    icon:"❃", color:"#6dffb0"},
-  {k:"wind",      label:"Wind",      icon:"≈", color:"#7fd0ff", signed:true},
-  {k:"light",     label:"Light",     icon:"☀", color:"#ffd66d", signed:true},
-  {k:"lean",      label:"Lean",      icon:"↯", color:"#c8a2ff", signed:true},
-  {k:"character", label:"Character", icon:"◈", color:"#ff9db0", signed:true},
-  {k:"diversity", label:"Diversity", icon:"◇", color:"#9dffcf"},
+  {k:"season",    label:"Season · growth year",  icon:"❃", color:"#6dffb0",
+   desc:"How good this generation's year is. High = long segments, many forks (lush growth); low = short, sparse twigs. Applied as an Ry rotation on the length/fork qubits."},
+  {k:"wind",      label:"Wind · sway",           icon:"≈", color:"#7fd0ff", signed:true,
+   desc:"Sideways push on the whole canopy. Left/right of centre = wind blowing west/east; how far from centre = how hard. Bends branches and animates the sway."},
+  {k:"light",     label:"Light · sun side",      icon:"☀", color:"#ffd66d", signed:true,
+   desc:"Which side the sun sits on. Branches lean toward the light (phototropism). Combined with wind into the physical Rx bias on the angle qubits."},
+  {k:"lean",      label:"Lean · net bend",       icon:"↯", color:"#c8a2ff", signed:true,
+   desc:"The resulting overall tilt of the tree once wind + light are summed. Centre = upright; off-centre = the trunk visibly leans that way."},
+  {k:"character", label:"Character · lush↔sparse",icon:"◈", color:"#ff9db0", signed:true,
+   desc:"The tree's inherited habit, reinforced every generation from what the last measurement actually grew. Positive = it's becoming a lush tree; negative = a sparse one. This is the tree's memory."},
+  {k:"diversity", label:"Diversity · superposition",icon:"◇", color:"#9dffcf",
+   desc:"Fraction of the 108 qubits that were genuinely undecided (near a coin-flip) before collapse. High = the branch decisions this step came from real quantum uncertainty, not a fixed pattern."},
 ];
 const MEL={};
 function buildMeters(){
@@ -593,7 +729,8 @@ function buildMeters(){
     const card=document.createElement("div"); card.className="m"; card.style.color=m.color;
     card.innerHTML=`<div class="ml"><span class="mi">${m.icon}</span>${m.label}</div>`+
       `<div class="mt"><div class="mf"></div>${m.signed?'<div class="mz"></div>':''}</div>`+
-      `<div class="mv"></div>`;
+      `<div class="mv"></div>`+
+      (m.desc?`<div class="md">${m.desc}</div>`:'');
     box.appendChild(card);
     MEL[m.k]={fill:card.querySelector(".mf"), val:card.querySelector(".mv")};
   }

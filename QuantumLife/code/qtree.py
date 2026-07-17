@@ -9,11 +9,15 @@ a 108-qubit register (18 branch-slots x 6 bits) laid out as a SWAP-free chain
 does real work every generation:
 
     1. belief encode : Ry(theta_i) on all 108 qubits  (the tree's growth belief)
-    2. correlation   : `--layers` entangling layers (CX open chain + controlled-
-                       Rx between neighbouring qubits) -- this is what makes near
-                       branches RESEMBLE each other, i.e. natural clustering
-                       instead of white-noise jitter. More layers = more
-                       correlated + more of the chip used.
+    2. correlation   : `--layers` entangling layers (CX + controlled-Rx between
+                       neighbouring qubits) laid out as a BRICK-WALL (even bonds
+                       fire together, then odd bonds together) -- this is what
+                       makes near branches RESEMBLE each other, i.e. natural
+                       clustering instead of white-noise jitter. Brick-wall keeps
+                       every neighbour bond but runs each sweep at depth 2 instead
+                       of ~n, so the state survives to measurement (coherence)
+                       rather than decohering during a 107-long serial sweep.
+                       More layers = more correlated + more of the chip used.
     3. environment   : classical bias angles injected as rotations --
                          wind + light -> Rx on the angle bits  (branches lean)
                          season       -> Ry on length/fork bits (good year =
@@ -91,7 +95,7 @@ WIGGLE = 0.05         # organic per-generation jitter in belief
 MUT_SCALE = 0.30      # self-mutation Rx kick from previous generation's bits
 CROSS_ANGLE = 0.7     # controlled-Rx neighbour correlation angle
 # environment strengths (how hard each factor bends the growth)
-WIND_SCALE = 0.9      # wind gust -> Rx on angle bits
+WIND_SCALE = 0.4      # wind gust -> Rx on angle bits (weak: growth barely leans on wind)
 LIGHT_SCALE = 0.5     # phototropism, steady lean toward the light side
 SEASON_SCALE = 0.9    # season -> Ry on length/fork bits
 # constant growth biases (steady Ry toward |1>): branch more, leaf more, and --
@@ -109,7 +113,7 @@ def build_env(generations: int) -> tuple[list[dict], dict]:
     phase = random.uniform(0, 2 * math.pi)
     wind_period = random.randint(4, 9)             # how fast the wind swings
     wind_phase = random.uniform(0, 2 * math.pi)
-    wind_prevail = random.uniform(-0.2, 0.2)       # tiny prevailing drift only
+    wind_prevail = random.uniform(-0.08, 0.08)     # near-zero prevailing drift
     light_side = random.choice([-1.0, 1.0])        # sun is to the left / right
     light_str = random.uniform(0.15, 0.35)         # gentle steady lean to light
 
@@ -118,8 +122,8 @@ def build_env(generations: int) -> tuple[list[dict], dict]:
         season = 0.5 + 0.5 * math.sin(2 * math.pi * g / period + phase)  # 0 dry..1 good
         # wind SWINGS around zero -> gusts both directions, no permanent lean
         gust = (wind_prevail
-                + 0.6 * math.sin(2 * math.pi * g / wind_period + wind_phase)
-                + random.uniform(-0.15, 0.15))
+                + 0.3 * math.sin(2 * math.pi * g / wind_period + wind_phase)
+                + random.uniform(-0.07, 0.07))
         angle_bias = WIND_SCALE * gust + LIGHT_SCALE * light_side * light_str
         season_bias = SEASON_SCALE * (2 * season - 1)
         env.append({
@@ -151,13 +155,20 @@ def build_circuit(theta: list[float], kick: list[float], env: dict,
     for i in range(n):
         qc.ry(theta[i], i)
 
-    # 2. correlation -- neighbour entangling OPEN chain, repeated `layers` times.
-    # Open (no wrap) so it maps to a physical qubit chain with zero SWAPs; see
-    # layout.best_chain, which picks such a chain from live calibration.
+    # 2. correlation -- neighbour entangling on the OPEN chain, repeated `layers`
+    # times, laid out BRICK-WALL. Open (no wrap) so it maps to a physical qubit
+    # chain with zero SWAPs; see layout.best_chain. Brick-wall = even bonds
+    # (0,1)(2,3).. share no qubits -> fire in parallel (depth 1), then odd bonds
+    # (1,2)(3,4).. (depth 1). Every neighbour bond covered exactly once per
+    # sweep, same as a serial sweep, but depth 2 instead of ~n-1.
     for _ in range(max(1, layers)):
-        for i in range(n - 1):
+        for i in range(0, n - 1, 2):        # even bonds, parallel
             qc.cx(i, i + 1)
-        for i in range(n - 1):
+        for i in range(1, n - 1, 2):        # odd bonds, parallel
+            qc.cx(i, i + 1)
+        for i in range(0, n - 1, 2):
+            qc.crx(CROSS_ANGLE, i, i + 1)
+        for i in range(1, n - 1, 2):
             qc.crx(CROSS_ANGLE, i, i + 1)
 
     # 3. environment bias per slot

@@ -1,0 +1,58 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife$ for L in 4 8; do   python code/research_qtree.py --generations 6 --shots 4096       --seed 100 --backend ibm_kingston  --repeats 3 --layers $L --name C_L$L; done
+Backend : ibm_kingston  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Auto qubit chain (live calib): {'dead_avoided': [112, 113, 120, 121, 146], 'twoq_err_mean': 0.01272, 'twoq_err_max': 1.0, 'readout_max': 0.05359, 'sx_max': 0.012288}
+
+=== repeat 1/3  (seed 100) ===
+  job 1: d9cg3v4jeosc73fg7uf0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  0  div 0.984  C0 0.2445  xi +0.057  qpu 3.00s
+  job 1: d9cg5dkjeosc73fg7vv0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  1  div 0.981  C0 0.2433  xi -0.026  qpu 3.00s
+  job 1: d9cg7gcjeosc73fg8200 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  2  div 0.974  C0 0.2412  xi -0.048  qpu 3.00s
+  job 1: d9cg9ephtsac739bnfv0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  3  div 0.980  C0 0.2432  xi -0.056  qpu 3.00s
+  job 1: d9cga1cinv1c73anoee0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  4  div 0.987  C0 0.2457  xi +0.037  qpu 3.00s
+  job 1: d9cgba1htsac739bnhr0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  5  div 0.982  C0 0.2438  xi +0.112  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/C_L4_ibm_kingston_seed100_20260716-182422_run.json
+
+=== repeat 2/3  (seed 101) ===
+  job 1: d9cgbdphtsac739bnhv0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  0  div 0.971  C0 0.2401  xi -0.015  qpu 3.00s
+  job 1: d9cgbhsjeosc73fg85rg (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  1  div 0.981  C0 0.2434  xi +0.032  qpu 3.00s
+  job 1: d9cgblkinv1c73anog2g (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  2  div 0.985  C0 0.2450  xi +0.089  qpu 3.00s
+  job 1: d9cgbpphtsac739bnib0 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  3  div 0.980  C0 0.2431  xi +0.112  qpu 3.00s
+  job 1: d9cgbucjeosc73fg868g (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  4  div 0.976  C0 0.2418  xi +0.145  qpu 3.00s
+  job 1: d9cgclcinv1c73anoh40 (4,096 shots) ... done (qpu 3.00s)
+  seed 101 gen  5  div 0.977  C0 0.2421  xi +0.103  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/C_L4_ibm_kingston_seed101_20260716-183200_run.json
+
+=== repeat 3/3  (seed 102) ===
+  job 1: d9cgf0cjeosc73fg89e0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  0  div 0.975  C0 0.2414  xi -0.038  qpu 3.00s
+  job 1: d9cgf42neu4c739lubh0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  1  div 0.975  C0 0.2414  xi -0.037  qpu 3.00s
+  job 1: d9cgfd4jeosc73fg89t0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  2  div 0.981  C0 0.2436  xi +0.032  qpu 3.00s
+  job 1: d9cgfgsjeosc73fg8a2g (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  3  div 0.980  C0 0.2431  xi +0.096  qpu 3.00s
+  job 1: d9cgfkhhtsac739bnm8g (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  4  div 0.974  C0 0.2410  xi +0.077  qpu 3.00s
+  job 1: d9cgfohhtsac739bnmf0 (4,096 shots) ... done (qpu 3.00s)
+  seed 102 gen  5  div 0.980  C0 0.2431  xi +0.103  qpu 3.00s
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/C_L4_ibm_kingston_seed102_20260716-183352_run.json
+
+--- DONE ---
+Repeats      : 3  (seeds 100..102)
+xi over gens : mean +0.043  (near 0 => no correlation)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/C_L4_ibm_kingston_20260716-183352_summary.json
+Compare a --sim summary against a hardware summary at the same --seed/--repeats to test the hypothesis.
+Backend : ibm_kingston  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Auto qubit chain (live calib): {'dead_avoided': [112, 113, 120, 121, 146], 'twoq_err_mean': 0.01272, 'twoq_err_max': 1.0, 'readout_max': 0.05359, 'sx_max': 0.012288}
