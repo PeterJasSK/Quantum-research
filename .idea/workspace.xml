@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -133,7 +130,7 @@
       <workItem from="1784284471714" duration="1701000" />
       <workItem from="1784289256687" duration="554000" />
       <workItem from="1784294124705" duration="3618000" />
-      <workItem from="1784548984053" duration="10437000" />
+      <workItem from="1784548984053" duration="10772000" />
     </task>
     <servers />
   </component>
