@@ -22,10 +22,55 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Q-EaaS — Quantum Entropy as a Service",
+  metadataBase: new URL("https://qrng.peterjas.sk"),
+  title: {
+    default: "Q-EaaS — Quantum Entropy as a Service",
+    template: "%s — Q-EaaS",
+  },
   description:
     "Quantum-seeded randomness, seeds & post-quantum key material — with a live dice player.",
+  keywords: [
+    "quantum random number generator",
+    "QRNG",
+    "quantum entropy",
+    "entropy as a service",
+    "post-quantum key material",
+    "true random numbers",
+    "quantum computing",
+  ],
+  authors: [{ name: "Peter Jas" }],
+  creator: "Peter Jas",
   icons: "/logo.png",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "https://qrng.peterjas.sk",
+    siteName: "Q-EaaS",
+    title: "Q-EaaS — Quantum Entropy as a Service",
+    description:
+      "Quantum-seeded randomness, seeds & post-quantum key material — with a live dice player.",
+    locale: "en_US",
+    images: [{ url: "/logo.png", width: 512, height: 512, alt: "Q-EaaS" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Q-EaaS — Quantum Entropy as a Service",
+    description:
+      "Quantum-seeded randomness, seeds & post-quantum key material — with a live dice player.",
+    images: ["/logo.png"],
+  },
 };
 
 export const viewport: Viewport = {

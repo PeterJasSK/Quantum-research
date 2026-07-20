@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/QuantumLife/circuit-d9ci6u4inv1c73anqj50.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/CONCLUSION_EPIC2.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/CONCLUSION_EPIC2.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QuantumLife/web/quantum_tree_pixel.html" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumLife/web/quantum_tree_pixel.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jsExamples/lesson.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/qrng-eaas/web/app/layout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,28 +41,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/QuantumLife&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/PeterJasIndex",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "ts.external.directory.path": "/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/PeterJasIndex" />
       <recent name="$PROJECT_DIR$/QuantumLife" />
       <recent name="$PROJECT_DIR$/QuantumLife/web" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG" />
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle" />
-      <recent name="$PROJECT_DIR$/qrng-eaas/claude" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/QuantumAlgorithmsExplained/explenation" />
@@ -136,6 +133,7 @@
       <workItem from="1784284471714" duration="1701000" />
       <workItem from="1784289256687" duration="554000" />
       <workItem from="1784294124705" duration="3618000" />
+      <workItem from="1784548984053" duration="10437000" />
     </task>
     <servers />
   </component>
