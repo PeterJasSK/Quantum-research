@@ -1,0 +1,16 @@
+{
+  "name": "Peter Jaš",
+  "short_name": "Peter Jaš",
+  "description": "Back-end developer & quantum-computing tinkerer — portfolio and projects.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#052e44",
+  "theme_color": "#052e44",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

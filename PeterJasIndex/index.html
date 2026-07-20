@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peter Jaš — Back-end Developer & Quantum Computing Projects</title>
+  <meta name="description" content="Peter Jaš — back-end developer and quantum-computing tinkerer. QRNG, IBM quantum hardware, cloud engineering. Portfolio, projects, CV and contact." />
+  <meta name="author" content="Peter Jaš" />
+  <meta name="keywords" content="Peter Jaš, PeterJas, back-end developer, PHP, quantum computing, QRNG, Qiskit, IBM Quantum, cloud engineering, portfolio, Slovakia" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://peterjas.sk/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Peter Jaš" />
+  <meta property="og:title" content="Peter Jaš — Back-end Developer & Quantum Computing Projects" />
+  <meta property="og:description" content="Back-end developer and quantum-computing tinkerer. QRNG, IBM quantum hardware, cloud engineering. Portfolio, projects, CV and contact." />
+  <meta property="og:url" content="https://peterjas.sk/" />
+  <meta property="og:image" content="https://peterjas.sk/og.jpg" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Peter Jaš — Back-end Developer & Quantum Computing Projects" />
+  <meta name="twitter:description" content="Back-end developer and quantum-computing tinkerer. QRNG, IBM quantum hardware, cloud engineering." />
+  <meta name="twitter:image" content="https://peterjas.sk/og.jpg" />
+
+  <meta name="theme-color" content="#052e44" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Structured data: Person -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Peter Jaš",
+    "alternateName": "PeterJas",
+    "url": "https://peterjas.sk/",
+    "image": "https://peterjas.sk/og.jpg",
+    "jobTitle": "Medior Back-end Developer",
+    "email": "mailto:peterjas81@gmail.com",
+    "telephone": "+421944411038",
+    "nationality": "Slovak",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Košice",
+      "addressCountry": "SK"
+    },
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Everlution s.r.o."
+    },
+    "knowsAbout": ["Quantum computing", "QRNG", "Qiskit", "PHP", "Symfony", "Angular", "SQL", "Linux", "AWS", "Java", "C", "Python"],
+    "hasCredential": {
+      "@type": "EducationalOccupationalCredential",
+      "credentialCategory": "certification",
+      "name": "AWS Certified Cloud Practitioner"
+    },
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Technical University of Košice" },
+      { "@type": "CollegeOrUniversity", "name": "University of Málaga" }
+    ],
+    "sameAs": [
+      "https://github.com/PeterJasSK",
+      "https://www.linkedin.com/in/peter-ja%C5%A1-513171250",
+      "https://www.facebook.com/peter.jas.31924",
+      "https://linktr.ee/PeterJas",
+      "https://eaas-two.vercel.app/"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", monospace;
+      --font-display: "Orbitron", var(--font-sans);
+    }
+
+    /* ---- light (default fallback) ---- */
+    [data-theme="light"] {
+      --bg-deep: #f8fafc; --bg: #ffffff; --surface: #eaf6ff;
+      --text: #0a2540; --heading: #052e44;
+      --accent: #00aaff; --primary: #084666; --primary-hover: #052e44;
+      --border: rgba(0,170,255,0.16);
+      --success: #0d9f6e;
+      --glow: none;
+    }
+    /* ---- dark ---- */
+    [data-theme="dark"] {
+      --bg-deep: #052e44; --bg: #0a2540; --surface: #084666;
+      --text: #e2e8f0; --heading: #f8fafc;
+      --accent: #00aaff; --primary: #00aaff; --primary-hover: #0077cc;
+      --border: rgba(0,170,255,0.24);
+      --success: #34d399;
+      --glow: 0 0 10px var(--accent);
+    }
+    /* ---- quantum (easter egg) ---- */
+    [data-theme="quantum"] {
+      --bg-deep: #01040b; --bg: #060c1f; --surface: #060c1f;
+      --text: #e3f6ff; --heading: #7ad9ff;
+      --accent: #4dcfff; --primary: #00aaff; --primary-hover: #0077cc;
+      --border: rgba(0,170,255,0.35);
+      --success: #4dcfff;
+      --glow: 0 0 14px var(--accent);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: var(--bg-deep); scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 0%, var(--bg), var(--bg-deep));
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    [data-theme="quantum"] body { font-family: var(--font-display); }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+    /* ---- header ---- */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in srgb, var(--bg-deep) 92%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .brand .badge {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--primary); color: var(--bg-deep);
+      font-weight: 700; font-family: var(--font-display);
+    }
+    .brand .name { font-weight: 700; color: var(--heading); text-shadow: var(--glow); letter-spacing: -0.02em; }
+    nav.links { display: flex; align-items: center; gap: 22px; }
+    nav.links a { color: var(--text); opacity: .85; font-size: 14px; }
+    nav.links a:hover { color: var(--accent); opacity: 1; text-decoration: none; }
+    .toggle {
+      display: flex; gap: 4px; padding: 4px;
+      border: 1px solid var(--border); border-radius: 30px;
+    }
+    .toggle button {
+      width: 30px; height: 30px; border: none; border-radius: 50%;
+      background: transparent; color: var(--text); opacity: .7;
+      cursor: pointer; font-size: 15px; line-height: 1;
+    }
+    .toggle button[aria-pressed="true"] { background: var(--primary); color: var(--bg-deep); opacity: 1; }
+    @media (max-width: 620px) { nav.links .navlink { display: none; } }
+
+    /* ---- hero ---- */
+    .hero { text-align: center; padding: 70px 0 40px; }
+    .avatar {
+      width: clamp(64px, 12vw, 104px); height: clamp(64px, 12vw, 104px);
+      border-radius: 50%; flex-shrink: 0;
+      border: 3px solid var(--accent); box-shadow: var(--glow);
+      object-fit: cover; background: var(--surface);
+    }
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      border-radius: 30px; padding: 6px 16px; margin-bottom: 22px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+      opacity: .85;
+    }
+    .hero h1 {
+      display: flex; align-items: center; justify-content: center; gap: 22px;
+      flex-wrap: wrap;
+      font-size: clamp(40px, 9vw, 84px); font-weight: 900;
+      color: var(--heading); letter-spacing: -0.03em; line-height: 1.05;
+      text-shadow: var(--glow);
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero .lead { max-width: 620px; margin: 20px auto 0; font-size: clamp(16px,2.5vw,20px); opacity: .9; }
+    .cta { margin-top: 30px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 48px; padding: 0 26px; border-radius: 14px;
+      font-weight: 700; font-size: 15px; cursor: pointer; transition: transform .15s ease;
+    }
+    .btn:hover { text-decoration: none; transform: translateY(-2px); }
+    .btn-primary { background: var(--primary); color: var(--bg-deep); box-shadow: 0 8px 28px color-mix(in srgb, var(--accent) 30%, transparent); }
+    [data-theme="light"] .btn-primary { color: #fff; }
+    .btn-ghost { border: 2px solid var(--border); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--accent); }
+
+    /* ---- sections ---- */
+    section.block { padding: 50px 0; }
+    .block h2 {
+      font-size: 13px; text-transform: uppercase; letter-spacing: 3px;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+    .block .h-lead { font-size: clamp(24px,4vw,34px); font-weight: 900; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 26px; }
+
+    /* panel */
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--surface) 55%, transparent);
+      backdrop-filter: blur(12px);
+      padding: 24px;
+    }
+
+    /* about */
+    .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+    @media (max-width: 720px) { .about-grid { grid-template-columns: 1fr; } }
+    .about { display: flex; flex-direction: column; }
+    .about p { margin-bottom: 14px; opacity: .92; }
+    .about .chips { margin-top: auto; padding-top: 8px; }
+    .facts { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .facts li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+    .facts .k { color: var(--accent); font-weight: 700; min-width: 78px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .chip {
+      font-family: var(--font-mono); font-size: 12px;
+      padding: 5px 11px; border-radius: 20px;
+      border: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 8%, transparent);
+      color: var(--text);
+    }
+
+    /* projects */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    .card { display: flex; flex-direction: column; transition: transform .18s ease, border-color .18s ease; }
+    .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .card.featured { grid-column: 1 / -1; border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+    .card .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .card h3 { font-size: 19px; color: var(--heading); font-weight: 800; letter-spacing: -0.01em; }
+    .status {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+    .status.live { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); border-color: transparent; }
+    .status.research { color: var(--accent); }
+    .status.done { opacity: .7; }
+    .card p { font-size: 14px; opacity: .88; flex: 1; }
+    .card .chips { margin-top: 14px; }
+    .card .card-links { display: flex; gap: 16px; margin-top: 14px; font-size: 13px; font-weight: 700; }
+
+    /* contact */
+    .social { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .social a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 18px; border-radius: 12px; font-weight: 700; font-size: 14px;
+      border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 55%, transparent);
+      color: var(--text);
+    }
+    .social a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+    footer { border-top: 1px solid var(--border); text-align: center; padding: 30px 0; font-size: 13px; opacity: .55; }
+
+    .toast {
+      position: fixed; left: 50%; top: 78px; transform: translateX(-50%);
+      background: var(--bg-deep); border: 1px solid var(--border); color: var(--heading);
+      padding: 10px 18px; border-radius: 30px; font-size: 14px; z-index: 60;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div class="brand" id="brand" title="Peter Jaš">
+        <span class="badge">PJ</span>
+        <span class="name">Peter&nbsp;Jaš</span>
+      </div>
+      <nav class="links">
+        <a class="navlink" href="#about">About</a>
+        <a class="navlink" href="#projects">Projects</a>
+        <div class="toggle" role="group" aria-label="Theme">
+          <button data-theme-btn="light" title="Light" aria-pressed="false">☀</button>
+          <button data-theme-btn="dark" title="Dark" aria-pressed="true">☾</button>
+          <button data-theme-btn="quantum" title="Quantum" aria-pressed="false" hidden>⚛</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="tag">◆ Back-end developer · Quantum tinkerer</div>
+      <h1><img class="avatar" src="avatar.jpg" alt="Peter Jaš" width="374" height="374" /> Peter <span class="accent">Jaš</span></h1>
+      <p class="lead">
+        Medior back-end developer at Everlution (PHP / Symfony) and QRNG researcher
+        at CNL, Technical University of Košice. AWS Certified Cloud Practitioner,
+        award-winning builder, exploring quantum computing.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#projects">See my projects →</a>
+        <a class="btn btn-ghost" href="CV.pdf" target="_blank" rel="noopener">Download CV</a>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="block" id="about">
+      <h2>About</h2>
+      <div class="h-lead">Who I am</div>
+      <div class="about-grid">
+        <div class="panel about">
+          <p>
+            I'm a <strong>medior back-end developer at Everlution</strong> in Košice,
+            building web applications in PHP / Symfony on Linux.
+          </p>
+          <p>
+            I'm also a researcher at the <strong>Computer Networks Laboratory (CNL)</strong>
+            at the Technical University of Košice, working on applied quantum computing
+            and randomness (QRNG) — the intersection of theoretical research and
+            practical, industry-relevant application.
+          </p>
+          <p>
+            I like projects that produce one clean, hard-to-argue-with result — an
+            API you can call, a graph that tells the whole story, or a tree that
+            literally grew out of quantum measurement.
+          </p>
+          <div class="chips">
+            <span class="chip">PHP</span>
+            <span class="chip">Symfony</span>
+            <span class="chip">SQL</span>
+            <span class="chip">Linux</span>
+            <span class="chip">AWS</span>
+            <span class="chip">Java</span>
+            <span class="chip">C</span>
+            <span class="chip">Python</span>
+            <span class="chip">Quantum computing</span>
+          </div>
+        </div>
+        <div class="panel">
+          <ul class="facts">
+            <li><span class="k">Role</span><span>Medior Back-end Developer @ Everlution</span></li>
+            <li><span class="k">Research</span><span>Applied QC &amp; RNG @ CNL, TUKE</span></li>
+            <li><span class="k">Studies</span><span>Ing. Informatics, TUKE (Erasmus: Málaga)</span></li>
+            <li><span class="k">Certs</span><span>AWS Certified Cloud Practitioner</span></li>
+            <li><span class="k">Email</span><a href="mailto:peterjas81@gmail.com">peterjas81@gmail.com</a></li>
+            <li><span class="k">Phone</span><a href="tel:+421944411038">+421 944 411 038</a></li>
+            <li><span class="k">Region</span><span>Košice, Slovakia</span></li>
+          </ul>
+          <div class="social">
+            <a href="https://www.linkedin.com/in/peter-ja%C5%A1-513171250" target="_blank" rel="noopener">in · LinkedIn</a>
+            <a href="https://github.com/PeterJasSK" target="_blank" rel="noopener">⌨ · GitHub</a>
+            <a href="CV.pdf" target="_blank" rel="noopener">▤ · CV.pdf</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="block" id="projects">
+      <h2>Portfolio</h2>
+      <div class="h-lead">Projects I'm building</div>
+      <div class="grid" id="grid"><!-- cards injected --></div>
+    </section>
+  </main>
+
+  <footer class="wrap">© 2026 Peter Jaš </footer>
+
+  <div class="toast" id="toast">⚛ Quantum theme unlocked</div>
+
+  <script>
+    // ---- projects data ----
+    const REPO = "https://github.com/PeterJasSK/Quantum-research/tree/main/";
+    const PROJECTS = [
+      {
+        title: "Q-EaaS — Quantum Entropy as a Service",
+        status: "Live", cls: "live", featured: true,
+        desc: "A free API turning real QRNG bits into served randomness, dice rolls, cryptographic seeds and post-quantum ML-KEM key material — each issue carrying a signed, offline-verifiable provenance receipt. FastAPI service + Next.js explainer.",
+        tags: ["FastAPI", "Next.js", "Postgres", "ML-KEM", "NIST SP 800-90A"],
+        links: [
+          { label: "Live site ↗", href: "https://eaas-two.vercel.app/" },
+          { label: "Repo ↗", href: REPO + "qrng-eaas" }
+        ]
+      },
+      {
+        title: "Quantum Tree",
+        status: "Live", cls: "live", featured: true,
+        desc: "A living tree grown on a real IBM Heron r2 quantum computer. Every growth step is one circuit; measured bits decide how it branches. Includes a falsifiable fork testing whether hardware entanglement imprints spatial correlation a classical surrogate can't reproduce.",
+        tags: ["Qiskit", "IBM Quantum", "Generative art"],
+        links: [
+          { label: "Live site ↗", href: "https://quantum-tree.vercel.app/" },
+          { label: "Repo ↗", href: REPO + "QuantumLife" }
+        ]
+      },
+      {
+        title: "Quantum Algorithms Explained",
+        status: "Complete", cls: "done",
+        desc: "A hands-on tour of 15 standard quantum algorithms — coin flip and Bell states up to Grover, QFT, phase estimation and Simon's. Self-contained lessons, all reproducible on Qiskit's local simulator.",
+        tags: ["Qiskit", "Education", "Simulator"],
+        links: [{ label: "Repo ↗", href: REPO + "QuantumAlgorithmsExplained" }]
+      },
+      {
+        title: "Bachelor Thesis — Bell-Pair QRNG",
+        status: "Complete", cls: "done",
+        desc: "Design and implementation of a Bell-Pair quantum random number generator. The foundation the later QRNG projects grew from.",
+        tags: ["Thesis", "QRNG", "TUKE"],
+        links: [{ label: "Repo ↗", href: REPO + "BC" }]
+      }
+    ];
+
+    const esc = (s) => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    document.getElementById("grid").innerHTML = PROJECTS.map(p => `
+      <article class="card panel ${p.featured ? "featured" : ""}">
+        <div class="top">
+          <h3>${esc(p.title)}</h3>
+          <span class="status ${p.cls}">${esc(p.status)}</span>
+        </div>
+        <p>${esc(p.desc)}</p>
+        <div class="chips">${p.tags.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div>
+        ${p.links.length ? `<div class="card-links">${p.links.map(l => `<a href="${l.href}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>` : ""}
+      </article>`).join("");
+
+    // ---- theme ----
+    const root = document.documentElement;
+    const btns = [...document.querySelectorAll("[data-theme-btn]")];
+    const KEY = "pj-theme", UNLOCK = "pj-quantum";
+    function setTheme(t) {
+      root.setAttribute("data-theme", t);
+      btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeBtn === t)));
+      try { localStorage.setItem(KEY, t); } catch (e) {}
+    }
+    function revealQuantum() {
+      document.querySelector('[data-theme-btn="quantum"]').hidden = false;
+    }
+    btns.forEach(b => b.addEventListener("click", () => setTheme(b.dataset.themeBtn)));
+
+    let unlocked = false;
+    try { unlocked = localStorage.getItem(UNLOCK) === "1"; } catch (e) {}
+    if (unlocked) revealQuantum();
+    let saved = "dark";
+    try { saved = localStorage.getItem(KEY) || "dark"; } catch (e) {}
+    if (saved === "quantum" && !unlocked) saved = "dark";
+    setTheme(saved);
+
+    // easter egg: tap brand 5x within 3s -> unlock quantum
+    let taps = [];
+    document.getElementById("brand").addEventListener("click", () => {
+      const now = Date.now();
+      taps = [...taps, now].filter(t => now - t <= 3000);
+      if (taps.length >= 5) {
+        taps = [];
+        try { localStorage.setItem(UNLOCK, "1"); } catch (e) {}
+        revealQuantum();
+        setTheme("quantum");
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+    });
+  </script>
+</body>
+</html>
