@@ -569,13 +569,24 @@
               const d = 1 + s * s;              // lemniscate of Bernoulli
               const nx = c / d;                 // ~ -1..1 (horizontal ∞)
               const ny = (s * c) / d;           // ~ -0.35..0.35
-              // desktop: center behind the name. touch: pin to top of viewport
-              // (canvas is fixed, so viewport coords keep it stuck at the top).
+              // desktop: center behind the name (unchanged).
               const r = (!coarse && nameEl) ? nameEl.getBoundingClientRect() : null;
-              const cx = r ? r.left + r.width / 2 : vw * 0.5;
-              const cy = r ? r.top + r.height / 2 : vh * 0.18;
               const rx = Math.min(vw * 0.44, 560);  // bigger loops
               const ry = rx * 0.5;
+              let cx, cy;
+              if (coarse) {
+                // touch: slowly drift the center up/down + sideways so the
+                // figure-eight floats over the whole background, staying on-screen.
+                const dx = Math.sin(now * 0.00021);       // slow, out of phase
+                const dy = Math.sin(now * 0.00013 + 1.7);
+                const mx = Math.max(rx, vw * 0.28);       // keep loops inside
+                const my = Math.max(ry, vh * 0.30);
+                cx = vw * 0.5 + dx * (vw * 0.5 - mx);
+                cy = vh * 0.5 + dy * (vh * 0.5 - my);
+              } else {
+                cx = r ? r.left + r.width / 2 : vw * 0.5;
+                cy = r ? r.top + r.height / 2 : vh * 0.28;
+              }
               const x = cx + nx * rx;
               const y = cy + ny * ry;
               canvas.dispatchEvent(new PointerEvent("pointermove", {
