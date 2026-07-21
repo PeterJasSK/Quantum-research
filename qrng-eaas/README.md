@@ -456,3 +456,54 @@ runtime and rewrites every path to `main.py`. Provision Neon (run `sql/001…005
 (regional, `rediss://` TCP URL), then set per-project env vars (§10). Full runbook, troubleshooting,
 and the EPIC 7–11 write-ups (seed-quality report, networking demo, provenance, secure-storage burn
 lifecycle, theming) live in `claude/plans/` and `shared/docs/`.
+
+---
+
+## 12. Agent-first integration (EPIC 13)
+
+The service is discoverable by AI agents and correctly indexable by classic + LLM crawlers.
+Canonical domains: web `https://qeaas.eu`, API `https://api.qeaas.eu`.
+
+**Discovery documents (API):**
+
+| URL | What |
+|---|---|
+| `/.well-known/agent.json` | Machine-readable agent manifest: framing, auth, capabilities, cross-links |
+| `/.well-known/ai-plugin.json` | Minimal ChatGPT-plugin-style manifest → `/openapi.json` |
+| `/.well-known/mcp.json` | MCP endpoint, transport, protocol version |
+| `/v1/agent/tools` | Tool descriptors — one per callable endpoint, with JSON Schema (from `qeaas/schemas.py`) |
+| `/v1/agent/manifest` | Full onboarding doc; `?profile=<http\|openai-tools\|anthropic-tools\|mcp>` for a framework-shaped quickstart |
+| `/openapi.json` + `/docs` | Enriched OpenAPI (tags, servers, `ApiKeyAuth` header scheme) |
+| `POST /mcp` | Full MCP server (Streamable-HTTP JSON-RPC 2.0): `tools`, `resources`, `prompts`, handshake |
+
+**Web maps:** `/llms.txt`, `/llms-full.txt`, `/agents` page, `sitemap.xml`, `robots.txt`
+(full AI-crawler allowlist), `manifest.webmanifest`, and site-wide JSON-LD.
+
+**Getting a key:** public endpoints (health, random, dice, verify, pubkey) need no key.
+Developer/KEM endpoints require the header `X-API-Key` (admin-minted, revocable, quota-metered).
+
+**One catalog, no drift:** `qeaas/agent.py` holds a single `ENDPOINTS` catalog; agent.json,
+tool descriptors, the manifest, and the MCP tool list all derive from it, and schemas come
+from `model_json_schema()`.
+
+**Base URLs from env:** API reads `PUBLIC_API_URL` / `PUBLIC_WEB_URL` (localhost defaults,
+`qeaas/urls.py`); web reads `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_WEB_URL` (`lib/urls.ts`).
+`WEB_ORIGIN` (CORS) must include `https://qeaas.eu`.
+
+**Worked example:**
+
+```bash
+# 1. an agent finds the manifest
+curl -s https://api.qeaas.eu/.well-known/agent.json | jq
+
+# 2. follows to its framework-shaped quickstart
+curl -s "https://api.qeaas.eu/v1/agent/manifest?profile=openai-tools" | jq
+
+# 3. calls a public endpoint, or (with a key) a developer one
+curl -s "https://api.qeaas.eu/random?bytes=32"
+curl -s -H "X-API-Key: $QEAAS_API_KEY" "https://api.qeaas.eu/v1/random/bytes?size=64&format=hex"
+
+# or connect an MCP client to POST https://api.qeaas.eu/mcp
+curl -s -X POST https://api.qeaas.eu/mcp -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | jq
+```

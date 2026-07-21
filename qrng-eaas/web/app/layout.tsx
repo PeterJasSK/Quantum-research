@@ -3,7 +3,28 @@ import { Orbitron, Inter, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ThemeProvider from "@/components/ThemeProvider";
+import StructuredData from "@/components/StructuredData";
+import { WEB_URL } from "@/lib/urls";
 import "./globals.css";
+
+// EPIC 13 AC-9: site-wide WebSite + Organization structured data.
+const SITE_JSON_LD: Record<string, unknown>[] = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Q-EaaS — Quantum Entropy as a Service",
+    url: WEB_URL,
+    description:
+      "Quantum-seeded randomness, seeds & post-quantum key material — with a live dice player.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Q-EaaS",
+    url: WEB_URL,
+    logo: `${WEB_URL}/logo.png`,
+  },
+];
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -22,7 +43,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://qrng.peterjas.sk"),
+  metadataBase: new URL(WEB_URL),
   title: {
     default: "Q-EaaS — Quantum Entropy as a Service",
     template: "%s — Q-EaaS",
@@ -56,7 +77,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: "https://qrng.peterjas.sk",
+    url: WEB_URL,
     siteName: "Q-EaaS",
     title: "Q-EaaS — Quantum Entropy as a Service",
     description:
@@ -90,6 +111,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <StructuredData data={SITE_JSON_LD} />
         <ThemeProvider>
           <Header />
           <main className="flex-1">{children}</main>

@@ -1,27 +1,33 @@
 import type { MetadataRoute } from "next";
+import { WEB_URL } from "@/lib/urls";
 
-const BASE = "https://qrng.peterjas.sk";
-
+// EPIC 13 AC-8: every public page, canonical host qeaas.eu.
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
   return [
     {
-      url: `${BASE}/`,
+      url: `${WEB_URL}/`,
       lastModified,
       changeFrequency: "monthly",
       priority: 1.0,
     },
     {
-      url: `${BASE}/demo`,
+      url: `${WEB_URL}/demo`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE}/dice`,
+      url: `${WEB_URL}/dice`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${WEB_URL}/agents`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   ];
 }

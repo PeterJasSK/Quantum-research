@@ -11,11 +11,20 @@ import hashlib
 import hmac
 import os
 
-from fastapi import Header
+from fastapi import Security
+from fastapi.security import APIKeyHeader
 
 from qeaas import db
 from qeaas.errors import ApiError
 from qeaas.pool import derive_subkey
+
+# EPIC 13 Decision 6: document the header auth schemes in OpenAPI so `/docs`
+# renders the auth box and agents read the security requirement. Behaviour is
+# unchanged -- `auto_error=False` keeps the manual checks + flat error slugs.
+_api_key_scheme = APIKeyHeader(name="X-API-Key", scheme_name="ApiKeyAuth", auto_error=False)
+_admin_token_scheme = APIKeyHeader(
+    name="X-Admin-Token", scheme_name="AdminTokenAuth", auto_error=False
+)
 
 
 def hash_api_key(key: str) -> str:
@@ -23,13 +32,13 @@ def hash_api_key(key: str) -> str:
     return hmac.new(pepper, key.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
-def require_admin(x_admin_token: str | None = Header(default=None)) -> None:
+def require_admin(x_admin_token: str | None = Security(_admin_token_scheme)) -> None:
     expected = os.environ["ADMIN_TOKEN"]
     if not x_admin_token or not hmac.compare_digest(x_admin_token, expected):
         raise ApiError(401, "unauthorized")
 
 
-def require_api_key(x_api_key: str | None = Header(default=None)) -> db.ApiKeyRow:
+def require_api_key(x_api_key: str | None = Security(_api_key_scheme)) -> db.ApiKeyRow:
     if not x_api_key:
         raise ApiError(401, "missing_api_key")
     row = db.get_api_key_by_hash(hash_api_key(x_api_key))

@@ -18,6 +18,7 @@ const NAV_LINKS: NavLink[] = [
   { href: "/#api", label: "API" },
   { href: "/dice", label: "Dice" },
   { href: "/demo", label: "Demo" },
+  { href: "/agents", label: "Agents" },
 ];
 
 function DesktopNavItem({ link }: { link: NavLink }) {

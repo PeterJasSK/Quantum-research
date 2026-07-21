@@ -6,10 +6,12 @@ import os
 import secrets
 import time
 
-from fastapi import Depends, FastAPI, Query, Request, UploadFile
+from fastapi import Depends, FastAPI, Header, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 
-from qeaas import db, dice, generation, kem, ratelimit, receipts
+from qeaas import agent, db, dice, generation, kem, mcp, ratelimit, receipts
+from qeaas.urls import api_url
 from qeaas.auth import hash_api_key, require_admin, require_api_key
 from qeaas.errors import ApiError, register_error_handlers
 from qeaas.gate import entropy_level, prime_cache, require_entropy
@@ -36,11 +38,30 @@ from qeaas.schemas import (
     VerifyResponse,
 )
 
-app = FastAPI(title="Quantum Entropy-as-a-Service")
+OPENAPI_TAGS = [
+    {"name": "public", "description": "Anonymous, rate-limited endpoints (no key)."},
+    {"name": "developer", "description": "API-key endpoints for developers + agent discovery."},
+    {"name": "kem", "description": "QRNG-seeded ML-KEM-768 (post-quantum) key material."},
+    {"name": "verify", "description": "Provenance receipts and offline verification."},
+    {"name": "admin", "description": "Admin-token operational endpoints."},
+]
+
+app = FastAPI(
+    title="Quantum Entropy-as-a-Service",
+    description=agent.FRAMING,
+    version=agent.API_VERSION,
+    openapi_tags=OPENAPI_TAGS,
+    servers=[{"url": api_url(), "description": "Q-EaaS API"}],
+)
 _started_at = time.time()
 
+# EPIC 13 AC-11: CORS default includes the canonical web origin so a browser on
+# qeaas.eu can fetch the discovery endpoints + POST /mcp.
 _web_origins = [
-    o.strip() for o in os.environ.get("WEB_ORIGIN", "http://localhost:3000").split(",")
+    o.strip()
+    for o in os.environ.get(
+        "WEB_ORIGIN", "http://localhost:3000,https://qeaas.eu"
+    ).split(",")
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -61,7 +82,7 @@ async def add_entropy_header(request: Request, call_next):
     return response
 
 
-@app.get("/health")
+@app.get("/health", tags=["public"], summary="Service health & entropy level")
 def health() -> HealthResponse:
     root = db.get_root_key()
     pool_bytes = db.pool_bytes_remaining()
@@ -74,7 +95,7 @@ def health() -> HealthResponse:
     )
 
 
-@app.get("/random")
+@app.get("/random", tags=["public"], summary="Anonymous quantum-seeded random bytes")
 def random_endpoint(
     request: Request, bytes: int = Query(default=32, ge=1, le=64)
 ) -> RandomResponse:
@@ -91,7 +112,7 @@ def random_endpoint(
     )
 
 
-@app.post("/dice")
+@app.post("/dice", tags=["public"], summary="Roll dice with quantum-seeded randomness")
 def dice_endpoint(request: Request, body: DiceRequest) -> DiceResponse:
     """AC-3: rejection-sampled dice rolls, ungated. AC-1: per-IP rate limit.
 
@@ -117,6 +138,8 @@ def _issue_v1(size: int, fmt: str) -> V1RandomBytesResponse:
 @app.get(
     "/v1/random/bytes",
     dependencies=[Depends(require_entropy)],
+    tags=["developer"],
+    summary="Developer entropy endpoint (API key)",
 )
 def v1_random_bytes(
     size: int = Query(ge=32, le=4096),
@@ -153,7 +176,7 @@ def seed(
     return response
 
 
-@app.post("/v1/verify")
+@app.post("/v1/verify", tags=["verify"], summary="Verify a provenance receipt")
 def verify(request: Request, body: VerifyRequest) -> VerifyResponse:
     """AC-4/5/6: verify provenance, not the secret. Anon, but per-IP rate-limited (Decision 6)."""
     ratelimit.check_ip_rate(ratelimit.client_ip(request))
@@ -163,7 +186,7 @@ def verify(request: Request, body: VerifyRequest) -> VerifyResponse:
     )
 
 
-@app.get("/v1/pubkey")
+@app.get("/v1/pubkey", tags=["verify"], summary="Ed25519 receipt-signing public key")
 def pubkey() -> PubkeyResponse:
     """AC-1: published Ed25519 receipt-signing public key for external offline verification."""
     return PubkeyResponse(
@@ -171,7 +194,12 @@ def pubkey() -> PubkeyResponse:
     )
 
 
-@app.post("/admin/ingest", dependencies=[Depends(require_admin)])
+@app.post(
+    "/admin/ingest",
+    dependencies=[Depends(require_admin)],
+    tags=["admin"],
+    summary="Refill the entropy pool from an uploaded bits file",
+)
 async def admin_ingest(file: UploadFile) -> AdminIngestResponse:
     """AC-7, Q5: multipart `.txt` upload (`0`/`1` only), <= 10 MB, refills the pool."""
     if not file.filename or not file.filename.endswith(".txt"):
@@ -196,7 +224,12 @@ async def admin_ingest(file: UploadFile) -> AdminIngestResponse:
     )
 
 
-@app.post("/admin/purge", dependencies=[Depends(require_admin)])
+@app.post(
+    "/admin/purge",
+    dependencies=[Depends(require_admin)],
+    tags=["admin"],
+    summary="Purge all entropy pool rows",
+)
 def admin_purge() -> AdminPurgeResponse:
     """Delete all entropy_pool rows so the pool can be reseeded from scratch."""
     chunks_removed = db.purge_pool()
@@ -207,7 +240,12 @@ def admin_purge() -> AdminPurgeResponse:
     )
 
 
-@app.post("/admin/keys", dependencies=[Depends(require_admin)])
+@app.post(
+    "/admin/keys",
+    dependencies=[Depends(require_admin)],
+    tags=["admin"],
+    summary="Mint an API key",
+)
 def admin_mint_key(body: AdminKeyRequest) -> AdminKeyResponse:
     """AC-9: HTTP mint route (EPIC 2 Q4 carry-over); same logic as `scripts/mint_key.py`."""
     key = secrets.token_urlsafe(32)
@@ -220,7 +258,12 @@ def admin_mint_key(body: AdminKeyRequest) -> AdminKeyResponse:
     )
 
 
-@app.post("/admin/keys/revoke", dependencies=[Depends(require_admin)])
+@app.post(
+    "/admin/keys/revoke",
+    dependencies=[Depends(require_admin)],
+    tags=["admin"],
+    summary="Revoke an API key",
+)
 def admin_revoke_key(body: AdminRevokeRequest) -> AdminRevokeResponse:
     """AC-8: instant revocation -- `require_api_key` reads the row fresh every request."""
     revoked = db.revoke_api_key(body.key_hash)
@@ -242,6 +285,8 @@ _DEMO_SHARED_SECRET_NOTE = (
 @app.post(
     "/v1/kem/keypair",
     dependencies=[Depends(require_entropy)],
+    tags=["kem"],
+    summary="QRNG-seeded ML-KEM-768 keypair",
 )
 def kem_keypair(
     body: KemKeypairRequest,
@@ -275,6 +320,8 @@ def kem_keypair(
 @app.post(
     "/v1/kem/encapsulate",
     dependencies=[Depends(require_entropy)],
+    tags=["kem"],
+    summary="QRNG-seeded ML-KEM encapsulation",
 )
 def kem_encapsulate(
     body: KemEncapsulateRequest,
@@ -310,3 +357,69 @@ def kem_encapsulate(
         response.entropy_epoch,
     )
     return response
+
+
+# --- EPIC 13: agent-first discovery (thin routes; builders live in qeaas.agent) ---
+
+
+@app.get("/.well-known/agent.json", include_in_schema=False)
+def well_known_agent() -> dict:
+    """AC-1: machine-readable agent manifest."""
+    return agent.well_known_agent()
+
+
+@app.get("/.well-known/ai-plugin.json", include_in_schema=False)
+def well_known_ai_plugin() -> dict:
+    """AC-2: minimal ChatGPT-plugin-style manifest."""
+    return agent.ai_plugin()
+
+
+@app.get("/.well-known/mcp.json", include_in_schema=False)
+def well_known_mcp() -> dict:
+    """AC-2: MCP discovery document."""
+    return agent.well_known_mcp()
+
+
+@app.get(
+    "/v1/agent/tools",
+    tags=["developer"],
+    summary="Machine-readable tool descriptors",
+)
+def agent_tools() -> list[dict]:
+    """AC-3: one tool descriptor per callable endpoint."""
+    return agent.tool_descriptors()
+
+
+@app.get(
+    "/v1/agent/manifest",
+    tags=["developer"],
+    summary="Agent onboarding manifest",
+)
+def agent_manifest(profile: str | None = Query(default=None)) -> dict:
+    """AC-5: full onboarding doc, or a framework-shaped quickstart for `?profile=`."""
+    return agent.agent_manifest(profile)
+
+
+@app.post("/mcp", include_in_schema=False)
+async def mcp_endpoint(
+    request: Request, x_api_key: str | None = Header(default=None)
+) -> Response:
+    """AC-10: stateless Streamable-HTTP MCP JSON-RPC endpoint."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse(
+            {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "parse_error"}}
+        )
+    result = mcp.handle(body, x_api_key)
+    if result is None:
+        return Response(status_code=202)
+    return JSONResponse(result)
+
+
+@app.get("/mcp", include_in_schema=False)
+def mcp_get() -> Response:
+    """The MCP transport is POST-only; GET returns a hint."""
+    return JSONResponse(
+        {"error": "mcp_transport_is_post"}, status_code=405, headers={"Allow": "POST"}
+    )
