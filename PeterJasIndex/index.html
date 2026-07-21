@@ -550,24 +550,30 @@
           // ---- auto infinity (lemniscate) at top of page ----
           // Drive the tubes by dispatching synthetic pointer moves along a
           // figure-eight near the top. Real mouse input takes over on move.
+          // touch devices: touch-drag makes the tubes jitter — never let real
+          // input drive them; run the auto loop always, pinned to the top.
+          const coarse = matchMedia("(pointer: coarse)").matches;
           let lastUser = -1e9;
-          window.addEventListener("pointermove", (e) => { if (e.isTrusted) lastUser = performance.now(); });
+          if (!coarse) {
+            window.addEventListener("pointermove", (e) => { if (e.isTrusted) lastUser = performance.now(); });
+          }
 
           const nameEl = document.querySelector(".hero h1");
           const SPEED = 0.0016;      // radians per ms — calm sweep
           const IDLE_MS = 2200;      // resume auto path this long after real move
           function frame(now) {
-            if (now - lastUser > IDLE_MS) {
+            if (coarse || now - lastUser > IDLE_MS) {
               const vw = window.innerWidth, vh = window.innerHeight;
               const t = now * SPEED;
               const s = Math.sin(t), c = Math.cos(t);
               const d = 1 + s * s;              // lemniscate of Bernoulli
               const nx = c / d;                 // ~ -1..1 (horizontal ∞)
               const ny = (s * c) / d;           // ~ -0.35..0.35
-              // center behind the name
-              const r = nameEl ? nameEl.getBoundingClientRect() : null;
+              // desktop: center behind the name. touch: pin to top of viewport
+              // (canvas is fixed, so viewport coords keep it stuck at the top).
+              const r = (!coarse && nameEl) ? nameEl.getBoundingClientRect() : null;
               const cx = r ? r.left + r.width / 2 : vw * 0.5;
-              const cy = r ? r.top + r.height / 2 : vh * 0.28;
+              const cy = r ? r.top + r.height / 2 : vh * 0.18;
               const rx = Math.min(vw * 0.44, 560);  // bigger loops
               const ry = rx * 0.5;
               const x = cx + nx * rx;
