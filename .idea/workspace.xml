@@ -1,7 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/QuantumLife/research/quantum-tree.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/1-calibration-guided-high-yield-qrng.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/Plans/1-calibration-guided-high-yield-qrng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/Plans/CALIBRATION_QRNG_BUILD_PLAN.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/feature-epic0-setup-and-measurement-circuits.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/Plans/feature-epic0-setup-and-measurement-circuits.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/feature-epic1-evaluation.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/Plans/feature-epic1-evaluation.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans/feature-epic2-band-stratified-evaluation.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/Plans/feature-epic2-band-stratified-evaluation.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/band_headline.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/band_headline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/band_registry.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/band_registry.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/band_trend.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/band_trend.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/calibration_snapshot.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/calibration_snapshot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/emit_quality_pdf.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/emit_quality_pdf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/eval_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/eval_common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/evaluate_bands.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/evaluate_bands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/evaluate_stage_a.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/evaluate_stage_a.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/evaluate_stage_b.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/evaluate_stage_b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/join_and_headline.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/join_and_headline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/pipeline_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/pipeline_common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/stage_a_selection.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/stage_a_selection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/code/stage_b_yield.py" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/code/stage_b_yield.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/paper/.gitkeep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/paper/CONCLUSION_EPIC2.md" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/paper/CONCLUSION_EPIC2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/.gitkeep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/calib_ibm_marrakesh_20260714-210124.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/calib_ibm_marrakesh_20260714-210124.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/liveRunStageA.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/liveRunStageA.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/liveRunStageBBest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/liveRunStageBBest.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/liveRunStageBNEXT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/liveRunStageBNEXT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/liveRunStageBWORST.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/liveRunStageBWORST.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stagea_ibm_marrakesh_20260714-210551_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stagea_ibm_marrakesh_20260714-210551_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stagea_ibm_marrakesh_20260714-210551_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stagea_ibm_marrakesh_20260714-210551_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stagea_ibm_marrakesh_20260714-210803_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stagea_ibm_marrakesh_20260714-210803_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stagea_ibm_marrakesh_20260714-210803_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stagea_ibm_marrakesh_20260714-210803_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-214301_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-214301_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-214301_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-214301_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-214816_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-214816_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-214816_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-214816_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-215558_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-215558_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-215558_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-215558_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-215818_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-215818_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/qrng_output/stageb_ibm_marrakesh_20260714-215818_raw.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/qrng_output/stageb_ibm_marrakesh_20260714-215818_raw.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/.gitkeep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/bands_ibm_marrakesh_bands_combined.csv" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/bands_ibm_marrakesh_bands_combined.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/bands_ibm_marrakesh_bands_headline.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/bands_ibm_marrakesh_bands_headline.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/bands_ibm_marrakesh_bands_stagea_predictor_65000shot.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/bands_ibm_marrakesh_bands_stagea_predictor_65000shot.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/bands_ibm_marrakesh_bands_trend.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/bands_ibm_marrakesh_bands_trend.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/bands_ibm_marrakesh_bands_usable_depth.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/bands_ibm_marrakesh_bands_usable_depth.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/optimal_harvested_ibm_marrakesh_20260714-214816_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/optimal_harvested_ibm_marrakesh_20260714-214816_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/optimal_harvested_ibm_marrakesh_20260714-215818_processed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/optimal_harvested_ibm_marrakesh_20260714-215818_processed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/qrng_compare_ibm_marrakesh_20260714-214816.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/qrng_compare_ibm_marrakesh_20260714-214816.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/qrng_compare_ibm_marrakesh_20260714-215818.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/qrng_compare_ibm_marrakesh_20260714-215818.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/stagea_ibm_marrakesh_20260714-210551_correlations.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/stagea_ibm_marrakesh_20260714-210551_correlations.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/stagea_ibm_marrakesh_20260714-210551_predictor.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/stagea_ibm_marrakesh_20260714-210551_predictor.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/stagea_ibm_marrakesh_20260714-210551_scores.csv" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/stagea_ibm_marrakesh_20260714-210551_scores.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/results/stagea_ibm_marrakesh_20260714-210551_scores.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old/results/stagea_ibm_marrakesh_20260714-210551_scores.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -62,11 +117,11 @@
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old" />
       <recent name="$PROJECT_DIR$/QuantumAlgorithmsExplained/explenation" />
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/plan" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans" />
       <recent name="$PROJECT_DIR$/study-ideas/Networking" />
-      <recent name="$PROJECT_DIR$/.claude/commands" />
     </key>
   </component>
   <component name="RunManager">
@@ -131,7 +186,9 @@
       <workItem from="1784289256687" duration="554000" />
       <workItem from="1784294124705" duration="3618000" />
       <workItem from="1784548984053" duration="11650000" />
-      <workItem from="1784612753394" duration="3175000" />
+      <workItem from="1784612753394" duration="14605000" />
+      <workItem from="1784633929810" duration="174000" />
+      <workItem from="1784897540958" duration="2202000" />
     </task>
     <servers />
   </component>

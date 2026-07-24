@@ -1,0 +1,654 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Does the Entangling Layer Do Real Work?
+Measuring a Causal Spatial-Correlation Signature in a
+Quantum-Grown Generative-Art Genome}
+
+\author{\IEEEauthorblockN{Peter Ja\v{s}}
+\IEEEauthorblockA{\textit{Department of Computers and Informatics} \\
+\textit{Technical University of Ko\v{s}ice}\\
+Ko\v{s}ice, Slovakia \\
+peterjas81@gmail.com}
+}
+
+\maketitle
+
+\begin{abstract}
+Generative art driven by quantum hardware is easy to market and hard to defend: a
+108-qubit circuit run once per generation produces a striking image, but the same
+image can be reproduced by a classical random-number generator wearing a quantum
+label. We take a running quantum-art system, \emph{QuantumTree} --- a virtual tree
+whose every growth step is one circuit executed on IBM Heron r2 superconducting
+hardware, with the measured bits deciding how it branches and the outcome of each
+generation fed back as the belief of the next --- and ask the smallest falsifiable
+question the pipeline can actually support: does the neighbour-entangling layer
+(a CX ladder plus a controlled-$R_x$ chain of angle $0.7$~rad) leave a
+\emph{spatial correlation signature} in the measured 108-bit genome that a
+classical, no-entanglement surrogate cannot reproduce? The system's native metric,
+per-qubit diversity, is blind to this by construction, so we instrument the pipeline
+with the connected two-point correlation $C(d)=\langle b_i b_{i+d}\rangle-\langle
+b_i\rangle\langle b_{i+d}\rangle$ and its normalised form $c(d)$. Across three
+seeded repeats of 4096 shots on \texttt{ibm\_kingston} we compare a classical
+surrogate (arm A), a no-entangler hardware control (arm B0), an entangler-on
+hardware run (arm B), and an entangling-depth dose--response sweep (arm C,
+layers~$0,1,2,4$). The classical surrogate gives a flat $c(d)\approx0$ (floor
+$\sigma_\xi\approx0.008$); the hardware entangler produces a strong, alternating
+signature ($c(1)=-0.077$, $c(2)=+0.040$) that is $z=-9.9$ from the surrogate and
+$z=-10.6$ from the readout control, and switches on causally --- layers $0$ and $1$
+match the control, and the sign flips only at layer~$2$. This rules out the
+deflationary reading: the entangling layer does real, tunable, device-produced
+work that a PRNG cannot fake. It does \emph{not} yet prove \emph{entanglement}: the
+serial ladder reaches ${\sim}800$ logical depth, so the signal is confounded with
+decoherence and coherent crosstalk. A preliminary brick-wall (depth-reducing)
+redesign is reported; the signature survives but changes shape (the weight migrates
+from $c(1)$ to $c(2)$), leaving the entanglement-versus-crosstalk question open and
+motivating the decisive low-depth experiment. The honest, reproducible statement is
+therefore \emph{``the entangling layer imprints a measurable, causal correlation
+signature absent from the classical model,''} not \emph{``we observe
+entanglement.''}
+\end{abstract}
+
+\begin{IEEEkeywords}
+quantum hardware, generative art, NISQ, entanglement correlation, two-point
+correlation function, IBM Heron, superconducting qubits, L-systems, crosstalk,
+falsifiable claims
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Quantum computers have become a fashionable engine for generative art: a circuit is
+run, its measured bits steer a drawing, and the result is presented as
+``quantum-generated.'' The rhetoric is seductive and the images can be beautiful,
+but the scientific content is usually left unstated. The uncomfortable question is
+simple: \emph{if a classical pseudo-random number generator (PRNG) can produce a
+visually indistinguishable output, in what sense is the artwork quantum at all?}
+Randomness alone does not settle this --- a Mersenne-Twister stream is more than
+adequate to bend branches and scatter leaves. What a classical surrogate
+\emph{cannot} manufacture is genuine multi-qubit correlation created by an
+entangling network~\cite{nielsen2010,horodecki2009}. If, and only if, such
+correlation survives measurement and can be detected in the output, the ``quantum''
+label describes a physical fact rather than a marketing choice.
+
+This paper puts that distinction to a controlled test on a real system.
+\emph{QuantumTree} is a generative-art project in which a virtual tree is
+\emph{grown}, generation by generation, on IBM Heron r2 superconducting
+hardware~\cite{ibmheron,kim2023}. Each generation runs exactly one 108-qubit
+circuit; the measured bitstrings are decoded into branch decisions (bend, length,
+fork, leaf), and --- crucially --- the per-qubit measurement statistics of
+generation $N$ are fed back as the encoded ``belief'' of generation $N+1$. The
+result is not a fresh random image per frame but a cumulative, inherited structure:
+random variation plus heredity plus a scheduled environment, i.e.\ the shape of
+directed change rather than blind noise. The art is real and runs on real hardware.
+The scientific claim, however, was never measured. The pipeline's only quantitative
+output was per-qubit \emph{diversity} (mean binary entropy), which is provably blind
+to entanglement: 108 independent biased coins yield the same diversity as 108
+maximally entangled qubits. Nothing in the art pipeline could tell ``quantum'' apart
+from ``classical noise with a quantum logo.''
+
+We therefore instrument the pipeline with a metric that \emph{can} see the
+difference --- the connected two-point correlation along the qubit chain --- and
+formulate the smallest honest, falsifiable question the hardware supports.
+
+\subsection*{Research Question}
+
+\emph{When the tree is grown on real superconducting hardware, does the
+neighbour-entangling layer (a CX ladder plus a controlled-$R_x$ chain) leave a
+spatial correlation signature in the measured 108-bit genome that a classical,
+no-entanglement surrogate provably cannot reproduce --- and if so, is the signature
+attributable to the entangling operation causally, rather than to residual
+device/readout artefacts?}
+
+\subsection*{Objectives}
+
+\begin{enumerate}
+\item Define a connected two-point correlation metric $C(d)$ on the genome bit
+stream that is sensitive to inter-qubit correlation and, by construction,
+insensitive to per-qubit bias.
+\item Establish a classical null (a no-entanglement surrogate) and a hardware
+readout floor (an encode-and-measure control with the entangling gates removed).
+\item Measure the correlation signature of the entangler-on hardware run against
+both baselines with a quantified significance level.
+\item Test causality with an entangling-depth dose--response sweep.
+\item State precisely which claim the data supports --- and which it does not.
+\end{enumerate}
+
+\subsection*{Contributions}
+
+\begin{itemize}
+\item A reproducible protocol that converts a quantum-art pipeline into a
+falsifiable experiment, using a bias-robust connected two-point correlation as the
+discriminating statistic and paired seeds to hold the environment fixed across arms.
+\item A ${\sim}10\sigma$ empirical demonstration on \texttt{ibm\_kingston} that the
+entangling layer imprints a spatial correlation signature ($c(1)=-0.077$,
+$c(2)=+0.040$) that the classical surrogate ($c(d)\approx0$) and the no-entangler
+hardware control ($c(1)=+0.015$) cannot reproduce, and that switches on
+\emph{causally} with entangling depth.
+\item A deliberately bounded negative: the same data \emph{cannot} yet certify
+\emph{entanglement}, because the serial entangling ladder is too deep
+(${\sim}800$ logical gates) for the entangled state to survive to measurement, so
+the signature is confounded with decoherence and coherent crosstalk. We report a
+preliminary depth-reducing (brick-wall) redesign and explain why it is the decisive
+follow-up rather than optional polish.
+\item A methodological caveat of independent interest: for a sign-alternating
+signature the integrated correlation length $\xi=\sum_{d\ge1}c(d)$ is a poor
+headline number (the terms partially cancel); $|c(1)|$ or a staggered sum is the
+correct summary.
+\end{itemize}
+
+\section{Background and Related Work}
+
+\subsection{Randomness, correlation, and the deflationary worry}
+
+A single qubit rotated into superposition and measured yields one Born-rule random
+bit~\cite{nielsen2010}; a chain of such qubits, measured independently, is
+statistically indistinguishable from a classical random source. Entanglement is the
+resource that a product state (and any classical surrogate built from per-qubit
+marginals) lacks~\cite{horodecki2009}. Entangling gates create correlations between
+qubits that survive measurement as \emph{statistical dependence between bit
+positions}. It is exactly this dependence --- not the presence of randomness --- that
+distinguishes a genuinely quantum output from a dressed-up PRNG. The natural probe
+is the connected two-point correlation function, a standard tool for detecting
+spatial structure in many-body systems~\cite{sachdev2011}. Recent
+utility-scale experiments on heavy-hex superconducting processors have likewise
+argued their case precisely by measuring correlation observables a cheap classical
+model fails to match~\cite{kim2023}, which is the template this study follows at art
+scale.
+
+\subsection{Generative art and L-systems}
+
+Procedurally grown plants are a classical subject: Lindenmayer systems (L-systems)
+generate botanical structure from rewriting rules~\cite{prusinkiewicz1990}, and
+generative art more broadly studies systems where the artist specifies a process and
+the output emerges from it~\cite{galanter2003}. QuantumTree is an L-system-like
+growth engine in which the rewriting decisions are supplied by hardware measurement
+and reinforced across generations. The contribution here is not the aesthetic but
+the discipline of asking whether the quantum substrate is doing measurable work that
+the classical version of the same growth engine cannot.
+
+\subsection{NISQ hardware, decoherence, and crosstalk}
+
+Current processors are noisy and pre-fault-tolerant~\cite{preskill2018}. On IBM
+Heron r2 (156 fixed-frequency transmons on a heavy-hex-derived lattice with tunable
+couplers~\cite{ibmheron,krantz2019}), single-qubit gates are high-fidelity while
+two-qubit gates and readout dominate the error budget. Two mechanisms complicate any
+correlation measurement. First, decoherence ($T_1/T_2$) degrades a prepared state as
+circuit depth grows, so a deep circuit can wash out the very correlation it
+creates~\cite{zurek2003,preskill2018}. Second, \emph{coherent crosstalk} --- unwanted
+qubit--qubit coupling and spectator effects during gates --- can imprint spatial
+structure that mimics genuine entanglement correlation~\cite{sarovar2020}.
+Correlated readout error is a third confound and is the reason a no-entangler
+hardware control is mandatory~\cite{temme2017}. This study is designed around these
+three threats.
+
+\section{The QuantumTree System (Art Pipeline)}
+
+We describe the art system in enough detail to make the experiment intelligible; the
+research fork (Sec.~\ref{sec:method}) reuses this engine unchanged and only adds the
+correlation metric.
+
+\subsection{Genome: 108 qubits as plant DNA}
+
+The register is $108 = 18\ \text{slots} \times 6\ \text{bits}$. One slot is one
+branch decision, decoded as in Table~\ref{tab:genome}. The choice of 108 is a
+hardware constraint, not an aesthetic one: it is the longest low-error, SWAP-free
+simple path that fits on a 156-qubit Heron r2 heavy-hex lattice (a full 120-qubit
+path does not exist on that topology). The genome specification is embedded verbatim
+into every run record so the browser viewer decodes exactly as Python encoded.
+
+\begin{table}[H]
+\caption{Genome slot layout: 6 bits per branch decision, 18 slots.}
+\label{tab:genome}
+\centering
+\small
+\begin{tabular}{@{}cll@{}}
+\toprule
+\textbf{Bits} & \textbf{Field} & \textbf{Meaning}\\
+\midrule
+0,1 & angle  & bend relative to parent, $-1\ldots+1$\\
+2,3 & length & segment length, $0.4\ldots1.0$\\
+4   & fork   & $1=$ split into two child branches (biased on)\\
+5   & leaf   & $1=$ sprout a leaf cluster; branch keeps growing\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The one circuit per generation}
+
+Each generation builds and runs a single circuit in five stages: (1)~a
+\emph{belief encode}, an $R_y(\theta_i)$ on every qubit ($\theta_i$ starts at
+$\pi/2$, a fair coin); (2)~the \emph{entangling network}, repeated
+\texttt{layers} times --- an open CX ladder $\mathrm{CX}(i,i{+}1)$ for
+$i=0\ldots106$ followed by a controlled-$R_x$ chain $\mathrm{CR}_x(0.7,i,i{+}1)$;
+(3)~an \emph{environment} layer of per-slot classical bias rotations (wind, light,
+season, and steady fork/leaf pushes); (4)~a \emph{self-mutation} kick carried from
+the previous generation; and (5)~measurement of all 108 qubits.
+Fig.~\ref{fig:circuit} shows the circuit as transpiled onto \texttt{ibm\_kingston}
+at \texttt{optimization\_level=3}: the logical $R_y/\mathrm{CX}/\mathrm{CR}_x/R_x$
+program is rewritten into the device's native $\sqrt{X}$, $R_z$, and CZ/ECR gates on
+the chosen 108-qubit chain, which is why the entangling stages dominate the depth.
+Stage~2 is the heart of the claim: $\mathrm{CX}(i,i{+}1)$ acting on a superposed
+qubit creates a Bell-type state $(\lvert00\rangle+\lvert11\rangle)/\sqrt2$ ---
+measuring one neighbour constrains the other --- and $\mathrm{CR}_x(0.7)$ adds a
+soft, tunable partial rotation on top. Setting \texttt{layers}${=}0$ removes stage~2
+entirely, leaving independent qubits: this is the on-hardware correlation floor.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{../circuit-d9ci6u4inv1c73anqj50.png}
+\caption{One QuantumTree generation as transpiled onto \texttt{ibm\_kingston}
+(Heron r2), \texttt{optimization\_level=3}, 108 qubits on a SWAP-free heavy-hex
+chain. Each horizontal line is a physical qubit; the dense left block is the
+belief-encode plus the repeated CX/controlled-$R_x$ entangling ladder rewritten into
+native $\sqrt{X}$/$R_z$/CZ gates, and the terminal squares are the measurement
+layer. The staircase at right is the read-out schedule across the chain. The serial
+ladder's per-neighbour ordering is what pushes the logical depth to ${\sim}800$ at
+\texttt{layers}${=}2$ --- the depth confound at the centre of this paper.}
+\label{fig:circuit}
+\end{figure*}
+
+\subsection{Evolution between generations: why it is not a random walk}
+
+There are two layers of randomness and one of them has memory. \emph{Within} a
+generation the 4096 shots are independent quantum coin-flips (pure noise on their
+own). \emph{Across} generations the system carries memory: after measuring, it
+computes $p_i$, the frequency with which qubit $i$ read~1 over all shots, and updates
+$\theta_i^{\text{next}} = \mathrm{clamp}(\theta_i + \eta(2p_i-1) + \text{wiggle})$
+with reinforcement rate $\eta=0.18$, while a mutation kick $\propto(2p_i-1)$ is
+carried forward. This feedback turns ``repeated random measurement'' into growth: the
+belief is pushed toward whatever the qubits already prefer, so the tree's branching
+\emph{character} crystallises (entropy falls) as it matures, while a small wiggle
+keeps individual branches alive. This is the structure of biological evolution ---
+random variation, heredity, and environmental pressure --- rather than a memoryless
+random walk. Note that two quantities are extracted per generation: the full
+per-qubit distribution $p_i$ drives evolution, and the single most-frequent 108-bit
+field is what the viewer draws. The two browser viewers (a line-art ``living'' viewer
+and a pixel-art ``grove'' that auto-cycles recorded runs) replay this history so one
+watches the tree grow, generation by generation, under its scheduled environment.
+
+\subsection{Why this needs measuring, not asserting}
+
+The full 108-qubit entangled state cannot be held classically
+($2^{108}\approx3\times10^{32}$ amplitudes), so the ``impossible to simulate at
+scale'' claim is true but sterile: it says nothing about whether the \emph{output}
+is quantum. The \emph{visual} tree can be faked --- the classical surrogate grows one
+too. What a surrogate cannot produce is genuine correlation $C(d)$. Whether that
+correlation survives device noise is not a slogan; it is the hypothesis the research
+fork tests.
+
+\section{Methodology}
+\label{sec:method}
+
+\subsection{The discriminating statistic}
+
+For a shot record of 108-bit strings we define the connected two-point correlation
+along the open chain,
+\begin{equation}
+C(d) = \operatorname*{mean}_{i}\bigl[\langle b_i b_{i+d}\rangle - \langle
+b_i\rangle\langle b_{i+d}\rangle\bigr],
+\end{equation}
+where $\langle\cdot\rangle$ averages over shots and the outer mean averages over
+chain positions. We report the normalised form $c(d)=C(d)/C(0)$ (so $c(0)=1$) and
+the integrated correlation length $\xi=\sum_{d\ge1}c(d)$. Two properties make $C(d)$
+the right probe. First, it is \emph{bias-robust}: subtracting $\langle
+b_i\rangle\langle b_{i+d}\rangle$ removes the effect of the deterministic per-slot
+environment bias, so per-qubit imbalance alone cannot manufacture $C(d)>0$ --- only
+genuine inter-qubit dependence can. Second, $C(d)=0$ for all $d>0$ is exactly the
+null produced by a product state or any classical per-marginal surrogate, up to
+finite-shot noise $\mathcal{O}(1/\sqrt{\text{shots}})$.
+
+\subsection{Experimental arms}
+
+All hardware arms run on \texttt{ibm\_kingston} with three seeded repeats
+($\text{seed}=100,101,102$) at 4096 shots per generation; the environment schedule is
+seeded, so an arm run at a given seed sees an \emph{identical} environment ---
+differences between arms are attributable to the circuit, not to a different random
+tree.
+
+\begin{itemize}
+\item \textbf{A --- classical null (\texttt{--sim}).} A surrogate with no entangling
+gates: each qubit is drawn from its own marginal with only a hand-coded 3-tap
+neighbour smoothing. Predicts $c(d)\approx0$, $\xi\approx0$.
+\item \textbf{B0 --- hardware control (\texttt{layers}${=}0$).} Encode and measure on
+hardware with the entangling stage removed. Any $c(d)$ here is pure device/readout
+artefact; this is the floor that is subtracted, so a signal is never compared against
+literal zero.
+\item \textbf{B --- hardware main (\texttt{layers}${=}2$).} The entangler on, same
+seeds and environment as A and B0.
+\item \textbf{C --- dose--response sweep (\texttt{layers}${=}0,1,2,4$).} Tests whether
+the effect grows with entangling depth (causal) rather than appearing by luck.
+\item \textbf{F --- shot-floor calibration (\texttt{--sim}, shots
+$256\ldots8192$).} Pins the finite-shot noise level empirically.
+\end{itemize}
+
+The qubit chain is chosen per run from live calibration by a time-boxed DFS that
+maximises path length while minimising total gate/readout error along it, dropping
+dead qubits; the ordered \texttt{qubit\_list} is recorded so arms are never compared
+across different physical chains. The evaluation is deterministic and offline: shot
+records and generation metadata are stored, and the correlation analysis re-runs
+without re-invoking the QPU.
+
+\subsection{Significance bar}
+
+The shot-floor sweep (arm F, Table~\ref{tab:shotfloor}) fixes the noise level. At
+4096 shots the simulated $\xi$ scatter is $\sigma_\xi\approx0.008$, and $\xi_{\text{mean}}\to0$
+as shots rise --- confirming both that the null behaves and that the metric is sound.
+A hardware effect therefore counts as real only if it exceeds ${\sim}3\sigma$ over the
+appropriate baseline. Per arm we compute a $z$-score
+$z=(\text{signal})/\sqrt{\sigma_{\text{hw}}^2+\sigma_{\text{base}}^2}$ over the
+generation samples, using B0-subtracted signals for hardware comparisons.
+
+\begin{table}[H]
+\caption{Arm F: shot-floor calibration (\texttt{--sim}). $\xi_{\text{mean}}\to0$
+and $\sigma_\xi\propto1/\sqrt{\text{shots}}$.}
+\label{tab:shotfloor}
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Shots} & \textbf{$\xi$ mean} & \textbf{$\sigma_\xi$}\\
+\midrule
+256   & $+0.012$ & 0.028\\
+1024  & $+0.007$ & 0.011\\
+\textbf{4096}  & \textbf{$-0.000$} & \textbf{0.008}\\
+8192  & $+0.000$ & 0.005\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Results}
+\label{sec:results}
+
+\subsection{The correlation signature}
+
+Table~\ref{tab:arms} reports each arm averaged over generations and repeats.
+The classical surrogate is flat ($c(1)=0.000$, $\xi=+0.001$), confirming the null.
+The no-entangler hardware control shows only a weak positive nearest-neighbour term
+($c(1)=+0.015$) that dies at $d{=}2$ --- the readout/device floor. Switching the
+entangler on (arm B) produces a qualitatively different, strong, \emph{alternating}
+signature: $c(1)=-0.077$ with a staggered $c(2)=+0.040$ tail. The full decay curve
+is given in Table~\ref{tab:cd}. The signature is far outside noise:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+$c(1)$ signature (B) vs classical surrogate: & $z=-9.9$\\
+$c(1)$ signature (B) vs hardware control:     & $z=-10.6$\\
+\end{tabular}
+\end{center}
+Both are an order of magnitude past the $3\sigma$ bar, so the signal is neither
+finite-shot noise nor a readout artefact.
+
+\begin{table}[H]
+\caption{Correlation and diversity by arm (\texttt{ibm\_kingston}, 3 repeats,
+4096 shots; arm A is the \texttt{--sim} null).}
+\label{tab:arms}
+\centering
+\small
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+\textbf{Arm} & \textbf{Layers} & \textbf{$c(1)$} & \textbf{$c(2)$} & \textbf{$\xi$} & \textbf{Diversity}\\
+\midrule
+A --- sim null   & 2 & $+0.000$ & $+0.000$ & $+0.001$ & 0.855\\
+B0 --- hw control & 0 & $+0.015$ & $-0.000$ & $+0.017$ & 0.931\\
+\textbf{B --- hw main} & \textbf{2} & \textbf{$-0.077$} & \textbf{$+0.040$} & \textbf{$-0.031$} & \textbf{0.944}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\caption{Normalised correlation decay $c(d)$, $d=0\ldots6$, averaged over
+generations. The classical null and the readout control are flat past $d{=}1$; the
+entangler produces an alternating, distance-decaying tail.}
+\label{tab:cd}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\textbf{Arm} & $c(0)$ & $c(1)$ & $c(2)$ & $c(3)$ & $c(4)$ & $c(5)$ & $c(6)$\\
+\midrule
+A --- sim   & 1.00 & $\phantom{-}0.000$ & $\phantom{-}0.000$ & $-0.001$ & $\phantom{-}0.001$ & $-0.000$ & $\phantom{-}0.000$\\
+B0 --- ctrl & 1.00 & $\phantom{-}0.015$ & $-0.000$ & $\phantom{-}0.000$ & $\phantom{-}0.000$ & $\phantom{-}0.001$ & $\phantom{-}0.000$\\
+B --- main  & 1.00 & $-0.077$ & $\phantom{-}0.040$ & $\phantom{-}0.002$ & $\phantom{-}0.002$ & $\phantom{-}0.000$ & $\phantom{-}0.001$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Causality: the dose--response sweep}
+
+Table~\ref{tab:dose} shows the effect switches on with entangling depth rather than
+appearing by chance. Layers~0 and~1 are indistinguishable from the readout control
+(weak $c(1)\approx+0.02$, dying at $d{=}2$). At \textbf{layer~2 the sign flips} to the
+strong staggered pattern, reproducing arm~B on an independent run. By layer~4 the
+signal is degraded and scattered (diversity rises to 0.98 and $c(1)$ collapses toward
+zero while $c(2)$ swings negative), consistent with the NISQ story that deeper
+circuits accumulate more two-qubit-gate error than added correlation. The structure
+is thus \emph{caused} by the entangling layer and is non-monotonic in depth --- the
+sweet-spot behaviour expected of a noise-limited device, not a linear systematic.
+
+\begin{table}[H]
+\caption{Arm C dose--response: correlation vs entangling depth
+(\texttt{ibm\_kingston}, 3 repeats, 4096 shots, 6 generations).}
+\label{tab:dose}
+\centering
+\small
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+\textbf{Layers} & \textbf{$c(1)$} & \textbf{$c(2)$} & \textbf{$\xi$} & \textbf{Div.} & \textbf{Reading}\\
+\midrule
+0 & $+0.020$ & $-0.001$ & $+0.019$ & 0.927 & $=$ control\\
+1 & $+0.019$ & $-0.002$ & $+0.015$ & 0.926 & $=$ control\\
+2 & $-0.071$ & $+0.038$ & $-0.030$ & 0.943 & \textbf{sign flips (=\,B)}\\
+4 & $+0.012$ & $-0.050$ & $+0.043$ & 0.979 & degraded / noisy\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The effect is correlation, not bias}
+
+Diversity (mean per-qubit binary entropy) is comparable across all hardware arms
+(0.93--0.98) and even the classical surrogate reaches 0.86, while $c(d)$ differs by
+${\sim}10\sigma$ between the entangler-on and entangler-off arms. Because a shift in
+per-qubit bias would move diversity but the connected $C(d)$ subtracts the marginal
+product, this confirms that the effect lives in \emph{correlation between bit
+positions}, not in a change of per-bit bias --- which was the entire motivation for
+choosing $C(d)$ over the pipeline's native diversity metric.
+
+\subsection{The $\xi$ headline is misleading for this signal}
+
+Because the signature alternates in sign, the integrated length
+$\xi=\sum_{d\ge1}c(d)$ partially cancels: for arm~B it reads a tiny $-0.031$ while the
+real effect lives in $|c(1)|\approx0.077$ and the staggered $c(2)>0$ tail. A decision
+rule keyed on $\xi$ alone (e.g.\ $|\xi|>0.024$) would badly understate the effect.
+Future summaries should headline $|c(1)|$ or the staggered sum
+$\sum_d(-1)^{d+1}c(d)$, not $\xi$. We report this as a methodological finding: the
+compression of a correlation curve into a single scalar must respect the curve's
+sign structure.
+
+\subsection{Brick-wall redesign: preliminary Phase-2 result}
+
+To separate genuine entanglement from a depth artefact, the entangling ladder must be
+made shallow enough that the entangled state survives to measurement. The serial
+ladder fires each neighbour bond one at a time (${\sim}107$ deep per sweep,
+${\sim}800$ logical depth at \texttt{layers}${=}2$). A brick-wall schedule fires all
+even bonds $(0,1)(2,3)\ldots$ in parallel (depth~1) then all odd bonds
+$(1,2)(3,4)\ldots$ (depth~1): identical neighbour physics at ${\sim}50\times$ less
+depth. Table~\ref{tab:brickwall} reports a best-effort brick-wall run against its own
+\texttt{layers}${=}0$ control. The signature \emph{persists} and remains far above
+the classical floor ($|c|\approx0.06$), but its \emph{shape changes}: the weight
+migrates from $c(1)$ (serial) to $c(2)$ (brick-wall), while the brick-wall control
+carries an unusually large positive $c(1)=+0.064$. Under the pre-registered decision
+rule --- ``signature persists and decays cleaner $\Rightarrow$ entanglement;
+signature vanishes or changes shape $\Rightarrow$ device artefact'' --- a changed
+shape does \emph{not} cleanly earn the entanglement claim. The most likely reading is
+that even the brick-wall circuit, at 108 qubits after transpilation, does not reach a
+low enough effective depth to isolate surviving entanglement, so the result remains
+consistent with a coherent-crosstalk / depth origin. This is why we report it as
+preliminary and keep the entanglement claim open.
+
+\begin{table}[H]
+\caption{Brick-wall (depth-reduced) entangler vs serial, and vs its own control
+(\texttt{ibm\_kingston}, 3 repeats, 4096 shots). ``best-effort'' = transpiled
+brick-wall schedule on the 108-qubit chain.}
+\label{tab:brickwall}
+\centering
+\small
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Entangler} & \textbf{Layers} & \textbf{$c(1)$} & \textbf{$c(2)$} & \textbf{$\xi$}\\
+\midrule
+serial      & 0 & $+0.015$ & $-0.000$ & $+0.017$\\
+serial      & 2 & $-0.077$ & $+0.040$ & $-0.031$\\
+brick-wall  & 0 & $+0.064$ & $-0.002$ & $+0.062$\\
+brick-wall  & 2 & $-0.000$ & $+0.057$ & $+0.065$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+
+\subsection{What is proven}
+
+Two claims are established at ${\sim}10\sigma$. \emph{Not PRNG art:} the classical
+surrogate produces flat $c(d)\approx0$; the hardware produces structure it cannot
+reproduce ($z=-9.9$). The quantum connection does measurable work a PRNG cannot fake.
+\emph{Not a readout artefact:} the no-entangler hardware control gives only a weak
+$c(1)=+0.015$ that dies at $d{=}2$, and turning the entangler on flips $c(1)$ to
+$-0.077$ with a staggered tail ($z=-10.6$ vs.\ control), switching on causally with
+depth. The entangling gates \emph{cause} the signal. For the QuantumTree art project
+this is the decisive result: it rules out the deflationary reading. The genome carries
+real, device-produced, tunable spatial structure --- the ``quantum'' label describes a
+physical fact, not decoration.
+
+\subsection{What is not proven}
+
+The stronger claim of \emph{entanglement} is not yet earned. The serial ladder
+reaches ${\sim}800$ logical depth --- far beyond Heron's coherence budget --- so the
+measured $c(d)$ may be a decoherence- and crosstalk-shaped pattern rather than
+surviving entanglement correlation~\cite{zurek2003,sarovar2020,preskill2018}. The
+alternating $c(1)<0,\,c(2)>0$ shape is as consistent with a coherent-error / spectator
+pattern arising from the serial ladder's ordering as with a genuine entanglement
+decay. Origin is confounded with circuit depth. The preliminary brick-wall run does
+not resolve the confound: the signature survives but changes shape, which the
+pre-registered rule reads as ``not clean.'' The honest statement is therefore:
+\emph{the entangling layer imprints a measurable, causal correlation signature absent
+from the classical model} --- not \emph{we observe entanglement}.
+
+\subsection{Relationship to the author's QRNG work}
+
+A companion study by the author on the same hardware family compared entanglement-based
+(Bell-pair) and product-state (Hadamard) quantum random number
+generators~\cite{jasqrng}, finding that on current Heron fidelities the entangling
+construction bought no quality advantage at substantial extra cost. The present result
+is complementary: here the entangling layer demonstrably \emph{does} imprint structure
+absent from the classical model, but whether that structure is \emph{entanglement} ---
+as opposed to a depth-limited coherent artefact --- is exactly the open question. Both
+studies converge on the same NISQ-era caution: entangling complexity must be shown to
+do useful, isolable work, not assumed to.
+
+\section{Threats to Validity}
+
+\emph{Finite shots.} $C(d)$ carries $\mathcal{O}(1/\text{shots})$ noise; every
+hardware $c(d)$ is compared against the \texttt{--sim} floor at the same shots
+(Table~\ref{tab:shotfloor}), never against literal zero.
+\emph{Transpilation / SWAPs.} Correlation is nearest-neighbour only if the logical
+chain maps to a physical chain; the layout picks a SWAP-free path and the
+\texttt{qubit\_list} is recorded per run so arms are never compared across chains.
+\emph{Bias masquerading as correlation.} The connected $C(d)$ subtracts $p_ip_j$, so
+the deterministic per-slot environment bias cannot create $C(d)>0$; paired seeds keep
+that bias fixed across arms.
+\emph{Correlated readout.} This is precisely what arm B0 measures and what is
+subtracted. \emph{Calibration drift.} The chain is re-picked per run from live
+calibration; exact $c(d)$ magnitudes should be read as valid within a calibration
+window, and the qualitative ordering (A $<$ B0 $\ll$ B) is the robust result.
+\emph{Depth confound (the principal limitation).} As above, the serial-ladder depth
+prevents attributing the signal specifically to entanglement.
+
+\section{Future Work}
+
+The decisive experiment is a genuine low-depth entangler: run a true brick-wall
+schedule at matched \texttt{--seed} and \texttt{--layers} against the serial version,
+plus its own \texttt{--sim} null and \texttt{layers}${=}0$ control, on progressively
+shorter chains so the effective depth drops below the coherence cliff. If the
+signature persists \emph{and decays cleanly / monotonically}, the entanglement claim
+is earned; if it vanishes or continues to change shape, the serial signal is device
+structure and should be reported as such. Complementary directions: a
+\texttt{CROSS\_ANGLE} coupling sweep to test whether correlation strength tracks the
+controlled-$R_x$ angle (a second causal handle); replication on a second Heron
+processor and across calibration days to bound noise sensitivity; and a lightweight
+entanglement witness on short qubit sub-chains, where state tomography is tractable,
+to cross-check the correlation-function verdict against a certified measure.
+
+\section{Conclusion}
+
+We asked whether the entangling layer of a quantum-grown generative-art system does
+real, measurable work --- whether it imprints a spatial correlation signature on the
+108-bit genome that a classical, no-entanglement surrogate cannot reproduce. Across
+three seeded repeats on \texttt{ibm\_kingston}, the answer to that question is
+unambiguously yes: the hardware entangler produces a strong, alternating,
+distance-decaying correlation ($c(1)=-0.077$, $c(2)=+0.040$) that is $z=-9.9$ from the
+classical surrogate and $z=-10.6$ from the no-entangler hardware control, and that
+switches on causally with entangling depth. The QuantumTree genome therefore carries
+structure that is neither PRNG randomness nor readout artefact --- the deflationary
+``classical noise with a quantum logo'' reading is ruled out.
+
+The result stops precisely there. It does \emph{not} certify entanglement: the serial
+entangling ladder is too deep for the entangled state to survive to measurement, so
+the signature cannot be cleanly separated from decoherence and coherent crosstalk, and
+a preliminary depth-reduced brick-wall run leaves the question open by producing a
+signature of changed shape. The faithful conclusion is that the entangling layer
+imprints a measurable, causal correlation signature absent from the classical model,
+and that converting ``measurable quantum structure'' (proven) into ``measurable
+entanglement'' (not yet proven) requires the low-depth experiment we have specified.
+For quantum-driven generative art more broadly, the lesson is methodological: the
+claim that an artwork is ``quantum'' is testable, and it should be tested --- with a
+bias-robust correlation statistic, a classical null, and a hardware control --- rather
+than asserted.
+
+\section*{Acknowledgment}
+
+The author thanks IBM Quantum for access to the \texttt{ibm\_kingston} processor
+through the Open Plan, and the Department of Computers and Informatics of the
+Technical University of Ko\v{s}ice for computational support.
+
+\begin{thebibliography}{00}
+\bibitem{nielsen2010} M.~A. Nielsen and I.~L. Chuang, \emph{Quantum Computation and Quantum Information}, 10th ed. Cambridge University Press, 2010.
+\bibitem{horodecki2009} R.~Horodecki, P.~Horodecki, M.~Horodecki, and K.~Horodecki, ``Quantum entanglement,'' \emph{Rev. Mod. Phys.}, vol.~81, no.~2, pp.~865--942, 2009.
+\bibitem{preskill2018} J.~Preskill, ``Quantum computing in the NISQ era and beyond,'' \emph{Quantum}, vol.~2, p.~79, 2018.
+\bibitem{sachdev2011} S.~Sachdev, \emph{Quantum Phase Transitions}, 2nd ed. Cambridge University Press, 2011.
+\bibitem{kim2023} Y.~Kim et al., ``Evidence for the utility of quantum computing before fault tolerance,'' \emph{Nature}, vol.~618, no.~7965, pp.~500--505, 2023.
+\bibitem{prusinkiewicz1990} P.~Prusinkiewicz and A.~Lindenmayer, \emph{The Algorithmic Beauty of Plants}. Springer-Verlag, 1990.
+\bibitem{galanter2003} P.~Galanter, ``What is generative art? Complexity theory as a context for art theory,'' in \emph{Proc. 6th Generative Art Conf. (GA2003)}, Milan, 2003.
+\bibitem{krantz2019} P.~Krantz et al., ``A quantum engineer's guide to superconducting qubits,'' \emph{Appl.\ Phys.\ Rev.}, vol.~6, no.~2, p.~021318, 2019.
+\bibitem{sarovar2020} M.~Sarovar et al., ``Detecting crosstalk errors in quantum information processors,'' \emph{Quantum}, vol.~4, p.~321, 2020.
+\bibitem{zurek2003} W.~H. Zurek, ``Decoherence, einselection, and the quantum origins of the classical,'' \emph{Rev. Mod. Phys.}, vol.~75, no.~3, pp.~715--775, 2003.
+\bibitem{temme2017} K.~Temme, S.~Bravyi, and J.~M. Gambetta, ``Error mitigation for short-depth quantum circuits,'' \emph{Phys.\ Rev.\ Lett.}, vol.~119, no.~18, p.~180509, 2017.
+\bibitem{ibmheron} IBM Quantum, ``The Heron processor family,'' IBM Research Blog, 2024.
+\bibitem{qiskitruntime} IBM Quantum, ``Qiskit Runtime primitives,'' \url{https://quantum.cloud.ibm.com/docs/guides/qiskit-runtime-primitives}, accessed 2026.
+\bibitem{jasqrng} P.~Ja\v{s}, ``Quantifying the cost of complexity: evaluating noise-based vs.\ Bell-state quantum random number generators,'' Technical University of Ko\v{s}ice, 2026.
+\end{thebibliography}
+
+\end{document}
