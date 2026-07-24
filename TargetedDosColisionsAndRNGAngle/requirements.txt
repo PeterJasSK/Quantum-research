@@ -1,0 +1,7 @@
+os-ken
+# os-ken is the OpenStack-maintained fork of Ryu (import os_ken, same
+# RyuApp API as ryu). Plain `ryu` fails to install on modern setuptools
+# (its setup.py calls a removed easy_install API) -- ryu has had no
+# release since 2021.
+# Mininet and Open vSwitch are system packages, not pip:
+#   sudo apt install mininet openvswitch-switch

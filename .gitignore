@@ -1,1 +1,6 @@
 credentialsApi.py
+
+# ECMP Collision DoS testbed (TargetedDosColisionsAndRNGAngle)
+TargetedDosColisionsAndRNGAngle/.venv/
+**/__pycache__/
+*.pyc
