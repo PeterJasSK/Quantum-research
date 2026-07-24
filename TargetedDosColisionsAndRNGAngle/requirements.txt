@@ -1,4 +1,5 @@
 os-ken
+scapy
 # os-ken is the OpenStack-maintained fork of Ryu (import os_ken, same
 # RyuApp API as ryu). Plain `ryu` fails to install on modern setuptools
 # (its setup.py calls a removed easy_install API) -- ryu has had no
@@ -7,3 +8,5 @@ os-ken
 #   sudo apt install mininet openvswitch-switch
 # P2: the qrng salt source uses stdlib urllib.request (no new dependency).
 # Node is required only to run testbed/vectors/check_parity.py, not pip-installed.
+# P3: scapy crafts/sends the attacker's packets (traffic.py only). hping3
+# and iperf are optional load alternatives -- system tools, not pip deps.

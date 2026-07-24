@@ -69,3 +69,27 @@ QEAAS_BASE_URL = os.environ.get("QEAAS_BASE_URL", "https://api.qeaas.eu")
 QEAAS_API_KEY = os.environ.get("QEAAS_API_KEY", "")
 
 ROTATION_LOG_PATH = os.environ.get("ROTATION_LOG_PATH", "rotation_events.jsonl")
+
+# --- P3: attacker config (AC-1-4) ---
+
+# Index into EGRESS_PORTS the precision attacker targets (OQ-4). A
+# realistic run instead reads the victim's current link from a
+# PlacementOracle probe and overrides this default.
+TARGET_LINK = int(os.environ.get("TARGET_LINK", "0"))
+
+# Spoof pool for the precision attacker's "multiple compliant sources"
+# (OQ-3) -- src-IP spoofing from the single `attacker` host, no topology
+# change.
+ATTACK_SOURCE_IPS = [f"10.0.0.{i}" for i in range(100, 116)]
+
+# Per-source send rate caps (AC-3/AC-4): precision stays under the P4
+# defence thresholds per spoofed source; volumetric floods a single fixed
+# flow at a naively high rate.
+PRECISION_PER_SOURCE_PPS = int(os.environ.get("PRECISION_PER_SOURCE_PPS", "5"))
+VOLUMETRIC_PPS = int(os.environ.get("VOLUMETRIC_PPS", "1000"))
+
+# Weak-PRNG brute-force bounds the partial attacker searches (OQ-2): the
+# P2-frozen 32-bit seed space, re-searched per rotation, at a bounded
+# draw-index window.
+PRNG_SEED_SPACE_BITS = int(os.environ.get("PRNG_SEED_SPACE_BITS", "32"))
+BRUTEFORCE_DRAW_WINDOW = int(os.environ.get("BRUTEFORCE_DRAW_WINDOW", "4"))

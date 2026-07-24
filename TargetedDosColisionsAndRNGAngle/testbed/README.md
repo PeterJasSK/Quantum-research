@@ -144,3 +144,57 @@ non-zero and prints every mismatching vector. `testbed/vectors/ecmp_hash.js`
 is the canonical JS mirror the P6 demo imports directly — do not fork it.
 Requires `node` on `PATH` (only needed to run the parity checker, not the
 testbed itself).
+
+## Running the attacker (Plan 3)
+
+`testbed/attacker/` is the "new attacker" (epic §3.1): it damages by
+mathematical placement, not by any behaviour a source-watching defence can
+observe. Three knowledge levels (`full` | `partial` | `blind`), two traffic
+modes (`volumetric` | `precision`).
+
+### Offline check (no Mininet/root)
+
+```
+.venv/bin/python3 testbed/attacker/collision_check.py
+```
+
+Confirms: every crafted "collision" 5-tuple actually hashes to the target
+link under the real `ecmp_link`; the blind fallback spreads ~uniformly
+across links; the partial attacker's `SeedBruteForcer` recovers a known
+seed. Non-zero exit on any of the three.
+
+### Live traffic (needs Mininet + OVS + root)
+
+Boot the P1 topology + P2 controller (`SALT_KIND=prng`, rotation off), then
+from the `attacker` host:
+
+```
+# Volumetric control (AC-3) -- single fixed flow, high rate:
+sudo .venv/bin/python3 testbed/attacker/run_attack.py \
+    --level full --mode volumetric --salt <controller active_salt hex>
+
+# Precision, full knowledge (AC-4):
+sudo .venv/bin/python3 testbed/attacker/run_attack.py \
+    --level full --mode precision --salt <controller active_salt hex>
+
+# Precision, partial knowledge -- brute-forces the weak-PRNG seed space,
+# validated against a placement oracle built from the true salt
+# (simulates the congestion/timing side channel, epic §3.1/P7):
+sudo .venv/bin/python3 testbed/attacker/run_attack.py \
+    --level partial --mode precision --oracle-salt <controller active_salt hex> \
+    --seed-space-bits 16 --draw-window 4
+
+# Blind (expected-failure baseline):
+sudo .venv/bin/python3 testbed/attacker/run_attack.py --level blind --mode precision
+```
+
+Each run prints a JSON run-record (`{level, mode, target_link,
+salt_source, sources_used, flows_sent, reconstruction}`) — P4/P5 consume
+this shape directly, no reshaping. `sources_used` should show the spoofed
+`ATTACK_SOURCE_IPS` pool for `precision`; confirm via `ovs-ofctl -O
+OpenFlow15 dump-ports s1` that the target link's counters climb while no
+single source exceeds `PRECISION_PER_SOURCE_PPS`.
+
+The **spoof pool needs root/netns** to send arbitrary `src_ip`s from the
+single `attacker` host (scapy). If OVS/Mininet drops spoofed-source packets
+(RPF/anti-spoof), that's a P1 topology escalation (OQ-3), not a P3 fix.
