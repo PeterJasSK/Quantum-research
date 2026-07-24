@@ -1,0 +1,338 @@
+[
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51000,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51000,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51000,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51000,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51001,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51001,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51001,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 51001,
+      "dst_port": 80,
+      "proto": 6
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 12345,
+      "dst_port": 443,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 12345,
+      "dst_port": 443,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 12345,
+      "dst_port": 443,
+      "proto": 6
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 12345,
+      "dst_port": 443,
+      "proto": 6
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 53,
+      "dst_port": 53,
+      "proto": 17
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 53,
+      "dst_port": 53,
+      "proto": 17
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 53,
+      "dst_port": 53,
+      "proto": 17
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 1
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.1",
+      "dst_ip": "10.0.0.2",
+      "src_port": 53,
+      "dst_port": 53,
+      "proto": 17
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 0,
+      "dst_port": 0,
+      "proto": 1
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 1
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 0,
+      "dst_port": 0,
+      "proto": 1
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 0,
+      "dst_port": 0,
+      "proto": 1
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 1
+  },
+  {
+    "five_tuple": {
+      "src_ip": "10.0.0.3",
+      "dst_ip": "10.0.0.2",
+      "src_port": 0,
+      "dst_port": 0,
+      "proto": 1
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "192.168.1.1",
+      "dst_ip": "192.168.1.2",
+      "src_port": 1,
+      "dst_port": 65535,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "192.168.1.1",
+      "dst_ip": "192.168.1.2",
+      "src_port": 1,
+      "dst_port": 65535,
+      "proto": 6
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 0
+  },
+  {
+    "five_tuple": {
+      "src_ip": "192.168.1.1",
+      "dst_ip": "192.168.1.2",
+      "src_port": 1,
+      "dst_port": 65535,
+      "proto": 6
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 1
+  },
+  {
+    "five_tuple": {
+      "src_ip": "192.168.1.1",
+      "dst_ip": "192.168.1.2",
+      "src_port": 1,
+      "dst_port": 65535,
+      "proto": 6
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 1
+  },
+  {
+    "five_tuple": {
+      "src_ip": "255.255.255.255",
+      "dst_ip": "0.0.0.0",
+      "src_port": 65535,
+      "dst_port": 1,
+      "proto": 17
+    },
+    "salt_hex": "73616c742d412d30303030303030303030303030303030303030303030303030303030",
+    "n_links": 4,
+    "link": 2
+  },
+  {
+    "five_tuple": {
+      "src_ip": "255.255.255.255",
+      "dst_ip": "0.0.0.0",
+      "src_port": 65535,
+      "dst_port": 1,
+      "proto": 17
+    },
+    "salt_hex": "73616c742d422d31313131313131313131313131313131313131313131313131313131",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "255.255.255.255",
+      "dst_ip": "0.0.0.0",
+      "src_port": 65535,
+      "dst_port": 1,
+      "proto": 17
+    },
+    "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "n_links": 4,
+    "link": 3
+  },
+  {
+    "five_tuple": {
+      "src_ip": "255.255.255.255",
+      "dst_ip": "0.0.0.0",
+      "src_port": 65535,
+      "dst_port": 1,
+      "proto": 17
+    },
+    "salt_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "n_links": 4,
+    "link": 1
+  }
+]

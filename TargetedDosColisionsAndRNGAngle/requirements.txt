@@ -5,3 +5,5 @@ os-ken
 # release since 2021.
 # Mininet and Open vSwitch are system packages, not pip:
 #   sudo apt install mininet openvswitch-switch
+# P2: the qrng salt source uses stdlib urllib.request (no new dependency).
+# Node is required only to run testbed/vectors/check_parity.py, not pip-installed.

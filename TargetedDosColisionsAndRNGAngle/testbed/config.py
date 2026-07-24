@@ -13,6 +13,8 @@ entry with location="spine" and a topology link, not a rewrite).
 """
 from __future__ import annotations
 
+import os
+
 N_LINKS = 4
 
 LEAF_DPID = 1  # Mininet derives dpid 1 from switch name "s1"
@@ -44,9 +46,26 @@ LOCAL_IP_TO_PORT = {HOSTS[name]["ip"]: LEAF_LOCAL_PORTS[name] for name in _LEAF_
 # IPs reachable only via the spine -- these go through ecmp_link() on s1.
 REMOTE_IPS = {HOSTS[name]["ip"] for name in _SPINE_HOSTS}
 
-# P1's salt is a static hardcoded placeholder. Real sources (prng/csprng/qrng)
-# and rotation are P2 — do not build them here.
+# P1's salt is a static hardcoded placeholder, kept as the default when
+# rotation/sources are disabled.
 STATIC_SALT = b"p1-static-placeholder-salt-do-not-use-in-p2"
 
 CONTROLLER_LISTEN_ADDR = "127.0.0.1"
 CONTROLLER_LISTEN_PORT = 6653  # standard OpenFlow port
+
+# --- P2: salt engine config (AC-2, AC-3) ---
+
+SALT_SIZE = 32
+SALT_KIND = os.environ.get("SALT_KIND", "prng")  # "prng" | "csprng" | "qrng"
+ROTATION_INTERVAL_SECONDS = float(os.environ.get("ROTATION_INTERVAL_SECONDS", "0"))  # 0 = off
+
+# Weak-PRNG seed space (OQ-2): 32-bit, small enough for P3's brute-force to
+# be tractable, honest as a "weak PRNG".
+PRNG_SEED = int(os.environ.get("PRNG_SEED", "0"))
+
+# Q-EaaS connection (epic Appendix A.3/A.4): key from env only, never
+# committed. Hosted endpoint is the default target (epic s8 Q6).
+QEAAS_BASE_URL = os.environ.get("QEAAS_BASE_URL", "https://api.qeaas.eu")
+QEAAS_API_KEY = os.environ.get("QEAAS_API_KEY", "")
+
+ROTATION_LOG_PATH = os.environ.get("ROTATION_LOG_PATH", "rotation_events.jsonl")

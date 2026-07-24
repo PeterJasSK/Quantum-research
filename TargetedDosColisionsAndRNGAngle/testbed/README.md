@@ -71,3 +71,76 @@ Confirm traffic lands on more than one egress port.
 With the topology up, change `STATIC_SALT` in `testbed/config.py`, restart
 the controller, re-send the *same* fixed 5-tuple, and confirm from the
 controller log + port counters that it now egresses a **different** link.
+
+## 5. Salt engine — sources, rotation, JS↔Python parity (Plan 2)
+
+### Salt sources (AC-2)
+
+Select via `SALT_KIND` env var: `prng` (default) | `csprng` | `qrng`.
+
+- `prng` — weak, reconstructable: `random.Random(PRNG_SEED)` (default seed
+  `0`), sequential draws. This is deliberately the attacker's brute-force
+  target (P3) — do not use it for anything except demonstrating the attack.
+- `csprng` — `secrets.token_bytes`.
+- `qrng` — the hosted Q-EaaS service (below).
+
+```
+SALT_KIND=csprng .venv/bin/python3 testbed/controller/run_controller.py &
+```
+
+### QRNG source setup (Appendix A)
+
+1. Mint an API key (needs `ADMIN_TOKEN`, run from `qrng-eaas/api/`):
+   ```
+   python -m scripts.mint_key --owner ecmp-dos-testbed --tier default
+   ```
+2. Export the key (never commit it):
+   ```
+   export QEAAS_API_KEY=<the minted key>
+   export QEAAS_BASE_URL=https://api.qeaas.eu   # default, can omit
+   ```
+3. Run with `SALT_KIND=qrng`. Provenance (`request_id`, `entropy_epoch`,
+   `timestamp`, `receipt`) is logged on every salt fetch.
+4. Quick smoke check without the testbed:
+   ```
+   .venv/bin/python3 -c "from testbed.salt import salt_source; print(salt_source('qrng'))"
+   ```
+
+### Rotation (AC-3, AC-4)
+
+`ROTATION_INTERVAL_SECONDS` (default `0` = off) makes the controller rotate
+`active_salt` on a timer (`os_ken.lib.hub.spawn` green thread) and reinstall
+every tracked ECMP flow under the new salt. `ECMPController.rotate_salt()` is
+also callable manually (e.g. from a demo / REPL against a running
+controller instance).
+
+```
+SALT_KIND=csprng ROTATION_INTERVAL_SECONDS=5 .venv/bin/python3 testbed/controller/run_controller.py &
+```
+
+Rotation events are appended as JSON lines to `ROTATION_LOG_PATH` (default
+`rotation_events.jsonl`): `{timestamp, old_salt, new_salt, interval, kind}`.
+
+**Atomic mechanism**: the controller tries an OpenFlow bundle
+(`OFPBundleCtrlMsg` OPEN → `OFPBundleAddMsg` DELETE+ADD per tracked flow →
+COMMIT) first. If no `COMMIT_REPLY` arrives within 2s, or an
+`OFPET_BUNDLE_FAILED` error is received, it falls back permanently (for the
+life of the controller process) to delete-and-lazy-re-resolve: all tracked
+ECMP flows are deleted and the next packet-in per 5-tuple re-resolves under
+the new salt (brief controller round-trip, no packet drop). `rotate_salt()`
+logs which mechanism was used each time. **`<TODO: record here which
+mechanism this box's OVS/OF1.5 build actually uses, once verified live —
+see manual verification step 4 below.>`**
+
+### JS↔Python hash parity (AC-5)
+
+```
+python3 testbed/vectors/gen_vectors.py     # regenerate hash_vectors.json from Python (source of truth)
+python3 testbed/vectors/check_parity.py    # recompute every vector via Node running ecmp_hash.js
+```
+
+`check_parity.py` exits `0` and prints `PASS: N/N vectors agree`, or exits
+non-zero and prints every mismatching vector. `testbed/vectors/ecmp_hash.js`
+is the canonical JS mirror the P6 demo imports directly — do not fork it.
+Requires `node` on `PATH` (only needed to run the parity checker, not the
+testbed itself).
