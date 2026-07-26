@@ -1,0 +1,9 @@
+{
+  "request_id": "sample-00000000-0000-0000-0000-000000000000",
+  "entropy_epoch": 0,
+  "timestamp": "1970-01-01T00:00:00Z",
+  "size": 32,
+  "endpoint": "https://api.qeaas.eu/v1/random/bytes",
+  "receipt": "qeaas1.SAMPLE_PLACEHOLDER_PAYLOAD.SAMPLE_PLACEHOLDER_SIGNATURE",
+  "_note": "SAMPLE placeholder pending P5 (Draft). Replace with the real recorded Q-EaaS provenance run from P5 before shipping the demo publicly."
+}

@@ -93,3 +93,57 @@ VOLUMETRIC_PPS = int(os.environ.get("VOLUMETRIC_PPS", "1000"))
 # draw-index window.
 PRNG_SEED_SPACE_BITS = int(os.environ.get("PRNG_SEED_SPACE_BITS", "32"))
 BRUTEFORCE_DRAW_WINDOW = int(os.environ.get("BRUTEFORCE_DRAW_WINDOW", "4"))
+
+# --- P4: defence/metrics config (AC-1-7) ---
+
+# Off by default so P3's existing runs and the "defences off" experiment
+# cells are unaffected (plan-4 Design "Toggle"). When off, packet_in_handler
+# is byte-for-byte today's behaviour.
+DEFENCES_ENABLED = os.environ.get("DEFENCES_ENABLED", "0") == "1"
+
+# Per-source rate limit (AC-1, OpenFlow meter, OFPMF_KBPS). Tuned with an
+# order-of-magnitude margin on both sides of PRECISION_PER_SOURCE_PPS=5 (~40
+# kbps at ~1000B packets) and VOLUMETRIC_PPS=1000 single-source (~8000
+# kbps): 1000 kbps sits an order of magnitude above one precision source and
+# well under one volumetric source. Frozen once verified live (plan-4
+# "Threshold tuning") -- do not re-tune per experiment.
+RATE_LIMIT_KBPS = int(os.environ.get("RATE_LIMIT_KBPS", "1000"))
+RATE_LIMIT_BURST_KB = int(os.environ.get("RATE_LIMIT_BURST_KB", "100"))
+
+# Per-source connection throttle (AC-2): new-flow count over a sliding
+# window. Same margin logic as the rate limit above.
+THROTTLE_MAX_CONNECTIONS = int(os.environ.get("THROTTLE_MAX_CONNECTIONS", "20"))
+THROTTLE_WINDOW_SECONDS = float(os.environ.get("THROTTLE_WINDOW_SECONDS", "5"))
+THROTTLE_ACTION = os.environ.get("THROTTLE_ACTION", "drop")  # "drop" | "deprioritise" (OQ-5)
+
+# Instrumentation (AC-4/5/6/7).
+PORT_STATS_POLL_INTERVAL_SECONDS = float(os.environ.get("PORT_STATS_POLL_INTERVAL_SECONDS", "0.5"))
+# Must match the P1 topology's TCLink bandwidth for each egress link (OQ-3
+# single source of truth) -- if the topology sets no `bw`, pin one there too.
+LINK_CAPACITY_MBPS = float(os.environ.get("LINK_CAPACITY_MBPS", "10"))
+SATURATION_UTILISATION = float(os.environ.get("SATURATION_UTILISATION", "0.9"))
+METRICS_CSV_PATH = os.environ.get("METRICS_CSV_PATH", "metrics.csv")
+# Rolling JSON-lines file `victim_throughput.py` writes to and the collector
+# reads from (AC-6); out-of-band, not read via the OpenFlow channel.
+VICTIM_THROUGHPUT_PATH = os.environ.get("VICTIM_THROUGHPUT_PATH", "victim_throughput.jsonl")
+
+# --- P5: experiment orchestrator + analysis config (AC-1-7) ---
+
+# Single source of truth for the matrix (plan-5 Config additions).
+KNOWLEDGE_LEVELS = ("full", "partial", "blind")
+SALT_SOURCES = ("prng", "csprng", "qrng")
+
+# How long each live cell runs before teardown (harness.py).
+RUN_DURATION_SECONDS = float(os.environ.get("RUN_DURATION_SECONDS", "30"))
+
+# Exp 5 rotation sweep (OQ-4): log-spaced, slow->fast, straddling the
+# analytical T_bf derived from PRNG_SEED_SPACE_BITS/BRUTEFORCE_DRAW_WINDOW.
+ROTATION_SWEEP_INTERVALS = [60.0, 30.0, 10.0, 5.0, 2.0, 1.0, 0.5]
+
+# Success predicate threshold (OQ-2): attacker_succeeded requires
+# min_victim_mbps to drop to/under this, on top of saturated=True.
+VICTIM_COLLAPSE_MBPS = float(os.environ.get("VICTIM_COLLAPSE_MBPS", "1.0"))
+
+RESULTS_DIR = os.environ.get("RESULTS_DIR", "results")
+GRAPH1_PATH = os.environ.get("GRAPH1_PATH", os.path.join(RESULTS_DIR, "graph1_success_matrix"))
+GRAPH2_PATH = os.environ.get("GRAPH2_PATH", os.path.join(RESULTS_DIR, "graph2_rotation_threshold"))

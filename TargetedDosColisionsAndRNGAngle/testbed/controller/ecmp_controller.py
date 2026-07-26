@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,17 +34,33 @@ from os_ken.ofproto import ofproto_v1_5
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from testbed.config import (  # noqa: E402
+    DEFENCES_ENABLED,
     EGRESS_PORTS,
     LEAF_DPID,
+    LINK_CAPACITY_MBPS,
     LOCAL_IP_TO_PORT,
     LOCAL_PORTS,
+    METRICS_CSV_PATH,
     N_LINKS,
+    PORT_STATS_POLL_INTERVAL_SECONDS,
+    RATE_LIMIT_BURST_KB,
+    RATE_LIMIT_KBPS,
     REMOTE_IPS,
     ROTATION_INTERVAL_SECONDS,
     ROTATION_LOG_PATH,
     SALT_KIND,
+    SATURATION_UTILISATION,
+    TARGET_LINK,
+    THROTTLE_ACTION,
+    THROTTLE_MAX_CONNECTIONS,
+    THROTTLE_WINDOW_SECONDS,
+    VICTIM_THROUGHPUT_PATH,
 )
+from testbed.controller.defences import DefencePolicy  # noqa: E402
 from testbed.hash_core import ecmp_link  # noqa: E402
+from testbed.metrics import MetricsCollector, RunContext  # noqa: E402
+from testbed.metrics.csv_writer import CsvWriter  # noqa: E402
+from testbed.metrics.victim_throughput import latest_mbps  # noqa: E402
 from testbed.salt import salt_source  # noqa: E402
 from testbed.salt.rotation_log import append_event  # noqa: E402
 from testbed.types import FiveTuple  # noqa: E402
@@ -62,8 +79,37 @@ class ECMPController(OSKenApp):
         super().__init__(*args, **kwargs)
         self.salt_kind = SALT_KIND
         self.active_salt = salt_source(self.salt_kind).salt  # rotatable (P2); static in P1
+
+        # P5 OQ-1: log the initial minted salt as a rotation event
+        # (old_salt=b"") so salt_handoff.py has one uniform "latest new_salt"
+        # read for every cell, including prng-no-rotation.
+        append_event(
+            ROTATION_LOG_PATH,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            old_salt=b"",
+            new_salt=self.active_salt,
+            interval=ROTATION_INTERVAL_SECONDS,
+            kind=self.salt_kind,
+        )
+
         self._leaf_datapath = None
         self._ecmp_flows: set[FiveTuple] = set()
+
+        # P4 (AC-1/AC-2): defences are gated on DEFENCES_ENABLED so the OFF
+        # path stays byte-for-byte today's behaviour. Meter/drop-flow
+        # install state lives here (live-datapath bookkeeping); the
+        # counting/id-assignment policy lives in DefencePolicy.
+        self.defence_policy = (
+            DefencePolicy(
+                throttle_max_connections=THROTTLE_MAX_CONNECTIONS,
+                throttle_window_seconds=THROTTLE_WINDOW_SECONDS,
+            )
+            if DEFENCES_ENABLED
+            else None
+        )
+        self._meters_installed: set[str] = set()
+        self._throttle_drops_installed: set[str] = set()
+        self._metrics_collector: MetricsCollector | None = None
 
         # OQ-1: try an OpenFlow bundle first (true atomic); fall back to
         # delete-and-lazy-re-resolve if the OVS/OF1.5 build rejects bundles.
@@ -97,6 +143,10 @@ class ECMPController(OSKenApp):
         match = parser.OFPMatch()
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
         self._add_flow(datapath, priority=0, match=match, actions=actions)
+
+        if DEFENCES_ENABLED and self._metrics_collector is None:
+            self._metrics_collector = self._build_metrics_collector()
+            hub.spawn(self._port_stats_poll_loop)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
@@ -142,10 +192,25 @@ class ECMPController(OSKenApp):
         if five_tuple is None:
             return
 
+        priority = 10
+        meter_id = None
+
         if five_tuple.dst_ip in LOCAL_IP_TO_PORT:
             out_port = LOCAL_IP_TO_PORT[five_tuple.dst_ip]
             LOG.info("5-tuple %s -> local port %d", five_tuple, out_port)
         elif five_tuple.dst_ip in REMOTE_IPS:
+            if self.defence_policy is not None:
+                decision = self.defence_policy.note_flow(five_tuple.src_ip, five_tuple, time.time())
+                throttled = decision.over_limit or self.defence_policy.is_throttled(five_tuple.src_ip)
+                if throttled:
+                    self._install_throttle_drop(datapath, five_tuple.src_ip)
+                    if THROTTLE_ACTION == "drop":
+                        # AC-2: subsequent new flows from this source are
+                        # dropped -- no ECMP flow, no packet-out this time either.
+                        return
+                    priority = 1  # "deprioritise": still ECMP-routed, but loses to normal priority-10 flows
+                meter_id = self._ensure_meter(datapath, five_tuple.src_ip)
+
             link_index = ecmp_link(five_tuple, self.active_salt, N_LINKS)
             out_port = EGRESS_PORTS[link_index]
             self._ecmp_flows.add(five_tuple)
@@ -155,7 +220,7 @@ class ECMPController(OSKenApp):
 
         match = self._match_for(parser, five_tuple)
         actions = [parser.OFPActionOutput(out_port)]
-        self._add_flow(datapath, priority=10, match=match, actions=actions)
+        self._add_flow(datapath, priority=priority, match=match, actions=actions, meter_id=meter_id)
 
         out = parser.OFPPacketOut(
             datapath=datapath,
@@ -342,9 +407,80 @@ class ECMPController(OSKenApp):
         return None
 
     @staticmethod
-    def _add_flow(datapath, priority, match, actions):
+    def _add_flow(datapath, priority, match, actions, meter_id=None):
         parser = datapath.ofproto_parser
         ofproto = datapath.ofproto
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+        if meter_id is not None:
+            inst.append(parser.OFPInstructionMeter(meter_id))
         mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
         datapath.send_msg(mod)
+
+    def _ensure_meter(self, datapath, src_ip: str) -> int:
+        """AC-1: install a per-source `OFPMeterMod` once (idempotent via
+        `_meters_installed`); return the stable meter id to reference from
+        the flow's instructions."""
+        meter_id = self.defence_policy.meter_id_for(src_ip)
+        if src_ip not in self._meters_installed:
+            parser = datapath.ofproto_parser
+            ofproto = datapath.ofproto
+            band = parser.OFPMeterBandDrop(rate=RATE_LIMIT_KBPS, burst_size=RATE_LIMIT_BURST_KB)
+            mod = parser.OFPMeterMod(
+                datapath=datapath,
+                command=ofproto.OFPMC_ADD,
+                flags=ofproto.OFPMF_KBPS,
+                meter_id=meter_id,
+                bands=[band],
+            )
+            datapath.send_msg(mod)
+            self._meters_installed.add(src_ip)
+        return meter_id
+
+    def _install_throttle_drop(self, datapath, src_ip: str) -> None:
+        """AC-2: priority-20 drop flow matching `src_ip`, so subsequent new
+        flows from an over-limit source are dropped at the switch without
+        reaching the controller again (default THROTTLE_ACTION="drop", OQ-5)."""
+        if src_ip in self._throttle_drops_installed:
+            return
+        parser = datapath.ofproto_parser
+        match = parser.OFPMatch(eth_type=ether_types.ETH_TYPE_IP, ipv4_src=src_ip)
+        self._add_flow(datapath, priority=20, match=match, actions=[])
+        self._throttle_drops_installed.add(src_ip)
+
+    def _build_metrics_collector(self) -> MetricsCollector:
+        run_context = RunContext.from_env()
+        csv_writer = CsvWriter(run_context.csv_path, N_LINKS)
+        return MetricsCollector(
+            egress_ports=EGRESS_PORTS,
+            target_link=TARGET_LINK,
+            link_capacity_mbps=LINK_CAPACITY_MBPS,
+            saturation_utilisation=SATURATION_UTILISATION,
+            run_context=run_context,
+            salt_source_tag=self.salt_kind,
+            rotation_interval=ROTATION_INTERVAL_SECONDS,
+            csv_writer=csv_writer,
+            victim_mbps_reader=lambda: latest_mbps(VICTIM_THROUGHPUT_PATH),
+        )
+
+    def _port_stats_poll_loop(self):
+        """Mirrors `_rotation_loop`'s `hub.spawn` pattern: poll port stats
+        on a timer once the leaf datapath is up (AC-4/5/6/7)."""
+        while True:
+            hub.sleep(PORT_STATS_POLL_INTERVAL_SECONDS)
+            self._request_port_stats()
+
+    def _request_port_stats(self) -> None:
+        datapath = self._leaf_datapath
+        if datapath is None:
+            return
+        parser = datapath.ofproto_parser
+        ofproto = datapath.ofproto
+        datapath.send_msg(parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY))
+
+    @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+    def port_stats_reply_handler(self, ev):
+        if self._metrics_collector is None:
+            return
+        now = time.time()
+        samples = [(stat.port_no, stat.tx_bytes, stat.tx_packets, now) for stat in ev.msg.body]
+        self._metrics_collector.on_port_stats(samples, tracked_flows=len(self._ecmp_flows))

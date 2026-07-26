@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* OQ-3: styling foundation copied verbatim from qrng-eaas/web/app/globals.css
+   so the two sites are visually identical (same tokens, dark mode setup). */
+@theme {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "Fira Code", monospace;
+
+  --color-bg-deep: #f8fafc;
+  --color-bg: #ffffff;
+  --color-surface: #eaf6ff;
+  --color-text: #0a2540;
+  --color-heading: #052e44;
+  --color-accent: #00aaff;
+  --color-primary: #084666;
+  --color-primary-hover: #052e44;
+  --color-border: rgba(0, 170, 255, 0.16);
+  --color-success: #0d9f6e;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
+}
+
+[data-theme="dark"] {
+  --color-bg-deep: #052e44;
+  --color-bg: #0a2540;
+  --color-surface: #084666;
+  --color-text: #e2e8f0;
+  --color-heading: #f8fafc;
+  --color-accent: #00aaff;
+  --color-primary: #00aaff;
+  --color-primary-hover: #0077cc;
+  --color-border: rgba(0, 170, 255, 0.24);
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+}
+
+html {
+  background: var(--color-bg-deep);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, var(--color-bg), var(--color-bg-deep));
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  box-shadow: 0 8px 32px rgba(8, 70, 102, 0.16);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--color-primary-hover);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+[data-theme="dark"] .pill {
+  color: var(--color-bg-deep);
+}
+
+@utility panel {
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  box-shadow: 0 8px 32px rgba(8, 70, 102, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+@utility lamp {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 9999px;
+}
+
+@utility lamp-green {
+  background: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success);
+}
+
+@utility lamp-red {
+  background: var(--color-danger);
+  box-shadow: 0 0 10px var(--color-danger);
+}

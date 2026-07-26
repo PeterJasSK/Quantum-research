@@ -1,5 +1,7 @@
 os-ken
 scapy
+pandas
+matplotlib
 # os-ken is the OpenStack-maintained fork of Ryu (import os_ken, same
 # RyuApp API as ryu). Plain `ryu` fails to install on modern setuptools
 # (its setup.py calls a removed easy_install API) -- ryu has had no
@@ -10,3 +12,10 @@ scapy
 # Node is required only to run testbed/vectors/check_parity.py, not pip-installed.
 # P3: scapy crafts/sends the attacker's packets (traffic.py only). hping3
 # and iperf are optional load alternatives -- system tools, not pip deps.
+# P4: defences.py/metrics/ are stdlib + os_ken only, no new pip dependency.
+# iperf3 (victim_throughput.py) is a system tool, not pip -- degrades to an
+# empty CSV column if absent.
+# P5: pandas/matplotlib back testbed/analysis/ only (CSV read + graph
+# render) -- not needed on the live testbed host (controller/topology/
+# attacker), only wherever analysis_check.py / run_experiments.py's graph
+# step runs.
