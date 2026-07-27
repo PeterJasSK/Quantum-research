@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     >
       <body className="min-h-full">
         <ThemeProvider>
+          <Nav />
           <main>{children}</main>
         </ThemeProvider>
       </body>

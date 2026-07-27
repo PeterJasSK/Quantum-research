@@ -28,7 +28,7 @@ from os_ken.base.app_manager import OSKenApp
 from os_ken.controller import ofp_event
 from os_ken.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER, set_ev_cls
 from os_ken.lib import hub
-from os_ken.lib.packet import ether_types, ethernet, icmp, ipv4, packet, tcp, udp
+from os_ken.lib.packet import arp, ether_types, ethernet, icmp, ipv4, packet, tcp, udp
 from os_ken.ofproto import ofproto_v1_5
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -36,6 +36,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from testbed.config import (  # noqa: E402
     DEFENCES_ENABLED,
     EGRESS_PORTS,
+    FABRIC_MODE,
+    FATTREE_K,
     LEAF_DPID,
     LINK_CAPACITY_MBPS,
     LOCAL_IP_TO_PORT,
@@ -63,6 +65,7 @@ from testbed.metrics.csv_writer import CsvWriter  # noqa: E402
 from testbed.metrics.victim_throughput import latest_mbps  # noqa: E402
 from testbed.salt import salt_source  # noqa: E402
 from testbed.salt.rotation_log import append_event  # noqa: E402
+from testbed.topology.fabric import build_fattree, fabric_ports, fabric_salts, next_hop  # noqa: E402
 from testbed.types import FiveTuple  # noqa: E402
 
 LOG = logging.getLogger(__name__)
@@ -94,6 +97,21 @@ class ECMPController(OSKenApp):
 
         self._leaf_datapath = None
         self._ecmp_flows: set[FiveTuple] = set()
+
+        # Plan-8 fabric mode (AC-2): every fat-tree switch hashes its own
+        # upward fan-out under its own salt, gated so the OFF path above
+        # stays byte-for-byte P1-P5 behaviour. Rotation stays single-leaf-only
+        # (no attacker in this scenario -- see plan-8 Codebase integration).
+        self._fabric = build_fattree(FATTREE_K) if FABRIC_MODE else None
+        self._fabric_ports = fabric_ports(self._fabric) if FABRIC_MODE else None
+        self._fabric_salts = fabric_salts(self.salt_kind, self._fabric) if FABRIC_MODE else None
+        self._switch_id_by_dpid = (
+            {i + 1: switch_id for i, switch_id in enumerate(self._fabric.all_switches)}
+            if FABRIC_MODE
+            else None
+        )
+        self._fabric_datapaths: dict[int, object] = {}
+        self._fabric_flows: dict[int, set[FiveTuple]] = {}
 
         # P4 (AC-1/AC-2): defences are gated on DEFENCES_ENABLED so the OFF
         # path stays byte-for-byte today's behaviour. Meter/drop-flow
@@ -128,6 +146,15 @@ class ECMPController(OSKenApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
+        if FABRIC_MODE:
+            # Every fat-tree switch is a hasher -- no blanket NORMAL shortcut;
+            # all get table-miss->CONTROLLER (plan-8 AC-2).
+            self._fabric_datapaths[datapath.id] = datapath
+            match = parser.OFPMatch()
+            actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
+            self._add_flow(datapath, priority=0, match=match, actions=actions)
+            return
+
         if datapath.id != LEAF_DPID:
             # Spine (and anything else): plain L2 bridge, no controller
             # involvement needed -- this is what makes the return path and
@@ -152,6 +179,11 @@ class ECMPController(OSKenApp):
     def packet_in_handler(self, ev):
         msg = ev.msg
         datapath = msg.datapath
+
+        if FABRIC_MODE:
+            self._fabric_packet_in(msg, datapath)
+            return
+
         if datapath.id != LEAF_DPID:
             return  # spine handles itself via NORMAL, shouldn't punt here
 
@@ -221,6 +253,68 @@ class ECMPController(OSKenApp):
         match = self._match_for(parser, five_tuple)
         actions = [parser.OFPActionOutput(out_port)]
         self._add_flow(datapath, priority=priority, match=match, actions=actions, meter_id=meter_id)
+
+        out = parser.OFPPacketOut(
+            datapath=datapath,
+            buffer_id=msg.buffer_id,
+            in_port=in_port,
+            actions=actions,
+            data=msg.data if msg.buffer_id == ofproto.OFP_NO_BUFFER else None,
+        )
+        datapath.send_msg(out)
+
+    def _fabric_packet_in(self, msg, datapath) -> None:
+        """Plan-8 AC-2: packet-in from any fabric dpid. Picks the next hop via
+        the shared `fabric.next_hop()` (hashed upward under this switch's own
+        salt, deterministic downward) and installs a pinning flow, same
+        discipline as the single-leaf path but per-dpid.
+
+        ARP/broadcast: routed deterministically along the same `next_hop()`
+        path as a synthetic zero-port five-tuple rather than flooded -- a
+        fat-tree is a multigraph of redundant paths, so naive multi-port
+        flooding loops (plan-8 Risks: "Multi-switch L2/ARP in Mininet").
+        Unresolvable destinations (unknown IP) are dropped, not flooded.
+        """
+        switch_id = self._switch_id_by_dpid.get(datapath.id)
+        if switch_id is None:
+            return
+
+        parser = datapath.ofproto_parser
+        ofproto = datapath.ofproto
+        in_port = msg.match["in_port"]
+
+        pkt = packet.Packet(msg.data)
+        eth = pkt.get_protocol(ethernet.ethernet)
+        if eth is None:
+            return
+
+        install_flow = eth.ethertype == ether_types.ETH_TYPE_IP
+        if install_flow:
+            ip = pkt.get_protocol(ipv4.ipv4)
+            if ip is None:
+                return
+            five_tuple = self._extract_five_tuple(pkt, ip)
+        else:
+            arp_pkt = pkt.get_protocol(arp.arp)
+            if arp_pkt is None or arp_pkt.dst_ip not in self._fabric.ip_to_host:
+                return
+            five_tuple = FiveTuple(arp_pkt.src_ip, arp_pkt.dst_ip, 0, 0, 0)
+
+        if five_tuple is None or five_tuple.dst_ip not in self._fabric.ip_to_host:
+            return
+
+        next_id = next_hop(self._fabric, self._fabric_salts, switch_id, five_tuple)
+        out_port = self._fabric_ports[switch_id].get(next_id)
+        if out_port is None:
+            return
+
+        actions = [parser.OFPActionOutput(out_port)]
+        if install_flow:
+            # ARP gets a one-off packet-out only (no flow) -- it is rare
+            # enough to punt every time, and a five-tuple-shaped match would
+            # over-match unrelated ARP traffic through the same in_port.
+            self._add_flow(datapath, priority=10, match=self._match_for(parser, five_tuple), actions=actions)
+            self._fabric_flows.setdefault(datapath.id, set()).add(five_tuple)
 
         out = parser.OFPPacketOut(
             datapath=datapath,

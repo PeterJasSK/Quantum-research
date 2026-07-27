@@ -127,6 +127,17 @@ METRICS_CSV_PATH = os.environ.get("METRICS_CSV_PATH", "metrics.csv")
 # reads from (AC-6); out-of-band, not read via the OpenFlow channel.
 VICTIM_THROUGHPUT_PATH = os.environ.get("VICTIM_THROUGHPUT_PATH", "victim_throughput.jsonl")
 
+# --- P8: fat-tree / load-balancing entropy config ---
+
+# Fat-tree fan-out (Al-Fares k=4: 4 core, 4 pods x (2 agg + 2 edge), 2 hosts
+# per edge -> 16 hosts, 20 switches). Leaf-spine/other k out of scope (plan-8).
+FATTREE_K = int(os.environ.get("FATTREE_K", "4"))
+
+# Off by default so P1-P5's single-leaf topology/controller stay byte-for-byte
+# unchanged (same toggle discipline as DEFENCES_ENABLED). On: every fabric
+# switch hashes its own upward fan-out under a per-dpid salt (plan-8 AC-2).
+FABRIC_MODE = os.environ.get("FABRIC_MODE", "0") == "1"
+
 # --- P5: experiment orchestrator + analysis config (AC-1-7) ---
 
 # Single source of truth for the matrix (plan-5 Config additions).

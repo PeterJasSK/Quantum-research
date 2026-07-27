@@ -21,7 +21,7 @@ sys.path.insert(0, __file__.rsplit("/testbed/", 1)[0])
 
 from testbed.metrics.collector import MetricsCollector  # noqa: E402
 from testbed.metrics.csv_writer import CsvWriter  # noqa: E402
-from testbed.metrics.fairness import jains_index  # noqa: E402
+from testbed.metrics.fairness import jains_index, polarization_index  # noqa: E402
 from testbed.metrics.run_context import RunContext  # noqa: E402
 
 _EGRESS_PORTS = [10, 11, 12, 13]
@@ -116,8 +116,24 @@ def _check_saturation_latch() -> bool:
         return True
 
 
+def _check_polarization_edge_cases() -> bool:
+    cases = [([1, 1, 1, 1], 1.0), ([4, 0, 0, 0], 4.0), ([0, 0, 0, 0], 1.0)]
+    for values, expected in cases:
+        got = polarization_index(values)
+        if abs(got - expected) > 1e-9:
+            print(f"FAIL: polarization_index({values}) = {got} != {expected}", file=sys.stderr)
+            return False
+    print("PASS: polarization_index matches fair (1.0), single-link concentration (4.0), and idle (1.0)")
+    return True
+
+
 def main() -> int:
-    checks = (_check_utilisation_and_max(), _check_jains_edge_cases(), _check_saturation_latch())
+    checks = (
+        _check_utilisation_and_max(),
+        _check_jains_edge_cases(),
+        _check_saturation_latch(),
+        _check_polarization_edge_cases(),
+    )
     return 0 if all(checks) else 1
 
 

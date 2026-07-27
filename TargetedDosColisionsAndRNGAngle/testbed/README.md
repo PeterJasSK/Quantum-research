@@ -310,3 +310,75 @@ victim_throughput.py`'s `run_server`/`run_client`, or run `iperf3` directly
 with `--json-stream` to `VICTIM_THROUGHPUT_PATH`, default
 `victim_throughput.jsonl`); if `iperf3` isn't installed, `victim_mbps` is
 written empty rather than crashing the run.
+
+## Load-balancing entropy: fat-tree + hash polarization (Plan 8)
+
+A **second, attack-free** argument: bad PRNG salt reused fabric-wide causes
+systematic congestion (ECMP hash polarization) with zero attacker; CSPRNG/QRNG
+salt spreads traffic evenly. See `../plans/plan-8-load-balancing-entropy.md`
+for the full mechanism (`§Honest mechanism`) and design record.
+
+### Offline check (no Mininet/root) — the correctness gate
+
+```
+.venv/bin/python3 testbed/topology/polarization_check.py
+```
+
+Confirms: weak-PRNG salt (one identical salt fabric-wide, `testbed/topology/
+fabric.py`'s `fabric_salts("prng", ...)`) polarizes a k=4 fat-tree's link
+load on every run (low Jain's index, high `polarization_index`); CSPRNG (and
+QRNG, if `QEAAS_API_KEY` is set — otherwise skipped, not failed) spread
+evenly; and a **single-switch control** shows PRNG and CSPRNG spreading
+*equally* on one hop (the false-claim guard — entropy quality is invisible at
+a single stage; polarization is a multi-stage correlation effect). Non-zero
+exit on any mismatch.
+
+### Metrics gate
+
+```
+.venv/bin/python3 testbed/metrics/metrics_check.py
+```
+
+Now also asserts `fairness.polarization_index` (`[1,1,1,1]→1.0`,
+`[4,0,0,0]→4.0`).
+
+### `FATTREE_K` / `FABRIC_MODE` (default off)
+
+`FATTREE_K` (default `4`) sizes `testbed/topology/fabric.py`'s
+`build_fattree()` and `testbed/topology/fattree_topo.py`'s Mininet topology
+(20 switches, 16 hosts at k=4). `FABRIC_MODE=1` switches the controller
+(`testbed/controller/ecmp_controller.py`) from the single-leaf P1-P5 path to
+hashing independently at **every** fat-tree switch under its own per-dpid
+salt (upward hops hashed, downward deterministic by destination pod/edge) —
+gated so `FABRIC_MODE=0` (default) leaves the P1-P5 controller/topology
+byte-for-byte unchanged.
+
+### Live fat-tree run (needs Mininet + OVS + root)
+
+```
+FABRIC_MODE=1 SALT_KIND=prng .venv/bin/python3 testbed/controller/run_controller.py &
+sudo .venv/bin/python3 -c "
+from mininet.cli import CLI
+from mininet.log import setLogLevel
+from mininet.net import Mininet
+from mininet.node import OVSSwitch, RemoteController
+from testbed.config import CONTROLLER_LISTEN_ADDR, CONTROLLER_LISTEN_PORT
+from testbed.topology.fattree_topo import FatTreeTopo
+setLogLevel('info')
+net = Mininet(topo=FatTreeTopo(), switch=OVSSwitch,
+              controller=RemoteController('c0', ip=CONTROLLER_LISTEN_ADDR, port=CONTROLLER_LISTEN_PORT),
+              autoSetMacs=False)
+net.start(); CLI(net); net.stop()
+"
+```
+
+(`run_topo.py` itself still launches the P1-P5 single-leaf `ECMPTopo` only —
+it was not modified, per plan-8's file plan. The inline snippet above is the
+fat-tree equivalent until/unless a dedicated launcher script is added.)
+
+Drive **uniform** background traffic (no attacker) and read `ovs-ofctl -O
+OpenFlow15 dump-ports` across switches: PRNG concentrates load on a subset of
+core links; `SALT_KIND=csprng` spreads it evenly. This live path has not been
+exercised in an environment without Mininet/OVS/root — the offline gate above
+is the primary, CI-runnable correctness check (plan-8 Risks: "if time-boxed,
+ship the offline + web deliverables first").
