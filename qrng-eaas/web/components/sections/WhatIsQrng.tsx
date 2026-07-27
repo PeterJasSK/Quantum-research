@@ -3,8 +3,15 @@ export default function WhatIsQrng() {
     <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
        <div className="panel p-4 sm:p-6">
           <h2 className="glow mb-4 text-xl font-semibold text-heading sm:text-2xl">
-            What is a QRNG?
+            What is Q-EaaS (and a QRNG)?
           </h2>
+          <p className="mb-4 text-sm text-text/90 sm:text-base">
+            <strong>Q-EaaS</strong> stands for <strong>Quantum Entropy as a
+            Service</strong> — the same &ldquo;…as a Service&rdquo; idea as SaaS,
+            but what it serves is <em>entropy</em>: raw, genuinely unpredictable
+            random numbers. Under the hood it runs a <strong>QRNG</strong>, a
+            quantum random number generator. Here is what that means.
+          </p>
           <p className="mb-4 text-sm text-text/90 sm:text-base">
             A quantum random number generator measures a genuinely probabilistic
             quantum process — here, superposition and measurement on real quantum

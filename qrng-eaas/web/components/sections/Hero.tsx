@@ -32,7 +32,7 @@ export default function Hero() {
           <FiShield size={14} />
         </span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-text/70 sm:text-xs">
-          Q-EaaS · Quantum Entropy API
+          Q-EaaS · Quantum Entropy as a Service
         </span>
       </motion.div>
 
@@ -65,9 +65,9 @@ export default function Hero() {
           variants={fadeUp}
           className="mx-auto max-w-2xl text-lg font-bold leading-tight tracking-tight text-text/70 sm:text-3xl"
         >
-          A free API for high-quality randomness.{" "}
+          A free API that gives you real random numbers,{" "}
           <span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-black text-transparent">
-            Created on real quantum hardware.
+            generated on a real quantum computer.
           </span>
         </motion.h2>
       </div>
@@ -79,9 +79,11 @@ export default function Hero() {
         variants={fadeUp}
         className="hidden max-w-lg text-lg font-medium leading-relaxed text-text/90 sm:block sm:text-xl"
       >
-        Real randomness created on quantum hardware, delivered over a simple
-        API — free to use, for seeds, keys, and anything that needs genuine
-        entropy. Try it now with a live dice roll.
+        Q-EaaS (Quantum Entropy as a Service) is a free API for genuinely
+        random numbers — the kind you need for passwords, keys, tokens, dice,
+        or anything that must not be guessable. The randomness comes from
+        measuring real quantum hardware, not a software formula. Try it now
+        with a live dice roll.
       </motion.p>
 
       <motion.div
@@ -109,10 +111,10 @@ export default function Hero() {
           />
         </Link>
         <a
-          href="#overview"
+          href="#api"
           className="flex h-12 w-full items-center justify-center rounded-2xl border-2 border-border px-8 text-base font-bold text-text/90 transition-all hover:border-accent hover:bg-surface sm:h-14 sm:w-auto sm:text-lg"
         >
-          Discover more
+          Connect to the API
         </a>
       </motion.div>
 
