@@ -427,6 +427,16 @@
         ]
       },
       {
+        title: "The Attacker in the Gap — ECMP Salt-Collision DoS",
+        status: "Live", cls: "live", featured: true, color: "#ff9db1",
+        desc: "A new link-flooding attack on ECMP load balancing: guess the hash salt and a single host — no botnet — crafts flows that all land on one link, starving a victim while slipping under the rate limits built to stop volumetric floods. The defence is to rotate the salt faster than it can be reconstructed, a cadence this study derives and measures. A live k=6 fat-tree lab plus a flow-level simulation over the real hash, with QEaaS supplying signed, auditable quantum entropy for every salt.",
+        tags: ["ECMP", "Network security", "DoS", "Moving-target defence", "Next.js", "QEaaS"],
+        links: [
+          { label: "Live site ↗", href: "https://ecmp.peterjas.sk/" },
+          { label: "Repo ↗", href: REPO + "TargetedDosColisionsAndRNGAngle" }
+        ]
+      },
+      {
         title: "Quantum Tree",
         status: "Live", cls: "live", featured: true, color: "#9df3b0",
         desc: "A living tree grown on a real IBM Heron r2 quantum computer. Every growth step is one circuit; measured bits decide how it branches. Includes a falsifiable fork testing whether hardware entanglement imprints spatial correlation a classical surrogate can't reproduce.",
