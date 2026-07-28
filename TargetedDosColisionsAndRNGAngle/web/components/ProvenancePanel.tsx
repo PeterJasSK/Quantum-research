@@ -54,6 +54,14 @@ export default function ProvenancePanel({ visible }: { visible: boolean }) {
       <p className="text-xs italic text-(--color-text) opacity-70">
         Footnote: a strong CSPRNG blunts this attack just as well; the signed receipt is what CSPRNG cannot give you.
       </p>
+      <a
+        href="https://qeaas.eu"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 text-xs font-semibold text-(--color-accent) hover:underline"
+      >
+        Draw your own signed entropy at qeaas.eu ↗
+      </a>
     </div>
   );
 }

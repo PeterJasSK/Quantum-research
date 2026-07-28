@@ -5,6 +5,7 @@ import LiveFatTree from "./LiveFatTree";
 import FairnessReadout from "./FairnessReadout";
 import AttackPanel from "./AttackPanel";
 import ProvenancePanel from "./ProvenancePanel";
+import QeaasCallout from "./QeaasCallout";
 import {
   attackForce,
   buildFattree,
@@ -30,7 +31,12 @@ type SaltSourceId = (typeof SALT_SOURCES)[number]["id"];
 // CSPRNG stays a fully working module (mint, notes, routing all intact) but is
 // hidden from the selector — the demo contrasts weak PRNG vs QEaaS/QRNG.
 const HIDDEN_SOURCES: SaltSourceId[] = ["csprng"];
-const VISIBLE_SOURCES = SALT_SOURCES.filter((s) => !HIDDEN_SOURCES.includes(s.id));
+// QRNG leads the selector: the demo opens on the QEaaS solution, then lets the
+// visitor flip to the weak PRNG to see the failure it fixes.
+const VISIBLE_ORDER: SaltSourceId[] = ["qrng", "weak-prng"];
+const VISIBLE_SOURCES = VISIBLE_ORDER.map(
+  (id) => SALT_SOURCES.find((s) => s.id === id)!,
+).filter((s) => !HIDDEN_SOURCES.includes(s.id));
 
 const SOURCE_NOTE: Record<SaltSourceId, string> = {
   "weak-prng":
@@ -38,7 +44,7 @@ const SOURCE_NOTE: Record<SaltSourceId, string> = {
   csprng:
     "Each switch draws its own independent CSPRNG salt. Hash choices are uncorrelated, so flows fan out and the collision attack scatters. It works — but the entropy is opaque: nothing proves where each salt came from, how fresh it was, or that it was ever truly random. Nothing to hand an auditor.",
   qrng:
-    "Each switch pulls an independent salt from QRNG entropy delivered by QEaaS. Traffic fans out and the attack scatters — and every draw ships with a signed provenance receipt (entropy epoch, request id, attestable quantum source), shown below. Provably-sourced, auditable randomness delivered as a service: the piece the fabric was missing.",
+    "Each switch pulls an independent salt from QRNG entropy delivered by QEaaS (qeaas.eu). Traffic fans out and the attack scatters — and every draw ships with a signed provenance receipt (entropy epoch, request id, attestable quantum source), shown below. Provably-sourced, auditable randomness delivered as a service: the piece the fabric was missing.",
 };
 
 function mintFor(source: SaltSourceId): () => string {
@@ -59,7 +65,7 @@ function mintFor(source: SaltSourceId): () => string {
  * lets the attacker lock a link; CSPRNG/QRNG spreads traffic AND scatters the
  * attack. QRNG's only extra is provenance. */
 export default function LoadBalanceController() {
-  const [source, setSource] = useState<SaltSourceId>("weak-prng");
+  const [source, setSource] = useState<SaltSourceId>("qrng");
   const [routes, setRoutes] = useState<string[][]>([]);
   const [running, setRunning] = useState(true);
   const [speed, setSpeed] = useState(1);
@@ -150,25 +156,30 @@ export default function LoadBalanceController() {
       <header className="flex flex-col gap-6">
         <span className="eyebrow">
           <span className="eyebrow-rule" />
-          Quantum entropy as a service
+          ECMP salt-collision link flooding · a rotation-cadence defence
         </span>
         <h1 className="hero-title max-w-4xl">
-          <span className="hero-accent">Provably-sourced</span> randomness for the network fabric.
+          The attacker <span className="hero-accent">in the gap</span>.
         </h1>
         <p className="max-w-3xl text-base leading-relaxed text-(--color-text)">
-          A live <strong>k=6 fat-tree</strong> data centre under a realistic skewed traffic mix. Every flow is ECMP-hashed
-          at each switch with a random <em>salt</em>; the quality — and the <em>provenance</em> — of that salt is what
-          this lab is about. Flip the salt source and watch the same seeded traffic either fan out cleanly or collapse
-          onto a few links, then launch a precision collision attacker and see the same choice decide whether it lands.
-          QEaaS delivers per-switch quantum salts that spread traffic <em>and</em> carry a signed receipt proving where
-          the entropy came from.
+          Data-center fabrics spread traffic across parallel links by hashing each flow with a secret{" "}
+          <em>salt</em>. Guess that salt and you can hand-pick flows that <strong>all hash to the same link</strong> —
+          then a <strong>single host, no botnet</strong>, floods that one link and starves a victim, slipping clean
+          under the rate limits and connection caps built to stop volumetric floods.
+        </p>
+        <p className="max-w-3xl text-base leading-relaxed text-(--color-text)">
+          The fix is to keep moving the target: <strong>rotate the salt faster than the attacker can reconstruct
+          it</strong> — a cadence you can actually compute, not folklore. This live lab lets you watch the attack
+          land under a weak, guessable salt, then dissolve the moment the salt becomes strong and fresh. Serving that
+          entropy through <strong>QEaaS</strong> adds the last piece: every salt draw ships a signed receipt proving
+          where the randomness came from.
         </p>
 
         <div className="flex flex-wrap gap-2">
-          <span className="chip">3 tiers + WAN</span>
-          <span className="chip">SHA-256 keyed ECMP</span>
-          <span className="chip">seeded traffic</span>
-          <span className="chip">signed entropy receipts</span>
+          <span className="chip">single-host DoS · no botnet</span>
+          <span className="chip">evades rate limits</span>
+          <span className="chip">computable rotation cadence</span>
+          <span className="chip">signed quantum entropy</span>
         </div>
       </header>
 
@@ -363,6 +374,11 @@ export default function LoadBalanceController() {
         </p>
         </div>
       </section>
+
+      <div className="hairline" />
+
+      {/* ---- QEaaS product callout (findings-grounded) ---- */}
+      <QeaasCallout />
     </div>
   );
 }

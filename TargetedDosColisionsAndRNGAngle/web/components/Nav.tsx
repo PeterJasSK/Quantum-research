@@ -12,9 +12,19 @@ export default function Nav() {
             QEaaS<span className="text-(--color-accent)">·</span>ECMP
           </span>
         </Link>
-        <span className="hidden text-xs text-(--color-text) opacity-70 sm:inline">
-          Quantum entropy as a service · live ECMP load-balancing &amp; collision-DoS lab
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="hidden text-xs text-(--color-text) opacity-70 md:inline">
+            Live ECMP load-balancing &amp; collision-DoS lab
+          </span>
+          <a
+            href="https://qeaas.eu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pill px-4 py-1.5 text-xs font-semibold"
+          >
+            qeaas.eu ↗
+          </a>
+        </div>
       </nav>
     </header>
   );
