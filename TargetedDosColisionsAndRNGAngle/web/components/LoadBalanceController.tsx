@@ -162,8 +162,13 @@ export default function LoadBalanceController() {
           The attacker <span className="hero-accent">in the gap</span>.
         </h1>
         <p className="max-w-3xl text-base leading-relaxed text-(--color-text)">
-          Data-center fabrics spread traffic across parallel links by hashing each flow with a secret{" "}
-          <em>salt</em>. Guess that salt and you can hand-pick flows that <strong>all hash to the same link</strong> —
+          <strong>ECMP</strong> — <em>Equal-Cost Multi-Path</em> — is how data-center fabrics spread traffic across the
+          many parallel links of equal cost between two points, instead of overloading just one. Each flow is pinned to
+          one of those links by hashing its 5-tuple with a secret <em>salt</em>, so packets of the same flow stay in
+          order while overall load fans out.
+        </p>
+        <p className="max-w-3xl text-base leading-relaxed text-(--color-text)">
+          That salt is the whole game. Guess it and you can hand-pick flows that <strong>all hash to the same link</strong> —
           then a <strong>single host, no botnet</strong>, floods that one link and starves a victim, slipping clean
           under the rate limits and connection caps built to stop volumetric floods.
         </p>
@@ -192,8 +197,8 @@ export default function LoadBalanceController() {
           Entropy source
         </span>
         <div className="panel flex flex-col gap-4 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap gap-2" role="tablist" aria-label="Salt source selector">
+        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row" role="tablist" aria-label="Salt source selector">
             {VISIBLE_SOURCES.map((s) => (
               <button
                 key={s.id}
@@ -201,23 +206,23 @@ export default function LoadBalanceController() {
                 role="tab"
                 aria-selected={source === s.id}
                 onClick={() => setSource(s.id)}
-                className={`pill px-4 py-2 text-sm ${source === s.id ? "" : "opacity-70"}`}
+                className={`pill w-full px-3 py-2 text-xs sm:w-auto sm:px-4 sm:text-sm ${source === s.id ? "" : "opacity-70"}`}
               >
                 {s.label}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => setRunning((r) => !r)}
-              className="pill px-4 py-2 text-sm"
+              className="pill px-3 py-2 text-xs sm:px-4 sm:text-sm"
               aria-pressed={running}
             >
               {running ? "⏸ pause" : "▶ play"}
             </button>
-            <label className="flex items-center gap-2 text-xs text-(--color-text)">
+            <label className="flex flex-1 items-center gap-2 text-xs text-(--color-text) sm:flex-none">
               speed
               <input
                 type="range"
@@ -227,13 +232,33 @@ export default function LoadBalanceController() {
                 value={speed}
                 onChange={(e) => setSpeed(Number(e.target.value))}
                 aria-label="Animation speed"
+                className="min-w-0 flex-1 sm:flex-none"
               />
-              <span className="w-8 font-(family-name:--font-mono)">{speed.toFixed(2)}×</span>
+              <span className="w-8 shrink-0 font-(family-name:--font-mono)">{speed.toFixed(2)}×</span>
             </label>
           </div>
         </div>
 
-          <p className="text-sm leading-relaxed text-(--color-text)">
+          {/* Mobile only: attack controls surfaced up here, right under pause,
+              so the visitor can launch without scrolling to the side panel. */}
+          <div className="flex flex-col gap-2 sm:hidden">
+            <button
+              type="button"
+              onClick={() => setAttack((a) => !a)}
+              aria-pressed={attack}
+              className={`pill w-full px-4 py-2 text-sm font-semibold ${attack ? "text-(--color-danger)" : ""}`}
+            >
+              {attack ? "■ stop attack" : "▶ launch attack"}
+            </button>
+            <a
+              href="#attack"
+              className="w-full rounded-full border border-(--color-border) px-4 py-2 text-center text-sm text-(--color-text)"
+            >
+              read more about the attack ↓
+            </a>
+          </div>
+
+          <p className="hidden text-sm leading-relaxed text-(--color-text) sm:block">
             <strong>{SALT_SOURCES.find((s) => s.id === source)?.label}:</strong> {SOURCE_NOTE[source]}
           </p>
           {routes.length === 0 && <span className="text-xs text-(--color-text)">computing routes…</span>}
@@ -281,7 +306,7 @@ export default function LoadBalanceController() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div id="attack" className="flex scroll-mt-20 flex-col gap-6">
           <AttackPanel
             enabled={attack}
             onToggle={setAttack}

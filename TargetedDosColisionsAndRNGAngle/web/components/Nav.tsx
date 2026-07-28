@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 /** Sticky top brand bar. The whole load-balancing + collision-attack demo lives
  * on one page (`/`), so this reads as a product header rather than a router. */
@@ -12,15 +13,16 @@ export default function Nav() {
             QEaaS<span className="text-(--color-accent)">·</span>ECMP
           </span>
         </Link>
-        <div className="flex items-center gap-4">
-          <span className="hidden text-xs text-(--color-text) opacity-70 md:inline">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="hidden text-xs text-(--color-text) opacity-70 lg:inline">
             Live ECMP load-balancing &amp; collision-DoS lab
           </span>
+          <ThemeToggle />
           <a
             href="https://qeaas.eu"
             target="_blank"
             rel="noopener noreferrer"
-            className="pill px-4 py-1.5 text-xs font-semibold"
+            className="pill px-3 py-1.5 text-xs font-semibold sm:px-4"
           >
             qeaas.eu ↗
           </a>
