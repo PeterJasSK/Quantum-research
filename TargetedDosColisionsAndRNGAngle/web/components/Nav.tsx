@@ -24,7 +24,7 @@ export default function Nav() {
             rel="noopener noreferrer"
             className="pill px-3 py-1.5 text-xs font-semibold sm:px-4"
           >
-            qeaas.eu ↗
+            qeaas.eu
           </a>
         </div>
       </nav>
