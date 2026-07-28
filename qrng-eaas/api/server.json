@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "eu.qeaas/qeaas-mcp",
-  "description": "Quantum Entropy-as-a-Service: QRNG-seeded HMAC-DRBG (SP 800-90A) random bytes, cryptographic seeds with signed provenance receipts, a dice roller, offline receipt verification, and QRNG-seeded ML-KEM-768 (FIPS 203) keypair generation and encapsulation.",
+  "description": "QRNG-seeded random bytes, seeds, and ML-KEM-768 keys with signed provenance receipts.",
   "version": "1.0.0",
   "repository": {
     "url": "https://qeaas.eu",
