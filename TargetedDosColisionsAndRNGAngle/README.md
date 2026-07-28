@@ -35,7 +35,7 @@ The salt is minted from one of three RNGs (`testbed/salt/sources.py`). They feed
 | `csprng` | `secrets.token_bytes(size)` | No — no small internal state to recover. |
 | `qrng` | Bytes fetched over HTTP from a hosted Quantum-RNG service, with an attestable provenance receipt | No — physically unpredictable. |
 
-`prng` is the deliberately weak, reconstructable target. `csprng` and `qrng` are cryptographically unpredictable; the project is explicit that **QRNG buys attestable provenance, not better security or balancing than CSPRNG** (an honest null result).
+`prng` is the deliberately weak, reconstructable target. `csprng` and `qrng` are both cryptographically unpredictable and behave identically in the attack/balancing math. The distinguishing value of `qrng` — delivered by **QEaaS** — is **attestable, provably-sourced entropy with a signed provenance receipt** you can hand an auditor: the deployable product angle. (That CSPRNG alone is *sufficient* for the security/balancing outcome is an honest null result, but it is a **footnote**, not the headline — the emphasis is QEaaS viability and auditable provenance. See "Framing" below.)
 
 ### 3. The attack (angle 1)
 
@@ -79,8 +79,11 @@ There is **no unit-test suite** (a deliberate project directive). Instead:
 
 Everything above is re-run live in the browser (`web/`), routed through the **vendored, byte-identical** hash and metrics.
 
-- **`/` — attack demo** (`web/components/SceneController.tsx`): three scenes — (1) a naive flood that rate limiting absorbs, all links green; (2) a precision collision on a predictable salt that collapses one link and the victim while the defence lamps sit idle; (3) CSPRNG + salt rotation, where a slider lets you find the rotation interval below which the attacker can never "lock on". Visualized with a topology SVG, per-link utilization bars, a victim-throughput bar, defence status lamps, and salt/provenance panels.
-- **`/load-balancing`** (`web/components/LoadBalanceController.tsx`): the full k=4 fat-tree under uniform traffic with a `weak-prng | csprng | qrng` selector. Switching the source re-derives per-switch salts and re-routes the same flows; `weak-prng` visibly polarizes (some links red/solid, others faint/unused; low Jain's index, high polarization), while `csprng`/`qrng` spread evenly. The QRNG option additionally shows its provenance receipt — explicitly labelled as attestation, not better balancing.
+Now a **single unified page** (`/`, `web/components/LoadBalanceController.tsx`) framed as a **QEaaS product demo**: a live k=6 fat-tree (47 switches + 2 WAN gateways, 36 hosts) with animated packets flowing along the real ECMP routes. A `weak-prng | csprng | qrng` selector re-derives per-switch salts and re-routes the same seeded traffic — `weak-prng` visibly polarizes, `csprng`/`qrng` spread evenly. The main stage is that load balancing; a **side panel** runs a live **precision collision attacker** (one host, one deep target link, no botnet) whose success is decided by the same salt source — a live "victim link congestion" gauge shows it landing under weak salt and dissolving under strong salt. Selecting **QRNG** surfaces the QEaaS signed provenance receipt: the piece the fabric was missing, the thing CSPRNG cannot give you. (CSPRNG-vs-QRNG parity on the *outcome* is a footnote in the UI, not the focus.)
+
+### Framing (emphasis directive)
+
+The QRNG≈CSPRNG null result on the attack/balancing *outcome* is real and stated honestly, but it is deliberately a **footnote** across the demo, README, and paper prep — **not** a heavy focus. The lead message is **QEaaS viability**: per-switch quantum entropy delivered as a service, each draw carrying an attestable, signed provenance receipt (entropy epoch, request id, source) — auditable randomness a CSPRNG cannot provide. Keep that emphasis when editing any surface here.
 
 ### In one line
 

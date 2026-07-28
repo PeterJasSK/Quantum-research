@@ -18,7 +18,7 @@ sys.path.insert(0, __file__.rsplit("/testbed/", 1)[0])
 from testbed.attacker.collision import CollisionCrafter  # noqa: E402
 from testbed.attacker.oracle import LocalOracle  # noqa: E402
 from testbed.attacker.reconstruct import SeedBruteForcer  # noqa: E402
-from testbed.attacker.traffic import random_five_tuples  # noqa: E402
+from testbed.attacker.flows import random_five_tuples  # noqa: E402
 from testbed.config import N_LINKS  # noqa: E402
 from testbed.types import FiveTuple  # noqa: E402
 

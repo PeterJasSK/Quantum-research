@@ -1,5 +1,5 @@
-import SceneController from "@/components/SceneController";
+import LoadBalanceController from "@/components/LoadBalanceController";
 
 export default function Home() {
-  return <SceneController />;
+  return <LoadBalanceController />;
 }

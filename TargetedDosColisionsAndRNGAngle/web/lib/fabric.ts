@@ -299,6 +299,132 @@ export async function fabricLinkLoad(
   return fabric.linkIds.map((id) => counts[id]);
 }
 
+// ---------------------------------------------------------------------------
+// Precision collision attacker (unified live stage).
+//
+// ONE compromised host floods a single victim with crafted flows (fixed dst,
+// only src_port sweeps). It aims the whole flood at ONE deep fabric link, deep
+// enough that ECMP has many equal-cost paths to spread across — the load-
+// balancing tier the attack subverts. A first-hop edge uplink would be a poor
+// target (only `half` parallel links, and the source's own uplinks congest
+// regardless of salt); the interesting target is a core -> victim-agg link,
+// where the fabric offers half^2 equal-cost core->agg paths into the victim's
+// pod (k=6 -> 9 such paths).
+//
+// Every cross-pod flow to the victim traverses core -> victim-agg -> victim-edge
+// (see route()). The path is fixed by two hashed choices: aggChoice (at the
+// attacker's edge) and coreChoice (at its agg). The attacker crafts src_ports so
+// both land on a chosen (a, c) => the flow rides core{a*half+c} -> victim-agg{a}
+// = targetLink. It solves this against the salt it *believes* the switches use
+// (`believedSalts`); packets route under the real salts (`realSalts`):
+//   predictable salt (believed==real) => every crafted flow lands on (a,c) =>
+//     the whole flood funnels onto the one target link and down to the victim
+//     (red cone); the rest of the fabric is untouched. Targeted DoS.
+//   unpredictable salt (believed!=real) => the same crafted ports hash to random
+//     (aggChoice,coreChoice) => flows spray across all half^2 core->agg links =>
+//     each carries ~1/half^2 => the flood dissolves into the background. Defeated.
+// CSPRNG already breaks the precomputation; QRNG only adds attestable
+// provenance, never extra mitigation (Experiment 4 null result). This is a
+// SINGLE-attacker, single-target-link model by design — no botnet — matching
+// the study's novelty framing (distinct from Crossfire/Coremelt).
+// ---------------------------------------------------------------------------
+
+export interface AttackForce {
+  attacker: string; // the single compromised source host
+  victim: string; // single target host
+}
+
+/** Deterministic attacker/victim pair on opposite ends of the fabric, in
+ * different pods, so the crafted flood climbs edge -> agg -> core and back down
+ * to the victim — maximally visible and forced through the core tier. */
+export function attackForce(fabric: Fabric): AttackForce {
+  return { attacker: fabric.hosts[fabric.hosts.length - 1], victim: fabric.hosts[0] };
+}
+
+/** The crafted 5-tuple: fixed attacker src, fixed victim dst, only src_port sweeps. */
+function attackTuple(fabric: Fabric, attacker: string, victim: string, srcPort: number): FiveTuple {
+  return {
+    src_ip: fabric.hostToIp[attacker],
+    dst_ip: fabric.hostToIp[victim],
+    src_port: srcPort,
+    dst_port: 80,
+    proto: 6,
+  };
+}
+
+export interface AttackPlan {
+  routes: string[][]; // crafted flood paths, routed under the REAL salts
+  targetLink: string; // the single deep core->victim-agg link aimed at
+  targetAgg: string;
+  collisionSetSize: number; // crafted flows in the flood
+  scanned: number; // src_ports searched
+  // Fraction of the flood that actually traverses targetLink under the REAL
+  // salts — the concentration the attacker achieved. ~1.0 when the salt was
+  // predictable (attack locks on), ~1/half^2 when it wasn't (scattered). This
+  // is exact and background-independent, so it drives the locked/scattered
+  // verdict without being fooled by ordinary traffic polarization.
+  onTargetFraction: number;
+}
+
+/** Build the attacker's crafted flood aimed at one deep core->victim-agg link,
+ * chosen by (targetAgg, targetCore). Scans src_port space keeping ports whose
+ * (aggChoice, coreChoice) match the target *under the salt it believes*, then
+ * routes each kept flow under the real salts so the animation shows where the
+ * packets truly go. Predictable salt => believed==real => all converge;
+ * unpredictable => they spray across the core tier. */
+export async function craftAttackFlows(
+  fabric: Fabric,
+  realSalts: Record<string, string>,
+  believedSalts: Record<string, string>,
+  { attacker, victim }: AttackForce,
+  {
+    count = 200,
+    window = 16000,
+    targetAgg = 0,
+    targetCore = 0,
+  }: Partial<{ count: number; window: number; targetAgg: number; targetCore: number }> = {},
+): Promise<AttackPlan> {
+  const victimPod = fabric.edgePod[fabric.hostEdge[victim]];
+  const targetAggId = `pod${victimPod}agg${targetAgg}`;
+  const targetCoreId = `core${targetAgg * fabric.half + targetCore}`;
+  const targetLink = linkId(targetCoreId, targetAggId);
+
+  const attackerEdge = fabric.hostEdge[attacker];
+  const attackerPod = fabric.edgePod[attackerEdge];
+  const attackerAgg = `pod${attackerPod}agg${targetAgg}`;
+
+  const routes: string[][] = [];
+  let scanned = 0;
+  for (let port = 40000; routes.length < count && port < 40000 + window; port++, scanned++) {
+    const tuple = attackTuple(fabric, attacker, victim, port);
+    const aggChoice = await ecmpLink(tuple, believedSalts[attackerEdge], fabric.half);
+    if (aggChoice !== targetAgg) continue;
+    const coreChoice = await ecmpLink(tuple, believedSalts[attackerAgg], fabric.half);
+    if (coreChoice !== targetCore) continue;
+    const nodes = await routeNodes(fabric, realSalts, tuple);
+    if (nodes.length > 0) routes.push(nodes);
+  }
+
+  let onTarget = 0;
+  for (const route of routes) {
+    for (let i = 0; i < route.length - 1; i++) {
+      if (linkId(route[i], route[i + 1]) === targetLink) {
+        onTarget += 1;
+        break;
+      }
+    }
+  }
+
+  return {
+    routes,
+    targetLink,
+    targetAgg: targetAggId,
+    collisionSetSize: routes.length,
+    scanned,
+    onTargetFraction: routes.length > 0 ? onTarget / routes.length : 0,
+  };
+}
+
 /** A uniform background flow set: every distinct host pair, one flow each. */
 export function uniformFlowSet(fabric: Fabric): FiveTuple[] {
   const flows: FiveTuple[] = [];

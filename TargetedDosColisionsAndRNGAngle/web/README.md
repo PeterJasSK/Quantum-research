@@ -25,7 +25,8 @@ To serve the exported bundle offline:
 npx serve out
 ```
 
-Disconnect the network and step through Scene 1 -> 2 -> 3; all three must run purely in the
+Disconnect the network and drive the single page: switch the salt source
+(`weak-prng` -> `csprng` -> `qrng`) and launch the attacker; everything must run purely in the
 browser (AC-1..4).
 
 ## Parity (build-time assert, not a test)
@@ -63,19 +64,29 @@ are typed scaffolding only. Wiring them up needs:
 `public/replay/qrng-provenance.json` is a **structurally-accurate sample**, not a real Q-EaaS
 receipt -- replace it with P5's recorded provenance run before using the demo publicly.
 
-## `/load-balancing` -- entropy quality vs ECMP hash polarization (Plan 8)
+## Single unified page (`/`) -- QEaaS product demo
 
-A second, attack-free route: a k=4 fat-tree (20 switches, 16 hosts, `lib/fabric.ts`) under
-uniform background traffic, no attacker, no defences. Salt-source selector (`weak-prng` |
-`csprng` | `qrng`) re-derives per-switch salts and re-routes the same flow set through the
-vendored `ecmpLink` per stage (D8-parity) -- `weak-prng` reuses one shared salt fabric-wide
-(polarizes); `csprng`/`qrng` mint an independent salt per switch (spreads evenly). See
-`../plans/plan-8-load-balancing-entropy.md`.
+The old three-scene attack demo and the separate `/load-balancing` route were merged into one page
+(`components/LoadBalanceController.tsx`). It is a live **k=6** fat-tree (`lib/fabric.ts`: 47 switches
++ 2 WAN gateways, 36 hosts) with animated packets flowing along the real ECMP routes, routed through
+the vendored `ecmpLink` per stage (D-parity).
 
-`FatTreeView` renders the full fabric as a tall vertical SVG (tiers stacked core -> aggregation
--> edge -> hosts) -- deliberately not cropped or simplified (OQ8-3). `FairnessReadout` computes
-Jain's index + polarization index (`lib/fairness.ts`, mirrors `testbed/metrics/fairness.py`) live
-from the real routed bucket counts. The QRNG selection shows the same `ProvenancePanel` as Scene
-3, labelled provenance-only (epic s3.2 null result) -- never "balances better than CSPRNG."
+- **Main stage** -- load balancing (`LiveFatTree` canvas). Salt-source selector (`weak-prng` |
+  `csprng` | `qrng`) re-derives per-switch salts and re-routes the same seeded traffic. `weak-prng`
+  reuses a tiny shared salt pool fabric-wide (polarizes); `csprng`/`qrng` mint an independent salt per
+  switch (spreads evenly). `FairnessReadout` computes Jain's index + polarization live
+  (`lib/fairness.ts`).
+- **Side panel** -- a live **precision collision attacker** (`AttackPanel`): one host, one deep
+  core->agg target link, **no botnet**. It solves the ECMP hash offline against the salt it *believes*
+  (== real only under a predictable salt), floods the victim, and a live "victim link congestion" gauge
+  shows the attack landing under weak salt and dissolving under strong salt. Success verdict uses the
+  exact `onTargetFraction` from `craftAttackFlows`, not a background-fooled live ratio.
+- **QRNG** selection surfaces `ProvenancePanel` -- the QEaaS signed provenance receipt.
 
-Cross-linked from the attack demo via `components/Nav.tsx` (basePath-aware via `next/link`).
+### Framing note (emphasis directive)
+
+The page is framed as a **QEaaS viability demo**: the lead message is per-switch quantum entropy
+delivered as a service with an attestable, signed provenance receipt per draw. The fact that a strong
+CSPRNG is *sufficient* for the same attack/balancing outcome (QRNG null result) is real and stated
+honestly, but kept as a **footnote**, never the focus. Preserve that emphasis when editing texts here.
+Keep all three salt-source modules -- weak/csprng/qrng stay selectable.

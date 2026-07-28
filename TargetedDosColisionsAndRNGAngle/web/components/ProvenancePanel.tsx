@@ -20,10 +20,19 @@ export default function ProvenancePanel({ visible }: { visible: boolean }) {
   if (!visible) return null;
 
   return (
-    <div className="panel flex flex-col gap-2 p-4">
+    <div className="panel card-hover flex flex-col gap-2 p-5">
+      <span className="eyebrow">
+        <span className="eyebrow-rule" />
+        QEaaS
+      </span>
       <h3 className="text-sm font-semibold text-(--color-heading)">
-        QRNG entropy provenance -- attestable, not attack-mitigating
+        Signed entropy provenance receipt
       </h3>
+      <p className="text-xs text-(--color-text) opacity-80">
+        Every QRNG salt served to the fabric arrives with this attestable receipt — proof of a real quantum source,
+        which epoch it came from, and a verifiable signature. This is the deployable product: auditable randomness as
+        a service.
+      </p>
       {!provenance ? (
         <span className="text-xs text-(--color-text)">loading recorded provenance...</span>
       ) : (
@@ -42,9 +51,8 @@ export default function ProvenancePanel({ visible }: { visible: boolean }) {
           <dd className="break-all font-(family-name:--font-mono)">{provenance.receipt}</dd>
         </dl>
       )}
-      <p className="text-xs italic text-(--color-text)">
-        Honest label: this shows entropy is attestable/provably-sourced, not that QRNG stops the attack better
-        than CSPRNG (Experiment 4's null result).
+      <p className="text-xs italic text-(--color-text) opacity-70">
+        Footnote: a strong CSPRNG blunts this attack just as well; the signed receipt is what CSPRNG cannot give you.
       </p>
     </div>
   );

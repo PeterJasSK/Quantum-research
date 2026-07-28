@@ -1,5 +1,11 @@
-"""AC-1-4 orchestrator: resolve salt -> craft the collision set -> send ->
-emit the run-record P4/P5 consume (frozen interface, epic s4)."""
+"""AC-1-4 orchestrator: resolve salt -> craft the collision set -> emit the
+run-record P4/P5 consume (frozen interface, epic s4).
+
+plan-10: the real-packet transport (`traffic.send_flows`, scapy) is deleted;
+`testbed/sim/*` drives the crafted set through the flow-level transport model
+instead. This entry point now resolves + crafts and returns the crafted
+tuples in its record; the sim harness mirrors the same resolve->craft wiring
+directly."""
 from __future__ import annotations
 
 from typing import Any
@@ -7,16 +13,14 @@ from typing import Any
 from testbed.config import (
     BRUTEFORCE_DRAW_WINDOW,
     N_LINKS,
-    PRECISION_PER_SOURCE_PPS,
     PRNG_SEED_SPACE_BITS,
-    VOLUMETRIC_PPS,
 )
 from testbed.types import FiveTuple
 
 from .collision import CollisionCrafter
+from .flows import TrafficMode, random_five_tuples
 from .knowledge import KnowledgeLevel, resolve_salt
 from .oracle import PlacementOracle
-from .traffic import TrafficMode, random_five_tuples, send_flows
 
 
 def run_attack(
@@ -36,14 +40,12 @@ def run_attack(
     src_ip_pool: list[str] | None = None,
     src_port_range: range = range(1024, 65535),
     dst_port: int = 80,
-    rate_pps: int = VOLUMETRIC_PPS,
-    per_source_cap: int = PRECISION_PER_SOURCE_PPS,
-    iface: str,
     n_links: int = N_LINKS,
 ) -> dict[str, Any]:
     """Run one attack: resolve the salt for `level`, craft (or fall back to
-    random, for blind) `count` flows targeting `target_link`, send them in
-    `mode`, and return the structured run-record."""
+    random, for blind) `count` flows targeting `target_link`, and return the
+    structured run-record (including the crafted `five_tuples` the flow-level
+    transport model will carry)."""
     reconstruction = resolve_salt(
         level,
         known_salt=known_salt,
@@ -72,14 +74,6 @@ def run_attack(
     if mode == "volumetric" and five_tuples:
         five_tuples = [five_tuples[0]] * count
 
-    flows_sent = send_flows(
-        five_tuples,
-        mode=mode,
-        rate_pps=rate_pps,
-        per_source_cap=per_source_cap,
-        iface=iface,
-    )
-
     sources_used = sorted({ft.src_ip for ft in five_tuples})
 
     return {
@@ -88,7 +82,7 @@ def run_attack(
         "target_link": target_link,
         "salt_source": salt_source_note,
         "sources_used": sources_used,
-        "flows_sent": flows_sent,
+        "five_tuples": five_tuples,
         "reconstruction": {
             "attempts": reconstruction.attempts,
             "elapsed_seconds": reconstruction.elapsed_seconds,

@@ -158,3 +158,57 @@ VICTIM_COLLAPSE_MBPS = float(os.environ.get("VICTIM_COLLAPSE_MBPS", "1.0"))
 RESULTS_DIR = os.environ.get("RESULTS_DIR", "results")
 GRAPH1_PATH = os.environ.get("GRAPH1_PATH", os.path.join(RESULTS_DIR, "graph1_success_matrix"))
 GRAPH2_PATH = os.environ.get("GRAPH2_PATH", os.path.join(RESULTS_DIR, "graph2_rotation_threshold"))
+
+# --- P10: flow-level simulation config (plan-10 §3, OQ10-3) ---
+#
+# The live path (Mininet/OVS/scapy) never defined a sustained offered-load
+# model -- the scapy sender emitted each crafted tuple once. The flow-level
+# simulator must state its operating point explicitly, the way P4 tuned its
+# defence thresholds, so every rate in the model is auditable arithmetic
+# rather than a hidden assumption. Every constant below is env-overridable
+# and derived from the existing frozen constants; none of the frozen values
+# are redefined.
+
+# The pps<->bps bridge. Config's meter tuning (RATE_LIMIT_KBPS comment above)
+# already assumes ~1000B packets; this makes that assumption a first-class,
+# inspectable constant.
+PACKET_SIZE_BYTES = int(os.environ.get("PACKET_SIZE_BYTES", "1000"))
+
+# Precision attacker's stated operating point. The internal-consistency
+# inequalities the central claim (Exp 2-3: precision evades both caps yet
+# saturates) requires, all from the frozen constants:
+#   per-flow rate     = PRECISION_PER_FLOW_PPS * PACKET_SIZE_BYTES * 8
+#                     = 5 * 1000 * 8 = 40 kbps
+#   per-source rate   = PRECISION_FLOWS_PER_SOURCE * per-flow
+#                     = 15 * 40 = 600 kbps  (<= RATE_LIMIT_KBPS=1000 -> evades the meter)
+#   flows per source  = 15  (<= THROTTLE_MAX_CONNECTIONS=20 -> evades the throttle)
+#   aggregate         = len(ATTACK_SOURCE_IPS) * per-source = 16 * 600 = 9.6 Mbps
+#                     (>= SATURATION_UTILISATION * LINK_CAPACITY_MBPS = 9 Mbps -> saturates)
+# The mechanism claim is invariant to the exact point as long as those three
+# inequalities hold (stated in the paper); these are the chosen values with
+# margin. CollisionCrafter.craft is invoked PER SOURCE (it iterates src_ip
+# outer, so one craft(count) call would pile every flow on the first source).
+PRECISION_PER_FLOW_PPS = int(os.environ.get("PRECISION_PER_FLOW_PPS", "5"))
+PRECISION_FLOWS_PER_SOURCE = int(os.environ.get("PRECISION_FLOWS_PER_SOURCE", "15"))
+
+# Exp 5 / partial-knowledge reconstruction anchor (plan-10 OQ10-1 dev
+# decision: weak-PRNG anchor with a reduced seed space). The partial attacker
+# reconstructs a *weak PRNG* salt -- the only regime in which the epic's
+# rotation-frequency crossover exists (a csprng/qrng salt is not
+# seed-reconstructable). run_sim sets PRNG_SEED_SPACE_BITS to this value as an
+# env default so BOTH the sim's real SeedBruteForcer AND the frozen
+# analysis/graphs.py T_bf line use the same bits, landing the analytical
+# T_bf = 2**(bits-1) * t_try inside the swept rotation range AND below
+# RUN_DURATION_SECONDS (so the slow-rotation cells actually reach concentration
+# within the run). At 19 bits, T_bf ~ 2**18 * t_try ~ 6 s for a typical
+# per-attempt t_try (~2e-5 s). The target seed is positioned mid-space so the
+# real brute-force does enough work for a stable t_try, yet small enough that
+# the 12-probe search finds the *true* seed before any false positive
+# (per-seed FP rate ~ N_LINKS**-12).
+SIM_RECON_SEED_SPACE_BITS = int(os.environ.get("SIM_RECON_SEED_SPACE_BITS", "19"))
+SIM_RECON_TARGET_SEED = int(os.environ.get("SIM_RECON_TARGET_SEED", "60000"))
+
+# Victim's steady background demand on the shared target link (plan-10 §4).
+# Its throughput is the fair share of residual link capacity after the
+# attacker's surviving load; it wants full capacity by default.
+VICTIM_DEMAND_MBPS = float(os.environ.get("VICTIM_DEMAND_MBPS", str(LINK_CAPACITY_MBPS)))

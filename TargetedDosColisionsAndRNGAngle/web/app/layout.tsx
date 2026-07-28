@@ -15,9 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ECMP Collision DoS -- interactive demo",
+  title: "QEaaS · quantum entropy for the network fabric",
   description:
-    "Three-scene browser demo: naive flood defended, precision-salt collision collapses a victim link, CSPRNG + rotation defeats it.",
+    "Live k=6 fat-tree lab: QEaaS serves per-switch quantum salts that spread ECMP traffic, scatter a precision collision attacker, and ship a signed provenance receipt for every draw — auditable randomness as a service.",
 };
 
 export const viewport: Viewport = {

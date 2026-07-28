@@ -1,0 +1,10 @@
+
+# plan-10: Q-EaaS API key for the qrng salt source -- never commit
+.env
+
+# plan-10: raw per-cell simulation outputs are regenerable (run_sim.py) --
+# commit only the rendered figures (results/*.png,*.svg) and the replay subset.
+results/**/*.csv
+results/**/*.record.json
+results/**/*.rotation_events.jsonl
+metrics.csv

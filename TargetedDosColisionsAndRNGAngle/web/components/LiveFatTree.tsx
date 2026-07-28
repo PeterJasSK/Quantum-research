@@ -12,14 +12,17 @@ const NODE_R = 13;
 const GW_R = 18;
 const HOST_R = 6;
 const PACKET_R = 3.4;
+const ATTACK_PACKET_R = 4.2;
 const BASE_SPEED = 230; // logical px/sec at speed multiplier 1
-const TARGET_INFLIGHT = 300; // concurrent packets kept alive
+const TARGET_INFLIGHT = 300; // concurrent background packets kept alive
+const ATTACK_INFLIGHT = 240; // concurrent crafted attack packets — a heavy, persistent flood
 
 interface Packet {
   route: string[];
   seg: number;
   t: number;
   jitter: number;
+  attack: boolean;
 }
 
 type Rgb = { r: number; g: number; b: number };
@@ -55,12 +58,20 @@ const rgba = (c: Rgb, a: number) => `rgba(${c.r},${c.g},${c.b},${a})`;
 export default function LiveFatTree({
   fabric,
   routes,
+  attackRoutes = [],
+  attacker,
+  victim,
+  targetLink,
   running,
   speed,
   onSample,
 }: {
   fabric: Fabric;
   routes: string[][];
+  attackRoutes?: string[][];
+  attacker?: string;
+  victim?: string;
+  targetLink?: string;
   running: boolean;
   speed: number;
   onSample: (cumulative: number[]) => void;
@@ -107,6 +118,7 @@ export default function LiveFatTree({
     for (const id of fabric.linkIds) cumulative[id] = 0;
     let delivered = 0;
     let spawnCursor = 0;
+    let attackCursor = 0;
 
     // Palette (resolved from CSS custom properties; refreshed periodically for
     // theme toggles).
@@ -152,10 +164,22 @@ export default function LiveFatTree({
         palAge = 0;
       }
 
-      if (runningRef.current && routes.length > 0) {
-        while (packets.length < TARGET_INFLIGHT) {
+      if (runningRef.current && (routes.length > 0 || attackRoutes.length > 0)) {
+        let nNormal = 0;
+        let nAttack = 0;
+        for (const p of packets) {
+          if (p.attack) nAttack++;
+          else nNormal++;
+        }
+        while (routes.length > 0 && nNormal < TARGET_INFLIGHT) {
           spawnCursor = (spawnCursor + 1) % routes.length;
-          packets.push({ route: routes[spawnCursor], seg: 0, t: 0, jitter: 0.8 + ((spawnCursor % 7) / 7) * 0.4 });
+          packets.push({ route: routes[spawnCursor], seg: 0, t: 0, jitter: 0.8 + ((spawnCursor % 7) / 7) * 0.4, attack: false });
+          nNormal++;
+        }
+        while (attackRoutes.length > 0 && nAttack < ATTACK_INFLIGHT) {
+          attackCursor = (attackCursor + 1) % attackRoutes.length;
+          packets.push({ route: attackRoutes[attackCursor], seg: 0, t: 0, jitter: 0.9 + ((attackCursor % 5) / 5) * 0.25, attack: true });
+          nAttack++;
         }
         const v = BASE_SPEED * speedRef.current;
         const survivors: Packet[] = [];
@@ -237,19 +261,44 @@ export default function LiveFatTree({
       }
       ctx.globalAlpha = 1;
 
-      // packets
+      // target link marker: the single uplink the attacker is aiming to saturate
+      if (targetLink) {
+        const [ta, tb] = targetLink.split("-");
+        const pa = pos.get(ta);
+        const pb = pos.get(tb);
+        if (pa && pb) {
+          ctx.save();
+          ctx.strokeStyle = rgba(pal.danger, 0.9);
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 5]);
+          ctx.beginPath();
+          ctx.moveTo(pa.x, pa.y);
+          ctx.lineTo(pb.x, pb.y);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // packets (background first, crafted attack packets on top)
       for (const p of packets) {
         const a = pos.get(p.route[p.seg]);
         const b = pos.get(p.route[p.seg + 1]);
         if (!a || !b) continue;
         const x = a.x + (b.x - a.x) * p.t;
         const y = a.y + (b.y - a.y) * p.t;
-        const link = segmentLinkId(p.route[p.seg], p.route[p.seg + 1]);
-        const hot = (liveOcc[link] ?? 0) / maxOcc > 0.6;
-        ctx.fillStyle = hot ? rgba(pal.danger, 0.95) : rgba(pal.accent, 0.95);
-        ctx.beginPath();
-        ctx.arc(x, y, PACKET_R, 0, Math.PI * 2);
-        ctx.fill();
+        if (p.attack) {
+          ctx.fillStyle = rgba(pal.danger, 1);
+          ctx.beginPath();
+          ctx.arc(x, y, ATTACK_PACKET_R, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          const link = segmentLinkId(p.route[p.seg], p.route[p.seg + 1]);
+          const hot = (liveOcc[link] ?? 0) / maxOcc > 0.6;
+          ctx.fillStyle = hot ? rgba(pal.danger, 0.95) : rgba(pal.accent, 0.95);
+          ctx.beginPath();
+          ctx.arc(x, y, PACKET_R, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
 
       // nodes
@@ -277,6 +326,33 @@ export default function LiveFatTree({
       drawNodes(fabric.edgeSwitches, pal.warning, NODE_R);
       drawNodes(fabric.hosts, pal.text, HOST_R, 0.55);
 
+      // attacker / victim host markers
+      const marker = (id: string | undefined, color: Rgb, label?: string) => {
+        if (!id) return;
+        const p = pos.get(id);
+        if (!p) return;
+        ctx.fillStyle = rgba(color, 1);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, HOST_R + 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = rgba(color, 0.9);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, HOST_R + 7, 0, Math.PI * 2);
+        ctx.stroke();
+        if (label) {
+          ctx.fillStyle = rgba(color, 1);
+          ctx.font = "700 12px system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(label, p.x, p.y + 26);
+          ctx.textAlign = "left";
+        }
+      };
+      if (attackRoutes.length > 0) {
+        marker(attacker, pal.danger, "ATTACKER");
+        marker(victim, pal.info, "VICTIM");
+      }
+
       // tier labels
       ctx.fillStyle = rgba(pal.text, 0.85);
       ctx.font = "600 13px system-ui, sans-serif";
@@ -292,7 +368,7 @@ export default function LiveFatTree({
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [routes, fabric, pos, logicalH, onSample, gwY, coreY, aggY, edgeY, hostY]);
+  }, [routes, attackRoutes, attacker, victim, targetLink, fabric, pos, logicalH, onSample, gwY, coreY, aggY, edgeY, hostY]);
 
   return (
     <div className="panel p-4">
@@ -303,6 +379,11 @@ export default function LiveFatTree({
         <span className="inline-flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded-full" style={{ background: "var(--color-accent)" }} /> packet
         </span>
+        {attackRoutes.length > 0 && (
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-4 rounded-full" style={{ background: "var(--color-danger)" }} /> crafted attack packet
+          </span>
+        )}
         <span className="inline-flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded-full" style={{ background: "var(--color-success)" }} /> light link
         </span>

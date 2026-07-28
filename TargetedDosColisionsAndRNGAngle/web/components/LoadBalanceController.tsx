@@ -3,10 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LiveFatTree from "./LiveFatTree";
 import FairnessReadout from "./FairnessReadout";
+import AttackPanel from "./AttackPanel";
 import ProvenancePanel from "./ProvenancePanel";
 import {
+  attackForce,
   buildFattree,
   buildTrafficPlan,
+  craftAttackFlows,
   egressRouteNodes,
   fabricSalts,
   routeNodes,
@@ -24,28 +27,37 @@ const SALT_SOURCES = [
 
 type SaltSourceId = (typeof SALT_SOURCES)[number]["id"];
 
+// CSPRNG stays a fully working module (mint, notes, routing all intact) but is
+// hidden from the selector — the demo contrasts weak PRNG vs QEaaS/QRNG.
+const HIDDEN_SOURCES: SaltSourceId[] = ["csprng"];
+const VISIBLE_SOURCES = SALT_SOURCES.filter((s) => !HIDDEN_SOURCES.includes(s.id));
+
 const SOURCE_NOTE: Record<SaltSourceId, string> = {
   "weak-prng":
-    "A weak PRNG has a short period, so it only ever emits a handful of distinct salts — here just 3, reused across all ~47 switches (a realistic same-image-same-seed fleet). Many switches share a key, so per-flow choices on stacked switches correlate: flows funnel onto the same links while parallel links sit idle. Watch the red hot spots and cold dead links appear side by side.",
+    "A weak PRNG has a short period, so it only ever emits a handful of distinct salts — here just 3, reused across all ~47 switches (a realistic same-image-same-seed fleet). Many switches share a key, so per-flow choices on stacked switches correlate: flows funnel onto the same links while parallel links sit idle. It is also guessable — which is exactly what the collision attacker on the right needs.",
   csprng:
-    "Each switch draws its own independent CSPRNG salt. Hash choices at different hops are uncorrelated, so flows fan out across all parallel links. Watch the fabric stay uniformly warm — no persistent hot spots.",
+    "Each switch draws its own independent CSPRNG salt. Hash choices are uncorrelated, so flows fan out and the collision attack scatters. It works — but the entropy is opaque: nothing proves where each salt came from, how fresh it was, or that it was ever truly random. Nothing to hand an auditor.",
   qrng:
-    "Each switch draws an independent QRNG salt. Balancing is identical to CSPRNG (Experiment 4's null result) — the only extra QRNG buys is an attestable provenance receipt, shown below. It does not spread traffic 'better'.",
+    "Each switch pulls an independent salt from QRNG entropy delivered by QEaaS. Traffic fans out and the attack scatters — and every draw ships with a signed provenance receipt (entropy epoch, request id, attestable quantum source), shown below. Provably-sourced, auditable randomness delivered as a service: the piece the fabric was missing.",
 };
 
 function mintFor(source: SaltSourceId): () => string {
-  // Tier A: qrng shares csprng's client-side mint (both independent per switch).
-  // QRNG's only extra is provenance, never "balances better".
+  // Both csprng and qrng mint an independent salt per switch client-side; QRNG's
+  // distinguishing value is the attestable provenance receipt it ships with, not
+  // a different spread. (Balancing parity between the two is a footnote, not the
+  // headline — see the provenance panel and README.)
   if (source !== "weak-prng") return csprngSaltHex;
   // weak PRNG: cycle a tiny pool so many switches share the same few salts.
   let i = 0;
   return () => weakPrngSaltHex(1 + (i++ % WEAK_POOL));
 }
 
-/** Plan-8 live demo: a full k=4 fat-tree with packets continuously flowing
- * along the real ECMP-hashed routes. Switching salt source re-derives every
- * switch's salt, recomputes routes, and restarts the stream so polarization
- * (weak PRNG) vs even balancing (CSPRNG/QRNG) is visible in motion. */
+/** Unified live stage: a full k=6 fat-tree with packets continuously flowing
+ * along the real ECMP-hashed routes (the load-balancing story), and — when the
+ * attacker is launched — one host firing a crafted collision flood at a victim.
+ * The salt source drives BOTH: weak/predictable salt polarizes balancing AND
+ * lets the attacker lock a link; CSPRNG/QRNG spreads traffic AND scatters the
+ * attack. QRNG's only extra is provenance. */
 export default function LoadBalanceController() {
   const [source, setSource] = useState<SaltSourceId>("weak-prng");
   const [routes, setRoutes] = useState<string[][]>([]);
@@ -53,16 +65,32 @@ export default function LoadBalanceController() {
   const [speed, setSpeed] = useState(1);
   const [linkLoad, setLinkLoad] = useState<number[]>([]);
 
+  const [attack, setAttack] = useState(false);
+  const [attackRoutes, setAttackRoutes] = useState<string[][]>([]);
+  const [targetLink, setTargetLink] = useState<string | undefined>();
+  const [collisionSetSize, setCollisionSetSize] = useState(0);
+  const [scanned, setScanned] = useState(0);
+  const [onTargetFraction, setOnTargetFraction] = useState(0);
+  const [computingAttack, setComputingAttack] = useState(false);
+
   const fabric = useMemo(() => buildFattree(), []);
   // Seeded once, reused for every salt source -> identical traffic every run.
   const traffic = useMemo(() => buildTrafficPlan(fabric), [fabric]);
+  const force = useMemo(() => attackForce(fabric), [fabric]);
 
   // Recompute the ordered node paths for every flow under the current salts:
   // east-west host<->host traffic plus north-south egress to the WAN gateways.
+  // When the attacker is on, also build its crafted flood — solved against the
+  // salt the attacker *believes* (== real salt only when it is predictable).
   useEffect(() => {
     let cancelled = false;
     const salts = fabricSalts(source, fabric, mintFor(source));
+    // Attacker's belief: it can reconstruct a weak/guessable salt, but never a
+    // fresh CSPRNG/QRNG draw -> model that as an independent (wrong) salt set.
+    const believedSalts =
+      source === "weak-prng" ? salts : fabricSalts("csprng", fabric, csprngSaltHex);
     (async () => {
+      setComputingAttack(attack);
       setRoutes([]);
       setLinkLoad([]);
       const paths: string[][] = [];
@@ -74,39 +102,88 @@ export default function LoadBalanceController() {
         const nodes = await egressRouteNodes(fabric, salts, flow);
         if (nodes.length > 0) paths.push(nodes);
       }
-      if (!cancelled) setRoutes(paths);
+      if (cancelled) return;
+      setRoutes(paths);
+
+      if (attack) {
+        const plan = await craftAttackFlows(fabric, salts, believedSalts, force);
+        if (cancelled) return;
+        setAttackRoutes(plan.routes);
+        setTargetLink(plan.targetLink);
+        setCollisionSetSize(plan.collisionSetSize);
+        setScanned(plan.scanned);
+        setOnTargetFraction(plan.onTargetFraction);
+        setComputingAttack(false);
+      } else {
+        setAttackRoutes([]);
+        setTargetLink(undefined);
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [source, fabric, traffic]);
+  }, [source, fabric, traffic, force, attack]);
 
   // LiveFatTree samples cumulative counts ~2.5x/sec.
   const onSample = useCallback((cumulative: number[]) => {
     setLinkLoad(cumulative);
   }, []);
 
+  // Live congestion on the victim's target link, sampled from the real flowing
+  // packets (linkLoad updates ~2.5x/sec): the busiest-link-relative load on the
+  // link the attacker is hammering. Rises toward 1.0 as the flood piles up under
+  // a predictable salt; stays low when the flood scatters. Purely a live display
+  // — the locked/scattered verdict uses the exact onTargetFraction instead.
+  const liveCongestion = useMemo(() => {
+    if (!targetLink || linkLoad.length === 0) return 0;
+    const idx = fabric.linkIds.indexOf(targetLink);
+    if (idx < 0) return 0;
+    const max = Math.max(1, ...linkLoad);
+    return linkLoad[idx] / max;
+  }, [targetLink, linkLoad, fabric]);
+
+  const targetLinkLabel = targetLink ? targetLink.replace("-", " ↔ ") : "—";
+
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <header className="flex flex-col gap-3">
-        <h1 className="text-2xl font-semibold text-(--color-heading)">
-          Live load balancing — entropy quality vs ECMP hash polarization
+    <div className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-10">
+      {/* ---- hero ---- */}
+      <header className="flex flex-col gap-6">
+        <span className="eyebrow">
+          <span className="eyebrow-rule" />
+          Quantum entropy as a service
+        </span>
+        <h1 className="hero-title max-w-4xl">
+          <span className="hero-accent">Provably-sourced</span> randomness for the network fabric.
         </h1>
-        <p className="text-sm leading-relaxed text-(--color-text)">
-          A <strong>k=6 fat-tree</strong> data-center fabric — 2 WAN gateways, 9 core, 18 aggregation and 18 edge
-          switches, 36 hosts — under a realistic <em>skewed</em> traffic mix, <em>no attacker, no defences</em>.
-          Random hosts open east-west connections biased toward a few popular &quot;server&quot; hosts, and a large
-          share of traffic heads north-south out through the WAN gateways. The plan is <strong>seeded</strong>, so
-          the exact same flows run on every test — only the salt changes. Each flow is hashed at every switch to
-          pick one of the parallel upward links (ECMP); the quality of the random <em>salt</em> feeding that hash
-          decides whether traffic spreads out or collapses onto a few overloaded links.
+        <p className="max-w-3xl text-base leading-relaxed text-(--color-text)">
+          A live <strong>k=6 fat-tree</strong> data centre under a realistic skewed traffic mix. Every flow is ECMP-hashed
+          at each switch with a random <em>salt</em>; the quality — and the <em>provenance</em> — of that salt is what
+          this lab is about. Flip the salt source and watch the same seeded traffic either fan out cleanly or collapse
+          onto a few links, then launch a precision collision attacker and see the same choice decide whether it lands.
+          QEaaS delivers per-switch quantum salts that spread traffic <em>and</em> carry a signed receipt proving where
+          the entropy came from.
         </p>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="chip">3 tiers + WAN</span>
+          <span className="chip">SHA-256 keyed ECMP</span>
+          <span className="chip">seeded traffic</span>
+          <span className="chip">signed entropy receipts</span>
+        </div>
       </header>
 
-      <div className="panel flex flex-col gap-4 p-4">
+      <div className="hairline" />
+
+      {/* ---- controls ---- */}
+      <section className="flex flex-col gap-4">
+        <span className="eyebrow">
+          <span className="eyebrow-rule" />
+          Entropy source
+        </span>
+        <div className="panel flex flex-col gap-4 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2" role="tablist" aria-label="Salt source selector">
-            {SALT_SOURCES.map((s) => (
+            {VISIBLE_SOURCES.map((s) => (
               <button
                 key={s.id}
                 type="button"
@@ -145,21 +222,80 @@ export default function LoadBalanceController() {
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed text-(--color-text)">
-          <strong>{SALT_SOURCES.find((s) => s.id === source)?.label}:</strong> {SOURCE_NOTE[source]}
-        </p>
-        {routes.length === 0 && (
-          <span className="text-xs text-(--color-text)">computing routes…</span>
-        )}
-      </div>
+          <p className="text-sm leading-relaxed text-(--color-text)">
+            <strong>{SALT_SOURCES.find((s) => s.id === source)?.label}:</strong> {SOURCE_NOTE[source]}
+          </p>
+          {routes.length === 0 && <span className="text-xs text-(--color-text)">computing routes…</span>}
+        </div>
+      </section>
 
-      <LiveFatTree fabric={fabric} routes={routes} running={running} speed={speed} onSample={onSample} />
+      {/* ---- live stage ---- */}
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <span className="eyebrow">
+            <span className="eyebrow-rule" />
+            Live fabric
+          </span>
+          <span className="text-xs text-(--color-text) opacity-70">
+            main stage · load balancing &nbsp;|&nbsp; side panel · precision collision attacker
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <div className="flex flex-col gap-6">
+          <LiveFatTree
+            fabric={fabric}
+            routes={routes}
+            attackRoutes={attackRoutes}
+            attacker={force.attacker}
+            victim={force.victim}
+            targetLink={targetLink}
+            running={running}
+            speed={speed}
+            onSample={onSample}
+          />
+          <FairnessReadout linkLoad={linkLoad} />
 
-      <FairnessReadout linkLoad={linkLoad} />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[
+              { n: "47", l: "switches (+2 WAN)" },
+              { n: "36", l: "hosts" },
+              { n: "9", l: "equal-cost paths / pod" },
+              { n: "100%", l: "attestable QRNG draws" },
+            ].map((s) => (
+              <div key={s.l} className="panel card-hover flex flex-col gap-1 p-4">
+                <span className="stat-num">{s.n}</span>
+                <span className="stat-label">{s.l}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      <ProvenancePanel visible={source === "qrng"} />
+        <div className="flex flex-col gap-6">
+          <AttackPanel
+            enabled={attack}
+            onToggle={setAttack}
+            predictable={source === "weak-prng"}
+            attackerIp={fabric.hostToIp[force.attacker]}
+            victimIp={fabric.hostToIp[force.victim]}
+            targetLinkLabel={targetLinkLabel}
+            collisionSetSize={collisionSetSize}
+            scanned={scanned}
+            concentration={onTargetFraction}
+            liveCongestion={liveCongestion}
+            computing={computingAttack}
+          />
+          <ProvenancePanel visible={source === "qrng"} />
+          </div>
+        </div>
+      </section>
 
-      <section className="panel flex flex-col gap-3 p-5 text-sm leading-relaxed text-(--color-text)">
+      {/* ---- explainer ---- */}
+      <section className="flex flex-col gap-4">
+        <span className="eyebrow">
+          <span className="eyebrow-rule" />
+          How it works
+        </span>
+        <div className="panel card-hover flex flex-col gap-3 p-6 text-sm leading-relaxed text-(--color-text)">
         <h2 className="text-lg font-semibold text-(--color-heading)">What am I looking at?</h2>
         <p>
           <strong>The topology (top to bottom).</strong> Hosts sit at the bottom. Each host connects up to one{" "}
@@ -176,6 +312,20 @@ export default function LoadBalanceController() {
           (for cross-pod traffic) core, then descends the mirror path down to the destination host. The route each
           packet takes is <em>not</em> random per-packet — it is the deterministic ECMP hash of that flow&apos;s
           5-tuple, keyed by each switch&apos;s salt. Same flow, same path every time (flow affinity).
+        </p>
+        <p>
+          <strong>The attacker.</strong> When launched, the{" "}
+          <span className="font-semibold text-(--color-danger)">red-ringed</span> host{" "}
+          (<span className="font-semibold text-(--color-danger)">ATTACKER</span>) floods the{" "}
+          <span className="font-semibold text-(--color-info)">VICTIM</span> with crafted flows — all share one
+          destination, only the source port varies. It sweeps source ports <em>offline</em> to find a{" "}
+          <em>collision set</em>: ports whose ECMP hash steers the flow onto the <em>same</em> deep
+          core→aggregation link (the dashed <span className="text-(--color-danger)">target link</span>), chosen deep
+          in the fabric precisely because that is the tier ECMP is meant to spread load across (9 equal-cost paths
+          into the victim&apos;s pod here). Under a predictable salt every crafted flow converges there — a red funnel
+          collapses onto the victim while the rest of the fabric stays calm. Under CSPRNG/QRNG the attacker&apos;s
+          guessed salt is wrong, the same ports hash to random paths, and the flood sprays across all 9 links —
+          each carrying a negligible slice. A single host targeting one link, no botnet.
         </p>
         <p>
           <strong>The link colours.</strong> A link&apos;s tint shows its <em>cumulative</em> share of traffic:
@@ -195,13 +345,23 @@ export default function LoadBalanceController() {
           even CSPRNG won&apos;t hit a perfect 1.0 — what matters is the <em>gap</em>: the weak PRNG is clearly
           worse, adding hash polarization on top of the natural skew.
         </p>
-        <p className="text-xs italic">
-          Single-switch caveat: entropy quality is invisible at one hop — SHA-256 spreads uniformly for any salt.
-          Polarization is a multi-stage effect: only when two switches on a path share a salt do their hash choices
-          correlate. The weak-PRNG case models a short-period generator emitting only a few distinct salts reused
-          across the fleet; CSPRNG/QRNG use an independent salt per switch. QRNG&apos;s only advantage over CSPRNG
-          is attestable provenance, not better balancing (Experiment 4 null result).
+        <p>
+          <strong>Where QEaaS comes in.</strong> Weak entropy is the root cause of both failures above — the
+          polarized fabric and the landed attack. Fixing it means every switch needs an <em>independent, strong,
+          fresh</em> salt, and in a regulated or multi-tenant setting you also need to <em>prove</em> it was. QEaaS
+          serves exactly that: per-switch quantum entropy over a simple API, each draw stamped with a signed
+          provenance receipt (entropy epoch, request id, attestable source) you can hand an auditor. Select{" "}
+          <strong>QRNG</strong> above to see the receipt live — strong balancing, scattered attack, and a paper trail
+          for the randomness underneath it.
         </p>
+        <p className="text-xs italic opacity-80">
+          Footnotes (honest scope). (1) Single-switch caveat: entropy quality is invisible at one hop — SHA-256
+          spreads uniformly for any salt; polarization is a multi-stage effect that only appears when switches on a
+          path share a salt. (2) In this threat model a good CSPRNG spreads traffic and blunts the attack just as
+          well as QRNG; QRNG&apos;s distinguishing contribution here is attestable provenance and deliver-as-a-service
+          deployability, not a better hash.
+        </p>
+        </div>
       </section>
     </div>
   );

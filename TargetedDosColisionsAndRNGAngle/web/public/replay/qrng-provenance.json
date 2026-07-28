@@ -1,9 +1,8 @@
 {
-  "request_id": "sample-00000000-0000-0000-0000-000000000000",
-  "entropy_epoch": 0,
-  "timestamp": "1970-01-01T00:00:00Z",
+  "request_id": "6b8daa72ddd94680b7d2b68fbe02cb91",
+  "entropy_epoch": 31,
+  "timestamp": "2026-07-28T06:39:21.503861Z",
   "size": 32,
   "endpoint": "https://api.qeaas.eu/v1/random/bytes",
-  "receipt": "qeaas1.SAMPLE_PLACEHOLDER_PAYLOAD.SAMPLE_PLACEHOLDER_SIGNATURE",
-  "_note": "SAMPLE placeholder pending P5 (Draft). Replace with the real recorded Q-EaaS provenance run from P5 before shipping the demo publicly."
+  "receipt": "qeaas1.eyJlcG9jaCI6MzEsInJpZCI6IjZiOGRhYTcyZGRkOTQ2ODBiN2QyYjY4ZmJlMDJjYjkxIiwic3oiOjMyLCJ0cyI6IjIwMjYtMDctMjhUMDY6Mzk6MjEuNTAzODYxKzAwOjAwIn0.l1il6Lc5YCo-lQwOtC6zVWJUFuoMGkW6NSND0SVkhdQ-4m5ZzqDzXzqpb-XjPFrYb7T_wNI6kJ2ybLHdb105CQ"
 }

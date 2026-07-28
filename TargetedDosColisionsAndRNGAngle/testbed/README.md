@@ -1,384 +1,153 @@
-# ECMP testbed (Plan 1 — scaffolding & the S0.2 spike)
+# ECMP salt-collision DoS testbed
+
+> **All results in this study are flow-level-simulation-derived.** This is a
+> **preliminary flow-level study**: a deterministic, root-free simulator
+> (`testbed/sim/`) drives the *real, frozen* mechanism — the SHA-256 hash core,
+> the collision crafter, the seed-space brute-forcer, the three salt sources
+> (including the live QRNG endpoint), the defence policy, and the metrics
+> collector — and models **only** the packet transport (offered load → per-link
+> byte counters over time). The direct next step is a **bare-metal
+> implementation** of the same stack (see `plans/plan-10-*.md`). The Mininet /
+> Open vSwitch / os-ken / scapy / iperf3 live path was removed (plan-10): it was
+> environment-fragile and never completed a run; nothing in the results depends
+> on it.
 
 ## Prereqs
 
-- Mininet + Open vSwitch (system packages):
-  `sudo apt install mininet openvswitch-switch`
-- `os-ken` (maintained fork of Ryu — plain `ryu` fails to install on modern
-  setuptools; see `../requirements.txt`):
-  `python3 -m venv .venv && .venv/bin/pip install -r ../requirements.txt`
-- OVS / OpenFlow version on this box: `ovs-vsctl (Open vSwitch) 3.3.4`, DB
-  Schema 8.5.1 (Ubuntu noble-updates package `openvswitch-switch`), OpenFlow 1.5
-  supported (`-O OpenFlow15` on `ovs-ofctl`).
+Root-free, cross-platform. Only:
 
-## D1 decision record (native OVS vs controller-side ECMP)
+- Python 3.10+ with `pandas` + `matplotlib` (for `testbed/analysis/` graph
+  rendering): `python3 -m venv .venv && .venv/bin/pip install -r ../requirements.txt`
+- `QEAAS_API_KEY` in the environment for the `qrng` cells (Exp 4c, Exp 4d qrng,
+  the qrng Graph 1 column) — see *QRNG source setup* below. Without it, those
+  cells are recorded **skipped-with-reason**, never faked.
+- `node` on `PATH` **only** to run the JS↔Python hash-parity checker (not the
+  sim itself).
 
-**Controller-side ECMP**, per epic decision D1 — Ryu/os_ken computes
-`hash(5-tuple + salt) mod N` (`testbed/hash_core.py`) and installs an
-exact-match flow rule pinning each observed 5-tuple to the chosen egress
-port. `<TODO: after running the native-OVS check with ovs-ofctl, note here
-whether this box's OVS build exposes an operator-settable hash seed, or
-confirms the expected controller-side fallback.>`
+No Mininet, no Open vSwitch, no os-ken, no scapy, no root, no iperf3.
 
-## 1. Run the spike first (AC-4)
+## Run the flow-level simulation (plan-10)
 
-No topology needed — pure Python, imports only `hash_core`/`types`:
+`testbed/sim/run_sim.py` is the entry point — the root-free replacement for the
+deleted Mininet `run_experiments.py`:
 
 ```
-python3 testbed/spike/salt_remap_check.py
+python3 testbed/sim/run_sim.py --exp 1        # one experiment
+python3 testbed/sim/run_sim.py --exp all      # full matrix + graphs + replay subset
+python3 testbed/sim/run_sim.py --exp 5 --no-graphs --no-replay
 ```
 
-Expected: prints the same 5-tuple's egress port under two salts, asserts
-they differ, exits 0. Non-zero exit / equal ports means the epic's core
-assumption is broken — stop before building further.
+`--exp {1,2,3,4,5,all}` selects the same cells from `testbed/experiments/matrix.py`
+(the whole matrix is data, inspectable there without running it). Each cell
+prints `PASS`/`FAIL`/`DATA`/`SKIP` against its expected summary result; then
+(unless `--no-graphs`) the produced CSVs are handed to the unchanged
+`testbed/analysis/graphs.py`, rendering `results/graph1_*.{png,svg}` and
+`results/graph2_*.{png,svg}`; and (unless `--no-replay`) the P6 Tier-B replay
+subset is written to `web/public/replay/*.json`.
 
-## 2. Boot the topology (AC-1)
+Per-cell CSVs land under `results/<exp>/<cell_id>.csv` (+ `.summary.csv`
+sidecar, + `.record.json` run-record, + `.rotation_events.jsonl` salt log) so no
+cell overwrites another. Raw per-cell CSVs are gitignored (OQ-5); only the two
+figures and the Q4 replay subset (three-scene runs + one QRNG provenance run +
+the full Exp 5 sweep, **blind skipped**) are committed. Runs are deterministic
+and reproducible bit-for-bit for a fixed `PRNG_SEED` (the only intentional
+non-determinism is the live QRNG draw and the wall-clock reconstruction timing
+of the Exp 5 partial attacker).
+
+### What the sim models (plan-10 §1–§4)
+
+- **Offered flows** come from the real `CollisionCrafter.craft` (precision,
+  crafted per source), a single high-rate source (volumetric), or the real
+  `random_five_tuples` (blind).
+- **Defences** are the real `DefencePolicy`: a source over
+  `THROTTLE_MAX_CONNECTIONS` in the window is dropped; a source over
+  `RATE_LIMIT_KBPS` is metered. Frozen P4 thresholds, never re-tuned.
+- **Placement** is the real `ecmp_link`: when the attacker holds the active
+  salt its set concentrates on the target link, otherwise it disperses.
+- **Victim throughput** is the fair share of residual target-link capacity
+  after the attacker's surviving load (replaces the deleted iperf3 reader).
+- **Utilisation / Jain / saturation / summary** are the real `MetricsCollector`,
+  fed the exact `(port_no, tx_bytes, tx_packets, t)` sample shape it accepts.
+
+The attack's stated operating point (auditable arithmetic, not hidden
+assumptions) lives in `testbed/config.py`'s P10 block: `PACKET_SIZE_BYTES`,
+`PRECISION_PER_FLOW_PPS`, `PRECISION_FLOWS_PER_SOURCE`, and the weak-PRNG
+reconstruction anchor (`SIM_RECON_SEED_SPACE_BITS`, `SIM_RECON_TARGET_SEED`).
+
+## Offline correctness gates (no root, no network)
+
+The correctness of this study rests on these gates plus the manual verification
+in `plans/plan-10-*.md`, not on any live data plane:
 
 ```
-.venv/bin/python3 testbed/controller/run_controller.py &
-sudo .venv/bin/python3 testbed/topology/run_topo.py
+python3 testbed/spike/salt_remap_check.py       # salt provably enters the hash (P1)
+python3 testbed/attacker/collision_check.py      # crafted sets collide; blind spreads; seed recovered (P3)
+python3 testbed/metrics/metrics_check.py          # util/Jain/saturation/polarization maths (P4/P8)
+python3 testbed/analysis/analysis_check.py        # success predicate, rotation threshold, graph render (P5)
+python3 testbed/topology/polarization_check.py    # fat-tree hash-polarization mechanism (P8, offline)
 ```
 
-(os-ken ships no `os-ken-manager` console script — it's a library for OpenStack
-Neutron, not a standalone controller like `ryu-manager` was. `run_controller.py`
-is a ~15-line launcher that loads `os_ken.controller.ofp_handler` +
-`ecmp_controller` the same way `ryu-manager` did.)
+Each exits `0` on success, non-zero (with a diagnostic) on any mismatch.
 
-The Mininet CLI opens; `net` and `links` should show `attacker`, `victim`,
-`bg` hosts, the OVS switch `s1`, and `N_LINKS` (default 4) parallel links to
-`spine`.
+## Salt engine — sources, rotation, parity (Plan 2)
 
-## 3. Traffic spreads across N links (Done-when)
+### Salt sources
 
-From the Mininet CLI, generate a handful of distinct flows (varying source
-ports), e.g.:
+`salt_source(kind)` yields one of `prng` | `csprng` | `qrng`:
 
-```
-mininet> attacker ping -c1 victim
-mininet> attacker iperf -c victim -p 5001 &
-```
-
-Then read OVS port counters:
-
-```
-ovs-ofctl -O OpenFlow15 dump-ports s1
-```
-
-Confirm traffic lands on more than one egress port.
-
-## 4. Salt provably re-maps flows (AC-3)
-
-With the topology up, change `STATIC_SALT` in `testbed/config.py`, restart
-the controller, re-send the *same* fixed 5-tuple, and confirm from the
-controller log + port counters that it now egresses a **different** link.
-
-## 5. Salt engine — sources, rotation, JS↔Python parity (Plan 2)
-
-### Salt sources (AC-2)
-
-Select via `SALT_KIND` env var: `prng` (default) | `csprng` | `qrng`.
-
-- `prng` — weak, reconstructable: `random.Random(PRNG_SEED)` (default seed
-  `0`), sequential draws. This is deliberately the attacker's brute-force
-  target (P3) — do not use it for anything except demonstrating the attack.
+- `prng` — weak, reconstructable: `random.Random(PRNG_SEED)` (default seed `0`),
+  sequential draws. Deliberately the attacker's brute-force target — never a
+  real defence.
 - `csprng` — `secrets.token_bytes`.
 - `qrng` — the hosted Q-EaaS service (below).
 
 ```
-SALT_KIND=csprng .venv/bin/python3 testbed/controller/run_controller.py &
+python3 -c "from testbed.salt import salt_source; print(salt_source('csprng'))"
 ```
 
-### QRNG source setup (Appendix A)
+Rotation is driven by the sim harness: for a cell with `rotation_interval > 0`
+it mints a fresh salt every interval across the run and logs each event
+(`{timestamp, old_salt, new_salt, interval, kind}`) via the real
+`testbed/salt/rotation_log.py`, byte-identical to what the removed live
+controller wrote.
 
-1. Mint an API key (needs `ADMIN_TOKEN`, run from `qrng-eaas/api/`):
-   ```
-   python -m scripts.mint_key --owner ecmp-dos-testbed --tier default
-   ```
-2. Export the key (never commit it):
-   ```
-   export QEAAS_API_KEY=<the minted key>
-   export QEAAS_BASE_URL=https://api.qeaas.eu   # default, can omit
-   ```
-3. Run with `SALT_KIND=qrng`. Provenance (`request_id`, `entropy_epoch`,
-   `timestamp`, `receipt`) is logged on every salt fetch.
-4. Quick smoke check without the testbed:
-   ```
-   .venv/bin/python3 -c "from testbed.salt import salt_source; print(salt_source('qrng'))"
-   ```
+### QRNG source setup
 
-### Rotation (AC-3, AC-4)
-
-`ROTATION_INTERVAL_SECONDS` (default `0` = off) makes the controller rotate
-`active_salt` on a timer (`os_ken.lib.hub.spawn` green thread) and reinstall
-every tracked ECMP flow under the new salt. `ECMPController.rotate_salt()` is
-also callable manually (e.g. from a demo / REPL against a running
-controller instance).
-
-```
-SALT_KIND=csprng ROTATION_INTERVAL_SECONDS=5 .venv/bin/python3 testbed/controller/run_controller.py &
-```
-
-Rotation events are appended as JSON lines to `ROTATION_LOG_PATH` (default
-`rotation_events.jsonl`): `{timestamp, old_salt, new_salt, interval, kind}`.
-
-**Atomic mechanism**: the controller tries an OpenFlow bundle
-(`OFPBundleCtrlMsg` OPEN → `OFPBundleAddMsg` DELETE+ADD per tracked flow →
-COMMIT) first. If no `COMMIT_REPLY` arrives within 2s, or an
-`OFPET_BUNDLE_FAILED` error is received, it falls back permanently (for the
-life of the controller process) to delete-and-lazy-re-resolve: all tracked
-ECMP flows are deleted and the next packet-in per 5-tuple re-resolves under
-the new salt (brief controller round-trip, no packet drop). `rotate_salt()`
-logs which mechanism was used each time. **`<TODO: record here which
-mechanism this box's OVS/OF1.5 build actually uses, once verified live —
-see manual verification step 4 below.>`**
+1. Mint an API key for the number-generation endpoint and store it (never
+   commit it). This repo reads it from a gitignored `.env`:
+   ```
+   echo 'QEAAS_API_KEY=<the minted key>' > .env    # .env is gitignored
+   ```
+   or export it: `export QEAAS_API_KEY=<key>`. `QEAAS_BASE_URL` defaults to
+   `https://api.qeaas.eu`.
+2. Run the sim with the key in the environment:
+   ```
+   set -a && . ./.env && set +a && python3 testbed/sim/run_sim.py --exp 4
+   ```
+3. Provenance (`request_id`, `entropy_epoch`, `timestamp`, `receipt`) from the
+   keyed `GET /v1/random/bytes` route is captured into the qrng cell's
+   `.record.json` and exported to `web/public/replay/qrng-provenance.json`. If
+   the endpoint is unavailable (e.g. `503`, or a server-side error), the qrng
+   cells are recorded **skipped-with-reason** and the provenance placeholder is
+   left in place — never a faked receipt.
 
 ### JS↔Python hash parity (AC-5)
 
 ```
-python3 testbed/vectors/gen_vectors.py     # regenerate hash_vectors.json from Python (source of truth)
+python3 testbed/vectors/gen_vectors.py     # regenerate hash_vectors.json (Python is source of truth)
 python3 testbed/vectors/check_parity.py    # recompute every vector via Node running ecmp_hash.js
 ```
 
-`check_parity.py` exits `0` and prints `PASS: N/N vectors agree`, or exits
-non-zero and prints every mismatching vector. `testbed/vectors/ecmp_hash.js`
-is the canonical JS mirror the P6 demo imports directly — do not fork it.
-Requires `node` on `PATH` (only needed to run the parity checker, not the
-testbed itself).
+`check_parity.py` exits `0` and prints `PASS: N/N vectors agree`, or non-zero
+with every mismatch. `testbed/vectors/ecmp_hash.js` is the canonical JS mirror
+the P6 demo imports directly — do not fork it. Needs `node` on `PATH`.
 
-## Running the attacker (Plan 3)
+## Load-balancing entropy: fat-tree hash polarization (Plan 8)
 
-`testbed/attacker/` is the "new attacker" (epic §3.1): it damages by
-mathematical placement, not by any behaviour a source-watching defence can
-observe. Three knowledge levels (`full` | `partial` | `blind`), two traffic
-modes (`volumetric` | `precision`).
-
-### Offline check (no Mininet/root)
-
-```
-.venv/bin/python3 testbed/attacker/collision_check.py
-```
-
-Confirms: every crafted "collision" 5-tuple actually hashes to the target
-link under the real `ecmp_link`; the blind fallback spreads ~uniformly
-across links; the partial attacker's `SeedBruteForcer` recovers a known
-seed. Non-zero exit on any of the three.
-
-### Live traffic (needs Mininet + OVS + root)
-
-Boot the P1 topology + P2 controller (`SALT_KIND=prng`, rotation off), then
-from the `attacker` host:
-
-```
-# Volumetric control (AC-3) -- single fixed flow, high rate:
-sudo .venv/bin/python3 testbed/attacker/run_attack.py \
-    --level full --mode volumetric --salt <controller active_salt hex>
-
-# Precision, full knowledge (AC-4):
-sudo .venv/bin/python3 testbed/attacker/run_attack.py \
-    --level full --mode precision --salt <controller active_salt hex>
-
-# Precision, partial knowledge -- brute-forces the weak-PRNG seed space,
-# validated against a placement oracle built from the true salt
-# (simulates the congestion/timing side channel, epic §3.1/P7):
-sudo .venv/bin/python3 testbed/attacker/run_attack.py \
-    --level partial --mode precision --oracle-salt <controller active_salt hex> \
-    --seed-space-bits 16 --draw-window 4
-
-# Blind (expected-failure baseline):
-sudo .venv/bin/python3 testbed/attacker/run_attack.py --level blind --mode precision
-```
-
-Each run prints a JSON run-record (`{level, mode, target_link,
-salt_source, sources_used, flows_sent, reconstruction}`) — P4/P5 consume
-this shape directly, no reshaping. `sources_used` should show the spoofed
-`ATTACK_SOURCE_IPS` pool for `precision`; confirm via `ovs-ofctl -O
-OpenFlow15 dump-ports s1` that the target link's counters climb while no
-single source exceeds `PRECISION_PER_SOURCE_PPS`.
-
-The **spoof pool needs root/netns** to send arbitrary `src_ip`s from the
-single `attacker` host (scapy). If OVS/Mininet drops spoofed-source packets
-(RPF/anti-spoof), that's a P1 topology escalation (OQ-3), not a P3 fix.
-
-## Running with defences + metrics (Plan 4)
-
-`testbed/controller/defences.py` (per-source rate-limit meter + connection
-throttle) and `testbed/metrics/` (the five metrics → run-tagged CSV) are the
-baseline defences that must *stop the volumetric flood but fail against
-precision* (epic §3.1). Everything below is gated on `DEFENCES_ENABLED`
-(default off) — the OFF path is byte-for-byte today's controller behaviour.
-
-### Offline check (no Mininet/root)
-
-```
-.venv/bin/python3 testbed/metrics/metrics_check.py
-```
-
-Confirms: per-link utilisation / `max_link_util` match a hand-computed
-delta-over-capacity calculation; `jains_index([0,0,0,0])==1.0`,
-`jains_index([1,1,1,1])==1.0`, `jains_index([4,0,0,0])==0.25`; and
-time/packets/flows-to-saturation latch on the correct poll of a rising
-series. Non-zero exit on any mismatch.
-
-### Threshold defaults (frozen, `testbed/config.py`)
-
-`RATE_LIMIT_KBPS=1000` and `THROTTLE_MAX_CONNECTIONS=20` (per
-`THROTTLE_WINDOW_SECONDS=5`) sit an order of magnitude above one precision
-source (`PRECISION_PER_SOURCE_PPS=5`) and well under one volumetric source
-(`VOLUMETRIC_PPS=1000`). These are **not re-tuned per experiment** — a
-moving threshold would make "precision evades / volumetric caught"
-unfalsifiable (plan-4 Design). `THROTTLE_ACTION=drop` (default) installs a
-priority-20 drop flow past the limit; `deprioritise` instead reinstalls the
-ECMP flow at priority 1.
-
-### Live run (needs Mininet + OVS + root)
-
-```
-DEFENCES_ENABLED=1 SALT_KIND=prng .venv/bin/python3 testbed/controller/run_controller.py &
-sudo .venv/bin/python3 testbed/topology/run_topo.py
-```
-
-From the `attacker` host, drive a volumetric flood and confirm:
-
-```
-ovs-ofctl -O OpenFlow15 dump-meters s1     # per-source meter, capped ~RATE_LIMIT_KBPS
-ovs-ofctl -O OpenFlow15 dump-flows s1      # priority-20 drop flow once THROTTLE_MAX_CONNECTIONS is exceeded
-```
-
-...and that a precision run (`--mode precision`, spread across
-`ATTACK_SOURCE_IPS`) never trips either — no drop flow, no meter overflow,
-per source.
-
-`METRICS_CSV_PATH` (default `metrics.csv`) fills with one row per poll
-(`PORT_STATS_POLL_INTERVAL_SECONDS`, default 0.5s), tagged
-`(salt_source, knowledge_level, rotation_interval, attack_mode)`;
-`knowledge_level`/`attack_mode` come from the `KNOWLEDGE_LEVEL`/`ATTACK_MODE`
-env vars (default `"na"`) since the controller can't infer them. A
-`*.summary.csv` sidecar next to it holds one always-current row with
-`time_to_saturation_s`, `packets_to_saturation`, `flows_to_saturation`,
-`final_jains_index`, `min_victim_mbps`, `saturated`.
-
-## Running the experiment matrix + rendering graphs (Plan 5)
-
-`testbed/experiments/` orchestrates the five experiments (AC-1-5) by driving
-the frozen P2/P3/P4 pieces unchanged; `testbed/analysis/` reads the P4 CSVs
-and renders the paper's two key graphs (AC-6, AC-7). P5 adds no new
-mechanism -- see the plan for the full matrix.
-
-### Prerequisites
-
-- Everything P1-P4 need (Mininet, OVS, root, `os-ken`, `scapy`).
-- `pandas`/`matplotlib` for `testbed/analysis/` (added to `requirements.txt`
-  -- not needed on the live testbed host itself).
-- `iperf3` for victim throughput (as in Plan 4).
-- `QEAAS_API_KEY` in env for the `qrng` cells (Exp 4c, Exp 4d, the qrng
-  Graph 1 column) -- see the Q-EaaS setup above.
-
-### Offline check (no Mininet/root)
-
-```
-.venv/bin/python3 testbed/analysis/analysis_check.py
-```
-
-Confirms: `attacker_succeeded` classifies success/fail/healthy-victim rows
-correctly; `rotation_threshold` recovers a planted crossover and computes
-`T_bf`; `graphs.py` renders both figures to a temp dir. Non-zero exit on any
-mismatch.
-
-### Live runs (needs Mininet + OVS + root)
-
-```
-sudo .venv/bin/python3 testbed/experiments/run_experiments.py --exp 1
-sudo .venv/bin/python3 testbed/experiments/run_experiments.py --exp all
-```
-
-`--exp {1,2,3,4,5,all}` selects cells from `testbed/experiments/matrix.py`
-(the whole matrix is data, inspectable there without running it). Each cell
-prints a PASS/FAIL against its expected summary result, then (unless
-`--no-graphs`) the collected CSVs are handed to `testbed/analysis/graphs.py`,
-producing `results/graph1_*.{png,svg}` and `results/graph2_*.{png,svg}`.
-
-Per-cell CSVs land under `results/<exp>/<cell_id>.csv` (+ `.summary.csv`
-sidecar, + `.record.json` for the attacker run-record) so no cell overwrites
-another. Raw per-cell CSVs are gitignored (OQ-5) -- regenerate them by
-re-running `run_experiments.py`; only the two figures and the Q4 replay
-subset (three-scene runs + one QRNG provenance run + the full Exp 5 sweep,
-**blind skipped**) are committed, for P6 Tier B replay and P7's write-up.
-
-Victim throughput (AC-6) needs `iperf3` running out-of-band — start a
-server on `victim` and a client on `bg` (see `testbed/metrics/
-victim_throughput.py`'s `run_server`/`run_client`, or run `iperf3` directly
-with `--json-stream` to `VICTIM_THROUGHPUT_PATH`, default
-`victim_throughput.jsonl`); if `iperf3` isn't installed, `victim_mbps` is
-written empty rather than crashing the run.
-
-## Load-balancing entropy: fat-tree + hash polarization (Plan 8)
-
-A **second, attack-free** argument: bad PRNG salt reused fabric-wide causes
+A **second, attack-free** argument: a bad PRNG salt reused fabric-wide causes
 systematic congestion (ECMP hash polarization) with zero attacker; CSPRNG/QRNG
-salt spreads traffic evenly. See `../plans/plan-8-load-balancing-entropy.md`
-for the full mechanism (`§Honest mechanism`) and design record.
-
-### Offline check (no Mininet/root) — the correctness gate
-
-```
-.venv/bin/python3 testbed/topology/polarization_check.py
-```
-
-Confirms: weak-PRNG salt (one identical salt fabric-wide, `testbed/topology/
-fabric.py`'s `fabric_salts("prng", ...)`) polarizes a k=4 fat-tree's link
-load on every run (low Jain's index, high `polarization_index`); CSPRNG (and
-QRNG, if `QEAAS_API_KEY` is set — otherwise skipped, not failed) spread
-evenly; and a **single-switch control** shows PRNG and CSPRNG spreading
-*equally* on one hop (the false-claim guard — entropy quality is invisible at
-a single stage; polarization is a multi-stage correlation effect). Non-zero
-exit on any mismatch.
-
-### Metrics gate
-
-```
-.venv/bin/python3 testbed/metrics/metrics_check.py
-```
-
-Now also asserts `fairness.polarization_index` (`[1,1,1,1]→1.0`,
-`[4,0,0,0]→4.0`).
-
-### `FATTREE_K` / `FABRIC_MODE` (default off)
-
-`FATTREE_K` (default `4`) sizes `testbed/topology/fabric.py`'s
-`build_fattree()` and `testbed/topology/fattree_topo.py`'s Mininet topology
-(20 switches, 16 hosts at k=4). `FABRIC_MODE=1` switches the controller
-(`testbed/controller/ecmp_controller.py`) from the single-leaf P1-P5 path to
-hashing independently at **every** fat-tree switch under its own per-dpid
-salt (upward hops hashed, downward deterministic by destination pod/edge) —
-gated so `FABRIC_MODE=0` (default) leaves the P1-P5 controller/topology
-byte-for-byte unchanged.
-
-### Live fat-tree run (needs Mininet + OVS + root)
-
-```
-FABRIC_MODE=1 SALT_KIND=prng .venv/bin/python3 testbed/controller/run_controller.py &
-sudo .venv/bin/python3 -c "
-from mininet.cli import CLI
-from mininet.log import setLogLevel
-from mininet.net import Mininet
-from mininet.node import OVSSwitch, RemoteController
-from testbed.config import CONTROLLER_LISTEN_ADDR, CONTROLLER_LISTEN_PORT
-from testbed.topology.fattree_topo import FatTreeTopo
-setLogLevel('info')
-net = Mininet(topo=FatTreeTopo(), switch=OVSSwitch,
-              controller=RemoteController('c0', ip=CONTROLLER_LISTEN_ADDR, port=CONTROLLER_LISTEN_PORT),
-              autoSetMacs=False)
-net.start(); CLI(net); net.stop()
-"
-```
-
-(`run_topo.py` itself still launches the P1-P5 single-leaf `ECMPTopo` only —
-it was not modified, per plan-8's file plan. The inline snippet above is the
-fat-tree equivalent until/unless a dedicated launcher script is added.)
-
-Drive **uniform** background traffic (no attacker) and read `ovs-ofctl -O
-OpenFlow15 dump-ports` across switches: PRNG concentrates load on a subset of
-core links; `SALT_KIND=csprng` spreads it evenly. This live path has not been
-exercised in an environment without Mininet/OVS/root — the offline gate above
-is the primary, CI-runnable correctness check (plan-8 Risks: "if time-boxed,
-ship the offline + web deliverables first").
+salt spreads traffic evenly. This study is entirely offline
+(`testbed/topology/fabric.py` + `polarization_check.py` above); its Mininet
+launcher was removed with the rest of the live path (plan-10). `FATTREE_K`
+(default `4`) sizes `fabric.py`'s `build_fattree()`. See
+`../plans/plan-8-load-balancing-entropy.md` for the mechanism and design record.
