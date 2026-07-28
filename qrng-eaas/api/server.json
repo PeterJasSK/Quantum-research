@@ -1,11 +1,13 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.qeaas/qeaas-mcp",
   "description": "QRNG-seeded random bytes, seeds, and ML-KEM-768 keys with signed provenance receipts.",
   "version": "1.0.0",
+  "websiteUrl": "https://qeaas.eu",
   "repository": {
-    "url": "https://qeaas.eu",
-    "source": "website"
+    "url": "https://github.com/PeterJasSK/Quantum-research",
+    "source": "github",
+    "subfolder": "qrng-eaas"
   },
   "remotes": [
     {
