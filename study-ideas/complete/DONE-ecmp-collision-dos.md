@@ -1,3 +1,5 @@
+> **STATUS: ✅ DONE** — built as project `TargetedDosColisionsAndRNGAngle/` (salt-rotation vs precision DoS; QRNG = provenance, not solution). Produced the load-balancing success-matrix graphs. Moved here 2026-07-29.
+
 # Idea 3 — ECMP Collision DoS: Predict the Salt, Melt the Link
 
 ## Pitch

@@ -1,3 +1,5 @@
+> **STATUS: ✅ DONE** — built as project `CalibrationGuidedHighYieldQRNG/` (forks `ErrorDetectionVSRawBits`). Moved here 2026-07-29.
+
 # Flagship — Calibration-Guided High-Yield QRNG on Heron r2
 
 ## Pitch
