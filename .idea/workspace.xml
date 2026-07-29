@@ -2,12 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Quantum-research.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Quantum-research.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PeterJasIndex/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/PeterJasIndex/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/web/components/LoadBalanceController.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/web/components/LoadBalanceController.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/web/components/Nav.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/web/components/Nav.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/01_coin_flip.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/01_coin_flip.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/02_bell_state.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/02_bell_state.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/03_ghz_state.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/03_ghz_state.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/04_teleportation.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/04_teleportation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/05_deutsch_jozsa.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/05_deutsch_jozsa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/06_bernstein_vazirani.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/06_bernstein_vazirani.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/07_superdense_coding.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/07_superdense_coding.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/08_bb84.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/08_bb84.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/09_quantum_adder.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/09_quantum_adder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/10_w_state.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/10_w_state.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/11_chsh.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/11_chsh.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/12_grover.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/12_grover.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/13_qft.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/13_qft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/14_phase_estimation.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/14_phase_estimation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/15_simon.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/15_simon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumAlgorithmsExplained/code/_common.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +68,7 @@
     &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/PeterJasIndex&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/qrng-eaas/web/node_modules/typescript/lib&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -146,7 +158,9 @@
       <workItem from="1785136779475" duration="6099000" />
       <workItem from="1785152941355" duration="10932000" />
       <workItem from="1785172645468" duration="12143000" />
-      <workItem from="1785227616972" duration="1110000" />
+      <workItem from="1785227616972" duration="5621000" />
+      <workItem from="1785236058313" duration="2955000" />
+      <workItem from="1785305747381" duration="771000" />
     </task>
     <servers />
   </component>

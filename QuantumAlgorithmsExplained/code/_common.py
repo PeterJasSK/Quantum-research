@@ -116,67 +116,55 @@ def run_and_save(qc, name, title, shots=4096, note=""):
                  extra={"num_qubits": qc.num_qubits})
 
 
-def run_live_and_save(qc, name, title, shots=4096, note="", backend_name=None):
-    """Run a circuit on a REAL IBM Quantum computer (Open plan, free), then save
-    result JSON + histogram PNG and print a summary — same outputs as
-    run_and_save so the .md lessons render identically.
+def run_live_and_save(qc, name, title, shots=4096, note="",
+                      backend_name="QX emulator"):
+    """Run a circuit on QUANTUM INSPIRE 2 (cloud), then save result JSON +
+    histogram PNG and print a summary — same outputs as run_and_save so the
+    .md lessons render identically.
 
-    Requires IBM credentials saved once (see ../../credentialsApi.py):
-        QiskitRuntimeService.save_account(channel="ibm_quantum_platform",
-                                          token="...", instance="...")
+    Requires a one-time login (no token to paste; OAuth browser flow):
+        qi login                      # see ../../quantumCredentialsApi.py
+    and the Qiskit plugin installed:
+        pip install qiskit-quantuminspire
 
     qc           : a QuantumCircuit that already contains measurements
     name         : base file stem (e.g. "01_coin_flip"). Live output is saved as
                    "<name>_live_<backend>_<UTC timestamp>" so every run is kept
                    and never overwrites the clean sim files the lessons link.
     title        : human title used in the chart and JSON
-    shots        : number of shots to request on hardware
+    shots        : number of shots to request
     note         : optional one-line interpretation stored in the JSON
-    backend_name : force a specific backend; if None, auto-pick the LEAST BUSY
-                   operational real device you have access to (free Open plan).
+    backend_name : which QI backend to target:
+                     "QX emulator" -> QI CLOUD simulator (no queue, safe default)
+                     "Starmon-7"   -> superconducting REAL hardware (has noise)
+                     "Spin-2+"     -> spin-qubit REAL hardware (has noise)
 
-    NOTE: real hardware has noise, so histograms will show extra states and the
-    ideal 0%/100% peaks become slightly smeared — that difference is the whole
-    point of running live.
+    NOTE: on real hardware (Starmon-7 / Spin-2+) noise adds extra states and
+    smears the ideal 0%/100% peaks — that difference is the point of going live.
+    Max 3 queued jobs per hardware backend on the free plan.
     """
-    # imported lazily so the local-only lessons don't need qiskit_ibm_runtime
-    from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
-    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+    # imported lazily so the local-only lessons don't need the QI plugin
+    from qiskit import transpile
+    from qiskit_quantuminspire.qi_provider import QIProvider
 
-    service = QiskitRuntimeService()
-    if backend_name:
-        backend = service.backend(backend_name)
-    else:
-        # least busy real device you can access on the Open plan
-        backend = service.least_busy(operational=True, simulator=False,
-                                     min_num_qubits=qc.num_qubits)
-    print(f"Live backend: {backend.name}  ({backend.num_qubits} qubits) — queueing ...")
+    provider = QIProvider()
+    backend = provider.get_backend(backend_name)
+    print(f"QI backend: {backend_name} — transpiling + submitting ...")
 
-    # transpile to the device's native gates + qubit layout (ISA circuit)
-    pm = generate_preset_pass_manager(optimization_level=1, backend=backend)
-    isa = pm.run(qc)
+    # transpile to the backend's native gate set / qubit layout
+    isa = transpile(qc, backend)
 
-    sampler = Sampler(mode=backend)
-    job = sampler.run([isa], shots=shots)
-    print(f"  job {job.job_id()} submitted; waiting for result ...")
+    # if your qiskit-quantuminspire version rejects the shots kwarg, drop it
+    # (the platform default is 1024 shots) and set shots below to match.
+    job = backend.run(isa, shots=shots)
     result = job.result()
-
-    creg = qc.cregs[0].name
-    counts = getattr(result[0].data, creg).get_counts()
-
-    # best-effort quantum-time metric (varies by runtime version)
-    try:
-        qseconds = float(job.metrics()["usage"]["quantum_seconds"])
-    except Exception:
-        qseconds = None
+    counts = result.get_counts()
 
     # unique, timestamped stem so every live run is kept, never overwritten
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    stem = f"{name}_live_{backend.name}_{stamp}"
+    stem = f"{name}_live_{backend_name.replace(' ', '_')}_{stamp}"
 
     return _emit(stem, title, counts, shots, note,
-                 backend=f"IBM Quantum {backend.name} (real hardware, has noise)",
+                 backend=f"Quantum Inspire 2 {backend_name} (cloud)",
                  extra={"num_qubits": qc.num_qubits,
-                        "base_name": name,
-                        "job_id": job.job_id(),
-                        "quantum_seconds": qseconds})
+                        "base_name": name})

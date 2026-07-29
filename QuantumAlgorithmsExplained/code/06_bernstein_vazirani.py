@@ -49,3 +49,17 @@ qc.measure(range(n), range(n))
 
 run_and_save(qc, "06_bernstein_vazirani", "06 — Bernstein-Vazirani (secret=1011)",
              note="Single query returns the hidden string 1011 with certainty.")
+
+# --- Run on real quantum hardware instead (Quantum Inspire 2) ---------------
+# The call above runs on the LOCAL ideal simulator (free, offline, no noise).
+# To run the SAME circuit on Quantum Inspire's cloud, log in once with
+#     qi login              (see ../../quantumCredentialsApi.py)
+# and install the plugin:
+#     pip install qiskit-quantuminspire
+# then comment out the run_and_save call above and uncomment the block below:
+#
+# from _common import run_live_and_save
+# run_live_and_save(qc, "06_bernstein_vazirani", "06 — Bernstein-Vazirani (secret=1011)",
+#                   backend_name="QX emulator")   # QI cloud simulator, no queue
+#                   # backend_name="Starmon-7"    # real superconducting hardware
+#                   # backend_name="Spin-2+"      # real spin-qubit hardware

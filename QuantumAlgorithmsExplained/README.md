@@ -53,6 +53,26 @@ numbers every time.
 No `qiskit-aer` or IBM Runtime needed — the built-in `StatevectorSampler` is an
 ideal, noise-free local simulator.
 
+## Optional: run on Quantum Inspire (cloud)
+
+The default is the local simulator. To run the same circuits on
+[Quantum Inspire 2](https://www.quantum-inspire.com/) (free account) instead:
+
+```bash
+pip install qiskit-quantuminspire   # Qiskit plugin
+qi login                            # one-time OAuth login (see ../quantumCredentialsApi.py)
+```
+
+Then in a lesson uncomment the `run_live_and_save(...)` block at the bottom of
+the script. Pick a backend:
+- `"QX emulator"` — QI cloud simulator (no queue; safe first step)
+- `"Starmon-7"` / `"Spin-2+"` — **real hardware** (noisy; max 3 queued jobs)
+
+Lessons `08_bb84` and `11_chsh` sample circuits inline (not via
+`run_and_save`); each has a comment block showing the one-line sampler swap.
+Live runs are saved as `<name>_live_<backend>_<timestamp>` so they never
+overwrite the clean simulator outputs the lessons link.
+
 ## Suggested learning path
 1. **01–03** build the two pillars: superposition and entanglement.
 2. **04** shows those pillars doing real work (teleportation).

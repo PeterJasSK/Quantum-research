@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Nav from "@/components/Nav";
@@ -42,6 +43,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main>{children}</main>
           <Footer />
         </ThemeProvider>
+        {/* Cloudflare Web Analytics */}
+        <Script
+          id="cloudflare-analytics"
+          strategy="afterInteractive"
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "d872bd63e0824e0b9d54782354a6d184"}'
+        />
       </body>
     </html>
   );

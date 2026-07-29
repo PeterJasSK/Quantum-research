@@ -53,3 +53,17 @@ qc.measure([0, 1], [0, 1])
 
 run_and_save(qc, "07_superdense_coding", "07 — Superdense Coding (send '10')",
              note="One transmitted qubit carries 2 classical bits: reads back 10.")
+
+# --- Run on real quantum hardware instead (Quantum Inspire 2) ---------------
+# The call above runs on the LOCAL ideal simulator (free, offline, no noise).
+# To run the SAME circuit on Quantum Inspire's cloud, log in once with
+#     qi login              (see ../../quantumCredentialsApi.py)
+# and install the plugin:
+#     pip install qiskit-quantuminspire
+# then comment out the run_and_save call above and uncomment the block below:
+#
+# from _common import run_live_and_save
+# run_live_and_save(qc, "07_superdense_coding", "07 — Superdense Coding (send '10')",
+#                   backend_name="QX emulator")   # QI cloud simulator, no queue
+#                   # backend_name="Starmon-7"    # real superconducting hardware
+#                   # backend_name="Spin-2+"      # real spin-qubit hardware

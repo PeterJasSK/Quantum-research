@@ -111,3 +111,21 @@ for k, v in E.items():
 print(f"  S = {S:.4f}   (classical <= 2, quantum max = {2*np.sqrt(2):.4f})")
 print("  result -> ../result/11_chsh.json")
 print("  graph  -> ../graph/11_chsh.png")
+
+# --- Run on real quantum hardware instead (Quantum Inspire 2) ---------------
+# This lesson does NOT use run_and_save: correlation() samples the Bell circuit
+# on the LOCAL StatevectorSampler, 4 times (one per CHSH setting). To route
+# those to Quantum Inspire instead, log in once
+#     qi login              (see ../../quantumCredentialsApi.py)
+#     pip install qiskit-quantuminspire
+# then in correlation() replace:
+#     res = StatevectorSampler(seed=SEED).run([qc], shots=SHOTS).result()
+#     counts = res[0].data.c.get_counts()
+# with:
+#     from qiskit import transpile
+#     from qiskit_quantuminspire.qi_provider import QIProvider
+#     backend = QIProvider().get_backend("QX emulator")   # or "Starmon-7"
+#     counts = backend.run(transpile(qc, backend), shots=SHOTS).result().get_counts()
+# Build the provider/backend ONCE at module top, not per call (only 4 jobs, so
+# real hardware is feasible here). On a real device noise lowers S below the
+# ideal 2.83 — the whole point of measuring CHSH on hardware.

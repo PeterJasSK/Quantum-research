@@ -132,3 +132,22 @@ print(f"  alice key (clean): {clean['alice_sifted_key']}")
 print(f"  bob   key (clean): {clean['bob_sifted_key']}")
 print("  result -> ../result/08_bb84.json")
 print("  graph  -> ../graph/08_bb84.png")
+
+# --- Run on real quantum hardware instead (Quantum Inspire 2) ---------------
+# This lesson does NOT use run_and_save: it samples many tiny circuits inline
+# via measure_bit(), which calls the LOCAL StatevectorSampler (2*N = 96 single-
+# shot runs). To route those to Quantum Inspire instead, log in once
+#     qi login              (see ../../quantumCredentialsApi.py)
+#     pip install qiskit-quantuminspire
+# then in measure_bit() replace:
+#     res = StatevectorSampler(seed=shot_seed).run([qc], shots=1).result()
+#     outcome = list(res[0].data.c.get_counts())[0]
+# with:
+#     from qiskit import transpile
+#     from qiskit_quantuminspire.qi_provider import QIProvider
+#     backend = QIProvider().get_backend("QX emulator")   # QI cloud simulator
+#     outcome = list(backend.run(transpile(qc, backend), shots=1).result().get_counts())[0]
+# Build the provider/backend ONCE at module top, not per call.
+# WARNING: this issues ~96 separate single-shot jobs. On the QX emulator that
+# is merely slow; on REAL hardware ("Starmon-7"/"Spin-2+", max 3 queued jobs)
+# it is impractical. Keep BB84 on the emulator.
