@@ -5,6 +5,8 @@ TargetedDosColisionsAndRNGAngle/.venv/
 **/__pycache__/
 *.pyc
 
+.claude
+
 # P5: raw per-cell metrics CSVs + attacker run-records are regenerable via
 # run_experiments.py (OQ-5) -- only the two committed graphs (.png/.svg) and
 # the Q4 replay subset (P6) are kept in git.
