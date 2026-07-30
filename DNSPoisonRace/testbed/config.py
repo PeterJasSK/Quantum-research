@@ -52,3 +52,9 @@ SAD_DNS_LEAK_BITS = int(os.environ.get("SAD_DNS_LEAK_BITS", "0"))
 # --- P2: draw sources ---
 
 FIXED_PORT = int(os.environ.get("FIXED_PORT", "33333"))
+
+# --- P3: off-path attacker ---
+
+ATTACKER_SEND_RATE_PPS = int(os.environ.get("ATTACKER_SEND_RATE_PPS", "10000"))
+RTT_JITTER_FRAC = float(os.environ.get("RTT_JITTER_FRAC", "0.1"))
+MAX_RETRANSMITS = int(os.environ.get("MAX_RETRANSMITS", "3"))

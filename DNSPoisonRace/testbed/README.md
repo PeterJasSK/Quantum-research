@@ -78,3 +78,40 @@ against the live hosted service.
 | Variable | Default | Notes |
 |---|---|---|
 | `FIXED_PORT` | `33333` | Port the `fixed` arm always returns |
+
+## Running the poison race (AC-3)
+
+The off-path attacker package (`testbed/attacker/`) floods forged `(TXID, port)` guesses at
+the resolver's outbound query while the authoritative reply races back, with retransmit-driven
+fresh-draw windows (birthday amplification). Dependency-free (stdlib only, no scapy/root/network
+except the opt-in `qrng` kind).
+
+Offline gate, no network required:
+
+```
+python3 testbed/attacker/attack_check.py
+```
+
+CLI runner — sweep any of send-rate, entropy, or parallelism by hand:
+
+```
+python3 testbed/attacker/run_attack.py --kind csprng --eff-bits 12 --send-rate 100000 --trials 2000
+python3 testbed/attacker/run_attack.py --kind csprng --eff-bits 28 --send-rate 100000 --trials 2000
+python3 testbed/attacker/run_attack.py --kind csprng --trials 5 --seed 123
+```
+
+The four `--kind` arms (`fixed`, `prng`, `csprng`, `qrng`) mirror `draw_source`. `--eff-bits`
+solves for the SAD-DNS leak `-k` needed to hit that effective-bit count at the current
+`--port-bits`. With `QEAAS_API_KEY` set, `--kind qrng` also carries the live Q-EaaS provenance
+receipt in the printed result.
+
+All reproducible randomness (guess order, RTT jitter, parity-vector targets) flows through
+`testbed/attacker/portable_prng.py`'s `splitmix64` — the parity contract P6's JS mirror vendors
+verbatim. `race_vectors.json`'s schema is frozen (P1); P3 fills the `send_schedule` /
+`parallel_queries` / `retransmit` fields with real flood scenarios via `gen_race_vectors.py`.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `ATTACKER_SEND_RATE_PPS` | `10000` | Single-race/CLI forged send-rate default |
+| `RTT_JITTER_FRAC` | `0.1` | Authoritative-arrival jitter, as a fraction of `rtt` |
+| `MAX_RETRANSMITS` | `3` | Retransmit rounds per query (each opens a fresh-draw window) |
