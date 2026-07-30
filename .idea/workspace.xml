@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/DNSPoisonRace/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/study-ideas/viz-3-dns-poison-race.md" beforeDir="false" afterPath="$PROJECT_DIR$/DNSPoisonRace/plans/viz-3-dns-poison-race.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,35 +42,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/PeterJasIndex&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/DNSPoisonRace",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "ts.external.directory.path": "/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/DNSPoisonRace" />
       <recent name="$PROJECT_DIR$/PeterJasIndex" />
       <recent name="$PROJECT_DIR$/QuantumLife" />
       <recent name="$PROJECT_DIR$/QuantumLife/web" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG" />
-      <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/DNSPoisonRace/plans" />
       <recent name="$PROJECT_DIR$/study-ideas" />
       <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old" />
       <recent name="$PROJECT_DIR$/QuantumAlgorithmsExplained/explenation" />
       <recent name="$PROJECT_DIR$/TargetedDosColisionsAndRNGAngle/plan" />
-      <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/Plans" />
     </key>
   </component>
   <component name="RunManager">
@@ -144,6 +146,8 @@
       <workItem from="1785227616972" duration="5621000" />
       <workItem from="1785236058313" duration="2955000" />
       <workItem from="1785305747381" duration="771000" />
+      <workItem from="1785389689552" duration="2369000" />
+      <workItem from="1785423748989" duration="3871000" />
     </task>
     <servers />
   </component>

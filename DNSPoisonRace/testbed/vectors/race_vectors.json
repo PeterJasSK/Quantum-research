@@ -1,0 +1,63 @@
+[
+  {
+    "seed": 1,
+    "txid": 4242,
+    "port": 33333,
+    "eff_bits": 32,
+    "rtt": 0.02,
+    "retransmit": 0.5,
+    "send_schedule": [
+      0.001
+    ],
+    "parallel_queries": 1,
+    "outcome": "resolved_legit",
+    "forged_packets": 1,
+    "t_outcome": 0.02
+  },
+  {
+    "seed": 2,
+    "txid": 100,
+    "port": 200,
+    "eff_bits": 32,
+    "rtt": 0.02,
+    "retransmit": 0.5,
+    "send_schedule": [
+      0.001
+    ],
+    "parallel_queries": 1,
+    "outcome": "poisoned",
+    "forged_packets": 1,
+    "t_outcome": 0.001
+  },
+  {
+    "seed": 3,
+    "txid": 65535,
+    "port": 65535,
+    "eff_bits": 32,
+    "rtt": 0.02,
+    "retransmit": 0.5,
+    "send_schedule": [
+      0.005,
+      0.01
+    ],
+    "parallel_queries": 1,
+    "outcome": "resolved_legit",
+    "forged_packets": 2,
+    "t_outcome": 0.02
+  },
+  {
+    "seed": 4,
+    "txid": 0,
+    "port": 0,
+    "eff_bits": 32,
+    "rtt": 0.01,
+    "retransmit": 0.5,
+    "send_schedule": [
+      0.0005
+    ],
+    "parallel_queries": 1,
+    "outcome": "poisoned",
+    "forged_packets": 1,
+    "t_outcome": 0.0005
+  }
+]

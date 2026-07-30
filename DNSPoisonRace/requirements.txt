@@ -1,0 +1,7 @@
+pandas
+matplotlib
+# The core (testbed/config.py, types.py, sim/) is stdlib-only: heapq,
+# dataclasses, os, json, struct, argparse. pandas/matplotlib are confined to
+# analysis/ (P5) -- not needed to run the smoke race or regenerate vectors.
+# P2's QRNG client uses stdlib urllib.request (no new dependency).
+# Node is required only to run the P6 parity gate, not pip-installed.
