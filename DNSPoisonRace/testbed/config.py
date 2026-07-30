@@ -58,3 +58,9 @@ FIXED_PORT = int(os.environ.get("FIXED_PORT", "33333"))
 ATTACKER_SEND_RATE_PPS = int(os.environ.get("ATTACKER_SEND_RATE_PPS", "10000"))
 RTT_JITTER_FRAC = float(os.environ.get("RTT_JITTER_FRAC", "0.1"))
 MAX_RETRANSMITS = int(os.environ.get("MAX_RETRANSMITS", "3"))
+
+# --- P4: resolver cache + metrics ---
+
+CACHE_TTL_SECONDS = float(os.environ.get("CACHE_TTL_SECONDS", "300"))
+RESULTS_CSV_PATH = os.environ.get("RESULTS_CSV_PATH", "results/metrics.csv")
+RESULTS_RECORD_DIR = os.environ.get("RESULTS_RECORD_DIR", "results/records")

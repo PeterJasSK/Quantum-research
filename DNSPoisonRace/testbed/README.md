@@ -115,3 +115,45 @@ verbatim. `race_vectors.json`'s schema is frozen (P1); P3 fills the `send_schedu
 | `ATTACKER_SEND_RATE_PPS` | `10000` | Single-race/CLI forged send-rate default |
 | `RTT_JITTER_FRAC` | `0.1` | Authoritative-arrival jitter, as a fraction of `rtt` |
 | `MAX_RETRANSMITS` | `3` | Retransmit rounds per query (each opens a fresh-draw window) |
+
+## Resolver cache + metrics collector (AC-4)
+
+`testbed/resolver/cache.py` gives the epic §5 diagram's four cache states
+(`POISONED`/`RESOLVED_LEGIT`/`WINDOW_CLOSED`) a named `CacheEntry` + TTL, purely as a vocabulary
+over `PoisonRaceResult.outcome` — it never re-derives the race decision, that stays P3's.
+`testbed/resolver/metrics.py`'s `collect_cell(...)` runs `run_poison_race` `--trials` times at one
+`(source, effective-bits, send-rate, parallel-queries)` cell and aggregates the five headline
+metrics (M1 poison probability, M2 mean forged packets / mean time-to-poison, M3 amplification
+factor vs a `parallel_queries=1` baseline, M4 `k`/`effective_bits` passthrough, M5 first-trial
+QRNG provenance).
+
+Offline gate, no network required:
+
+```
+python3 testbed/resolver/metrics_check.py
+```
+
+CLI runner — writes one CSV row + one `.record.json` per `(kind, parallel)` cell:
+
+```
+python3 testbed/resolver/run_metrics.py --kind csprng --eff-bits 16 --send-rate 100000 --trials 2000
+python3 testbed/resolver/run_metrics.py --kind csprng --eff-bits 16 --send-rate 100000 --trials 2000 --parallel 1,8
+python3 testbed/resolver/run_metrics.py --kind qrng --eff-bits 16 --trials 5 --seed 1   # needs QEAAS_API_KEY
+```
+
+`--parallel` is comma-separated; its **first** value is the amplification baseline
+(`--parallel 1,8`, not `--parallel 8` alone, or `amplification_factor` stays `None`). `--kind`
+accepts a comma-separated list too (OQ-P4.3), looping cells across sources in one invocation.
+
+CSV schema (frozen, `results/metrics.csv` by default — P5/P6 read it): `run_tag, timestamp, kind,
+effective_bits, k, send_rate_pps, parallel_queries, trials, poison_rate, mean_forged_packets,
+mean_time_to_poison, amplification_factor`. Provenance is not a CSV column — it lives in the
+per-cell `results/records/<tag>.record.json` sidecar (`DrawProvenance.detail`'s nested dict
+doesn't flatten cleanly into one CSV cell), embedding the **first** trial's provenance for the
+cell (documented simplification, not exhaustive per-draw enumeration).
+
+| Variable | Default | Notes |
+|---|---|---|
+| `CACHE_TTL_SECONDS` | `300` | Nominal DNS record TTL for the cache-wrapper edge (cosmetic — no metric reads it yet) |
+| `RESULTS_CSV_PATH` | `results/metrics.csv` | Run-tagged CSV, one row per cell |
+| `RESULTS_RECORD_DIR` | `results/records` | Per-cell `.record.json` provenance sidecars |
