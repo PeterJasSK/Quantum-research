@@ -1,0 +1,10 @@
+{
+  "kind": "qrng",
+  "detail": {
+    "request_id": "04590466213c4d6fb366f2e6c76184ba",
+    "entropy_epoch": "49",
+    "timestamp": "2026-08-03T17:23:30.268290Z",
+    "receipt": "qeaas1.eyJlcG9jaCI6NDksInJpZCI6IjA0NTkwNDY2MjEzYzRkNmZiMzY2ZjJlNmM3NjE4NGJhIiwic3oiOjQwOTYsInRzIjoiMjAyNi0wOC0wM1QxNzoyMzozMC4yNjgyOTArMDA6MDAifQ.-y6eBuZWaShI7AMI72IwyIM8alvXAtX9sUC6WTto9y5d6ilHG3Xy0TjpseopkYF8d63yzHkEA6wywWp6WYzaBw",
+    "endpoint": "https://api.qeaas.eu/v1/random/bytes"
+  }
+}

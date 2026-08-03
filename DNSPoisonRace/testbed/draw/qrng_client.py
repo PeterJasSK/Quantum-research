@@ -57,7 +57,7 @@ class QRNGClient:
         last_error: Exception | None = None
         for attempt in range(1, _MAX_ATTEMPTS + 1):
             try:
-                with urllib.request.urlopen(request, timeout=10) as resp:
+                with urllib.request.urlopen(request, timeout=8) as resp:
                     body = json.loads(resp.read())
                     return QRNGResponse(
                         request_id=body["request_id"],
@@ -73,7 +73,11 @@ class QRNGClient:
                     raise QRNGUnavailable(f"auth failed ({code}) -- check QEAAS_API_KEY") from exc
                 if exc.code == 429:
                     last_error = exc
-                    retry_after = float(exc.headers.get("Retry-After", _BACKOFF_SECONDS))
+                    # Cap the honoured Retry-After so a long quota window can't
+                    # hang the caller for minutes -- fail fast, let it skip.
+                    retry_after = min(
+                        float(exc.headers.get("Retry-After", _BACKOFF_SECONDS)), 5.0
+                    )
                     if attempt < _MAX_ATTEMPTS:
                         time.sleep(retry_after)
                     continue

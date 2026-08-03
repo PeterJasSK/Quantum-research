@@ -1,0 +1,161 @@
+{
+  "kind": "csprng",
+  "series": [
+    {
+      "k": 0,
+      "poison_rate": 0.003
+    },
+    {
+      "k": 0,
+      "poison_rate": 0.003
+    },
+    {
+      "k": 1,
+      "poison_rate": 0.006
+    },
+    {
+      "k": 1,
+      "poison_rate": 0.006
+    },
+    {
+      "k": 2,
+      "poison_rate": 0.01
+    },
+    {
+      "k": 2,
+      "poison_rate": 0.01
+    },
+    {
+      "k": 3,
+      "poison_rate": 0.0305
+    },
+    {
+      "k": 3,
+      "poison_rate": 0.0305
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.0595
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.0595
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.0595
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.637
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.219
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.4025
+    },
+    {
+      "k": 4,
+      "poison_rate": 0.1235
+    },
+    {
+      "k": 5,
+      "poison_rate": 0.125
+    },
+    {
+      "k": 5,
+      "poison_rate": 0.125
+    },
+    {
+      "k": 6,
+      "poison_rate": 0.23
+    },
+    {
+      "k": 6,
+      "poison_rate": 0.23
+    },
+    {
+      "k": 7,
+      "poison_rate": 0.398
+    },
+    {
+      "k": 7,
+      "poison_rate": 0.398
+    },
+    {
+      "k": 8,
+      "poison_rate": 0.629
+    },
+    {
+      "k": 8,
+      "poison_rate": 0.629
+    },
+    {
+      "k": 9,
+      "poison_rate": 0.873
+    },
+    {
+      "k": 9,
+      "poison_rate": 0.873
+    },
+    {
+      "k": 10,
+      "poison_rate": 0.985
+    },
+    {
+      "k": 10,
+      "poison_rate": 0.985
+    },
+    {
+      "k": 11,
+      "poison_rate": 0.9995
+    },
+    {
+      "k": 11,
+      "poison_rate": 0.9995
+    },
+    {
+      "k": 12,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 12,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 13,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 13,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 14,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 14,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 15,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 15,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 16,
+      "poison_rate": 1.0
+    },
+    {
+      "k": 16,
+      "poison_rate": 1.0
+    }
+  ]
+}

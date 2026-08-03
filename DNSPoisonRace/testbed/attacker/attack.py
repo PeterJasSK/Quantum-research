@@ -9,11 +9,12 @@ from dataclasses import dataclass
 
 from testbed import config
 from testbed.draw.sad_dns import effective_bits
+from testbed.draw.source_model import attacker_search_bits
 from testbed.draw.sources import DrawKind, draw_source
 from testbed.sim.race import run_attack_race
 from testbed.types import DrawProvenance
 
-from .guessing import GuessStream, effective_index, guess_space_size
+from .guessing import GuessStream, effective_index
 from .portable_prng import bounded
 
 
@@ -52,8 +53,17 @@ def run_poison_race(
     Kaminsky amplification, OQ-P3.4) -- builds each window's target index and
     (portable-PRNG-jittered) authoritative arrival, and runs the race on
     `sim.race.run_attack_race`."""
+    # `eff_bits` is the defender's *nominal* entropy (the cliff x-axis). The
+    # attacker's real problem can be smaller for a weak source (epic §3.2/§6a):
+    # `fixed`'s known port and `prng`'s recoverable state shrink the space the
+    # flood must cover, so the poison probability keys on `search_bits`, not
+    # `eff_bits`. csprng/qrng get no discount -> they overlap (M5: QRNG's
+    # differentiator is the signed receipt, not a lower rate).
     eff_bits = effective_bits(txid_bits, port_bits, k)
-    space_size = guess_space_size(txid_bits, port_bits, k)
+    search_bits = attacker_search_bits(
+        kind, txid_bits=txid_bits, port_bits=port_bits, k=k, prng_leak_bits=config.PRNG_LEAK_BITS
+    )
+    space_size = 1 << search_bits
 
     state = seed
     windows_spec: list[list[tuple[int, float, float]]] = []
@@ -83,6 +93,8 @@ def run_poison_race(
         retransmit=retransmit,
         parallel_queries=parallel_queries,
         seed=seed,
+        guess_budget=config.ATTACK_GUESS_BUDGET,
+        attempts=config.ATTACK_ATTEMPTS,
     )
 
     assert first_provenance is not None  # parallel_queries >= 1 guarantees at least one draw

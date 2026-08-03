@@ -9,6 +9,7 @@ events on this same queue -- no new engine.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from testbed.sim.event_queue import EventQueue
@@ -80,65 +81,102 @@ def run_attack_race(
     retransmit: float,
     parallel_queries: int,
     seed: int,
+    guess_budget: int | None = None,
+    attempts: int = 1,
 ) -> AttackRaceResult:
-    """P3's flood race (epic ss5). `windows_spec` is one list per parallel
-    query of `(target_index, t_open, t_authoritative)` rounds -- the initial
-    window plus any retransmit-spawned windows, each with its own fresh
-    target index and its own (already-jittered) authoritative arrival --
-    computed upstream by `attacker/attack.py` via the portable PRNG, so this
-    engine stays source-agnostic (no `draw`/`attacker` imports beyond
-    `types`). `guess_stream` need only expose `.next() -> int`. `rtt`,
-    `retransmit`, `parallel_queries`, `seed` are accepted for the documented
-    signature contract (epic ss9 P3) -- their effect is already baked into
-    `windows_spec`/`guess_stream` by the caller, mirroring `run_race`'s
-    unused `seed` (P1).
+    """P3's flood race (epic ss5), evaluated per-window against the epic's
+    analytic anchor instead of by enumerating every forged packet.
+
+    `windows_spec` is one list per parallel query of `(target_index, t_open,
+    t_authoritative)` rounds -- the initial window plus any retransmit-spawned
+    windows, each with its own fresh target index and its own (already-
+    jittered) authoritative arrival -- computed upstream by
+    `attacker/attack.py`. `guess_stream` exposes `.space_size`, `.next() ->
+    int` (a distinct uniform index in `[0, space_size)`) and `.reset_round()`.
+
+    **Continuous-flood model (defect 1).** A window is *live* only during
+    `[t_open, t_authoritative]`; the old model spread the flood evenly across
+    the whole `[0, max_t_authoritative]` span, so with retransmits ~500ms apart
+    and ~20ms windows almost every forged packet landed in dead time between
+    windows and was wasted -- and at the send-rates where the cliff actually
+    sits it enumerated billions of dead packets. Here the flood is continuous
+    but only in-window guesses count: `g_live = send_rate_pps * duration`
+    distinct guesses land inside each live window (capped by `guess_budget`
+    and by `space_size` -- you cannot fire more distinct guesses than there are
+    cells).
+
+    **Analytic per-window hit.** With `g_live` *distinct* guesses (no
+    replacement within a round) against a fresh uniform target, the window is
+    poisoned with probability exactly `g_live / space_size` -- so the whole
+    race is `P = 1 - prod_w (1 - g_live_w / S)`, the epic's anchor
+    `1 - (1 - g_live/S)^(r*q)` when the windows are equal-sized. We Monte-Carlo
+    that by drawing the target's rank in the flood's random distinct-guess
+    order from the (seeded, portable) `guess_stream`: the window is poisoned
+    iff that rank falls within the `g_live` guesses actually fired. This is
+    O(windows), independent of send-rate, and tracks the anchor exactly.
+
+    **Kaminsky campaign (`attempts`).** A single RTT window fires only
+    `g_live = rate*RTT` guesses -- too few to poison modern entropy in one
+    shot. A real off-path attacker re-triggers each query `attempts` times
+    (fresh name -> fresh target -> an independent window), so each structural
+    window here stands for `attempts` back-to-back live windows and poisons
+    with probability `1 - (1 - g_live/S)**attempts`. Folded in closed form
+    (O(1) per window), so a multi-thousand-attempt campaign costs nothing.
+    `attempts=1` reduces exactly to the single-window case.
+
+    `rtt`, `retransmit`, `parallel_queries`, `seed` are accepted for the
+    documented signature contract (epic ss9 P3) -- their effect is already
+    baked into `windows_spec`/`guess_stream` by the caller.
     """
     del rtt, retransmit, parallel_queries, seed  # baked into windows_spec/guess_stream by the caller
 
-    queue = EventQueue()
-    window_target: dict[int, int] = {}
-    window_t_auth: dict[int, float] = {}
-    open_windows: set[int] = set()
+    space_size = guess_stream.space_size
 
-    window_id = 0
+    windows: list[tuple[float, float, int]] = []
     max_t_authoritative = 0.0
+    window_id = 0
     for query_windows in windows_spec:
-        for target_index, t_open, t_authoritative in query_windows:
-            queue.push(t_open, "window_open", (window_id, target_index, t_authoritative))
+        for _target_index, t_open, t_authoritative in query_windows:
+            windows.append((t_open, t_authoritative, window_id))
             max_t_authoritative = max(max_t_authoritative, t_authoritative)
             window_id += 1
-    total_windows = window_id
-
-    forged_count = int(max_t_authoritative * send_rate_pps)
-    if forged_count > 0:
-        step = max_t_authoritative / forged_count
-        for i in range(forged_count):
-            t = step * (i + 0.5)
-            queue.push(t, "forged", guess_stream.next())
+    windows.sort(key=lambda w: w[0])  # resolve the earliest-opening window first
 
     forged_packets = 0
-    closed_count = 0
+    for t_open, t_authoritative, wid in windows:
+        guess_stream.reset_round()  # OQ-P3.2: distinct guesses reset per retransmit round
+        duration = max(0.0, t_authoritative - t_open)
+        g_live = int(send_rate_pps * duration)
+        if guess_budget is not None:
+            g_live = min(g_live, guess_budget)
+        g_live = min(g_live, space_size)  # cannot fire more distinct guesses than cells
+        if g_live <= 0:
+            continue
+        # Rank of the true target in the flood's random distinct-guess order;
+        # uniform in [0, space_size), so P(rank < g_live) = g_live/space_size.
+        target_rank = guess_stream.next()
+        if attempts <= 1:
+            # Single window: reduces to the plain g_live/S Bernoulli.
+            if target_rank < g_live:
+                forged_packets += target_rank + 1
+                t_hit = t_open + (target_rank + 0.5) / g_live * duration
+                return AttackRaceResult("poisoned", t_hit, forged_packets, wid)
+            forged_packets += g_live
+        else:
+            # Campaign: `attempts` independent windows folded to
+            # p_win = 1-(1-p1)**attempts; the target_rank/S uniform selects the
+            # hit and (via the geometric inverse-CDF) which attempt landed it.
+            p1 = g_live / space_size
+            u = target_rank / space_size
+            p_win = 1.0 - (1.0 - p1) ** attempts
+            if u < p_win:
+                attempt_no = 1 if p1 >= 1.0 else min(
+                    attempts, 1 + int(math.log1p(-u) / math.log1p(-p1))
+                )
+                within = target_rank % g_live
+                forged_packets += (attempt_no - 1) * g_live + within + 1
+                t_hit = t_open + (attempt_no - 1 + (within + 0.5) / g_live) * duration
+                return AttackRaceResult("poisoned", t_hit, forged_packets, wid)
+            forged_packets += attempts * g_live
 
-    while not queue.empty():
-        event = queue.pop()
-        if event.kind == "window_open":
-            wid, target_index, t_authoritative = event.payload
-            window_target[wid] = target_index
-            window_t_auth[wid] = t_authoritative
-            open_windows.add(wid)
-            queue.push(t_authoritative, "authoritative", wid)
-        elif event.kind == "forged":
-            forged_packets += 1
-            guess = event.payload
-            for wid in open_windows:
-                if _accepts(guess, window_target[wid], event.time, window_t_auth[wid]):
-                    return AttackRaceResult("poisoned", event.time, forged_packets, wid)
-        elif event.kind == "authoritative":
-            wid = event.payload
-            if wid in open_windows:
-                open_windows.discard(wid)
-                closed_count += 1
-                if closed_count >= total_windows:
-                    return AttackRaceResult("resolved_legit", event.time, forged_packets, None)
-
-    return AttackRaceResult("window_closed", queue.clock.now, forged_packets, None)
+    return AttackRaceResult("resolved_legit", max_t_authoritative, forged_packets, None)

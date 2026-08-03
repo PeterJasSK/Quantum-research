@@ -1,0 +1,14 @@
+{
+  "kind": "prng",
+  "seed": 0,
+  "txid_bits": 16,
+  "port_bits": 16,
+  "k": 0,
+  "send_rate_pps": 10000,
+  "rtt": 0.02,
+  "retransmit": 0.5,
+  "parallel_queries": 1,
+  "outcome": "resolved_legit",
+  "t_outcome": 1.520169776,
+  "forged_packets": 1677600
+}

@@ -81,12 +81,6 @@ def _flood_vector(
         windows_spec.append(rounds)
 
     guess_stream = GuessStream(space_size=space_size, state=state)
-    forged_count = int(max_t_authoritative * send_rate_pps)
-    send_schedule = (
-        [max_t_authoritative / forged_count * (i + 0.5) for i in range(forged_count)]
-        if forged_count > 0
-        else []
-    )
 
     result = run_attack_race(
         windows_spec=windows_spec,
@@ -96,6 +90,7 @@ def _flood_vector(
         retransmit=retransmit,
         parallel_queries=parallel_queries,
         seed=seed,
+        guess_budget=config.ATTACK_GUESS_BUDGET,
     )
 
     eff_bits = config.TXID_BITS + max(0, port_bits - k)
@@ -106,11 +101,23 @@ def _flood_vector(
         "eff_bits": eff_bits,
         "rtt": rtt,
         "retransmit": retransmit,
-        "send_schedule": send_schedule,
+        # Analytic engine no longer enumerates packets -> no flood send_schedule
+        # (kept as [] for schema stability with the run_race rows).
+        "send_schedule": [],
         "parallel_queries": parallel_queries,
         "outcome": result.outcome,
         "forged_packets": result.forged_packets,
         "t_outcome": result.t_outcome,
+        # --- P6 additive enrichment: self-describing inputs for the JS parity
+        # gate (`web/scripts/check-parity.mjs` recomputes each row). Existing
+        # keys/order above are unchanged (P1 schema stability).
+        "mode": "flood",
+        "txid_bits": config.TXID_BITS,
+        "port_bits": port_bits,
+        "k": k,
+        "send_rate_pps": send_rate_pps,
+        "retransmit_rounds": retransmit_rounds,
+        "rtt_jitter_frac": config.RTT_JITTER_FRAC,
     }
 
 
@@ -139,6 +146,9 @@ def generate() -> list[dict]:
                 "outcome": result.outcome,
                 "forged_packets": result.forged_packets,
                 "t_outcome": result.t_outcome,
+                # --- P6 additive enrichment (see _flood_vector) ---
+                "mode": "run_race",
+                "forged_guess": list(forged_guess),
             }
         )
     for flood_scenario in FLOOD_SCENARIOS:

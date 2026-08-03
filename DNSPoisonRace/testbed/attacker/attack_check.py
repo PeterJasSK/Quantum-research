@@ -32,10 +32,18 @@ def _check(name: str, condition: bool) -> None:
 
 
 class _ConstGuessStream:
-    """Test double: always returns the same guess index."""
+    """Test double: pins the target's rank in the flood's guess order. The
+    analytic engine poisons a window iff this rank falls within the `g_live`
+    guesses fired -- so a small constant lands inside the budget (poison) and a
+    large one falls outside it (miss). `space_size` is large enough here that
+    `g_live` is set by the send-rate, not clamped to the space."""
 
-    def __init__(self, value: int) -> None:
+    def __init__(self, value: int, space_size: int = 1 << 20) -> None:
         self.value = value
+        self.space_size = space_size
+
+    def reset_round(self) -> None:
+        pass
 
     def next(self) -> int:
         return self.value
@@ -48,11 +56,12 @@ def _reset_prng_state() -> None:
 
 
 def _check_acceptance_rule() -> None:
+    # One window, 1s live, 1000 pps => g_live = 1000 guesses fired into it.
     windows_spec = [[(5, 0.0, 1.0)]]
 
-    equal_result = run_attack_race(
+    hit_result = run_attack_race(
         windows_spec=windows_spec,
-        guess_stream=_ConstGuessStream(5),
+        guess_stream=_ConstGuessStream(5),  # target rank 5 < g_live=1000 -> fired
         send_rate_pps=1000,
         rtt=1.0,
         retransmit=0.5,
@@ -60,23 +69,23 @@ def _check_acceptance_rule() -> None:
         seed=0,
     )
     _check(
-        "(a) guess equal to draw poisons before the reply",
-        equal_result.outcome == "poisoned" and equal_result.poisoned_window == 0,
+        "(a) target within the fired-guess budget poisons",
+        hit_result.outcome == "poisoned" and hit_result.poisoned_window == 0,
     )
 
-    unequal_result = run_attack_race(
+    miss_result = run_attack_race(
         windows_spec=windows_spec,
-        guess_stream=_ConstGuessStream(999),
+        guess_stream=_ConstGuessStream(5000),  # target rank 5000 >= g_live -> never fired
         send_rate_pps=1000,
         rtt=1.0,
         retransmit=0.5,
         parallel_queries=1,
         seed=0,
     )
-    _check("(b) guess unequal to draw never poisons", unequal_result.outcome == "resolved_legit")
+    _check("(b) target beyond the fired-guess budget never poisons", miss_result.outcome == "resolved_legit")
 
     _check(
-        "(b) correct guess arriving after the reply loses (timing, not just match)",
+        "(b) run_race's exact-match rule still requires beating the reply (timing, not just match)",
         _accepts(5, 5, 2.0, 1.0) is False and _accepts(5, 5, 0.5, 1.0) is True,
     )
 
@@ -100,30 +109,33 @@ def _check_send_rate_monotonic() -> None:
 
 
 def _check_retransmit_adds_window() -> None:
-    """Deterministic superset argument: window0's deadline (10.0) dominates
-    the span in both runs, so the forged flood (same `GuessStream` seed) is
-    byte-identical in both -- the only difference is the extra retransmit
-    window. It targets the very first guess the flood will send, with a
-    deadline the first packet beats, so adding the retransmit round turns a
-    `resolved_legit` into a `poisoned` (never the reverse)."""
-    probe = GuessStream(space_size=16, state=42)
-    first_guess = probe.next()
+    """Superset-in-probability argument for the analytic model: a second
+    (retransmit) window is an extra independent Bernoulli(g_live/S) trial, so
+    across seeds the two-window flood must poison at least as often as the
+    one-window flood. Per-window `g_live` is kept well below `S` (65536) so a
+    single window's success is far from certain and the extra window's lift is
+    visible."""
+    common = dict(send_rate_pps=200000, rtt=0.02, retransmit=0.5, parallel_queries=1, seed=0)
+    one_window = [[(0, 0.0, 0.02)]]
+    two_windows = [[(0, 0.0, 0.02), (0, 0.5, 0.52)]]
 
-    common = dict(send_rate_pps=1000, rtt=0.02, retransmit=0.5, parallel_queries=1, seed=0)
-    no_retransmit = run_attack_race(
-        windows_spec=[[(999999, 0.0, 10.0)]],
-        guess_stream=GuessStream(space_size=16, state=42),
-        **common,
-    )
-    with_retransmit = run_attack_race(
-        windows_spec=[[(999999, 0.0, 10.0), (first_guess, 0.0, 0.001)]],
-        guess_stream=GuessStream(space_size=16, state=42),
-        **common,
-    )
+    def _count(windows_spec: list) -> int:
+        return sum(
+            1
+            for trial in range(800)
+            if run_attack_race(
+                windows_spec=windows_spec,
+                guess_stream=GuessStream(space_size=65536, state=trial),
+                **common,
+            ).outcome
+            == "poisoned"
+        )
+
+    single = _count(one_window)
+    double = _count(two_windows)
     _check(
-        f"(d) a retransmit round only raises success "
-        f"(no_retransmit={no_retransmit.outcome}, with_retransmit={with_retransmit.outcome})",
-        no_retransmit.outcome == "resolved_legit" and with_retransmit.outcome == "poisoned",
+        f"(d) a retransmit round only raises success (one_window={single}, two_windows={double})",
+        double >= single,
     )
 
 

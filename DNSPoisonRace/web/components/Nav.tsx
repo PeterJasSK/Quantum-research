@@ -1,0 +1,33 @@
+import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
+
+/** Sticky top brand bar. The whole demo lives on one page (`/`), so this reads
+ * as a product header rather than a router. */
+export default function Nav() {
+  return (
+    <header className="sticky top-0 z-20 border-b border-(--color-border) bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="lamp lamp-red" aria-hidden />
+          <span className="text-base font-bold tracking-tight text-(--color-heading)">
+            DNS<span className="text-(--color-accent)">·</span>Poison Race
+          </span>
+        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="hidden text-xs text-(--color-text) opacity-70 lg:inline">
+            How many entropy bits stop a cache poisoner?
+          </span>
+          <ThemeToggle />
+          <a
+            href="https://qeaas.eu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pill px-3 py-1.5 text-xs font-semibold sm:px-4"
+          >
+            qeaas.eu
+          </a>
+        </div>
+      </nav>
+    </header>
+  );
+}

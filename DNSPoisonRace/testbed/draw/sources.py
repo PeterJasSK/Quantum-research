@@ -11,6 +11,7 @@ advantage over the other, only `DrawProvenance.detail`'s receipt differs.
 from __future__ import annotations
 
 import binascii
+import os
 import random
 import secrets
 from typing import Literal
@@ -114,33 +115,70 @@ def _csprng_draw(txid_bits: int, port_bits: int) -> Draw:
     )
 
 
+# Q-EaaS entropy is fetched in blocks and consumed per draw, so a full sweep
+# costs a handful of calls, not one HTTP round-trip per trial (epic Appendix
+# A.5: consume the hosted service efficiently, no new QC runs). The endpoint
+# serves at most 4096 bytes per call (larger sizes return 422); every draw
+# served from one block shares that block's signed receipt as its provenance.
+# The endpoint rate-limits hard (~3 requests/window -> 429), so minimise HTTP
+# calls: pull the largest block it serves (4096 bytes = 1024 draws) and consume
+# from it. One block covers a frugal qrng sweep in a single request. Override
+# via QRNG_REFILL_BYTES (must stay <= 4096; larger returns 422).
+_QRNG_REFILL_BYTES = int(os.environ.get("QRNG_REFILL_BYTES", "4096"))
+_qrng_pool: bytes = b""
+_qrng_pool_offset: int = 0
+_qrng_provenance: DrawProvenance | None = None
+
+
+def reset_qrng_pool() -> None:
+    """Drop the buffered quantum-entropy block and its receipt, so the next
+    `_qrng_draw` refetches -- forces a fresh receipt at the start of a run."""
+    global _qrng_pool, _qrng_pool_offset, _qrng_provenance
+    _qrng_pool = b""
+    _qrng_pool_offset = 0
+    _qrng_provenance = None
+
+
+def _qrng_refill(min_bytes: int) -> None:
+    """Fetch one block of quantum entropy and cache it with its provenance."""
+    global _qrng_pool, _qrng_pool_offset, _qrng_provenance
+    size = min(_QRNG_REFILL_BYTES, max(min_bytes, _QRNG_REFILL_BYTES))
+    client = QRNGClient(config.QEAAS_BASE_URL, config.QEAAS_API_KEY)
+    response = client.fetch(size=size, fmt="hex")
+    _qrng_pool = binascii.unhexlify(response.data)
+    _qrng_pool_offset = 0
+    _qrng_provenance = DrawProvenance(
+        kind="qrng",
+        detail={
+            "request_id": response.request_id,
+            "entropy_epoch": str(response.entropy_epoch),
+            "timestamp": response.timestamp,
+            "receipt": response.receipt or "",
+            "endpoint": f"{config.QEAAS_BASE_URL}/v1/random/bytes",
+        },
+    )
+
+
 def _qrng_draw(txid_bits: int, port_bits: int) -> Draw:
     """Full-entropy source drawn from the hosted Q-EaaS service (epic
     Appendix A.1/A.2) -- no new QC runs, just the existing
-    `/v1/random/bytes` endpoint."""
+    `/v1/random/bytes` endpoint. Bytes come from a cached block refetched only
+    when exhausted, so a sweep is a few HTTP calls rather than one per trial;
+    every draw carries the block's real signed receipt (epic §3.2)."""
     if not config.QEAAS_API_KEY:
         raise RuntimeError("QEAAS_API_KEY is not set -- required for the qrng draw source")
 
     total_bits = txid_bits + port_bits
     byte_count = (total_bits + 7) // 8
 
-    client = QRNGClient(config.QEAAS_BASE_URL, config.QEAAS_API_KEY)
-    response = client.fetch(size=byte_count, fmt="hex")
-    raw = binascii.unhexlify(response.data)
+    global _qrng_pool_offset
+    if _qrng_pool_offset + byte_count > len(_qrng_pool):
+        _qrng_refill(byte_count)
+    raw = _qrng_pool[_qrng_pool_offset : _qrng_pool_offset + byte_count]
+    _qrng_pool_offset += byte_count
+
     value = int.from_bytes(raw, "big") >> (byte_count * 8 - total_bits)
     txid, port = _split_high_low(value, port_bits)
 
-    return Draw(
-        txid=txid,
-        port=port,
-        provenance=DrawProvenance(
-            kind="qrng",
-            detail={
-                "request_id": response.request_id,
-                "entropy_epoch": str(response.entropy_epoch),
-                "timestamp": response.timestamp,
-                "receipt": response.receipt or "",
-                "endpoint": f"{config.QEAAS_BASE_URL}/v1/random/bytes",
-            },
-        ),
-    )
+    assert _qrng_provenance is not None  # set by _qrng_refill above
+    return Draw(txid=txid, port=port, provenance=_qrng_provenance)

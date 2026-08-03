@@ -8,3 +8,6 @@ results/**/*.csv
 results/**/*.record.json
 results/**/*.rotation_events.jsonl
 metrics.csv
+
+# holds a pasted live QRNG key -- never commit
+run_eval.sh

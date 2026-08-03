@@ -1,7 +1,7 @@
 # Plan 4 — Resolver/victim model & instrumentation
 
 **Epic:** [DNS Poison Race](../epic-dns-poison-race.md) · **Source P4** · **Priority:** `[MUST]`
-**Status:** Approved (2026-07-30, all open questions resolved, developer: "accept all defaults") ·
+**Status:** Complete (2026-08-02) ·
 **Depends on:** P3 (off-path attacker & poison race, Complete) ·
 **Gates:** P5 (runs the sweeps, renders figures, exports replay JSON), P6 (reads the CSV / provenance
 for the web spectacle)
@@ -89,36 +89,32 @@ victim's resolver actually believe now."
 
 ## Acceptance criteria (verbatim from epic §9 P4)
 - **AC-4.1** M1 poisoning success probability per (source, effective-bits) cell.
-  **Delivered by:** `resolver/metrics.py` `collect_cell(...)` — runs `run_poison_race` `trials` times,
-  `poison_rate = poisoned_count / trials`. Verified offline: `metrics_check.py` feeds a synthetic
-  all-poisoned and all-legit trial set and asserts `poison_rate == 1.0` / `0.0`; a mixed set asserts the
-  exact fraction.
+  **Delivered by:** `testbed/resolver/metrics.py:34,84` `collect_cell(...)` — runs `run_poison_race`
+  `trials` times, `poison_rate = poisoned_count / trials`. Verified offline:
+  `testbed/resolver/metrics_check.py:56` (`_check_poison_rate`) — all-poisoned/all-legit/mixed sets
+  give `1.0`/`0.0`/exact fraction. `python3 testbed/resolver/metrics_check.py` → PASS.
 - **AC-4.2** M2 expected forgery packets and time-to-poison at fixed entropy.
-  **Delivered by:** `collect_cell(...)` — `mean_forged_packets` over **all** trials (every trial spends
-  packets whether or not it poisons) and `mean_time_to_poison` over **poisoned** trials only (undefined,
-  written `None`/empty, when zero trials poisoned). Verified offline: `metrics_check.py` checks both
-  means against hand-computed values and the empty-poisoned-set edge case.
+  **Delivered by:** `testbed/resolver/metrics.py:85-86` — `mean_forged_packets` over **all** trials,
+  `mean_time_to_poison` over **poisoned** trials only (`None` when zero poisoned). Verified offline:
+  `testbed/resolver/metrics_check.py:66` (`_check_means`) — hand-computed means + zero-poisoned edge
+  case. PASS.
 - **AC-4.3** M3 birthday amplification factor vs parallel-query count.
-  **Delivered by:** `resolver/metrics.py` `amplification_factor(poison_rate_q, poison_rate_baseline) ->
-  float | None` (`poison_rate_q / poison_rate_baseline`, `None` when the baseline rate is `0.0` —
-  division-by-zero guard, not a crash). `run_metrics.py --parallel 1,8` runs the `parallel_queries=1`
-  cell first as the baseline, then each further value, and writes `amplification_factor` into that row.
-  Verified offline: `metrics_check.py` checks the ratio on known rates and the `None` guard at a `0.0`
-  baseline.
+  **Delivered by:** `testbed/resolver/metrics.py:92-100` `amplification_factor(...)` (`None` guard on
+  zero baseline); `testbed/resolver/run_metrics.py:56,73-80` treats the first `--parallel` value as
+  baseline and fills `amplification_factor` per cell. Verified offline:
+  `testbed/resolver/metrics_check.py:89` (`_check_amplification_factor`). PASS.
 - **AC-4.4** M4 success vs bits-of-port-leaked (SAD-DNS sensitivity).
-  **Delivered by:** every CSV row carries the cell's `k` (SAD-DNS leaked port bits) and `effective_bits`
-  alongside `poison_rate` — P4 does not sweep `k` itself (that is P5's SAD-DNS collapse-figure matrix,
-  epic §9 P5 AC-5.2), it guarantees the column exists and is correctly populated so P5's sweep is a
-  concatenation of P4 cells, not a reshape. Verified offline: `metrics_check.py` asserts `k` and
-  `effective_bits` pass through `collect_cell` unchanged into the returned `CellRecord`.
+  **Delivered by:** `testbed/resolver/metrics.py:23,79-80` — `k`/`effective_bits` carried unchanged
+  into `CellRecord`; `testbed/resolver/csv_writer.py:15-28` CSV schema includes both columns. Verified
+  offline: `testbed/resolver/metrics_check.py:116` (`_check_k_and_effective_bits_passthrough`). PASS.
 - **AC-4.5** M5 per-cell provenance record persisted to `.record.json`.
-  **Delivered by:** `resolver/csv_writer.py` `write_record_json(cell_record, path)` — writes
-  `{cell fields..., provenance: {kind, detail}}` verbatim from the **first** trial's
-  `PoisonRaceResult.provenance` in the cell (documented: provenance is per-draw, not per-trial-aggregate;
-  the first trial's receipt stands in for the cell for `kind="qrng"`, where every draw in a run shares
-  one Q-EaaS response envelope's `entropy_epoch`/`request_id` shape). Verified offline:
-  `metrics_check.py` asserts the written JSON's `provenance` matches the input `CellRecord.provenance`
-  field-for-field.
+  **Delivered by:** `testbed/resolver/csv_writer.py:61-83` `write_record_json(record, path, *,
+  run_tag)` — writes `{cell fields..., provenance: {kind, detail}}` from the cell's first-trial
+  provenance. Verified offline: `testbed/resolver/metrics_check.py:124`
+  (`_check_record_json_roundtrip`). PASS.
+
+All 13 checks in `python3 testbed/resolver/metrics_check.py` pass (2026-08-02 run: `13/13 checks
+passed`, final `PASS`).
 - **Done when:** `python3 testbed/resolver/metrics_check.py` runs all checks with no network and no
   root and prints a final `PASS`; `python3 testbed/resolver/run_metrics.py --kind csprng --eff-bits 16
   --trials 2000` writes one CSV row plus (for `--kind qrng`) a `.record.json` with a real receipt; and
@@ -308,3 +304,17 @@ unmodified `run_poison_race` call; P4 only loops and aggregates.
   a comma-separated list (`--kind csprng,qrng`), looping cells across kinds in one invocation as operator
   convenience — P5 is not required to use this, it may call `collect_cell` directly per cell itself.
   *Binds `resolver/run_metrics.py`.*
+
+## Post-implementation (2026-08-02)
+Built: `testbed/resolver/` package (`cache.py`, `metrics.py`, `csv_writer.py`, `run_metrics.py`,
+`metrics_check.py`, `__init__.py`), `config.py`'s P4 block, and the README's P4 section — all match
+this plan's design section field-for-field. Offline gate `metrics_check.py` run and confirmed
+(`13/13 checks passed`, `PASS`).
+
+**Deferred:** the live CLI runs in §Manual verification steps 2-5 (`run_metrics.py` end-to-end at
+`--send-rate 100000 --trials 2000`, the `--parallel 1,8` amplification check, CSV accumulation, and
+the opt-in QRNG `.record.json` run) were **not** executed this session — a `--send-rate 100000
+--trials 2000` run was started and killed after ~10 minutes still running (matches this plan's own
+Risks section: high send-rate/high-trial-count runtime in pure Python). Developer decision: mark
+Complete on offline-gate + code-review evidence alone; run the live CLI steps manually before P5
+depends on the CSV/`.record.json` artefacts for real.

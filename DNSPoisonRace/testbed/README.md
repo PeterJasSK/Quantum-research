@@ -157,3 +157,63 @@ cell (documented simplification, not exhaustive per-draw enumeration).
 | `CACHE_TTL_SECONDS` | `300` | Nominal DNS record TTL for the cache-wrapper edge (cosmetic — no metric reads it yet) |
 | `RESULTS_CSV_PATH` | `results/metrics.csv` | Run-tagged CSV, one row per cell |
 | `RESULTS_RECORD_DIR` | `results/records` | Per-cell `.record.json` provenance sidecars |
+
+## Experiments, figures & replay export (AC-5)
+
+`testbed/experiments/matrix.py` freezes the sweep as data — `CLIFF` (four sources × the OQ-2 bit
+sweep, M1), `COLLAPSE` (`csprng` × the SAD-DNS `k` sweep, M4), `BIRTHDAY` (M3 amplification, data
+only, no figure). `testbed/experiments/run_experiments.py` iterates one group through P4's
+`collect_cell`, writes each cell via P4's `write_row`/`write_record_json`, then renders the two
+headline figures (`testbed/analysis/graphs.py`) and exports the replay JSON
+(`testbed/sim/replay_export.py`) unless gated off.
+
+Offline gate, no network required:
+
+```
+python3 testbed/analysis/analysis_check.py
+```
+
+CLI runner:
+
+```
+python3 testbed/experiments/run_experiments.py --group cliff --trials 500 --send-rate 10000 --fresh
+python3 testbed/experiments/run_experiments.py --group collapse --trials 500 --send-rate 10000
+python3 testbed/experiments/run_experiments.py --group cliff --no-replay   # re-render figures only
+python3 testbed/experiments/run_experiments.py --group cliff --no-graphs  # re-export replay JSON only
+```
+
+`--group` (`cliff`/`collapse`/`birthday`/`all`) selects the matrix; `--fresh` truncates
+`--out` first (default: append). `--no-graphs`/`--no-replay` gate the render/export steps only —
+they do **not** skip re-running the group's cells (mirrors the ECMP twin's `run_sim.py`). To
+re-render or re-export from an existing `results/metrics.csv` without recollecting anything, call
+`testbed.analysis.graphs.render_graphs()` / `testbed.sim.replay_export.export_replay()` directly.
+
+**`cliff` and `all` include `qrng` cells** — run with `.env` loaded (`set -a && . ./.env && set
++a`) or those cells raise. **Runtime:** the 75 non-`qrng` cliff cells take well under two minutes
+at `--trials 500`; the 25 `qrng` cells (one live Q-EaaS call per trial) and low-`k` `collapse`
+cells (near-zero poison rate races out every retransmit) are much slower — budget a full
+high-trial sweep as its own background job, not an inline run.
+
+Figures: `results/figures/entropy_cliff.{png,svg}` (AC-5.1), `results/figures/
+sad_dns_collapse.{png,svg}` (AC-5.2) — default matplotlib theme, `matplotlib.use("Agg")`,
+`fig.tight_layout()`, no explicit `dpi`. The CSPRNG/QRNG cliff lines are *expected* to coincide
+(epic §3.2 null result) — plotted honestly, qrng dashed only for visibility.
+
+Replay JSON (`web/public/replay/*.json`, committed — P6 reads it): `cliff.json`, `collapse.json`,
+one `race_<kind>.json` per source (a representative scenario descriptor, not a packet trace —
+OQ-P5.4), and `qrng-provenance.json` (AC-5.3, the frozen live receipt). Freeze the real receipt:
+
+```
+set -a && . ./.env && set +a && python3 testbed/experiments/run_experiments.py --group cliff --trials 5
+```
+
+If `QEAAS_API_KEY` is unset, or the endpoint is unavailable (`QRNGUnavailable`), both
+`qrng-provenance.json` and `race_qrng.json` degrade gracefully to a placeholder / a skip + a
+`WARN:` line — never a crash. Don't ship the placeholder as if it were a real receipt.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `FIGURES_DIR` | `results/figures` | Both headline figures render here (`.png` + `.svg`) |
+| `WEB_REPLAY_DIR` | `web/public/replay` | Replay JSON for P6 |
+| `PARALLEL_QUERIES_SWEEP` | `1,2,4,8,16` | M3 birthday axis; first value is the amplification baseline |
+| `BIRTHDAY_EFF_BITS` | `20` | Representative cell for the M3 birthday group |

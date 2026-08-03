@@ -1,0 +1,82 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { loadRecordedProvenance, isPlaceholderProvenance, type QrngProvenance } from "@/lib/qeaas";
+
+/** Renders P5's recorded qrng-provenance.json (AC-6.5). Shape is nested under
+ * `detail`. If the record is the P5 sample-placeholder it is rendered honestly
+ * as clearly-not-real -- never presented as a real attestation. */
+export default function ProvenancePanel({ visible }: { visible: boolean }) {
+  const [provenance, setProvenance] = useState<QrngProvenance | null>(null);
+
+  useEffect(() => {
+    if (!visible) return;
+    let cancelled = false;
+    loadRecordedProvenance().then((record) => {
+      if (!cancelled) setProvenance(record);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [visible]);
+
+  if (!visible) return null;
+
+  const placeholder = provenance ? isPlaceholderProvenance(provenance) : false;
+
+  return (
+    <div className="panel card-hover flex flex-col gap-2 p-5">
+      <span className="eyebrow">
+        <span className="eyebrow-rule" />
+        QEaaS
+      </span>
+      <h3 className="text-sm font-semibold text-(--color-heading)">
+        Signed entropy provenance receipt
+      </h3>
+      <p className="text-xs text-(--color-text) opacity-80">
+        The QRNG entropy that seeds the resolver&apos;s TXID/port draw arrives with this attestable receipt — proof of a
+        real quantum source, which epoch it came from, and a verifiable signature. This is the deployable product: an
+        auditable paper trail for the randomness a strong CSPRNG defends just as well but cannot attest.
+      </p>
+      {!provenance ? (
+        <span className="text-xs text-(--color-text)">loading recorded provenance...</span>
+      ) : (
+        <>
+          {placeholder && (
+            <p className="rounded-lg border border-(--color-warning)/40 bg-(--color-warning)/10 px-3 py-2 text-xs text-(--color-text)">
+              <strong>Sample placeholder</strong> — P5 has not yet frozen a real, .env-authenticated Q-EaaS receipt.
+              These values are a structurally-accurate stand-in, not a real attestation.
+            </p>
+          )}
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-(--color-text)">
+            <dt className="font-semibold">kind</dt>
+            <dd className="break-all">{provenance.kind}</dd>
+            <dt className="font-semibold">request_id</dt>
+            <dd className="break-all">{provenance.detail.request_id}</dd>
+            <dt className="font-semibold">entropy_epoch</dt>
+            <dd>{provenance.detail.entropy_epoch}</dd>
+            <dt className="font-semibold">timestamp</dt>
+            <dd>{provenance.detail.timestamp}</dd>
+            <dt className="font-semibold">endpoint</dt>
+            <dd className="break-all">{provenance.detail.endpoint}</dd>
+            <dt className="font-semibold">receipt</dt>
+            <dd className="break-all font-(family-name:--font-mono)">
+              {provenance.detail.receipt || "—"}
+            </dd>
+          </dl>
+        </>
+      )}
+      <p className="text-xs italic text-(--color-text) opacity-70">
+        Footnote: a strong CSPRNG blunts this race just as well; the signed receipt is what CSPRNG cannot give you.
+      </p>
+      <a
+        href="https://qeaas.eu"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 text-xs font-semibold text-(--color-accent) hover:underline"
+      >
+        Draw your own signed entropy at qeaas.eu ↗
+      </a>
+    </div>
+  );
+}

@@ -1,0 +1,357 @@
+{
+  "sources": {
+    "fixed": [
+      {
+        "effective_bits": 16,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 17,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 18,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 19,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 20,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 21,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 22,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 23,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 24,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 25,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 26,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 27,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 29,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 30,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 31,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 32,
+        "poison_rate": 1.0
+      }
+    ],
+    "prng": [
+      {
+        "effective_bits": 16,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 17,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 18,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 19,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 20,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 21,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 22,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 23,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 24,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 25,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 26,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 27,
+        "poison_rate": 0.9995
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 0.985
+      },
+      {
+        "effective_bits": 29,
+        "poison_rate": 0.873
+      },
+      {
+        "effective_bits": 30,
+        "poison_rate": 0.629
+      },
+      {
+        "effective_bits": 31,
+        "poison_rate": 0.398
+      },
+      {
+        "effective_bits": 32,
+        "poison_rate": 0.23
+      }
+    ],
+    "csprng": [
+      {
+        "effective_bits": 16,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 16,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 17,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 17,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 18,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 18,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 19,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 19,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 20,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 20,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 21,
+        "poison_rate": 0.9995
+      },
+      {
+        "effective_bits": 21,
+        "poison_rate": 0.9995
+      },
+      {
+        "effective_bits": 22,
+        "poison_rate": 0.985
+      },
+      {
+        "effective_bits": 22,
+        "poison_rate": 0.985
+      },
+      {
+        "effective_bits": 23,
+        "poison_rate": 0.873
+      },
+      {
+        "effective_bits": 23,
+        "poison_rate": 0.873
+      },
+      {
+        "effective_bits": 24,
+        "poison_rate": 0.629
+      },
+      {
+        "effective_bits": 24,
+        "poison_rate": 0.629
+      },
+      {
+        "effective_bits": 25,
+        "poison_rate": 0.398
+      },
+      {
+        "effective_bits": 25,
+        "poison_rate": 0.398
+      },
+      {
+        "effective_bits": 26,
+        "poison_rate": 0.23
+      },
+      {
+        "effective_bits": 26,
+        "poison_rate": 0.23
+      },
+      {
+        "effective_bits": 27,
+        "poison_rate": 0.125
+      },
+      {
+        "effective_bits": 27,
+        "poison_rate": 0.125
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 0.0595
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 0.0595
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 0.0595
+      },
+      {
+        "effective_bits": 29,
+        "poison_rate": 0.0305
+      },
+      {
+        "effective_bits": 29,
+        "poison_rate": 0.0305
+      },
+      {
+        "effective_bits": 30,
+        "poison_rate": 0.01
+      },
+      {
+        "effective_bits": 30,
+        "poison_rate": 0.01
+      },
+      {
+        "effective_bits": 31,
+        "poison_rate": 0.006
+      },
+      {
+        "effective_bits": 31,
+        "poison_rate": 0.006
+      },
+      {
+        "effective_bits": 32,
+        "poison_rate": 0.003
+      },
+      {
+        "effective_bits": 32,
+        "poison_rate": 0.003
+      }
+    ],
+    "qrng": [
+      {
+        "effective_bits": 16,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 17,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 18,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 19,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 20,
+        "poison_rate": 1.0
+      },
+      {
+        "effective_bits": 21,
+        "poison_rate": 0.9995
+      },
+      {
+        "effective_bits": 22,
+        "poison_rate": 0.985
+      },
+      {
+        "effective_bits": 23,
+        "poison_rate": 0.873
+      },
+      {
+        "effective_bits": 24,
+        "poison_rate": 0.629
+      },
+      {
+        "effective_bits": 25,
+        "poison_rate": 0.398
+      },
+      {
+        "effective_bits": 26,
+        "poison_rate": 0.23
+      },
+      {
+        "effective_bits": 27,
+        "poison_rate": 0.125
+      },
+      {
+        "effective_bits": 28,
+        "poison_rate": 0.0595
+      },
+      {
+        "effective_bits": 29,
+        "poison_rate": 0.0305
+      },
+      {
+        "effective_bits": 30,
+        "poison_rate": 0.01
+      },
+      {
+        "effective_bits": 31,
+        "poison_rate": 0.006
+      },
+      {
+        "effective_bits": 32,
+        "poison_rate": 0.003
+      }
+    ]
+  },
+  "send_rate_pps": 100000
+}
