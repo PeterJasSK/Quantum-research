@@ -79,6 +79,20 @@ function toFrame(s: string, gen: number): Frame {
   return { chars, correct: chars.map((c, i) => c === TARGET[i]), gen };
 }
 
+// Display churn: every wrong position gets a fresh random letter each frame so
+// no incorrect slot sits visually frozen while the GA quietly locks the rest.
+// Correct letters stay put. Uses the seeded PRNG, so it stays reproducible.
+function displayFrame(s: string, gen: number, rng: () => number): Frame {
+  const chars: string[] = [];
+  const correct: boolean[] = [];
+  for (let i = 0; i < TARGET.length; i += 1) {
+    const ok = s[i] === TARGET[i];
+    correct.push(ok);
+    chars.push(ok ? TARGET[i] : randChar(rng));
+  }
+  return { chars, correct, gen };
+}
+
 // Run the full GA and return one frame per generation until the target is hit.
 export function evolve(seed: number): Frame[] {
   const rng = makePrng(seed);
@@ -91,8 +105,11 @@ export function evolve(seed: number): Frame[] {
       .sort((x, y) => y.f - x.f);
 
     const best = scored[0].s;
-    frames.push(toFrame(best, gen));
-    if (best === TARGET) break;
+    if (best === TARGET) {
+      frames.push(toFrame(best, gen));
+      break;
+    }
+    frames.push(displayFrame(best, gen, rng));
 
     // Elitism: the two fittest survive untouched ("higher chance to live"),
     // then breed the rest by crossing the two most-similar-to-ideal parents.
