@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiCheckCircle, FiShield } from "react-icons/fi";
+import EvolvingTitle from "@/components/EvolvingTitle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -44,19 +45,7 @@ export default function Hero() {
           variants={fadeUp}
           className="mb-3 text-5xl font-black leading-[1.1] tracking-tighter text-heading drop-shadow-sm sm:mb-6 sm:text-7xl lg:text-[6.5rem]"
         >
-          QUANTUM
-          <br />
-          <span className="relative inline-block text-accent">
-            <span className="relative z-10">ENTROPY</span>
-            <svg
-              className="absolute -bottom-1 left-0 z-0 h-3 w-full text-accent opacity-60"
-              viewBox="0 0 100 10"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
-            </svg>
-          </span>
+          <EvolvingTitle />
         </motion.h1>
         <motion.h2
           initial="hidden"

@@ -69,6 +69,19 @@ export async function getHealth(): Promise<Health> {
   return requestJson<Health>("/health");
 }
 
+interface RandomResponse {
+  bytes: number;
+  format: "base64";
+  data: string;
+}
+
+// Anonymous quantum-seeded bytes (max 64 per call). Used to seed the hero
+// evolution once, then a deterministic PRNG expands it -- no repeat draws.
+export async function getRandomBytes(n: number): Promise<Uint8Array> {
+  const res = await requestJson<RandomResponse>(`/random?bytes=${n}`);
+  return base64ToBytes(res.data);
+}
+
 export async function rollDice(
   sides: number,
   count: number,
