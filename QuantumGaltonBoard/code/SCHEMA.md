@@ -258,3 +258,54 @@ absent this phase is written as a `null` slot; Phase B rewrites the same file wi
 `figures.py` writes both PNG (raster) + SVG (vector) under
 `QuantumGaltonBoard/figures/`: `horns_melting.{png,svg}` (AC-4.1) and
 `collapse_curve.{png,svg}` (AC-4.2).
+
+## P5 web parity — how `web/replay.json` is consumed (no key change)
+
+P5 (`web/quantum_galton.html`, `code/build_web.py`, `code/parity_check.py`) adds
+**new files only** and changes **no `run.json` / `WALK_SPEC` / `summary.json` /
+`replay.json` key** (frozen, epic §3.6). It only documents how the frozen replay
+is consumed by the browser.
+
+### The `GALTON-PARITY-BLOCK` sentinel convention
+
+The shipping JS decoder + metric mirror in `web/quantum_galton.html` live between
+two sentinel comments, and are the **only** JS the parity gate runs:
+
+```
+// ===GALTON-PARITY-BLOCK-START===
+//   decodeCounts + the metric mirror — the JS↔Python parity surface
+// ===GALTON-PARITY-BLOCK-END===
+```
+
+The block is a hand-kept, line-for-line port of the frozen Python source of truth
+and reads `WALK_SPEC` from `replay.walk_spec` (no second literal). It contains **no
+DOM code** and hardcodes no spec, so `parity_check.py` can extract that exact text,
+run it under `node` with an `export` footer, and prove it equal to Python.
+
+### The JS mirror must match these Python functions (parity gate, AC-5.4)
+
+| JS mirror | Python source of truth |
+|-----------|------------------------|
+| `decodeCounts(counts, steps, spec)` | `walk_spec.decode_counts` (`walk_spec.py:39`) |
+| `variance(hist)` / `mean(hist)` | `metrics.variance` / `metrics.mean` |
+| `hornContrast(hist)` | `metrics.horn_contrast` (parity band rule, `metrics.py:133`) |
+| `entropy(hist, base=2)` | `metrics.entropy` |
+| `tvDistance(p,q)` / `hellinger(p,q)` | `metrics.tv_distance` / `metrics.hellinger` (union support) |
+| `localVarianceExponent(depths,variances,window=3)` | `metrics.local_variance_exponent` |
+| `crossoverDepth(depths,variances,contrasts)` | `metrics.crossover_depth` |
+
+`code/parity_check.py` asserts equality within `1e-9` over **every filled arm and
+depth** in `web/replay.json` (per-depth scalar metrics + arm-vs-`binomial_reference`
+distances + the depth-series knee) and asserts `decodeCounts` matches
+`decode_counts` on synthetic one-hot maps (even/odd `n`, multi-bin). Network-free,
+QPU-free, node-driven; one `PASS` line per metric, non-zero exit on mismatch. The
+AC-5.3 interference glow is analytic-illustrative (ideal amplitude phase) and is
+**outside** the gate (OQ-5.3).
+
+### The embed step (`build_web.py`, OQ-5.1)
+
+`code/build_web.py` splices `web/replay.json` into the
+`<script type="application/json" id="replay">` block of `web/quantum_galton.html`
+so the shipped single file is self-contained (`file://`, no server, no `fetch`).
+Re-run it after any P4 re-export (noisy fill / Phase-B hw) — a codegen step, **not**
+a view-time build. The null arm slots simply become populated; no P5 code changes.
