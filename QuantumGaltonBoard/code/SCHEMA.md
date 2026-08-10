@@ -122,6 +122,63 @@ P2 fills P1's existing `run.json`/`meta` keys with real values across three arms
   histogram is ever mirrored, flip in `run_arm`'s aggregation only. Pinned by the
   round-trip assertion in `walk_check.py`.
 
+## P3 metrics — the frozen analysis interface
+
+Pure functions in `metrics.py` over `{position: probability}` histograms and
+per-depth series (no I/O; P4 loads `run.json` / writes `summary.json`). Closed-form
+baselines live in `analytics.py`. **Python is the source of truth (epic §3.6);** the
+P5 JS viewer mirrors these exact values under the parity gate, so each definition
+below is the mirror contract. Histograms are sparse int-keyed dicts (missing
+position ⇒ probability 0); `metrics.to_int_hist` re-`int()`s the string keys the
+`run.json` `position_histogram` carries.
+
+| Metric | Function | Definition |
+|--------|----------|------------|
+| M1 mean | `mean(hist)` | `Σ p(x)·x` |
+| M1 variance | `variance(hist)` | `Σ p(x)·x² − mean²` |
+| M1 exponent (AC-3.1) | `variance_exponent(depths, variances)` | degree-1 `polyfit(log t, log σ²)` → `{a, b, r²}`; `a→2` ballistic, `a→1` diffusive. Drops non-positive variances before the log; needs ≥2 usable points else `ValueError`. |
+| M2 TV (AC-3.2) | `tv_distance(p, q)` | `0.5·Σ_{x∈supp(p)∪supp(q)} \|p(x)−q(x)\|` |
+| M2 Hellinger (AC-3.2) | `hellinger(p, q)` | `(1/√2)·√(Σ_x (√p(x) − √q(x))²)` — both symmetric, range `[0,1]`, `0` iff `p==q` |
+| M3 horn contrast (AC-3.3) | `horn_contrast(hist)` | `(P_horn − P_centre)/(P_horn + P_centre)` |
+| M4 entropy (AC-3.4) | `entropy(hist, base=2.0)` | `−Σ_{x: p>0} p·log_base(p)`, raw bits (`0·log0 ≡ 0`) |
+
+**Horn-centre parity rule (OQ-3.3).** Walk parity is read from the histogram support
+(`pos ≡ n (mod 2)` since `pos = 2·bin − n`). Even `n`: `P_centre = hist.get(0)`,
+central band `{0}`. Odd `n`: `P_centre = mean(hist[-1], hist[1])`, central band
+`{−1,+1}`. `P_horn` = max probability over the remaining off-centre positions.
+Twin horns ⇒ strongly positive; a diffusive central hump ⇒ `P_centre` dominates ⇒
+`→0`/negative — the sign flip the collapse curve rides on. Returns `0.0` on an
+empty/degenerate histogram.
+
+**Entropy base (OQ-3.4).** Shannon entropy in bits (`log₂`), returned **raw**
+(un-normalised); a `log₂(n+1)`-normalised view is a P4/P6 presentation choice, not a
+P3 return value.
+
+### The crossover / knee — the single defended metric (AC-3.5)
+
+- `local_variance_exponent(depths, variances, window=3)` → `[(t, a_local(t)), …]`: a
+  sliding log-log fit over the `window` depths centred on `t` (2-point at the ends,
+  OQ-3.2).
+- `crossover_depth(depths, variances, contrasts, *, midpoint=1.5)` →
+  `{"knee_depth", "exponent_knee", "contrast_knee", "rule"}`.
+
+**Combination rule (OQ-3.1).** The reported `knee_depth` **is** the M1 crossing: the
+linearly-interpolated depth where `a_local(t)` first crosses **down** through
+`midpoint = 1.5` (midway between ballistic 2 and diffusive 1); `None` if it never
+does (an honest "no collapse in range", not an error). `contrast_knee` corroborates:
+the depth where `horn_contrast` first drops below half its sweep maximum (the
+"randomness-shape half-life"). M1 defines because epic §3.1 names the exponent
+crossover the defended metric; horn contrast is the headline *visual* but noisier
+near collapse. The extractor is a pure function of the three series — deterministic,
+reproducible.
+
+Analytic baselines (`analytics.py`): `analytic_hadamard_walk(steps)` (ideal
+ballistic, symmetric Hadamard coin, OQ-4) and `binomial_reference(steps)` (classical
+diffusive, `B(n, ½)` at position `2j − n`). Both sparse int-keyed in the same signed
+frame the arms emit. `metrics_check.py` pins `analytic_hadamard_walk` against
+`build_walk` + `Statevector` to `1e-6` (OQ-3.6). No `run.json` / `WALK_SPEC` /
+`summary.json` key changes (frozen).
+
 ## Dependencies
 
 Core (`config.py`, `walk.py`, `walk_spec.py`, `pipeline.py`, `layout.py`,
