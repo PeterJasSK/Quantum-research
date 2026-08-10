@@ -13,3 +13,8 @@ qiskit-aer>=0.15
 
 # hw arm only: live Heron r2 access via the reused pipeline_common.
 qiskit-ibm-runtime
+
+# P4 figures only: imported solely by figures.py (matplotlib.use("Agg")). The
+# sweep/aggregate (sweep.py) + replay export (replay_export.py) paths never
+# import it, so the depth sweep still runs headless without matplotlib present.
+matplotlib>=3.8

@@ -187,3 +187,74 @@ the offline gate and the root-free ideal arm run aer-free (OQ-2.5).
 The **`noisy`** arm adds **`qiskit-aer`** (OQ-2.1), imported lazily inside
 `arms._run_noisy` so its absence never blocks the ideal/offline paths. See
 `code/requirements.txt`. Not vendored.
+
+**P4** adds **`matplotlib`** (`code/requirements.txt`), imported **only** by
+`figures.py` under the non-interactive `Agg` backend. The `sweep.py` aggregation
+and `replay_export.py` export paths use `numpy` + `json` only and never import it.
+
+## P4 experiments — how the frozen slots are filled + the new replay artefact
+
+P4 adds **new modules only** (`sweep.py`, `figures.py`, `replay_export.py`,
+`experiment_check.py`) and **no `run.json` / `WALK_SPEC` / `summary.json` key**
+(frozen, epic §3.6). It *populates* the P1 `summary.json` `per_depth[].metrics`
+and `per_depth[].position_histogram` slots and introduces one **new** artefact,
+`web/replay.json` (the frozen P5 contract). Summaries are written to
+`research_runs/` via the frozen `pipeline.write_summary`. Two-phase (plan §0):
+Phase A fills `ideal`+`noisy` (`hw` null); Phase B fills `hw` (mean±std + knee band).
+
+### `summary.json` `per_depth[].metrics` (P4-defined contents, no new key)
+
+`sweep.aggregate` groups runs by depth and, across each depth's seeds, writes:
+
+| Field | Meaning |
+|-------|---------|
+| `variance_mean` / `variance_std` | `metrics.variance` mean ± std over seeds (`std` ddof=0) |
+| `horn_contrast_mean` / `horn_contrast_std` | `metrics.horn_contrast` mean ± std (the M3 collapse sample) |
+| `entropy_mean` / `entropy_std` | `metrics.entropy` mean ± std |
+| `a_local` | `metrics.local_variance_exponent` at this depth (`None` if < 2 depths) |
+| `tv_to_ideal` / `hellinger_to_ideal` | M2 vs the ideal arm's mean hist (`null` unless a `reference_summary` is supplied and arm ≠ `ideal`) |
+| `tv_to_binomial` / `hellinger_to_binomial` | M2 vs `analytics.binomial_reference(n)` (always available) |
+
+`per_depth[].position_histogram` is the **mean** probability per position over the
+depth's seeds, string-keyed (mirrors `run.json`, `pipeline.py:101`).
+
+Sweep-level fields written into `summary.json` `meta` (not a frozen `run.json`
+key): `knee_depth`, `exponent_knee`, `contrast_knee`, `rule` (from
+`metrics.crossover_depth`), `variance_exponent` (global `{a,b,r2}`), `depths`,
+`seeds`, `phase` (`"A"`), `hw_error_bars` (`false` in Phase A). Phase B adds
+`knee_depth_lo` / `knee_depth_hi` (the seed-spread band, plan §6).
+
+### `web/replay.json` — the frozen P5 contract (OQ-6)
+
+One file `replay_export.export_replay` writes; P5 embeds it verbatim into its
+single self-contained HTML. Its shape must not drift without a P5-visible
+amendment (the JS decoder + JS metric mirror read it).
+
+```jsonc
+{
+  "walk_spec": { /* WALK_SPEC verbatim — P5 JS decoder parity, epic §4 */ },
+  "encoding": "one_hot_line",
+  "arms": ["ideal", "noisy", "hw"],          // fixed order; hw null in Phase A
+  "depths": [2, 4, 6, …],
+  "binomial_reference": { "2": {"-2":0.25,…}, … },   // classical hump per depth
+  "per_arm": {
+    "ideal": { "backend": "statevector",
+      "by_depth": { "2": { "position_histogram": {"-2":0.25,"0":0.5,"2":0.25},
+                           "metrics": {"variance":…, "horn_contrast":…,
+                                       "entropy":…, "a_local":…} }, … },
+      "knee": { "knee_depth": null_or_number, "contrast_knee": …, "rule": "…" } },
+    "noisy": { /* same shape; knee usually non-null — the collapse */ },
+    "hw":    null                            // Phase A; Phase B fills same shape + error bars
+  }
+}
+```
+
+Histogram keys are stringified ints (identical JS decode to `run.json`). Any arm
+absent this phase is written as a `null` slot; Phase B rewrites the same file with
+`per_arm.hw` populated — P5 needs no structural change.
+
+### `figures/` — the two headline figures
+
+`figures.py` writes both PNG (raster) + SVG (vector) under
+`QuantumGaltonBoard/figures/`: `horns_melting.{png,svg}` (AC-4.1) and
+`collapse_curve.{png,svg}` (AC-4.2).
