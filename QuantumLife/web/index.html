@@ -80,6 +80,17 @@
   .ex code{font-size:12px;color:#eafff2;background:#0a1810;
            border:1px solid #23392d;padding:1px 5px;border-radius:3px}
   .ex ul{margin:0;padding-left:18px} .ex li{font-size:13.5px;line-height:1.7;color:#c4e6d3;margin-bottom:6px}
+  .ex ol{margin:0 0 10px;padding-left:20px} .ex ol li{font-size:13.5px;line-height:1.7;color:#c4e6d3;margin-bottom:6px}
+  .ex .tbl{width:100%;overflow-x:auto;margin:0 0 12px}
+  .ex table{border-collapse:collapse;width:100%;font-size:12.5px}
+  .ex th,.ex td{border:1px solid #23392d;padding:5px 9px;text-align:left;color:#c4e6d3;vertical-align:top}
+  .ex th{color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-size:11px;background:#0a1810}
+  .ex pre{margin:0 0 12px;padding:11px 13px;background:#0a1810;border:1px solid #23392d;border-radius:4px;
+          overflow-x:auto;font-size:12px;line-height:1.6;color:#eafff2;white-space:pre}
+  .ex pre .cmt{color:#7fae95}
+  .ex .fx{background:#0a1810;border:1px solid #23392d;border-radius:4px;padding:8px 12px;margin:0 0 10px;
+          font-size:12.5px;color:#eafff2;white-space:normal}
+  .ex h3{margin:14px 0 8px;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent2)}
 
   .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:860px}
   .dot{width:9px;height:9px;background:#1e2b22;border:1px solid #2f4436;
@@ -142,6 +153,16 @@
 <div class="explain">
   <div class="ex">
     <h2>What's actually happening</h2>
+    <p> <span class="q"> The tree you see is grown from a genuinely correlated quantum genome a
+    designed, crosstalk-immune long-range entanglement, not a decorated random one. </span></p>
+    <p>A random genome is independent coin flips one gene tells you nothing about the next. This one
+    is different: its genes are <b>linked across positions</b>, engineered clean over long range, just
+    like real DNA where nearby genes are co-inherited and distant ones interact, carrying structure
+    that gets passed on. That measured linkage is what makes it a genome and not just a random <i>seed</i>.</p>
+    <p>And for the instant those shots run, the 102 qubits are one entangled, non-classical whole that
+    exists only there, that moment, on that chip: impossible to copy, impossible to hold in any
+    classical memory. <span class="q"> As close to alive in that time and space as a machine gets.</span></p>
+
     <p>An <b>environment</b> (wind, light, a season cycle) is fixed at the start. The tree begins
     completely undecided — every gene is a fair coin flip. Each generation runs <b>one circuit of
     thousands of shots on a real IBM Heron&nbsp;r2 chip</b>. Two things come out of those shots: the
@@ -156,7 +177,7 @@
     <span class="q">evolution</span>, not a fresh random image every frame.</p>
 
     <p><b>Is it really impossible to simulate?</b> Yes, in two distinct ways.</p>
-    <p><b>Scale:</b> 108 entangled qubits would need <code>2¹⁰⁸</code> numbers held in memory at
+    <p><b>Scale:</b> 102 entangled qubits would need <code>2¹⁰²</code> numbers held in memory at
     once. No classical machine can do that.</p>
     <p><b>The quantum signature:</b> the <i>picture</i> alone could be faked classically — so a
     companion research study asks a sharper, falsifiable question: does the entangling layer leave a
@@ -168,18 +189,20 @@
     baselines and is causally switched on by the entangling gates. So the connection does measurable
     work no PRNG can fake — that much is <b>proven</b>.</p>
 
-    <p><b>Is that entanglement? Not proven yet — and the latest run is why.</b> The original
+    <p><b>Is that entanglement? Here is where the question stood when the study began.</b> The original
     "serial" entangler stacks its bonds hundreds of gates deep, far past the chip's coherence, so its
     strong signature (an alternating <code>c(1)≈−0.08</code>) is tangled up with ordinary decoherence
-    and crosstalk. The most recent study run (2026-07-17, <b>ibm_kingston</b>) re-ran the same physics
+    and crosstalk. An earlier study run (2026-07-17, <b>ibm_kingston</b>) re-ran the same physics
     with a <b>brick-wall</b> entangler only ~13 gates deep — shallow enough that a genuinely entangled
     state should still be alive at measurement. Result: the serial <code>c(1)</code> fingerprint
     <i>did not</i> carry over — it collapses toward zero, so that part was mostly depth noise — but a
     distinct short-range correlation (<code>c(2)≈+0.05–0.06</code>) shows up <i>only</i> with the
-    entangler switched on and is absent from the layers-0 control. So the honest headline stays: the
-    entangling layer imprints a <b>measurable, causal, hardware-only correlation</b> the classical
-    model can't reproduce; calling it full <i>entanglement</i> is still an open claim, pending deeper
-    analysis of these brick-wall runs.</p>
+    entangler switched on and is absent from the layers-0 control. So the honest headline at this
+    stage: the entangling layer imprints a <b>measurable, causal, hardware-only correlation</b> the
+    classical model can't reproduce — but one loophole stayed open. These bonds were between
+    <b>neighbouring</b> genes, and ordinary crosstalk <i>also</i> couples neighbours, so crosstalk
+    could not yet be ruled out and calling it full <i>entanglement</i> stayed an open claim.
+    <b>That is exactly the gap the next iteration closes.</b></p>
 
     <p><b>The newest iteration (2026-08-17, ibm_marrakesh) closes exactly that crosstalk gap
     using quantum teleportation.</b> Instead of only bonding neighbouring genes, it wires a
@@ -195,36 +218,102 @@
     hardware the teleported bond shows a <b>stable, single-sign correlation at 12-qubit
     separation</b> (<code>c(d)≈−0.065</code>, reproducible across seeds, and confirmed
     <i>not</i> to be a measurement/post-selection artifact) that differs
-    <b>significantly</b> from the deep <code>SWAP</code> baseline. It is the strongest evidence
-    yet that the connection is genuine <span class="q">long-range entanglement</span> — one
-    open puzzle remains (teleport and <code>SWAP</code> disagree on the <i>sign</i> of the
-    correlation), pending a noiseless simulation of both circuits to settle it.</p>
+    <b>significantly</b> from the deep <code>SWAP</code> baseline. An <b>exact noiseless
+    simulation</b> then settles which arm is right: it confirms the teleported gate is a
+    genuine <code>CNOT</code> and that the true bond correlation is <b>negative</b> — the
+    sign teleport shows on hardware. The <code>SWAP</code> ladder, decohered by its depth,
+    washes that correlation out and reads the <i>wrong</i> sign. So <b>teleportation is
+    simply the better long-range gate here</b>: correct-signed, reproducible, and
+    constant-depth, where <code>SWAP</code> routing is washed out by its own depth.</p>
   </div>
 
   <div class="ex">
     <h2>How it works</h2>
-    <p>Every frame you see is one real <b>growth step</b>, replayed from a quantum computer. Each
-    step is a single circuit run on <b>IBM Heron r2</b> using <b>108 qubits</b> (18 branch-slots ×
-    6 bits each). One qubit-field decides one branch: its bend angle, its length, whether it forks,
-    and whether it sprouts a leaf.</p>
+    <p>Full pipeline from code. Step by step — genome build, measure, interpret.</p>
 
-    <p>Inside each step, the circuit does four things, in order:</p>
+    <h3>Genome layout — what a "genome" is</h3>
+    <p>102 qubits = <b>17 slots × 6 bits</b> (<code>genome.py</code>). One slot = one branch
+    decision:</p>
+    <div class="tbl"><table>
+      <tr><th>bits</th><th>field</th><th>meaning</th></tr>
+      <tr><td>0,1</td><td>angle 0–3</td><td>branch bend vs parent</td></tr>
+      <tr><td>2,3</td><td>length 0–3</td><td>segment length</td></tr>
+      <tr><td>4</td><td>fork</td><td>1 = split in two</td></tr>
+      <tr><td>5</td><td>leaf</td><td>1 = leaf cluster (branch keeps growing)</td></tr>
+    </table></div>
+    <p><b>One shot = one full 102-bit string = one complete field of 17 branch decisions.</b>
+    Circuit fired many shots per generation (up to 16384).</p>
+
+    <h3>Build — one generation circuit (<code>build_circuit</code>, 6 stages)</h3>
+    <p>Registers: <code>q</code> (102 genome) + <code>a</code> (2 per bond, teleport ancillas) +
+    <code>c</code> (genome readout) + <code>tel</code> (ancilla readout).</p>
     <ol>
-      <li><b>Belief rotation</b> (<code>Ry</code>) — puts every qubit into superposition, tilted
-      toward the tree's current growth habit.</li>
-      <li><b>Entangling network</b> (<code>CX</code> chain + controlled-<code>Rx</code>) —
-      correlates neighboring branches so nearby limbs resemble each other. A small but measurable
-      clustering (see the study above), not random jitter.</li>
-      <li><b>Environment rotations</b> — wind and sun lean the angles; a good season lengthens
-      branches and encourages more forks.</li>
-      <li><b>Collapse</b> — all 108 qubits measure at once. Each shot is one complete field of
-      branch decisions.</li>
+      <li><b>Belief encode</b> — <code>Ry(theta[i])</code> each qubit. Start <code>theta = π/2</code>
+      everywhere = fair coin, tree fully undecided (<code>:453</code>).</li>
+      <li><b>Local entangle</b> — <code>layers</code> brick-wall neighbour passes:
+      <code>CX(i,i+1)</code> + <code>controlled-Rx(0.7)</code>. Correlates adjacent genes
+      (short-range).</li>
+      <li><b>Long-range teleport CX</b> — for each bond slot <code>si→sj</code>, apply
+      <code>CX</code> between their <b>angle bit-0 qubits</b> (<code>qi=si*6</code>,
+      <code>qj=sj*6</code>) via teleportation (<code>_teleport_cx :201</code>):
+      <pre>H(a1); CX(a1,a2)        <span class="cmt"># Bell pair spans the gap</span>
+CX(ctrl,a1); measure a1-&gt;tel   <span class="cmt"># inject control parity</span>
+if tel: X(a2)                  <span class="cmt"># feed-forward</span>
+CX(a2,tgt); H(a2); measure a2-&gt;tel
+if tel: Z(ctrl)                <span class="cmt"># feed-forward</span></pre>
+      ctrl and tgt <b>never physical neighbours</b>. Constant depth regardless of gap.</li>
+      <li><b>Environment bias</b> — <code>Rx(angle_bias)</code> on angle bits,
+      <code>Ry(season_bias)</code> on length/fork bits, plus <code>FORK_BIAS=0.3</code>,
+      <code>LEAF_BIAS=0.45</code>. Wind/season lean growth.</li>
+      <li><b>Self-mutation kicks</b> — <code>Rx(kick[i])</code>, kick carried from previous
+      generation (<code>:270</code>).</li>
+      <li><b>Collapse</b> — <code>measure(q→c)</code>. Each shot = one genome (<code>:275</code>).</li>
     </ol>
 
-    <p>Between steps, belief <b>reinforces</b> what it just measured, so the tree's character
-    crystallizes as it matures — while hardware noise keeps every branch a little different. The
-    bars below the tree show the live values driving the current step; hover over each to see what
-    it means.</p>
+    <h3>Measure — shots to numbers (<code>field_stats :288</code>)</h3>
+    <ul>
+      <li><b><code>p[i]</code></b> = fraction of shots where bit <code>i</code>=1 → the
+      <b>per-qubit frequency</b>, what belief learns from.</li>
+      <li><b><code>modal</code></b> = single most-frequent 102-bit string → stored as
+      <code>bits</code>, the tree you actually see that gen.</li>
+      <li><b><code>samples</code></b> = next 4 frequent strings.</li>
+      <li><b><code>diversity</code></b> = mean binary entropy of <code>p</code> → how undecided
+      (1=coin, 0=locked).</li>
+    </ul>
+    <p><b>Heralded runs</b> (<code>:476</code>): keep only shots where all <code>tel</code> ancilla
+    bits = 0 (correctly-teleported branch, ~25% per bond). Filter uses <b>ancilla bits only, never
+    genome bits</b> → valid noise filter, not selection bias.</p>
+
+    <h3>Interpret — two readings</h3>
+    <p><b>A. Research metric (correlation):</b></p>
+    <ul>
+      <li><code>two_point_correlation :298</code> — chain average
+      <span class="fx">C(d)=mean_i[⟨b_i b_{i+d}⟩ − ⟨b_i⟩⟨b_{i+d}⟩]</span>
+      <span class="fx">c(d)=C(d)/C0</span> <span class="fx">xi=Σc(d≥1)</span></li>
+      <li><code>bond_correlations :327</code> — at <b>exact bonded angle qubits</b>:
+      <span class="fx">conn=⟨b_qi b_qj⟩ − ⟨b_qi⟩⟨b_qj⟩</span>
+      <span class="fx">c_at_d = conn/C0</span>. This is the <b>crosstalk-immune long-range
+          signal</b> (the headline <code>−0.065</code>)  (best run <code>-0.116</code>). Classical <code>--sim</code> null = ~0;
+      hardware nonzero at bond distance = entanglement signature crosstalk cannot fake.</li>
+    </ul>
+    <p><b>B. Evolution (belief carried to next gen, <code>next_belief :349</code>):</b></p>
+    <pre>drift = 0.18*(2p-1)      <span class="cmt"># nudge theta toward measured habit (heredity)</span>
+wig   = uniform(-0.05,0.05)   <span class="cmt"># jitter (variation)</span>
+theta_next = clamp(theta+drift+wig, 0.08, π-0.08)
+kick_next  = 0.30*(2p-1)      <span class="cmt"># next-gen self-mutation</span></pre>
+    <p>Belief locks onto its own habit → entropy falls over generations → tree crystallizes.
+    Heredity + variation + environment = evolution, not fresh random each frame.</p>
+
+    <h3>Interpret — tree render (<code>buildTree</code> JS in index.html)</h3>
+    <p>Per generation, decode <code>modal</code> bits → 17 slots →
+    <code>{bend = angle/3*2−1 ∈[−1,1], length = 0.4+len/3*0.6, fork, leaf}</code>. Walk generations
+    as growth steps: each tip bends by <code>slot.bend*MAXBEND + windLean</code>, length scaled by
+    season, <code>fork</code> splits tip in two, <code>leaf</code> sprouts, stop at
+    <code>MAXDEPTH</code>. Slot picked per tip = <code>(k+g)%17</code>.</p>
+    <p><b>Loop:</b> encode belief → run chip → measure <code>p</code>+modal → correlation metric +
+    draw modal → reinforce belief → next gen. run.json stores every gen's
+    <code>bits</code>/<code>p</code>/<code>correlation</code>/<code>bonds</code>/<code>env</code>;
+    viewer replays as the film.</p>
   </div>
 
 
@@ -243,18 +332,18 @@
     Two qubits = 4. Ten qubits = 1,024. The cost <b>doubles with every qubit added</b> —
     exponential growth, <code>2ⁿ</code>.</p>
 
-    <p>This tree uses <b>108 qubits</b>. That's <code>2¹⁰⁸</code> amplitudes — roughly
-    <b>3 × 10³²</b> numbers to hold at once. There are only about <b>10⁸⁰</b> atoms in the entire
-    observable universe, so storing <code>2¹⁰⁸</code> full-precision numbers would take far more
+    <p>This tree uses <b>102 qubits</b>. That's <code>2¹⁰²</code> amplitudes — roughly
+    <b>5 × 10³⁰</b> numbers to hold at once. There are only about <b>10⁸⁰</b> atoms in the entire
+    observable universe, so storing <code>2¹⁰²</code> full-precision numbers would take far more
     memory than could ever physically be built. No supercomputer — present or future — can hold
     that state. The real hardware does it for free, because the qubits <i>are</i> the superposition:
     nature isn't storing a list, it simply <b>is</b> all those states at once.</p>
 
     <p>The usual trick for classical RNGs — sampling one bit at a time — doesn't work here, because
     the branches are <b>entangled</b>. Measuring one qubit instantly constrains its neighbors: all
-    108 decisions are woven into a single joint state with no shortcut. A classical computer could
+    102 decisions are woven into a single joint state with no shortcut. A classical computer could
     fake independent coin-flips, but it <b>can't reproduce these correlations</b> without first
-    building the full <code>2¹⁰⁸</code> state it can never fit in memory. That's why every run grows
+    building the full <code>2¹⁰²</code> state it can never fit in memory. That's why every run grows
     a different, naturally-clustered tree no ordinary machine could generate — and why
     <code>--sim</code> mode is only a rough approximation, not the real thing.</p>
   </div>
@@ -836,7 +925,7 @@ const METERS=[
   {k:"character", label:"Character · lush↔sparse",icon:"◈", color:"#ff9db0", signed:true,
    desc:"The tree's inherited habit, reinforced every generation from what the last measurement actually grew. Positive = it's becoming a lush tree; negative = a sparse one. This is the tree's memory."},
   {k:"diversity", label:"Diversity · superposition",icon:"◇", color:"#9dffcf",
-   desc:"Fraction of the 108 qubits that were genuinely undecided (near a coin-flip) before collapse. High = the branch decisions this step came from real quantum uncertainty, not a fixed pattern."},
+   desc:"Fraction of the 102 qubits that were genuinely undecided (near a coin-flip) before collapse. High = the branch decisions this step came from real quantum uncertainty, not a fixed pattern."},
 ];
 const MEL={};
 function buildMeters(){

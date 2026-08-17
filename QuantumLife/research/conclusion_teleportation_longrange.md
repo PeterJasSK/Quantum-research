@@ -11,6 +11,35 @@ register and are directly comparable.
 
 ---
 
+## 0. RESOLUTION (2026-08-17, exact noiseless simulation) — teleport wins
+
+**The sign anomaly (§4b) is resolved, and it resolves in teleport's favour.** An exact,
+noiseless statevector simulation (no QC) established two things:
+
+1. **The teleport circuit is logically a CNOT.** On a 4-qubit test, `_teleport_cx`
+   (feed-forward and the heralded `00` branch) reproduces a plain `CX` to within shot noise
+   (worst-case output-distribution L1 = 0.008 feed-forward, 0.018 herald). No bug.
+2. **The ideal bond correlation is NEGATIVE.** Running the genome circuit with the
+   long-range gate as a *direct* `CX` (pure unitary, exact) gives `c(d)` mean **−0.29 at
+   d=12** and **−0.08 at d=18** — negative at both distances.
+
+Therefore the correct sign is **negative**, and:
+- **Teleport hardware (−0.065 … −0.139) matches the ideal sign** → it is the *faithful*
+  implementation, just noise-attenuated (−0.29 ideal → ~−0.07 on hardware).
+- **SWAP is the corrupted arm.** Its high-shot single run sits at the floor (−0.002, sign
+  wandering); the same seed gave −0.002 at 16384 shots and +0.080 at 4096 shots — a
+  drift-dominated floor, not a stable +0.040 bond. Depth-31 decohered the ideal negative
+  correlation and the residual reads the wrong sign.
+- **The repo's classical `--sim-longrange` positive-copy preview is wrong-signed** — it
+  modelled the bond as a positive copy; the real ideal CX gives negative.
+
+**Bottom line:** in this framing teleportation is simply the better long-range gate —
+correct-signed, reproducible, constant-depth — where SWAP routing is washed out and
+sign-inverted by its own depth. The sections below are the pre-resolution record; read §4b,
+§6, §6c against this banner.
+
+---
+
 ## 1. What the study tests
 
 `research_qtree_teleport.py` applies a **long-range CNOT via teleportation** (one Bell
@@ -290,10 +319,11 @@ contribution here is a **clean hardware head-to-head plus a novel application** 
 entanglement driving an evolving-genome tree), suitable as an arXiv note / workshop piece /
 outreach artifact — **not** a novel-physics claim.
 
-**Honest framing for a writeup:** we can state that *the teleport and SWAP long-range
-correlations differ significantly under matched repeats*, and that *teleport yields a
-robust, reproducible, non-artifact bond at constant depth 9 where the SWAP ladder pays
-depth 31*. We can **not yet** state that teleport reproduces the SWAP CX at lower depth —
-the two disagree in sign, and that anomaly must first be explained by the noiseless
-simulation of both circuits. The significance is real; the interpretation is the last open
-item.
+**Honest framing for a writeup (post-resolution, see §0):** we can now state that
+*teleportation faithfully reproduces the long-range CNOT at constant depth 9 where the
+depth-31 SWAP ladder does not*. The exact noiseless sim fixes the ideal bond sign as
+negative and shows the teleport circuit is a logical CNOT; teleport hardware reproduces
+that negative sign, SWAP decoheres it to a wrong-signed floor. So teleport is
+**correct-signed, reproducible, and constant-depth** — the better long-range gate in this
+framing. The remaining work is scale (distance sweep, second backend), not the central
+claim, which is settled.
