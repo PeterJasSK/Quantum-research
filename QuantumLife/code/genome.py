@@ -15,9 +15,15 @@ Layout per slot (SLOT_BITS = 6):
                                  KEEPS growing; branches only stop at the
                                  viewer's MAXDEPTH). Biased ON in qtree.py.
 
-Default register is N_SLOTS * SLOT_BITS = 18 * 6 = 108 qubits -> the longest
-low-error SWAP-free chain that actually fits on a 156-qubit Heron r2 (a full
-120-qubit simple path does not exist on its heavy-hex lattice).
+Default register is N_SLOTS * SLOT_BITS = 17 * 6 = 102 qubits -> the longest
+low-error SWAP-free chain reliably available across live Heron r2 backends when
+no clean 108-long line exists (marrakesh calibration poor, kingston 108-runs are
+the earlier baseline). 102 = 18-slot register minus its last slot; the genome
+size is comparable to the 108-qubit runs at the per-bond c(d) metric (measured at
+the exact bonded angle qubits, register-length independent), and only the
+chain-averaged C(d)/C0/xi shift slightly with n. See RUNBOOK Phase 2 note.
+Historically this was 18 * 6 = 108 (longest SWAP-free path on a 156-qubit chip;
+a full 120-qubit simple path does not exist on its heavy-hex lattice).
 
 GENOME_SPEC is embedded verbatim into run.json so the viewer decodes the same
 way (it keeps a JS mirror in web/quantum_tree.html -- keep the two in sync by
@@ -27,8 +33,8 @@ hand if you edit here).
 from __future__ import annotations
 
 SLOT_BITS = 6
-N_SLOTS = 18
-N_BITS = SLOT_BITS * N_SLOTS   # 108
+N_SLOTS = 17
+N_BITS = SLOT_BITS * N_SLOTS   # 102  (was 18*6=108; see module docstring / RUNBOOK)
 
 GENOME_SPEC: dict = {
     "n_bits": N_BITS,

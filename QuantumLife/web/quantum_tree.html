@@ -309,9 +309,9 @@ $("scrub").addEventListener("input", e=>{ playing=false;
 
 /* ---------- demo: a synthetic tree so the page is alive before a run loads ---------- */
 function demo(){
-  const spec = {n_bits:108, slot_bits:6, n_slots:18,
+  const spec = {n_bits:102, slot_bits:6, n_slots:17,
     slot_fields:{angle:{bits:[0,1]},length:{bits:[2,3]},fork:{bits:[4]},leaf:{bits:[5]}}};
-  const n=108, G=13, shots=2048;
+  const n=102, G=13, shots=2048;
   let seed=987654; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
   const theta=Array.from({length:n},()=>Math.PI/2);
   const period=8, phase=1.1, windPeriod=6, wphase=0.7, light=1;

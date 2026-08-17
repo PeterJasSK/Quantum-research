@@ -1,0 +1,185 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife/code$ python research_qtree_teleport.py --generations 11 --shots 16384 --seed 100 --repeats 1 --layers 1 --bond-dist 2 --anchors 0  --herald --backend ibm_marrakesh --name tel_herald_hw
+Backend : ibm_marrakesh  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Entangler: brickwall   bonds (slot i->j): [(0, 2)]   qubit dist: 12   ancillas: 2
+Herald   : ON (no feed-forward, post-select tel==00). Expected kept ~25.00% -> ~4096 of 16384 shots/gen.
+Auto qubit chain (live calib): {'dead_avoided': [82, 94, 113, 130], 'twoq_err_mean': 0.00416, 'twoq_err_max': 0.03203, 'readout_max': 0.08179, 'sx_max': 0.006008}
+Note: teleport adds ancillas beyond the chain; the transpiler routes them (initial_layout left unpinned).
+
+=== repeat 1/1  (seed 100) ===
+  job 1: da1a2rmg52gs73clcm2g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  0  depth    8  div 0.940  C0 0.2299  xi +0.062  qpu 7.00s  herald 24.5% kept  |  bond c(d): 0->2:-0.047
+  job 1: da1a322ein7c73bd5dog (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  1  depth    9  div 0.946  C0 0.2322  xi +0.042  qpu 7.00s  herald 26.8% kept  |  bond c(d): 0->2:-0.170
+  job 1: da1a38e3kjvs7386fr6g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  2  depth    9  div 0.857  C0 0.2038  xi +0.041  qpu 7.00s  herald 26.7% kept  |  bond c(d): 0->2:-0.177
+  job 1: da1a3eug52gs73clcmp0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  3  depth    9  div 0.920  C0 0.2234  xi +0.022  qpu 7.00s  herald 27.1% kept  |  bond c(d): 0->2:-0.161
+  job 1: da1a3n63kjvs7386frl0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  4  depth    9  div 0.953  C0 0.2344  xi +0.033  qpu 7.00s  herald 25.5% kept  |  bond c(d): 0->2:-0.128
+  job 1: da1a3te3kjvs7386frrg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  5  depth    9  div 0.838  C0 0.1985  xi +0.074  qpu 7.00s  herald 25.0% kept  |  bond c(d): 0->2:-0.110
+  job 1: da1a4663kjvs7386fs5g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  6  depth    9  div 0.822  C0 0.1937  xi +0.107  qpu 7.00s  herald 25.2% kept  |  bond c(d): 0->2:-0.095
+  job 1: da1a4esdedkc73eqpf5g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  7  depth    9  div 0.932  C0 0.2276  xi +0.012  qpu 7.00s  herald 27.4% kept  |  bond c(d): 0->2:-0.175
+  job 1: da1a4ncdedkc73eqpfig (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  8  depth    9  div 0.959  C0 0.2362  xi -0.028  qpu 7.00s  herald 25.6% kept  |  bond c(d): 0->2:-0.068
+  job 1: da1a4tkdedkc73eqpfog (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  9  depth    9  div 0.898  C0 0.2167  xi -0.036  qpu 7.00s  herald 26.2% kept  |  bond c(d): 0->2:-0.139
+  job 1: da1a55ug52gs73clcogg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen 10  depth    9  div 0.941  C0 0.2304  xi -0.049  qpu 7.00s  herald 24.6% kept  |  bond c(d): 0->2:-0.009
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_herald_hw_ibm_marrakesh_seed100_20260817-075652_run.json
+
+--- DONE ---
+Long-range   : teleport  bonds [(0, 2)]  (qubit dist 12)
+Repeats      : 1  (seeds 100..100)
+logical depth: mean 9  (teleport bond is ~constant depth)
+bond c(d)    : mean -0.116 over gens/bonds (near 0 => no long-range signal above noise)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_herald_hw_ibm_marrakesh_20260817-075652_summary.json
+Compare against research_qtree_swaplr.py (same bonds, SWAP ladder) at matched --seed/--bond-dist, and against the --sim null.
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife/code$ python research_qtree_teleport.py --sim --herald --generations 11 --shots 16384 --seed 100 --repeats 1 --bond-dist 2 --anchors 0 --name tel_null_d2
+Backend : classical surrogate (--sim, honest null)
+Entangler: brickwall   bonds (slot i->j): [(0, 2)]   qubit dist: 12   ancillas: 2
+Herald   : ON (no feed-forward, post-select tel==00). Expected kept ~25.00% -> ~4096 of 16384 shots/gen.
+
+=== repeat 1/1  (seed 100) ===
+  seed 100 gen  0  depth    8  div 0.962  C0 0.2370  xi +0.034  qpu 0.00s  herald 24.9% kept  |  bond c(d): 0->2:+0.018
+  seed 100 gen  1  depth    9  div 0.963  C0 0.2376  xi -0.010  qpu 0.00s  herald 24.7% kept  |  bond c(d): 0->2:-0.021
+  seed 100 gen  2  depth    9  div 0.919  C0 0.2230  xi +0.007  qpu 0.00s  herald 25.0% kept  |  bond c(d): 0->2:+0.011
+  seed 100 gen  3  depth    9  div 0.905  C0 0.2182  xi +0.024  qpu 0.00s  herald 25.5% kept  |  bond c(d): 0->2:+0.020
+  seed 100 gen  4  depth    9  div 0.889  C0 0.2141  xi -0.015  qpu 0.00s  herald 25.5% kept  |  bond c(d): 0->2:+0.024
+  seed 100 gen  5  depth    9  div 0.777  C0 0.1820  xi -0.004  qpu 0.00s  herald 25.1% kept  |  bond c(d): 0->2:-0.007
+  seed 100 gen  6  depth    9  div 0.715  C0 0.1645  xi +0.009  qpu 0.00s  herald 24.9% kept  |  bond c(d): 0->2:-0.009
+  seed 100 gen  7  depth    9  div 0.713  C0 0.1642  xi +0.002  qpu 0.00s  herald 25.2% kept  |  bond c(d): 0->2:-0.023
+  seed 100 gen  8  depth    9  div 0.762  C0 0.1770  xi -0.010  qpu 0.00s  herald 24.8% kept  |  bond c(d): 0->2:+0.019
+  seed 100 gen  9  depth    9  div 0.748  C0 0.1721  xi +0.003  qpu 0.00s  herald 25.4% kept  |  bond c(d): 0->2:-0.021
+  seed 100 gen 10  depth    9  div 0.723  C0 0.1649  xi +0.007  qpu 0.00s  herald 25.1% kept  |  bond c(d): 0->2:-0.018
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_null_d2_sim_seed100_20260817-075913_run.json
+
+--- DONE ---
+Long-range   : teleport  bonds [(0, 2)]  (qubit dist 12)
+Repeats      : 1  (seeds 100..100)
+logical depth: mean 9  (teleport bond is ~constant depth)
+bond c(d)    : mean -0.001 over gens/bonds (near 0 => no long-range signal above noise)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_null_d2_sim_20260817-075913_summary.json
+Compare against research_qtree_swaplr.py (same bonds, SWAP ladder) at matched --seed/--bond-dist, and against the --sim null.
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife/code$ python research_qtree_swaplr.py --backend ibm_marrakesh --generations 11 --shots 16384 --seed 100 --repeats 1 --layers 1 --bond-dist 2 --anchors 0 --name swap_d2
+Backend : ibm_marrakesh  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Entangler: brickwall   bonds (slot i->j): [(0, 2)]   qubit dist: 12   ~SWAPs/gen: 24 (the depth cost teleport avoids)
+Auto qubit chain (live calib): {'dead_avoided': [82, 94, 113, 130], 'twoq_err_mean': 0.00416, 'twoq_err_max': 0.03203, 'readout_max': 0.08179, 'sx_max': 0.006008}
+
+=== repeat 1/1  (seed 100) ===
+  job 1: da1a6ne3kjvs7386fvp0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  0  depth   30  div 0.938  C0 0.2294  xi +0.065  qpu 7.00s  |  bond c(d): 0->2:-0.043
+  job 1: da1a6qm3kjvs7386fvu0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  1  depth   31  div 0.941  C0 0.2303  xi +0.038  qpu 7.00s  |  bond c(d): 0->2:-0.026
+  job 1: da1a6uaein7c73bd5ir0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  2  depth   31  div 0.854  C0 0.2029  xi +0.043  qpu 7.00s  |  bond c(d): 0->2:-0.001
+  job 1: da1a71qein7c73bd5j0g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  3  depth   31  div 0.917  C0 0.2224  xi +0.051  qpu 7.00s  |  bond c(d): 0->2:-0.022
+  job 1: da1a75m3kjvs7386g0bg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  4  depth   31  div 0.948  C0 0.2326  xi +0.072  qpu 7.00s  |  bond c(d): 0->2:-0.009
+  job 1: da1a79mg52gs73clcs10 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  5  depth   31  div 0.837  C0 0.1985  xi +0.077  qpu 7.00s  |  bond c(d): 0->2:+0.015
+  job 1: da1a7fcdedkc73eqpjfg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  6  depth   31  div 0.819  C0 0.1932  xi +0.087  qpu 7.00s  |  bond c(d): 0->2:+0.015
+  job 1: da1a7img52gs73clcsag (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  7  depth   31  div 0.933  C0 0.2278  xi +0.013  qpu 7.00s  |  bond c(d): 0->2:+0.019
+  job 1: da1a7nug52gs73clcsgg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  8  depth   31  div 0.954  C0 0.2345  xi -0.035  qpu 7.00s  |  bond c(d): 0->2:-0.002
+  job 1: da1a7r63kjvs7386g150 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  9  depth   31  div 0.891  C0 0.2143  xi -0.019  qpu 7.00s  |  bond c(d): 0->2:+0.022
+  job 1: da1a7uaein7c73bd5jvg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen 10  depth   31  div 0.939  C0 0.2298  xi -0.030  qpu 7.00s  |  bond c(d): 0->2:+0.008
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/swap_d2_ibm_marrakesh_seed100_20260817-080244_run.json
+
+--- DONE ---
+Long-range   : SWAP ladder  bonds [(0, 2)]  (qubit dist 12)
+Repeats      : 1  (seeds 100..100)
+logical depth: mean 31  (grows with bond distance)
+bond c(d)    : mean -0.002 over gens/bonds
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/swap_d2_ibm_marrakesh_20260817-080244_summary.json
+Diff against research_qtree_teleport.py at matched --seed/--bond-dist: teleport should hold c(d) above noise at far lower depth.
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife/code$ python research_qtree_teleport.py --generations 11 --shots 16384 --seed 100 --repeats 1 --layers 1 --bond-dist 2 --anchors 0 --backend ibm_marrakesh --name tel_ff_d2
+Backend : ibm_marrakesh  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Entangler: brickwall   bonds (slot i->j): [(0, 2)]   qubit dist: 12   ancillas: 2
+Auto qubit chain (live calib): {'dead_avoided': [82, 94, 113, 130], 'twoq_err_mean': 0.00416, 'twoq_err_max': 0.03203, 'readout_max': 0.08179, 'sx_max': 0.006008}
+Note: teleport adds ancillas beyond the chain; the transpiler routes them (initial_layout left unpinned).
+
+=== repeat 1/1  (seed 100) ===
+  job 1: da1a9meg52gs73clcuj0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  0  depth   13  div 0.943  C0 0.2308  xi +0.048  qpu 7.00s  |  bond c(d): 0->2:-0.000
+  job 1: da1a9tmg52gs73clcurg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  1  depth   14  div 0.945  C0 0.2317  xi +0.017  qpu 7.00s  |  bond c(d): 0->2:-0.087
+  job 1: da1aa66g52gs73clcv50 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  2  depth   14  div 0.867  C0 0.2072  xi +0.003  qpu 7.00s  |  bond c(d): 0->2:-0.060
+  job 1: da1aae2ein7c73bd5mm0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  3  depth   14  div 0.925  C0 0.2251  xi +0.029  qpu 7.00s  |  bond c(d): 0->2:-0.084
+  job 1: da1aalmg52gs73clcvng (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  4  depth   14  div 0.945  C0 0.2318  xi +0.050  qpu 7.00s  |  bond c(d): 0->2:-0.100
+  job 1: da1aarqein7c73bd5n5g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  5  depth   14  div 0.832  C0 0.1969  xi +0.089  qpu 7.00s  |  bond c(d): 0->2:-0.026
+  job 1: da1ab2kdedkc73eqpn80 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  6  depth   14  div 0.814  C0 0.1916  xi +0.088  qpu 7.00s  |  bond c(d): 0->2:+0.008
+  job 1: da1ab94dedkc73eqpnfg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  7  depth   14  div 0.938  C0 0.2294  xi -0.014  qpu 7.00s  |  bond c(d): 0->2:-0.076
+  job 1: da1abfcdedkc73eqpnmg (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  8  depth   14  div 0.960  C0 0.2364  xi -0.039  qpu 7.00s  |  bond c(d): 0->2:-0.197
+  job 1: da1abm6g52gs73cld0s0 (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen  9  depth   14  div 0.892  C0 0.2148  xi -0.027  qpu 7.00s  |  bond c(d): 0->2:-0.068
+  job 1: da1abssdedkc73eqpo4g (16,384 shots) ... done (qpu 7.00s)
+  seed 100 gen 10  depth   14  div 0.942  C0 0.2307  xi -0.031  qpu 7.00s  |  bond c(d): 0->2:-0.134
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_ff_d2_ibm_marrakesh_seed100_20260817-081110_run.json
+
+--- DONE ---
+Long-range   : teleport  bonds [(0, 2)]  (qubit dist 12)
+Repeats      : 1  (seeds 100..100)
+logical depth: mean 14  (teleport bond is ~constant depth)
+bond c(d)    : mean -0.075 over gens/bonds (near 0 => no long-range signal above noise)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_ff_d2_ibm_marrakesh_20260817-081110_summary.json
+Compare against research_qtree_swaplr.py (same bonds, SWAP ladder) at matched --seed/--bond-dist, and against the --sim null.
+(base) peter@home:~/PycharmProjects/Quantum-research/QuantumLife/code$ python research_qtree_teleport.py --generations 12 --shots 4096 --seed 100 --repeats 1 --layers 1 --bond-dist 2 --anchors 0  --herald --backend ibm_marrakesh --name tel_herald_hw
+Backend : ibm_marrakesh  (156 qubits)
+WARNING: reset_error missing for one or more qubits — recorded as null (§11 Q1).
+Entangler: brickwall   bonds (slot i->j): [(0, 2)]   qubit dist: 12   ancillas: 2
+Herald   : ON (no feed-forward, post-select tel==00). Expected kept ~25.00% -> ~1024 of 4096 shots/gen.
+Auto qubit chain (live calib): {'dead_avoided': [82, 94, 113, 130], 'twoq_err_mean': 0.00416, 'twoq_err_max': 0.03203, 'readout_max': 0.08179, 'sx_max': 0.006008}
+Note: teleport adds ancillas beyond the chain; the transpiler routes them (initial_layout left unpinned).
+
+=== repeat 1/1  (seed 100) ===
+  job 1: da1aj9mg52gs73cld90g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  0  depth    8  div 0.939  C0 0.2296  xi +0.080  qpu 3.00s  herald 24.9% kept  |  bond c(d): 0->2:-0.068
+  job 1: da1ak3u3kjvs7386gdn0 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  1  depth    9  div 0.944  C0 0.2313  xi +0.024  qpu 3.00s  herald 24.4% kept  |  bond c(d): 0->2:-0.247
+  job 1: da1akbeg52gs73clda4g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  2  depth    9  div 0.865  C0 0.2063  xi +0.027  qpu 3.00s  herald 25.9% kept  |  bond c(d): 0->2:-0.198
+  job 1: da1akgm3kjvs7386ge6g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  3  depth    9  div 0.917  C0 0.2222  xi +0.058  qpu 3.00s  herald 27.0% kept  |  bond c(d): 0->2:-0.173
+  job 1: da1am56g52gs73cldc4g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  4  depth    9  div 0.950  C0 0.2333  xi +0.059  qpu 3.00s  herald 25.9% kept  |  bond c(d): 0->2:-0.129
+  job 1: da1aooeg52gs73cldf80 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  5  depth    9  div 0.833  C0 0.1968  xi +0.093  qpu 3.00s  herald 25.7% kept  |  bond c(d): 0->2:-0.147
+  job 1: da1aq7sdedkc73eqq7og (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  6  depth    9  div 0.815  C0 0.1918  xi +0.095  qpu 3.00s  herald 26.2% kept  |  bond c(d): 0->2:-0.125
+  job 1: da1aqf2ein7c73bd689g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  7  depth    9  div 0.934  C0 0.2281  xi -0.024  qpu 3.00s  herald 26.4% kept  |  bond c(d): 0->2:-0.190
+  job 1: da1aqn6g52gs73cldhjg (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  8  depth    9  div 0.952  C0 0.2337  xi -0.075  qpu 3.00s  herald 26.9% kept  |  bond c(d): 0->2:-0.137
+  job 1: da1aqu2ein7c73bd6940 (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen  9  depth    9  div 0.897  C0 0.2163  xi -0.008  qpu 3.00s  herald 26.6% kept  |  bond c(d): 0->2:-0.016
+  job 1: da1ar36g52gs73cldi8g (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen 10  depth    9  div 0.939  C0 0.2297  xi -0.068  qpu 3.00s  herald 26.2% kept  |  bond c(d): 0->2:-0.137
+  job 1: da1ar96g52gs73cldiig (4,096 shots) ... done (qpu 3.00s)
+  seed 100 gen 11  depth    9  div 0.959  C0 0.2363  xi +0.017  qpu 3.00s  herald 28.3% kept  |  bond c(d): 0->2:-0.106
+  -> /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_herald_hw_ibm_marrakesh_seed100_20260817-084355_run.json
+
+--- DONE ---
+Long-range   : teleport  bonds [(0, 2)]  (qubit dist 12)
+Repeats      : 1  (seeds 100..100)
+logical depth: mean 9  (teleport bond is ~constant depth)
+bond c(d)    : mean -0.139 over gens/bonds (near 0 => no long-range signal above noise)
+Summary file : /home/peter/PycharmProjects/Quantum-research/QuantumLife/research_runs/tel_herald_hw_ibm_marrakesh_20260817-084355_summary.json
+Compare against research_qtree_swaplr.py (same bonds, SWAP ladder) at matched --seed/--bond-dist, and against the --sim null.
