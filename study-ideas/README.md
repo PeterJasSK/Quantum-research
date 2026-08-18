@@ -2,6 +2,10 @@
 
 One folder for all candidate studies. Finished ideas move to `complete/` (renamed `DONE-*`).
 
+## 🔨 Building next
+- `qdep-1-coherence-depth-genealogy.md` — coherence depth `g*` of an inherited-entanglement genealogy (quantum artificial life, reproduce 2018 → g* vs classical surrogate → break the SWAP ceiling)
+- `qh-13-np-problems-teleport-routing.md` — first teleport-routed QAOA on real hardware; dense-QUBO NP-hard problems as the teleport-routing target zone
+
 ## Active — networking / RNG
 - `net-1-unpredictability-as-network-primitive.md` — umbrella: 3 attacker games + boot-entropy fix
 - `net-2-boot-entropy-fix.md` — Q-EaaS cures weak keys on headless devices (score 84, highest)
@@ -29,6 +33,10 @@ The teleport iteration showed a constant-depth teleported bond keeps a crosstalk
 - `qh-11-entanglement-reach-device-metric.md` — cheap per-device metric `R`: how far a teleported bond stays alive, tracked across calibration drift. **72/100 · want-to-do 4/5 · effort low-medium · QC yes (light)**
 - `qh-12-swap-depth-sign-inversion.md` — sign anomaly RESOLVED (teleport faithful, SWAP wrong); reframed to: at what routing depth does SWAP *invert* a correlation's sign, not just shrink it? **74/100 · want-to-do 4/5 · effort low-medium · QC sim-first, small confirm**
 - `qh-13-np-problems-teleport-routing.md` — maps every NP-hard problem by QUBO density × heavy-hex hardware status; dense-and-unclaimed = teleport-routing target zone. Flagship: fully-connected Number Partitioning (SK) QAOA — first teleport-routed QAOA on real hardware (prior art is sim-only). **78/100 · want-to-do 4/5 · effort medium-high · QC sim-first, hardware confirm**
+
+### QDEP — quantum artificial life / inherited entanglement (new 2026-08-18 — carved from `QDEP_Living_Genealogies.md`)
+Sharp single-claim spines cut from the Living Genealogies spec. Temporal (cross-generational) axis, distinct from QuantumLife's spatial `c(d)`.
+- `qdep-1-coherence-depth-genealogy.md` — how many generations of coherent inheritance beat a matched classical measure-and-resend surrogate before the gap closes (the number `g*`)? **75/100 · want-to-do 4/5 · effort medium-high · QC yes (sim-first)**
 
 ## Active — visualization-first (new 2026-07-29)
 Heavy graphics potential, in the spirit of the 3-body + load-balancing visuals. Each carries a
