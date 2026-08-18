@@ -210,51 +210,6 @@
       living history replayed as this film.</p>
     </div>
   </details>
-
-  <details class="acc">
-    <summary>Simplified model — two 3-bit genomes talking</summary>
-    <div class="ex body">
-      <p>The full tree is 102 qubits — hard to picture. Here is the same idea shrunk to the
-      smallest thing that still shows every mechanism: <b>two genomes of 3 qubits each</b>, wired the
-      same two ways the full tree wires its genes — a local chain inside each genome, and one
-      <span class="q">teleported</span> long-range bond between them
-      (<code>demo_qtree.py</code>, runnable on a real IBM chip).</p>
-
-      <figure style="margin:1em 0;text-align:center">
-        <img src="run-demo.png" alt="Two 3-qubit genomes A and B, each a neighbour CX chain, bonded by a teleported CNOT between A0 and B0 via a Bell pair, two mid-circuit measurements and classical feed-forward, leaving the two genomes correlated."
-             style="max-width:100%;height:auto;border-radius:8px" loading="lazy">
-        <figcaption class="sub" style="margin-top:.5em">
-        <code>A0 A1 A2</code> = genome A qubits, <code>B0 B1 B2</code> = genome B qubits
-        <code>a</code>, <code>b</code> = the two teleport couriers (Bell-pair halves, measured then discarded)
-        <code>cA</code>/<code>cB</code> = classical registers storing final genome readouts (the printed 3-bit strings)
-        <code>bell</code> = 2-bit register holding the mid-circuit teleport measures, drives the X/Z feed-forward
-      </figcaption>
-      </figure>
-
-      <ul>
-        <li><b>A genome = 3 qubits.</b> Each qubit gets an <code>Ry(angle)</code> — its inborn
-        lean toward 0 or 1. Measure = flip the coin. Read 3 coins = one 3-bit branch decision.</li>
-        <li><b>Local bond (inside a genome).</b> A neighbour <code>CX</code> chain
-        (<code>A0→A1→A2</code>, and <code>B0→B1→B2</code>) links every gene to the whole genome — so
-        the bits move together, like real DNA where nearby genes are co-inherited, not independent
-        noise.</li>
-        <li><b>Long-range bond = teleported CNOT.</b> On a real chip the genomes sit far apart with no
-        wire. A <b>teleported CNOT</b> applies <code>CX(A0, B0)</code> across the gap, exactly the
-        block in the picture: <code>H(a); CX(a,b)</code> makes a <b>Bell pair</b> of couriers;
-        <code>CX(A0,a)</code> folds A0's parity into courier <code>a</code>, which is <b>measured</b>
-        into <code>bell</code>; <code>if bell: X(b)</code> then <code>CX(b, B0)</code> lets courier
-        <code>b</code> act as the control on B0; finally <code>H(b)</code>, measure, and
-        <code>if bell: Z(A0)</code> close it out. Nothing is moved and nothing is destroyed — <b>both
-        A0 and B0 stay live</b> and come out entangled.</li>
-        <li><b>The communication.</b> The teleported CNOT is the two genomes talking: it bonds A0 and
-        B0 without ever making them neighbours. In the output, <b>genome A and genome B come out
-        correlated</b> — that shared structure is a long-range bond crosstalk cannot fake.</li>
-      </ul>
-      <p>Scale this from 2 genomes to 17 slots and one teleported bond to many, and you have the full
-      tree above.</p>
-    </div>
-  </details>
-
   <details class="acc">
     <summary>Road of this project</summary>
     <div class="ex body">
@@ -385,7 +340,49 @@ kick_next  = 0.30*(2p-1)      <span class="cmt"># next-gen self-mutation</span><
     viewer replays as the film.</p>
     </div>
   </details>
+  <details class="acc">
+    <summary>Simplified model — two 3-bit genomes talking</summary>
+    <div class="ex body">
+      <p>The full tree is 102 qubits — hard to picture. Here is the same idea shrunk to the
+      smallest thing that still shows every mechanism: <b>two genomes of 3 qubits each</b>, wired the
+      same two ways the full tree wires its genes — a local chain inside each genome, and one
+      <span class="q">teleported</span> long-range bond between them
+      (<code>demo_qtree.py</code>, runnable on a real IBM chip).</p>
 
+      <figure style="margin:1em 0;text-align:center">
+        <img src="run-demo.png" alt="Two 3-qubit genomes A and B, each a neighbour CX chain, bonded by a teleported CNOT between A0 and B0 via a Bell pair, two mid-circuit measurements and classical feed-forward, leaving the two genomes correlated."
+             style="max-width:100%;height:auto;border-radius:8px" loading="lazy">
+        <figcaption class="sub" style="margin-top:.5em">
+        <code>A0 A1 A2</code> = genome A qubits, <code>B0 B1 B2</code> = genome B qubits
+        <code>a</code>, <code>b</code> = the two teleport couriers (Bell-pair halves, measured then discarded)
+        <code>cA</code>/<code>cB</code> = classical registers storing final genome readouts (the printed 3-bit strings)
+        <code>bell</code> = 2-bit register holding the mid-circuit teleport measures, drives the X/Z feed-forward
+      </figcaption>
+      </figure>
+
+      <ul>
+        <li><b>A genome = 3 qubits.</b> Each qubit gets an <code>Ry(angle)</code> — its inborn
+        lean toward 0 or 1. Measure = flip the coin. Read 3 coins = one 3-bit branch decision.</li>
+        <li><b>Local bond (inside a genome).</b> A neighbour <code>CX</code> chain
+        (<code>A0→A1→A2</code>, and <code>B0→B1→B2</code>) links every gene to the whole genome — so
+        the bits move together, like real DNA where nearby genes are co-inherited, not independent
+        noise.</li>
+        <li><b>Long-range bond = teleported CNOT.</b> On a real chip the genomes sit far apart with no
+        wire. A <b>teleported CNOT</b> applies <code>CX(A0, B0)</code> across the gap, exactly the
+        block in the picture: <code>H(a); CX(a,b)</code> makes a <b>Bell pair</b> of couriers;
+        <code>CX(A0,a)</code> folds A0's parity into courier <code>a</code>, which is <b>measured</b>
+        into <code>bell</code>; <code>if bell: X(b)</code> then <code>CX(b, B0)</code> lets courier
+        <code>b</code> act as the control on B0; finally <code>H(b)</code>, measure, and
+        <code>if bell: Z(A0)</code> close it out. Nothing is moved and nothing is destroyed — <b>both
+        A0 and B0 stay live</b> and come out entangled.</li>
+        <li><b>The communication.</b> The teleported CNOT is the two genomes talking: it bonds A0 and
+        B0 without ever making them neighbours. In the output, <b>genome A and genome B come out
+        correlated</b> — that shared structure is a long-range bond crosstalk cannot fake.</li>
+      </ul>
+      <p>Scale this from 2 genomes to 17 slots and one teleported bond to many, and you have the full
+      tree above.</p>
+    </div>
+  </details>
   <details class="acc">
     <summary>Why it's not randomly growing a tree</summary>
     <div class="ex body">
