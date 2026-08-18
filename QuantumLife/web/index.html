@@ -92,6 +92,31 @@
           font-size:12.5px;color:#eafff2;white-space:normal}
   .ex h3{margin:14px 0 8px;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent2)}
 
+  /* ---- hero headline ---- */
+  .hero{width:min(92vw,860px);margin:2px 0 4px;
+        background:linear-gradient(180deg,#12211a,#0a140e);
+        border:2px solid #2c4636;border-radius:4px;padding:20px 22px;
+        box-shadow:inset 0 0 0 1px #0c150f,0 3px 0 #060b08}
+  .hero p{margin:0 0 10px;font-size:16px;line-height:1.6;color:#eafff2;letter-spacing:.3px}
+  .hero p:last-child{margin-bottom:0}
+  .hero .q{color:var(--accent);text-shadow:0 0 10px rgba(109,255,176,.35)}
+
+  /* ---- accordion (collapsible explainer) ---- */
+  .acc{background:linear-gradient(180deg,#101c15,#0a140e);
+       border:2px solid #21332a;border-radius:4px;
+       box-shadow:inset 0 0 0 1px #0c150f,0 3px 0 #060b08;overflow:hidden}
+  .acc>summary{list-style:none;cursor:pointer;user-select:none;
+       padding:15px 18px;display:flex;align-items:center;gap:11px;
+       font-size:14px;letter-spacing:2px;text-transform:uppercase;
+       color:var(--accent);text-shadow:0 0 8px rgba(109,255,176,.4)}
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc>summary::before{content:"+";font-size:17px;font-weight:700;line-height:1;
+       color:var(--accent2);width:15px;text-align:center;flex:none}
+  .acc[open]>summary::before{content:"\2013"}
+  .acc>summary:hover{background:#0f1d15}
+  .acc[open]>summary{border-bottom:1px solid #21332a}
+  .acc .body{background:none;border:0;box-shadow:none;border-radius:0;padding:14px 18px 16px}
+
   .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:860px}
   .dot{width:9px;height:9px;background:#1e2b22;border:1px solid #2f4436;
        cursor:pointer;transition:.15s;image-rendering:pixelated}
@@ -125,6 +150,10 @@
     .ex h2{font-size:12px;letter-spacing:1px}
     .ex p,.ex li{font-size:12.5px;line-height:1.6}
     .ex code{font-size:11px}
+    .hero{width:100%;padding:15px 15px}
+    .hero p{font-size:13.5px;line-height:1.55}
+    .acc>summary{padding:12px 14px;font-size:12px;letter-spacing:1px;gap:9px}
+    .acc .body{padding:12px 14px 13px}
     .foot{font-size:9px;text-align:center;line-height:1.5}
   }
 
@@ -150,85 +179,81 @@
 <div class="foot">auto-cycling <b id="cnt">0</b> runs · <b id="pick">load your own run.json</b>
   <input type="file" id="file" accept=".json,application/json"></div>
 
+<div class="hero">
+  <p>
+    A tree grown from <span class="q">quantum teleportation</span>, not code its genes teleported into correlation across a real quantum chip.
+    For the moment those qubits run, it is <br><span class="q">as close to alive as a machine gets.</span>(in that time and space)
+  </p>
+</div>
+
 <div class="explain">
-  <div class="ex">
-    <h2>What's actually happening</h2>
-    <p> <span class="q"> The tree you see is grown from a genuinely correlated quantum genome a
-    designed, crosstalk-immune long-range entanglement, not a decorated random one. </span></p>
-    <p>A random genome is independent coin flips one gene tells you nothing about the next. This one
-    is different: its genes are <b>linked across positions</b>, engineered clean over long range, just
-    like real DNA where nearby genes are co-inherited and distant ones interact, carrying structure
-    that gets passed on. That measured linkage is what makes it a genome and not just a random <i>seed</i>.</p>
-    <p>And for the instant those shots run, the 102 qubits are one entangled, non-classical whole that
-    exists only there, that moment, on that chip: impossible to copy, impossible to hold in any
-    classical memory. <span class="q"> As close to alive in that time and space as a machine gets.</span></p>
 
-    <p>An <b>environment</b> (wind, light, a season cycle) is fixed at the start. The tree begins
-    completely undecided — every gene is a fair coin flip. Each generation runs <b>one circuit of
-    thousands of shots on a real IBM Heron&nbsp;r2 chip</b>. Two things come out of those shots: the
-    <b>per-qubit frequency</b> (how often each gene came up 1 — this is what the tree <i>learns</i>
-    from) and the <b>single most frequent result</b> (the branch plan you actually see drawn).</p>
+  <details class="acc" open>
+    <summary>What's happening</summary>
+    <div class="ex body">
+      <p>Every branch you see is drawn from a <span class="q">quantum genome</span> 102 qubits on a
+      real IBM Heron&nbsp;r2 chip whose genes are <b>linked across positions</b>, engineered clean over
+      long range, like real DNA where nearby genes are co-inherited and distant ones interact. Those
+      long-range links aren't wired the ordinary way they're placed by <span class="q">quantum
+      teleportation</span>: the circuit teleports the entangling gate across the chip (a Bell pair,
+      mid-circuit measurement, classical feed-forward) so two genes <b>12 qubits and more apart, are correlated</b>.
+        For the instant those shots run, those qubits are
+      one entangled, non-classical whole that exists only there, that moment, on that chip
+      impossible to copy, impossible to hold in any classical memory.</p>
 
-    <p>Each new generation's belief is the old one <b>nudged toward what was just measured</b>, plus
-    a small random wiggle and that step's environment — then run on the chip again. Because belief
-    keeps locking onto its own habit, <b>entropy falls over time</b>: the tree crystallizes, changes
-    less, and mostly grows as it's already become. When the generations run out, the full history is
-    replayed as this film. That loop — variation, heredity, environmental pressure — is why it's
-    <span class="q">evolution</span>, not a fresh random image every frame.</p>
+      <p>An <b>environment</b> (wind, light, a season cycle) is fixed at the start; the tree begins
+      completely undecided every gene a fair coin. Each generation runs <b>one circuit of thousands
+      of shots on the chip</b>, then nudges its belief toward what it just measured. Because belief
+      keeps locking onto its own habit, <b>entropy falls over time</b> and the tree crystallizes
+      changing less, mostly growing as it's already become. This is the loop that makes it grow:
+      <b>variation + heredity + environmental pressure = <span class="q">evolution</span></b>, one
+      living history replayed as this film.</p>
+    </div>
+  </details>
 
-    <p><b>Is it really impossible to simulate?</b> Yes, in two distinct ways.</p>
-    <p><b>Scale:</b> 102 entangled qubits would need <code>2¹⁰²</code> numbers held in memory at
-    once. No classical machine can do that.</p>
-    <p><b>The quantum signature:</b> the <i>picture</i> alone could be faked classically — so a
-    companion research study asks a sharper, falsifiable question: does the entangling layer leave a
-    <b>spatial correlation between neighboring genes</b> that a classical, no-entangler surrogate
-    can't produce? It measures the connected two-point correlation <code>C(d)</code> along the qubit
-    chain. The classical <code>--sim</code> surrogate is flat zero; the hardware isn't — it carries a
-    real correlation between bit <i>positions</i> (not just a shift in per-bit bias), and a
-    no-entangler hardware control can't reproduce it either. The signal sits ~10σ past both
-    baselines and is causally switched on by the entangling gates. So the connection does measurable
-    work no PRNG can fake — that much is <b>proven</b>.</p>
+  <details class="acc">
+    <summary>Road of this project</summary>
+    <div class="ex body">
+      <p>The <i>picture</i> alone could be faked classically — so a companion study asks a sharper,
+      falsifiable question: does the entangling layer leave a real correlation between genes that no
+      classical surrogate can produce? Getting to a clean "yes" took three iterations, each closing a
+      hole in the last.</p>
+      <ol>
+        <li><b>Serial entangler — the first signature.</b> Stacked its bonds hundreds of gates deep
+        and showed a strong alternating fingerprint (<code>c(1)≈−0.08</code>). <b>Issue:</b> depth
+        ran far past the chip's coherence, so the signal was tangled up with ordinary decoherence and
+        crosstalk — no way to tell real physics from noise.</li>
+        <li><b>Brick-wall entangler (2026-07-17, ibm_kingston).</b> Re-ran the same physics only ~13
+        gates deep — shallow enough that a genuinely entangled state is still alive at measurement.
+        The serial <code>c(1)</code> fingerprint collapsed toward zero (so that part was mostly depth
+        noise), but a distinct short-range correlation (<code>c(2)≈+0.05–0.06</code>) showed up
+        <i>only</i> with the entangler on, absent from the layers-0 control. <b>Issue:</b> these bonds
+        were between <b>neighbouring</b> genes — and ordinary crosstalk <i>also</i> couples
+        neighbours, so crosstalk couldn't yet be ruled out. Calling it full <i>entanglement</i>
+        stayed an open claim.</li>
+        <li><b>Teleported long-range CNOT (2026-08-17, ibm_marrakesh).</b> Closes the crosstalk gap:
+        wires a bond between two genes <b>12 qubits apart, never physical neighbours</b> — a
+        correlation local crosstalk <i>cannot</i> fabricate. It <span class="q">teleports the
+        gate</span> (Bell pair across the gap, two mid-circuit measurements, classical feed-forward),
+        costing a constant <b>~9 gates regardless of distance</b> vs <b>depth 31</b> for the
+        equivalent <code>SWAP</code> ladder. Hardware shows a stable, single-sign correlation at
+        12-qubit separation (<code>c(d)≈−0.065</code>, reproducible across seeds, not a
+        post-selection artifact). An exact noiseless simulation confirms the teleported gate is a
+        genuine <code>CNOT</code> and that the true sign is <b>negative</b> — which shows on hardware,
+        while the depth-decohered <code>SWAP</code> ladder washes it out and reads the <i>wrong</i>
+        sign.</li>
+      </ol>
+      <p><b>Where it stands:</b> the entangling layer does measurable, causal, hardware-only work no
+      PRNG can fake — <b>proven</b> at ~10σ past both baselines — and teleportation is simply the
+      better long-range gate here: correct-signed, reproducible, and constant-depth, where
+      <code>SWAP</code> routing is washed out by its own depth.</p>
+    </div>
+  </details>
 
-    <p><b>Is that entanglement? Here is where the question stood when the study began.</b> The original
-    "serial" entangler stacks its bonds hundreds of gates deep, far past the chip's coherence, so its
-    strong signature (an alternating <code>c(1)≈−0.08</code>) is tangled up with ordinary decoherence
-    and crosstalk. An earlier study run (2026-07-17, <b>ibm_kingston</b>) re-ran the same physics
-    with a <b>brick-wall</b> entangler only ~13 gates deep — shallow enough that a genuinely entangled
-    state should still be alive at measurement. Result: the serial <code>c(1)</code> fingerprint
-    <i>did not</i> carry over — it collapses toward zero, so that part was mostly depth noise — but a
-    distinct short-range correlation (<code>c(2)≈+0.05–0.06</code>) shows up <i>only</i> with the
-    entangler switched on and is absent from the layers-0 control. So the honest headline at this
-    stage: the entangling layer imprints a <b>measurable, causal, hardware-only correlation</b> the
-    classical model can't reproduce — but one loophole stayed open. These bonds were between
-    <b>neighbouring</b> genes, and ordinary crosstalk <i>also</i> couples neighbours, so crosstalk
-    could not yet be ruled out and calling it full <i>entanglement</i> stayed an open claim.
-    <b>That is exactly the gap the next iteration closes.</b></p>
-
-    <p><b>The newest iteration (2026-08-17, ibm_marrakesh) closes exactly that crosstalk gap
-    using quantum teleportation.</b> Instead of only bonding neighbouring genes, it wires a
-    <b>long-range CNOT</b> between two genes that sit <b>12 qubits apart on the chip and are
-    never physical neighbours</b> — a correlation local crosstalk <i>cannot</i> fabricate,
-    because crosstalk only couples adjacent qubits. It does this by <span class="q">teleporting
-    the gate</span>: the circuit lays down one <b>Bell pair</b> spanning the gap, entangles the
-    source gene into it, then takes <b>two mid-circuit measurements</b> and applies a
-    <b>classical feed-forward</b> correction on the far side — the textbook teleported-CNOT.
-    The win is <b>depth</b>: this bond costs a constant <b>~9 gates regardless of distance</b>,
-    while the equivalent <code>SWAP</code> ladder that physically drags one qubit across the
-    chip costs <b>depth 31</b> and keeps growing as the genes get farther apart. On real
-    hardware the teleported bond shows a <b>stable, single-sign correlation at 12-qubit
-    separation</b> (<code>c(d)≈−0.065</code>, reproducible across seeds, and confirmed
-    <i>not</i> to be a measurement/post-selection artifact) that differs
-    <b>significantly</b> from the deep <code>SWAP</code> baseline. An <b>exact noiseless
-    simulation</b> then settles which arm is right: it confirms the teleported gate is a
-    genuine <code>CNOT</code> and that the true bond correlation is <b>negative</b> — the
-    sign teleport shows on hardware. The <code>SWAP</code> ladder, decohered by its depth,
-    washes that correlation out and reads the <i>wrong</i> sign. So <b>teleportation is
-    simply the better long-range gate here</b>: correct-signed, reproducible, and
-    constant-depth, where <code>SWAP</code> routing is washed out by its own depth.</p>
-  </div>
-
-  <div class="ex">
-    <h2>How it works</h2>
+  <details class="acc">
+    <summary>Technical specification of work</summary>
+    <div class="ex body">
+    <h2 style="display:none">How it works</h2>
     <p>Full pipeline from code. Step by step — genome build, measure, interpret.</p>
 
     <h3>Genome layout — what a "genome" is</h3>
@@ -314,11 +339,13 @@ kick_next  = 0.30*(2p-1)      <span class="cmt"># next-gen self-mutation</span><
     draw modal → reinforce belief → next gen. run.json stores every gen's
     <code>bits</code>/<code>p</code>/<code>correlation</code>/<code>bonds</code>/<code>env</code>;
     viewer replays as the film.</p>
-  </div>
+    </div>
+  </details>
 
-
-  <div class="ex">
-    <h2>Why it's different from randomly growing a tree</h2>
+  <details class="acc">
+    <summary>Why it's not randomly growing a tree</summary>
+    <div class="ex body">
+    <h2 style="display:none">Why it's different from randomly growing a tree</h2>
     <p>A classical <b>pseudo-random</b> generator is just a deterministic formula: same seed, same
     "random" stream, every time, forever. It only <i>looks</i> random. Here, the randomness is
     <span class="q">physical</span> — each qubit sits in genuine superposition, and its bit is
@@ -346,7 +373,8 @@ kick_next  = 0.30*(2p-1)      <span class="cmt"># next-gen self-mutation</span><
     building the full <code>2¹⁰²</code> state it can never fit in memory. That's why every run grows
     a different, naturally-clustered tree no ordinary machine could generate — and why
     <code>--sim</code> mode is only a rough approximation, not the real thing.</p>
-  </div>
+    </div>
+  </details>
 </div>
 
 
