@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "arm": "ideal",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 100,
+    "generations": 6,
+    "shots": 4096,
+    "mut_scale": 0.1,
+    "operators": {
+      "M_theta": "[[cos t, sin t], [sin t, -cos t]]",
+      "U_M": "Ry(phi=0.4510) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)=0.9"
+    },
+    "calibration": null
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "trait_sigmaz": 1.0,
+      "fidelity_vs_ideal": 0.9997878196897005,
+      "shots": 4096
+    },
+    {
+      "gen": 1,
+      "trait_sigmaz": 0.92822265625,
+      "fidelity_vs_ideal": 0.9963603830813978,
+      "shots": 4096
+    },
+    {
+      "gen": 2,
+      "trait_sigmaz": 0.89501953125,
+      "fidelity_vs_ideal": 0.9980613424224678,
+      "shots": 4096
+    },
+    {
+      "gen": 3,
+      "trait_sigmaz": 0.8525390625,
+      "fidelity_vs_ideal": 0.9951354350473177,
+      "shots": 4096
+    },
+    {
+      "gen": 4,
+      "trait_sigmaz": 0.8330078125,
+      "fidelity_vs_ideal": 0.9991579661917833,
+      "shots": 4096
+    },
+    {
+      "gen": 5,
+      "trait_sigmaz": 0.76416015625,
+      "fidelity_vs_ideal": 0.990516834306493,
+      "shots": 4096
+    }
+  ]
+}
