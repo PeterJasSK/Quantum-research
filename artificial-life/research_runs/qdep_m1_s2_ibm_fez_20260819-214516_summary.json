@@ -1,0 +1,285 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_fez",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 5,
+    "gmin": 8,
+    "gmax": 8,
+    "shots": 8192,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "run_files": [
+      "qdep_m1_s2_quantum_G8_ibm_fez_seed100_20260819-214419_run.json",
+      "qdep_m1_s2_classical_G8_ibm_fez_seed100_20260819-214420_run.json",
+      "qdep_m1_s2_ideal_G8_sim_seed100_20260819-214420_run.json",
+      "qdep_m1_s2_quantum_G8_ibm_fez_seed101_20260819-214443_run.json",
+      "qdep_m1_s2_classical_G8_ibm_fez_seed101_20260819-214443_run.json",
+      "qdep_m1_s2_ideal_G8_sim_seed101_20260819-214443_run.json",
+      "qdep_m1_s2_quantum_G8_ibm_fez_seed102_20260819-214455_run.json",
+      "qdep_m1_s2_classical_G8_ibm_fez_seed102_20260819-214455_run.json",
+      "qdep_m1_s2_ideal_G8_sim_seed102_20260819-214455_run.json",
+      "qdep_m1_s2_quantum_G8_ibm_fez_seed103_20260819-214504_run.json",
+      "qdep_m1_s2_classical_G8_ibm_fez_seed103_20260819-214505_run.json",
+      "qdep_m1_s2_ideal_G8_sim_seed103_20260819-214505_run.json",
+      "qdep_m1_s2_quantum_G8_ibm_fez_seed104_20260819-214515_run.json",
+      "qdep_m1_s2_classical_G8_ibm_fez_seed104_20260819-214516_run.json",
+      "qdep_m1_s2_ideal_G8_sim_seed104_20260819-214516_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 8,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum": 1.0,
+            "classical": 1.0,
+            "ideal": 1.0
+          },
+          "C_g_std": {
+            "quantum": 0.0,
+            "classical": 0.0,
+            "ideal": 0.0
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum": -0.04345,
+            "classical": 0.490271,
+            "ideal": -0.090387
+          },
+          "C_g_std": {
+            "quantum": 0.017182,
+            "classical": 0.023655,
+            "ideal": 0.016248
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum": -0.018048,
+            "classical": 0.235251,
+            "ideal": -0.034952
+          },
+          "C_g_std": {
+            "quantum": 0.017834,
+            "classical": 0.040256,
+            "ideal": 0.010814
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum": -0.008064,
+            "classical": 0.122636,
+            "ideal": -0.030099
+          },
+          "C_g_std": {
+            "quantum": 0.014061,
+            "classical": 0.023371,
+            "ideal": 0.01828
+          }
+        },
+        {
+          "gen": 4,
+          "C_g_mean": {
+            "quantum": -0.0093,
+            "classical": 0.06698,
+            "ideal": -0.024654
+          },
+          "C_g_std": {
+            "quantum": 0.013348,
+            "classical": 0.020424,
+            "ideal": 0.021421
+          }
+        },
+        {
+          "gen": 5,
+          "C_g_mean": {
+            "quantum": 0.0046,
+            "classical": 0.02885,
+            "ideal": -0.019398
+          },
+          "C_g_std": {
+            "quantum": 0.009072,
+            "classical": 0.019892,
+            "ideal": 0.021178
+          }
+        },
+        {
+          "gen": 6,
+          "C_g_mean": {
+            "quantum": -0.000199,
+            "classical": 0.017976,
+            "ideal": -0.007765
+          },
+          "C_g_std": {
+            "quantum": 0.011153,
+            "classical": 0.010933,
+            "ideal": 0.007624
+          }
+        },
+        {
+          "gen": 7,
+          "C_g_mean": {
+            "quantum": 0.013223,
+            "classical": 0.013155,
+            "ideal": -0.026789
+          },
+          "C_g_std": {
+            "quantum": 0.020079,
+            "classical": 0.01968,
+            "ideal": 0.024521
+          }
+        },
+        {
+          "gen": 8,
+          "C_g_mean": {
+            "quantum": -0.003867,
+            "classical": 0.009643,
+            "ideal": -0.023209
+          },
+          "C_g_std": {
+            "quantum": 0.016265,
+            "classical": 0.012546,
+            "ideal": 0.024019
+          }
+        }
+      ],
+      "gstar": {
+        "k2": 4,
+        "k3": 4
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 1.0,
+        "classical": 1.0,
+        "ideal": 1.0
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0,
+        "ideal": 0.0
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": -0.04345,
+        "classical": 0.490271,
+        "ideal": -0.090387
+      },
+      "C_g_std": {
+        "quantum": 0.017182,
+        "classical": 0.023655,
+        "ideal": 0.016248
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": -0.018048,
+        "classical": 0.235251,
+        "ideal": -0.034952
+      },
+      "C_g_std": {
+        "quantum": 0.017834,
+        "classical": 0.040256,
+        "ideal": 0.010814
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": -0.008064,
+        "classical": 0.122636,
+        "ideal": -0.030099
+      },
+      "C_g_std": {
+        "quantum": 0.014061,
+        "classical": 0.023371,
+        "ideal": 0.01828
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": -0.0093,
+        "classical": 0.06698,
+        "ideal": -0.024654
+      },
+      "C_g_std": {
+        "quantum": 0.013348,
+        "classical": 0.020424,
+        "ideal": 0.021421
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": 0.0046,
+        "classical": 0.02885,
+        "ideal": -0.019398
+      },
+      "C_g_std": {
+        "quantum": 0.009072,
+        "classical": 0.019892,
+        "ideal": 0.021178
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": -0.000199,
+        "classical": 0.017976,
+        "ideal": -0.007765
+      },
+      "C_g_std": {
+        "quantum": 0.011153,
+        "classical": 0.010933,
+        "ideal": 0.007624
+      }
+    },
+    {
+      "gen": 7,
+      "C_g_mean": {
+        "quantum": 0.013223,
+        "classical": 0.013155,
+        "ideal": -0.026789
+      },
+      "C_g_std": {
+        "quantum": 0.020079,
+        "classical": 0.01968,
+        "ideal": 0.024521
+      }
+    },
+    {
+      "gen": 8,
+      "C_g_mean": {
+        "quantum": -0.003867,
+        "classical": 0.009643,
+        "ideal": -0.023209
+      },
+      "C_g_std": {
+        "quantum": 0.016265,
+        "classical": 0.012546,
+        "ideal": 0.024019
+      }
+    }
+  ],
+  "gstar": {
+    "k2": 4,
+    "k3": 4
+  }
+}

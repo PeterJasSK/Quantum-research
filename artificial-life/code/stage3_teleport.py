@@ -933,6 +933,16 @@ def main() -> None:
     qrng_url = args.qrng_url or os.environ.get("QEAAS_API_URL") or QEAAS_URL_DEFAULT
     client = QRNGClient(qrng_url, api_key)
     print(f"Q-EaaS  : {qrng_url}  (fail-closed, no PRNG fallback)")
+    try:  # fast /health probe up front -- abort clearly instead of blocking on fetch
+        h = client.health()
+    except QRNGUnavailable as exc:
+        print(f"[S3 ABORT] Q-EaaS health check failed: {exc} -- no PRNG fallback (CD-7).")
+        raise SystemExit(1)
+    print(f"          health: {h.status} / entropy {h.quantum_entropy_level} / "
+          f"pool {h.pool_bytes_remaining} bytes")
+    if h.status != "ok":
+        print(f"[S3 ABORT] Q-EaaS status {h.status!r} (entropy {h.quantum_entropy_level!r}).")
+        raise SystemExit(1)
 
     # --- backend / qubit layout (sized for the largest routed G) -------------
     backend = None

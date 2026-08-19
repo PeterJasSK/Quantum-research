@@ -113,6 +113,19 @@ UNIT_TOL = 0.03                 # operator-equivalence L1 tolerance
 
 M_THETA_SPEC = "[[cos t, sin t], [sin t, -cos t]]"
 U_M_SPEC = f"Ry(phi={PHI:.4f}) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)={ETA}"
+TRAIT_BASIS_DEFAULT = math.pi / 4   # off-diagonal trait readout (SETUP-FIX, see note below)
+
+# --- SETUP-FIX (2026-08-19) -------------------------------------------------
+# Same fix as stage1_temporal.py, propagated here. The original S2 quantum arm
+# mid-circuit-measured a phenotype ancilla every generation (a proxy Z-measure
+# that collapsed the lineage into a classical Markov chain) and read the trait
+# diagonal -- so the coherent arm was physically identical to the surrogate and
+# g* pinned at 1. Fix: (a) DEFER all readout to circuit end (chain stays
+# unitary); (b) read the trait OFF-DIAGONAL (TRAIT_BASIS). The surrogate is the
+# same circuit with an honest per-generation measure-and-resend in the SAME
+# basis. g* aggregation is over the NORMALIZED c(g), not raw C(g). The old
+# --pheno-coupling "weak peek" is now moot (no mid-circuit peek at all) and is
+# retained only as a stamped no-op for provenance parity.
 
 
 # ---------------------------------------------------------------------------
@@ -267,30 +280,29 @@ def _mutation_schedule(client: QRNGClient, n_slots: int, mut_scale: float
 # copied from stage1_temporal.py; S2 adds the --pheno-coupling knob (Q1).
 # ---------------------------------------------------------------------------
 def build_lineage_quantum(theta_seq: list[float], n_slots: int,
-                          pheno_coupling: float = 1.0) -> QuantumCircuit:
-    """One dynamic circuit descending the whole lineage; read T_g per generation.
+                          trait_basis: float = TRAIT_BASIS_DEFAULT) -> QuantumCircuit:
+    """Coherent lineage, DEFERRED measurement, off-diagonal trait readout (SETUP-FIX).
 
-    Registers: genotype chain ``q[0..n_slots-1]`` + one fresh phenotype ancilla
-    ``p[g]`` per generation + classical ``c(n_slots)``. Per generation g:
-    ``apply_clone`` the parent (S0 U_M), mutate with ``m_gate(theta_g)``, ``phenotype_map``
-    (with the S2 ``pheno_coupling`` knob, Q1) into the fresh ancilla, and mid-circuit
-    ``measure`` it into ``c[g]``. A shot's record is ``T_0...T_G``. At
-    ``pheno_coupling=1.0`` the circuit is byte-identical to S1's.
+    Registers: genotype chain ``q[0..n_slots-1]`` + classical ``c(n_slots)``. The whole
+    lineage is built UNITARILY (per generation: ``apply_clone`` the parent, mutate with
+    ``m_gate(theta_g)``). NO mid-circuit measurement -- every genotype stays coherent so it
+    can seed its child and still be read at the end. Only then is each genotype rotated into
+    the trait basis (``Ry(-basis)`` so ``measure`` reports ``cos(basis) Z + sin(basis) X``)
+    and measured. Column g of a shot record is ``T_g``. Identical to stage1_temporal.py's
+    fixed builder.
     """
     geno = QuantumRegister(n_slots, "q")
-    phen = QuantumRegister(n_slots, "p")
     cr = ClassicalRegister(n_slots, "c")
-    qc = QuantumCircuit(geno, phen, cr)
-    # integer indices: geno[g] = g, phen[g] = n_slots + g (declaration order)
-    for g in range(n_slots):
-        if g == 0:
-            qc.append(m_gate(theta_seq[0]), [0])            # genotype 0: |0> then mutate
-        else:
-            apply_clone(qc, parent=g - 1, ancilla=g)        # coherent clone parent->child
-            qc.append(m_gate(theta_seq[g]), [g])            # mutate the child
-        phenotype_map(qc, genotype=g, pheno_ancilla=n_slots + g,
-                      pheno_coupling=pheno_coupling)
-        qc.measure(n_slots + g, cr[g])                      # mid-circuit trait readout
+    qc = QuantumCircuit(geno, cr)
+    qc.append(m_gate(theta_seq[0]), [0])                    # genotype 0: |0> then mutate
+    for g in range(1, n_slots):
+        apply_clone(qc, parent=g - 1, ancilla=g)           # coherent clone parent->child
+        qc.append(m_gate(theta_seq[g]), [g])               # mutate the child
+    qc.barrier()
+    for g in range(n_slots):                               # deferred trait-basis readout
+        if abs(trait_basis) > 1e-12:
+            qc.ry(-trait_basis, g)
+        qc.measure(g, cr[g])
     return qc
 
 
@@ -326,42 +338,38 @@ def sample_quantum_arm(qc: QuantumCircuit, shots: int, args: argparse.Namespace,
 # Classical surrogate arm -- measure-and-resend (§7, AC-S2.1, Q3)
 # copied verbatim from stage1_temporal.py.
 # ---------------------------------------------------------------------------
-def run_classical_surrogate(theta_seq: list[float], n_slots: int, shots: int,
-                            seed: int) -> list[str]:
-    """Measure-and-resend null: per generation, re-prepare a SEPARABLE child from the
-    parent's classically-communicated trait bit (Q3: <sigma_z>_child = eta*(1-2*bit)),
-    then apply the same ``m_gate(theta_g)`` and re-measure.
-
-    Matched to the quantum arm on everything except coherence: same theta_seq, same eta,
-    same per-generation readout. Because each child is re-prepared from ONLY the previous
-    trait bit (a Markov-order-1 chain), the T_0-T_g correlation decays faster than the
-    coherent arm -- the gap is g\\* (M3). Produces one ``T_0...T_G`` string per shot.
-
-    Note (§7 honesty): the surrogate is *defined* to fully measure-and-resend each
-    generation -- it is **not** matched to the quantum arm's ``--pheno-coupling`` weak peek;
-    that full measurement is its defining classicality, and the asymmetry is the physics.
-
-    The single-qubit trait algebra: M(theta) sigma_z M(theta) = cos(2t) sigma_z +
-    sin(2t) sigma_x, and a separably re-prepped Ry child has <sigma_x> = sqrt(1-z^2) >= 0.
+def build_lineage_classical(theta_seq: list[float], n_slots: int,
+                            trait_basis: float = TRAIT_BASIS_DEFAULT) -> QuantumCircuit:
+    """Measure-and-resend surrogate as a circuit (SETUP-FIX): same clone+mutate ops as the
+    quantum arm, but after each genotype is formed it is MEASURED in the trait basis and the
+    outcome re-prepared as a separable trait eigenstate before it seeds the child
+    (``Ry(-basis); measure->c[g]; Ry(+basis)`` -- an entanglement-breaking classical
+    broadcast of one bit per generation). Everything else matches the quantum arm; only
+    coherence is destroyed. Identical to stage1_temporal.py's fixed surrogate.
     """
-    rng = random.Random(seed)
+    geno = QuantumRegister(n_slots, "q")
+    cr = ClassicalRegister(n_slots, "c")
+    qc = QuantumCircuit(geno, cr)
+    qc.append(m_gate(theta_seq[0]), [0])
+    for g in range(n_slots):
+        if g > 0:
+            apply_clone(qc, parent=g - 1, ancilla=g)
+            qc.append(m_gate(theta_seq[g]), [g])
+        if abs(trait_basis) > 1e-12:
+            qc.ry(-trait_basis, g)
+        qc.measure(g, cr[g])                                # record T_g AND collapse (resend)
+        if abs(trait_basis) > 1e-12:
+            qc.ry(trait_basis, g)                           # re-prep separable trait eigenstate
+    return qc
+
+
+def sample_circuit(qc: QuantumCircuit, shots: int) -> list[str]:
+    """Statevector-sim a measurement circuit; one ``T_0...T_G`` record per shot (reversed to
+    c[0..G]). Used for the classical surrogate (always sim -- a classical null, no QPU)."""
+    counts = SIM.run(transpile(qc, SIM), shots=shots).result().get_counts()
     fields: list[str] = []
-    for _ in range(shots):
-        bits: list[str] = []
-        prev_bit = 0
-        for g in range(n_slots):
-            if g == 0:
-                z_pre, x_pre = 1.0, 0.0                      # genotype 0 from |0>
-            else:
-                z_pre = ETA * (1.0 - 2.0 * prev_bit)         # eta-contraction via classical bit
-                x_pre = math.sqrt(max(0.0, 1.0 - z_pre * z_pre))
-            th = theta_seq[g]
-            z_after = math.cos(2 * th) * z_pre + math.sin(2 * th) * x_pre
-            p1 = (1.0 - z_after) / 2.0                       # P(T_g = 1)
-            b = 1 if rng.random() < p1 else 0
-            bits.append(str(b))
-            prev_bit = b
-        fields.append("".join(bits))
+    for bitstr, cnt in counts.items():
+        fields.extend([bitstr.replace(" ", "")[::-1]] * cnt)
     return fields
 
 
@@ -410,8 +418,8 @@ def run_ideal_correlation(theta_seq: list[float], n_slots: int, args: argparse.N
     quantum arm's; the quantum-minus-ideal gap is the hardware decoherence, the ideal decay
     alone is approximate-cloning (plan §7).
     """
-    qc = build_lineage_quantum(theta_seq, n_slots, args.pheno_coupling)
-    ideal_qubits = list(range(2 * n_slots))
+    qc = build_lineage_quantum(theta_seq, n_slots, args.trait_basis)
+    ideal_qubits = list(range(n_slots))
     fields: list[str] = []
     for w in range(max(1, width)):
         fields += sample_quantum_arm(qc, args.shots, args, backend=None,
@@ -458,11 +466,11 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, G: int,
         fields: list[str] = []
         for w in range(width):                    # parallel INDEPENDENT lineages (Q4)
             if arm == "quantum":
-                qc = build_lineage_quantum(theta_seq, n_slots, args.pheno_coupling)
+                qc = build_lineage_quantum(theta_seq, n_slots, args.trait_basis)
                 fields += sample_quantum_arm(qc, args.shots, args, backend, qubit_list)
             elif arm == "classical":
-                fields += run_classical_surrogate(
-                    theta_seq, n_slots, args.shots, seed + _WIDTH_SEED_STEP * w)
+                qc = build_lineage_classical(theta_seq, n_slots, args.trait_basis)
+                fields += sample_circuit(qc, args.shots)     # always sim (classical null)
             else:
                 raise ValueError(f"unknown arm {arm!r}")
         M = np.frombuffer("".join(fields).encode(), dtype=np.uint8).reshape(
@@ -487,6 +495,7 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, G: int,
             "shots": args.shots,
             "width": width,
             "pheno_coupling": args.pheno_coupling,
+            "trait_basis": args.trait_basis,
             "mut_scale": args.mut_scale,
             "corr_gmax": gmax,
             "operators": {"M_theta": M_THETA_SPEC, "U_M": U_M_SPEC},
@@ -594,7 +603,12 @@ def main() -> None:
     ap.add_argument("--width", type=int, default=1,
                     help="parallel INDEPENDENT lineages pooled for tighter sigma (Q4; off=1)")
     ap.add_argument("--pheno-coupling", dest="pheno_coupling", type=float, default=0.5,
-                    help="genotype->phenotype readout strength in (0,1] (Q1; 1.0 = S1 parity)")
+                    help="[no-op since SETUP-FIX] retained for provenance parity; "
+                         "readout is now deferred, not a mid-circuit peek")
+    ap.add_argument("--trait-basis", dest="trait_basis", type=float,
+                    default=TRAIT_BASIS_DEFAULT,
+                    help="trait readout basis in radians (SETUP-FIX): 0=diagonal sigma_z "
+                         "(classically clonable, g*=1), pi/4=off-diagonal (default, real gap)")
     ap.add_argument("--sv-max-qubits", dest="sv_max_qubits", type=int, default=26,
                     help="statevector qubit ceiling; abort if 2*(gmax+1) exceeds it (Q6)")
     ap.add_argument("--shots", type=int, default=8192)
@@ -627,7 +641,7 @@ def main() -> None:
         raise SystemExit(1)
 
     n_slots_max = args.gmax + 1                  # largest lineage in the sweep
-    n_q = 2 * n_slots_max                        # genotype chain + phenotype ancillas
+    n_q = n_slots_max                            # genotype chain only (deferred readout, SETUP-FIX)
 
     # The ideal confound curve (M4, AC-S2.2) is MANDATORY at every G and is computed on
     # the statevector sim regardless of --sim, so the qubit ceiling always bites (§9).
@@ -635,7 +649,7 @@ def main() -> None:
         print(f"[S2 ABORT] --gmax {args.gmax} needs {n_q} statevector qubits > "
               f"--sv-max-qubits {args.sv_max_qubits}. The ideal-clone confound curve "
               f"(M4, AC-S2.2) is computed on the statevector sim and is mandatory at every G. "
-              f"Reduce --gmax (<= {args.sv_max_qubits // 2 - 1}) or raise --sv-max-qubits.")
+              f"Reduce --gmax (<= {args.sv_max_qubits - 1}) or raise --sv-max-qubits.")
         raise SystemExit(1)
 
     base_arms = ["quantum", "classical"] if args.arm == "both" else [args.arm]
@@ -650,6 +664,16 @@ def main() -> None:
     qrng_url = args.qrng_url or os.environ.get("QEAAS_API_URL") or QEAAS_URL_DEFAULT
     client = QRNGClient(qrng_url, api_key)
     print(f"Q-EaaS  : {qrng_url}  (fail-closed, no PRNG fallback)")
+    try:  # fast /health probe up front -- abort clearly instead of blocking on fetch
+        h = client.health()
+    except QRNGUnavailable as exc:
+        print(f"[S2 ABORT] Q-EaaS health check failed: {exc} -- no PRNG fallback (CD-7).")
+        raise SystemExit(1)
+    print(f"          health: {h.status} / entropy {h.quantum_entropy_level} / "
+          f"pool {h.pool_bytes_remaining} bytes")
+    if h.status != "ok":
+        print(f"[S2 ABORT] Q-EaaS status {h.status!r} (entropy {h.quantum_entropy_level!r}).")
+        raise SystemExit(1)
 
     # --- backend / qubit layout (sized for the largest G) --------------------
     backend = None
@@ -699,7 +723,8 @@ def main() -> None:
                 run, path = run_once(args, seed, arm, G, theta_full, prov_full,
                                      backend, backend_name, calib, qubit_list)
                 run_files.append(os.path.basename(path))
-                corr_by_arm[arm].append(run["correlation_temporal"]["C"])
+                # aggregate NORMALIZED c(g) (SETUP-FIX): raw C(g) is at the C0 noise floor
+                corr_by_arm[arm].append(run["correlation_temporal"]["c"])
 
         stat_arms = [a for a in ("quantum", "classical", "ideal")
                      if a in corr_by_arm and corr_by_arm[a] and corr_by_arm[a][0]]

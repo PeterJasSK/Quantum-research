@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "sim",
+    "sim": true,
+    "base_seed": 100,
+    "repeats": 8,
+    "generations": 6,
+    "shots": 16384,
+    "corr_gmax": 6,
+    "k": 2,
+    "run_files": [
+      "qdep_s1_fixed_quantum_sim_seed100_20260819-205659_run.json",
+      "qdep_s1_fixed_classical_sim_seed100_20260819-205659_run.json",
+      "qdep_s1_fixed_quantum_sim_seed101_20260819-205704_run.json",
+      "qdep_s1_fixed_classical_sim_seed101_20260819-205704_run.json",
+      "qdep_s1_fixed_quantum_sim_seed102_20260819-205709_run.json",
+      "qdep_s1_fixed_classical_sim_seed102_20260819-205709_run.json",
+      "qdep_s1_fixed_quantum_sim_seed103_20260819-205713_run.json",
+      "qdep_s1_fixed_classical_sim_seed103_20260819-205714_run.json",
+      "qdep_s1_fixed_quantum_sim_seed104_20260819-205719_run.json",
+      "qdep_s1_fixed_classical_sim_seed104_20260819-205719_run.json",
+      "qdep_s1_fixed_quantum_sim_seed105_20260819-205724_run.json",
+      "qdep_s1_fixed_classical_sim_seed105_20260819-205724_run.json",
+      "qdep_s1_fixed_quantum_sim_seed106_20260819-205729_run.json",
+      "qdep_s1_fixed_classical_sim_seed106_20260819-205729_run.json",
+      "qdep_s1_fixed_quantum_sim_seed107_20260819-205734_run.json",
+      "qdep_s1_fixed_classical_sim_seed107_20260819-205734_run.json"
+    ]
+  },
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 1.0,
+        "classical": 1.0
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": -0.060671,
+        "classical": 0.505558
+      },
+      "C_g_std": {
+        "quantum": 0.03821,
+        "classical": 0.017834
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": -0.018825,
+        "classical": 0.242443
+      },
+      "C_g_std": {
+        "quantum": 0.0141,
+        "classical": 0.015943
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": -0.020349,
+        "classical": 0.121069
+      },
+      "C_g_std": {
+        "quantum": 0.01454,
+        "classical": 0.009419
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": -0.01664,
+        "classical": 0.060396
+      },
+      "C_g_std": {
+        "quantum": 0.012853,
+        "classical": 0.016058
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": -0.010531,
+        "classical": 0.037185
+      },
+      "C_g_std": {
+        "quantum": 0.012952,
+        "classical": 0.012133
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": -0.00988,
+        "classical": 0.020054
+      },
+      "C_g_std": {
+        "quantum": 0.0117,
+        "classical": 0.008817
+      }
+    }
+  ],
+  "gstar": {
+    "k2": 6,
+    "k3": 4
+  }
+}

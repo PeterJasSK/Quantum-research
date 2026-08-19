@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "arm": "classical",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "20260819-203052",
+    "seed": 103,
+    "generations": 8,
+    "shots": 32768,
+    "mut_scale": 0.1,
+    "corr_gmax": 8,
+    "operators": {
+      "M_theta": "[[cos t, sin t], [sin t, -cos t]]",
+      "U_M": "Ry(phi=0.4510) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)=0.9"
+    },
+    "entropy_provenance": [
+      {
+        "gen": 0,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.02852622
+      },
+      {
+        "gen": 1,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.02113112
+      },
+      {
+        "gen": 2,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.03361684
+      },
+      {
+        "gen": 3,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.06488439
+      },
+      {
+        "gen": 4,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.07269122
+      },
+      {
+        "gen": 5,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.00609727
+      },
+      {
+        "gen": 6,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.04697063
+      },
+      {
+        "gen": 7,
+        "source": "qeaas",
+        "request_id": "518454c6ddf94cca8f8db5c6f2b59122",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiI1MTg0NTRjNmRkZjk0Y2NhOGY4ZGI1YzZmMmI1OTEyMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjQ2LjEyNDMwNCswMDowMCJ9.LPNPuibgRyi4UJ_aT4nnkgkunpt6s1eWT-EE0uHWfHBhs3y4NxQikuf-pPhcc5-3aJKnRQimlm3TDvrzO-zOCw",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:46.124304Z",
+        "angle_rad": 0.0272248
+      },
+      {
+        "gen": 8,
+        "source": "qeaas",
+        "request_id": "15adea3189a94c959c5064344f07b085",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiIxNWFkZWEzMTg5YTk0Yzk1OWM1MDY0MzQ0ZjA3YjA4NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMwOjUwLjIwMTI0NCswMDowMCJ9.HDR-kcWFVR4oVC-s9rKGRbgxvJpKHH29DfaZfYr_9wUKaKiGiIoPK02CPytEWMKV9XqiTJvBTBbZXXaUlEA_DA",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:30:50.201244Z",
+        "angle_rad": 0.01213055
+      }
+    ],
+    "calibration": null
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "trait_sigmaz": 0.998291,
+      "shots": 32768
+    },
+    {
+      "gen": 1,
+      "trait_sigmaz": 0.919678,
+      "shots": 32768
+    },
+    {
+      "gen": 2,
+      "trait_sigmaz": 0.853638,
+      "shots": 32768
+    },
+    {
+      "gen": 3,
+      "trait_sigmaz": 0.817505,
+      "shots": 32768
+    },
+    {
+      "gen": 4,
+      "trait_sigmaz": 0.790161,
+      "shots": 32768
+    },
+    {
+      "gen": 5,
+      "trait_sigmaz": 0.713562,
+      "shots": 32768
+    },
+    {
+      "gen": 6,
+      "trait_sigmaz": 0.678711,
+      "shots": 32768
+    },
+    {
+      "gen": 7,
+      "trait_sigmaz": 0.639465,
+      "shots": 32768
+    },
+    {
+      "gen": 8,
+      "trait_sigmaz": 0.589722,
+      "shots": 32768
+    }
+  ],
+  "correlation_temporal": {
+    "C": [
+      0.000854,
+      0.000759,
+      0.0007,
+      0.000502,
+      0.00049,
+      0.000488,
+      0.000443,
+      0.000426,
+      0.000405
+    ],
+    "c": [
+      1.0,
+      0.88917,
+      0.820377,
+      0.587826,
+      0.574143,
+      0.571555,
+      0.51837,
+      0.49873,
+      0.473837
+    ],
+    "C0": 0.000854,
+    "gmax": 8
+  }
+}

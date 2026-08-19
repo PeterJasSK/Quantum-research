@@ -40,12 +40,46 @@ class QRNGResponse:
     receipt: str | None
 
 
+@dataclass(frozen=True)
+class QRNGHealth:
+    status: str                    # "ok" when the service is serving
+    quantum_entropy_level: str     # e.g. "healthy" / "degraded"
+    pool_bytes_remaining: int
+    drbg_reseeds: int
+    uptime: float
+
+
 class QRNGClient:
     """`GET /v1/random/bytes` client (epic Appendix A.1)."""
 
     def __init__(self, base_url: str, api_key: str) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
+
+    def health(self) -> QRNGHealth:
+        """`GET /health` liveness + entropy-pool probe (no API key required).
+
+        Fails fast: raises `QRNGUnavailable` on any non-200 or transport error so a
+        run aborts up front with a clear reason instead of blocking on the first
+        `fetch`. Cheap (~1-2s) vs a full entropy draw (~5s).
+        """
+        url = f"{self._base_url}/health"
+        request = urllib.request.Request(url, method="GET")
+        try:
+            with urllib.request.urlopen(request, timeout=10) as resp:
+                body = json.loads(resp.read())
+        except urllib.error.HTTPError as exc:
+            raise QRNGUnavailable(
+                f"health check failed ({exc.code} {_error_code(exc)})") from exc
+        except urllib.error.URLError as exc:
+            raise QRNGUnavailable(f"health check unreachable: {exc.reason}") from exc
+        return QRNGHealth(
+            status=body.get("status", "unknown"),
+            quantum_entropy_level=body.get("quantum_entropy_level", "unknown"),
+            pool_bytes_remaining=int(body.get("pool_bytes_remaining", 0)),
+            drbg_reseeds=int(body.get("drbg_reseeds", 0)),
+            uptime=float(body.get("uptime", 0.0)),
+        )
 
     def fetch(self, *, size: int = 32, fmt: Format = "hex") -> QRNGResponse:
         """Fetch `size` bytes of entropy with provenance. Raises `QRNGUnavailable`

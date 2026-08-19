@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_fez",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 1,
+    "generations": 6,
+    "shots": 8192,
+    "corr_gmax": 6,
+    "k": 2,
+    "run_files": [
+      "qdep_m1_s1_quantum_ibm_fez_seed100_20260819-212939_run.json",
+      "qdep_m1_s1_classical_ibm_fez_seed100_20260819-212940_run.json"
+    ]
+  },
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 1.0,
+        "classical": 1.0
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": 0.025613,
+        "classical": 0.474053
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": -0.000249,
+        "classical": 0.24436
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": 0.027821,
+        "classical": 0.131683
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": 0.00462,
+        "classical": 0.064238
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": 0.006177,
+        "classical": 0.046515
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": -0.004192,
+        "classical": 0.029913
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    }
+  ],
+  "gstar": {
+    "k2": 1,
+    "k3": 1
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "arm": "classical",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "20260819-205833",
+    "seed": 106,
+    "generations": 6,
+    "shots": 16384,
+    "mut_scale": 0.1,
+    "corr_gmax": 6,
+    "operators": {
+      "M_theta": "[[cos t, sin t], [sin t, -cos t]]",
+      "U_M": "Ry(phi=0.4510) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)=0.9"
+    },
+    "entropy_provenance": [
+      {
+        "gen": 0,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.00389059
+      },
+      {
+        "gen": 1,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.00050738
+      },
+      {
+        "gen": 2,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.098455
+      },
+      {
+        "gen": 3,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.06511114
+      },
+      {
+        "gen": 4,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.00276173
+      },
+      {
+        "gen": 5,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.03316745
+      },
+      {
+        "gen": 6,
+        "source": "qeaas",
+        "request_id": "496ddc4e0279445691145de890e6829c",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAyLCJyaWQiOiI0OTZkZGM0ZTAyNzk0NDU2OTExNDVkZTg5MGU2ODI5YyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjU4OjMxLjY3MTQ5NCswMDowMCJ9.EWneULiOxbXVlXAHnzGpSuBv2AXtcFbiS4wza3GvMexMSeSZSMoBFntwXpepeJsHOjw8dfXNX6R09zAyeL2DCw",
+        "entropy_epoch": 102,
+        "timestamp": "2026-08-19T18:58:31.671494Z",
+        "angle_rad": 0.06105096
+      }
+    ],
+    "calibration": null
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "trait_sigmaz": 1.0,
+      "shots": 16384
+    },
+    {
+      "gen": 1,
+      "trait_sigmaz": 0.901489,
+      "shots": 16384
+    },
+    {
+      "gen": 2,
+      "trait_sigmaz": 0.883545,
+      "shots": 16384
+    },
+    {
+      "gen": 3,
+      "trait_sigmaz": 0.842651,
+      "shots": 16384
+    },
+    {
+      "gen": 4,
+      "trait_sigmaz": 0.758545,
+      "shots": 16384
+    },
+    {
+      "gen": 5,
+      "trait_sigmaz": 0.711304,
+      "shots": 16384
+    },
+    {
+      "gen": 6,
+      "trait_sigmaz": 0.688477,
+      "shots": 16384
+    }
+  ],
+  "correlation_temporal": {
+    "C": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "c": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "C0": 0.0,
+    "gmax": 6
+  }
+}

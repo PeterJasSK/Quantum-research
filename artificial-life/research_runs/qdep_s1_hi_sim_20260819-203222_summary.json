@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "sim",
+    "sim": true,
+    "base_seed": 100,
+    "repeats": 14,
+    "generations": 8,
+    "shots": 32768,
+    "corr_gmax": 8,
+    "k": 2,
+    "run_files": [
+      "qdep_s1_hi_quantum_sim_seed100_20260819-203024_run.json",
+      "qdep_s1_hi_classical_sim_seed100_20260819-203024_run.json",
+      "qdep_s1_hi_quantum_sim_seed101_20260819-203034_run.json",
+      "qdep_s1_hi_classical_sim_seed101_20260819-203034_run.json",
+      "qdep_s1_hi_quantum_sim_seed102_20260819-203043_run.json",
+      "qdep_s1_hi_classical_sim_seed102_20260819-203043_run.json",
+      "qdep_s1_hi_quantum_sim_seed103_20260819-203051_run.json",
+      "qdep_s1_hi_classical_sim_seed103_20260819-203052_run.json",
+      "qdep_s1_hi_quantum_sim_seed104_20260819-203101_run.json",
+      "qdep_s1_hi_classical_sim_seed104_20260819-203101_run.json",
+      "qdep_s1_hi_quantum_sim_seed105_20260819-203110_run.json",
+      "qdep_s1_hi_classical_sim_seed105_20260819-203110_run.json",
+      "qdep_s1_hi_quantum_sim_seed106_20260819-203119_run.json",
+      "qdep_s1_hi_classical_sim_seed106_20260819-203119_run.json",
+      "qdep_s1_hi_quantum_sim_seed107_20260819-203128_run.json",
+      "qdep_s1_hi_classical_sim_seed107_20260819-203128_run.json",
+      "qdep_s1_hi_quantum_sim_seed108_20260819-203137_run.json",
+      "qdep_s1_hi_classical_sim_seed108_20260819-203137_run.json",
+      "qdep_s1_hi_quantum_sim_seed109_20260819-203146_run.json",
+      "qdep_s1_hi_classical_sim_seed109_20260819-203146_run.json",
+      "qdep_s1_hi_quantum_sim_seed110_20260819-203155_run.json",
+      "qdep_s1_hi_classical_sim_seed110_20260819-203155_run.json",
+      "qdep_s1_hi_quantum_sim_seed111_20260819-203204_run.json",
+      "qdep_s1_hi_classical_sim_seed111_20260819-203204_run.json",
+      "qdep_s1_hi_quantum_sim_seed112_20260819-203213_run.json",
+      "qdep_s1_hi_classical_sim_seed112_20260819-203213_run.json",
+      "qdep_s1_hi_quantum_sim_seed113_20260819-203222_run.json",
+      "qdep_s1_hi_classical_sim_seed113_20260819-203222_run.json"
+    ]
+  },
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 0.00304,
+        "classical": 0.002943
+      },
+      "C_g_std": {
+        "quantum": 0.002515,
+        "classical": 0.002398
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": 0.002705,
+        "classical": 0.002642
+      },
+      "C_g_std": {
+        "quantum": 0.002249,
+        "classical": 0.002165
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": 0.002408,
+        "classical": 0.002338
+      },
+      "C_g_std": {
+        "quantum": 0.001992,
+        "classical": 0.001904
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": 0.00216,
+        "classical": 0.00211
+      },
+      "C_g_std": {
+        "quantum": 0.001804,
+        "classical": 0.001734
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": 0.001935,
+        "classical": 0.001893
+      },
+      "C_g_std": {
+        "quantum": 0.001607,
+        "classical": 0.001554
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": 0.001734,
+        "classical": 0.001705
+      },
+      "C_g_std": {
+        "quantum": 0.00145,
+        "classical": 0.001409
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": 0.001565,
+        "classical": 0.001513
+      },
+      "C_g_std": {
+        "quantum": 0.001307,
+        "classical": 0.001256
+      }
+    },
+    {
+      "gen": 7,
+      "C_g_mean": {
+        "quantum": 0.001373,
+        "classical": 0.001405
+      },
+      "C_g_std": {
+        "quantum": 0.001152,
+        "classical": 0.001161
+      }
+    },
+    {
+      "gen": 8,
+      "C_g_mean": {
+        "quantum": 0.001185,
+        "classical": 0.001248
+      },
+      "C_g_std": {
+        "quantum": 0.000987,
+        "classical": 0.001047
+      }
+    }
+  ],
+  "gstar": {
+    "k2": 1,
+    "k3": 1
+  }
+}

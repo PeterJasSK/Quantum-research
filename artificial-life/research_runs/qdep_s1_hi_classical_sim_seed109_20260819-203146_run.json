@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "arm": "classical",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "20260819-203146",
+    "seed": 109,
+    "generations": 8,
+    "shots": 32768,
+    "mut_scale": 0.1,
+    "corr_gmax": 8,
+    "operators": {
+      "M_theta": "[[cos t, sin t], [sin t, -cos t]]",
+      "U_M": "Ry(phi=0.4510) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)=0.9"
+    },
+    "entropy_provenance": [
+      {
+        "gen": 0,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.00348196
+      },
+      {
+        "gen": 1,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.00602788
+      },
+      {
+        "gen": 2,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.06703809
+      },
+      {
+        "gen": 3,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.02368212
+      },
+      {
+        "gen": 4,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.02247744
+      },
+      {
+        "gen": 5,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.04595185
+      },
+      {
+        "gen": 6,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.00068455
+      },
+      {
+        "gen": 7,
+        "source": "qeaas",
+        "request_id": "c297f3db28344042a013fbf2327b1b5e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiJjMjk3ZjNkYjI4MzQ0MDQyYTAxM2ZiZjIzMjdiMWI1ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQwLjM0NzIyOSswMDowMCJ9.Q16haW-MnPLyH_SFV3CRrxROYND9yldftWqV18CtW_Gyd_5efDEn3lcMkD68UWujCGjKMr0yAp_wXGWWkyQWBQ",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:40.347229Z",
+        "angle_rad": 0.00041008
+      },
+      {
+        "gen": 8,
+        "source": "qeaas",
+        "request_id": "1e764235fd684b3980a8de2a782128bd",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTAxLCJyaWQiOiIxZTc2NDIzNWZkNjg0YjM5ODBhOGRlMmE3ODIxMjhiZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTE5VDE4OjMxOjQ0LjQ1MDU5NSswMDowMCJ9.PZzjTtJM9F-d0xjAsG1Kl5b6kKsIbTkR9kx82ZSg2PYnBE9hAetaGO9YMOOoT3hU2xdY909VIaYtKL8OL6X5Dg",
+        "entropy_epoch": 101,
+        "timestamp": "2026-08-19T18:31:44.450595Z",
+        "angle_rad": 0.03170371
+      }
+    ],
+    "calibration": null
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "trait_sigmaz": 1.0,
+      "shots": 32768
+    },
+    {
+      "gen": 1,
+      "trait_sigmaz": 0.90448,
+      "shots": 32768
+    },
+    {
+      "gen": 2,
+      "trait_sigmaz": 0.866577,
+      "shots": 32768
+    },
+    {
+      "gen": 3,
+      "trait_sigmaz": 0.800171,
+      "shots": 32768
+    },
+    {
+      "gen": 4,
+      "trait_sigmaz": 0.737488,
+      "shots": 32768
+    },
+    {
+      "gen": 5,
+      "trait_sigmaz": 0.703979,
+      "shots": 32768
+    },
+    {
+      "gen": 6,
+      "trait_sigmaz": 0.636475,
+      "shots": 32768
+    },
+    {
+      "gen": 7,
+      "trait_sigmaz": 0.57312,
+      "shots": 32768
+    },
+    {
+      "gen": 8,
+      "trait_sigmaz": 0.541565,
+      "shots": 32768
+    }
+  ],
+  "correlation_temporal": {
+    "C": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "c": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "C0": 0.0,
+    "gmax": 8
+  }
+}

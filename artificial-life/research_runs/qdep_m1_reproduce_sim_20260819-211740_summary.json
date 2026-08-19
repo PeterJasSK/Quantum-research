@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "sim",
+    "sim": true,
+    "base_seed": 100,
+    "repeats": 1,
+    "generations": 6,
+    "shots": 8192,
+    "corr_gmax": 6,
+    "k": 2,
+    "run_files": [
+      "qdep_m1_reproduce_quantum_sim_seed100_20260819-211740_run.json",
+      "qdep_m1_reproduce_classical_sim_seed100_20260819-211740_run.json"
+    ]
+  },
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 1.0,
+        "classical": 1.0
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": 0.952265,
+        "classical": -0.045049
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": 0.929557,
+        "classical": -0.066536
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": 0.897082,
+        "classical": -0.100232
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": -0.136247,
+        "classical": -0.132829
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": -0.162129,
+        "classical": -0.161641
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": -0.18679,
+        "classical": -0.185936
+      },
+      "C_g_std": {
+        "quantum": 0.0,
+        "classical": 0.0
+      }
+    }
+  ],
+  "gstar": {
+    "k2": 1,
+    "k3": 1
+  }
+}

@@ -25,32 +25,32 @@
     },
     {
       "gen": 1,
-      "trait_sigmaz": 0.92822265625,
-      "fidelity_vs_ideal": 0.9963603830813978,
+      "trait_sigmaz": 0.93701171875,
+      "fidelity_vs_ideal": 0.9992450856686022,
       "shots": 4096
     },
     {
       "gen": 2,
-      "trait_sigmaz": 0.89501953125,
-      "fidelity_vs_ideal": 0.9980613424224678,
+      "trait_sigmaz": 0.91015625,
+      "fidelity_vs_ideal": 0.9943702982025322,
       "shots": 4096
     },
     {
       "gen": 3,
-      "trait_sigmaz": 0.8525390625,
-      "fidelity_vs_ideal": 0.9951354350473177,
+      "trait_sigmaz": 0.857421875,
+      "fidelity_vs_ideal": 0.9975768412973177,
       "shots": 4096
     },
     {
       "gen": 4,
-      "trait_sigmaz": 0.8330078125,
-      "fidelity_vs_ideal": 0.9991579661917833,
+      "trait_sigmaz": 0.8310546875,
+      "fidelity_vs_ideal": 0.9998654713082167,
       "shots": 4096
     },
     {
       "gen": 5,
-      "trait_sigmaz": 0.76416015625,
-      "fidelity_vs_ideal": 0.990516834306493,
+      "trait_sigmaz": 0.78515625,
+      "fidelity_vs_ideal": 0.998985118818507,
       "shots": 4096
     }
   ]
