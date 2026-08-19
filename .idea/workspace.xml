@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/code/qrng_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/code/qrng_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/code/stage1_temporal.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/code/stage1_temporal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/code/stage2_scale.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/code/stage2_scale.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/code/stage3_teleport.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/code/stage3_teleport.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/research_runs/qdep_s0_sim_seed100_sim_run.json" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/research_runs/qdep_s0_sim_seed100_sim_run.json" afterDir="false" />
-    </list>
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -167,7 +160,7 @@
       <workItem from="1787028440994" duration="11294000" />
       <workItem from="1787079481866" duration="1042000" />
       <workItem from="1787115279999" duration="19272000" />
-      <workItem from="1787163460101" duration="6359000" />
+      <workItem from="1787163460101" duration="6671000" />
     </task>
     <servers />
   </component>
