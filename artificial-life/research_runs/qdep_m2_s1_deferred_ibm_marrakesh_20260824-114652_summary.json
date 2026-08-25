@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_marrakesh",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 2,
+    "generations": 8,
+    "shots": 8192,
+    "corr_gmax": 8,
+    "readout": "deferred",
+    "k": 2,
+    "run_files": [
+      "qdep_m2_s1_deferred_quantum_ibm_marrakesh_seed100_20260824-114630_run.json",
+      "qdep_m2_s1_deferred_quantum_ibm_marrakesh_seed101_20260824-114652_run.json"
+    ]
+  },
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum": 1.0
+      },
+      "C_g_std": {
+        "quantum": 0.0
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum": -0.069507
+      },
+      "C_g_std": {
+        "quantum": 0.00042
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum": 0.001219
+      },
+      "C_g_std": {
+        "quantum": 0.003566
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum": 0.008377
+      },
+      "C_g_std": {
+        "quantum": 0.011398
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum": -0.00046
+      },
+      "C_g_std": {
+        "quantum": 0.019882
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum": 0.000299
+      },
+      "C_g_std": {
+        "quantum": 0.021723
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum": -0.01392
+      },
+      "C_g_std": {
+        "quantum": 0.013206
+      }
+    },
+    {
+      "gen": 7,
+      "C_g_mean": {
+        "quantum": -0.023641
+      },
+      "C_g_std": {
+        "quantum": 0.000126
+      }
+    },
+    {
+      "gen": 8,
+      "C_g_mean": {
+        "quantum": -0.018079
+      },
+      "C_g_std": {
+        "quantum": 0.006422
+      }
+    }
+  ],
+  "gstar": {
+    "k2": null,
+    "k3": null
+  }
+}

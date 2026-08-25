@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "width": 5,
+    "steps": 4,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "founder_equator": true,
+    "seed": 100,
+    "sim": true,
+    "operators": "CNOT-clone / Ry-mutation / {damping|unitary}-death / SWAP-interaction"
+  },
+  "arms": {
+    "unitary/nn": {
+      "pheno_z": [
+        0.9238795325112866,
+        0.7071067811865478,
+        0.38268343236508995,
+        0.0,
+        1.0
+      ],
+      "classical_z": [
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476,
+        0.38268343236508984,
+        6.123233995736766e-17
+      ],
+      "alive_population": 3,
+      "deepest_lineage": -1,
+      "classical_alive": 3,
+      "classical_deepest": -1
+    },
+    "damping/nn": {
+      "pheno_z": [
+        0.41425189974851556,
+        0.35911804943637804,
+        0.15687233145817425,
+        0.01878180242920413,
+        0.3481189451337332
+      ],
+      "classical_z": [
+        0.5478782399999998,
+        0.4486319999999999,
+        0.3275999999999999,
+        0.17999999999999994,
+        0.0
+      ],
+      "alive_population": 5,
+      "deepest_lineage": 4,
+      "classical_alive": 5,
+      "classical_deepest": 4
+    }
+  }
+}

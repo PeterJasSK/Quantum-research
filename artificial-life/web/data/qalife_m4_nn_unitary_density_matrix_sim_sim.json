@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "backend": "density_matrix_sim",
+    "steps": 3,
+    "interaction": "nn",
+    "routing": "swap",
+    "death": "unitary",
+    "mut_scale": 0.08,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "shots": 8192,
+    "repeats": 3,
+    "k": 2.0,
+    "widths": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "sim": true,
+    "genealogical_entanglement_depth_W": 6
+  },
+  "by_width": {
+    "2": {
+      "witness_joint_mean": 0.9736328125,
+      "witness_joint_sigma": 0.014763275982270277,
+      "separable_mean": 0.00017529726028442383,
+      "entanglement_signal": 0.9734575152397156,
+      "survives": true,
+      "alive_mean": 1.0,
+      "deepest_mean": 0.0
+    },
+    "3": {
+      "witness_joint_mean": 0.9666341145833334,
+      "witness_joint_sigma": 0.01572429050879362,
+      "separable_mean": 5.458665934080879e-07,
+      "entanglement_signal": 0.96663356871674,
+      "survives": true,
+      "alive_mean": 2.0,
+      "deepest_mean": 1.0
+    },
+    "4": {
+      "witness_joint_mean": 0.959228515625,
+      "witness_joint_sigma": 0.031505178641449645,
+      "separable_mean": -6.339064384519588e-09,
+      "entanglement_signal": 0.9592285219640644,
+      "survives": true,
+      "alive_mean": 3.0,
+      "deepest_mean": 2.0
+    },
+    "5": {
+      "witness_joint_mean": 0.95263671875,
+      "witness_joint_sigma": 0.016758791310283704,
+      "separable_mean": 9.053423288829521e-11,
+      "entanglement_signal": 0.9526367186594658,
+      "survives": true,
+      "alive_mean": 4.0,
+      "deepest_mean": 3.0
+    },
+    "6": {
+      "witness_joint_mean": 0.9300130208333334,
+      "witness_joint_sigma": 0.024330368697492978,
+      "separable_mean": 1.3745254680139945e-15,
+      "entanglement_signal": 0.930013020833332,
+      "survives": true,
+      "alive_mean": 5.0,
+      "deepest_mean": 4.0
+    }
+  }
+}

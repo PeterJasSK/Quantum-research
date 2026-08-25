@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_marrakesh",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 3,
+    "gmin": 3,
+    "gmax": 3,
+    "shots": 8192,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "bond_dist": 9,
+    "anchors": "all",
+    "routing": "swap",
+    "herald": false,
+    "noise_model": null,
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "run_files": [
+      "qdep_m3_swap_deep_quantum_swap_G3_ibm_marrakesh_seed100_20260824-133820_run.json",
+      "qdep_m3_swap_deep_classical_G3_ibm_marrakesh_seed100_20260824-133820_run.json",
+      "qdep_m3_swap_deep_ideal_G3_sim_seed100_20260824-133821_run.json",
+      "qdep_m3_swap_deep_quantum_swap_G3_ibm_marrakesh_seed101_20260824-133830_run.json",
+      "qdep_m3_swap_deep_classical_G3_ibm_marrakesh_seed101_20260824-133830_run.json",
+      "qdep_m3_swap_deep_ideal_G3_sim_seed101_20260824-133830_run.json",
+      "qdep_m3_swap_deep_quantum_swap_G3_ibm_marrakesh_seed102_20260824-133839_run.json",
+      "qdep_m3_swap_deep_classical_G3_ibm_marrakesh_seed102_20260824-133839_run.json",
+      "qdep_m3_swap_deep_ideal_G3_sim_seed102_20260824-133839_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 3,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum_swap": 0.248741,
+            "classical": 0.002756,
+            "ideal": 0.173181
+          },
+          "C_g_std": {
+            "quantum_swap": 0.000914,
+            "classical": 0.001697,
+            "ideal": 0.004169
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum_swap": 0.116553,
+            "classical": 0.001634,
+            "ideal": 0.03716
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002176,
+            "classical": 0.000936,
+            "ideal": 0.001883
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum_swap": 0.067548,
+            "classical": 0.000997,
+            "ideal": 0.019542
+          },
+          "C_g_std": {
+            "quantum_swap": 0.003944,
+            "classical": 0.000516,
+            "ideal": 0.001303
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum_swap": 0.036811,
+            "classical": 0.000652,
+            "ideal": 0.011647
+          },
+          "C_g_std": {
+            "quantum_swap": 0.000914,
+            "classical": 0.000303,
+            "ideal": 0.000431
+          }
+        }
+      ],
+      "gstar": {
+        "swap": {
+          "k2": 3,
+          "k3": 3
+        },
+        "teleport": {
+          "k2": null,
+          "k3": null
+        }
+      },
+      "delta_gstar": {
+        "k2": null,
+        "k3": null
+      },
+      "logical_depth": {
+        "swap": 40,
+        "teleport": null
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum_swap": 0.248741,
+        "classical": 0.002756,
+        "ideal": 0.173181
+      },
+      "C_g_std": {
+        "quantum_swap": 0.000914,
+        "classical": 0.001697,
+        "ideal": 0.004169
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum_swap": 0.116553,
+        "classical": 0.001634,
+        "ideal": 0.03716
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002176,
+        "classical": 0.000936,
+        "ideal": 0.001883
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum_swap": 0.067548,
+        "classical": 0.000997,
+        "ideal": 0.019542
+      },
+      "C_g_std": {
+        "quantum_swap": 0.003944,
+        "classical": 0.000516,
+        "ideal": 0.001303
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum_swap": 0.036811,
+        "classical": 0.000652,
+        "ideal": 0.011647
+      },
+      "C_g_std": {
+        "quantum_swap": 0.000914,
+        "classical": 0.000303,
+        "ideal": 0.000431
+      }
+    }
+  ],
+  "gstar": {
+    "swap": {
+      "k2": 3,
+      "k3": 3
+    },
+    "teleport": {
+      "k2": null,
+      "k3": null
+    }
+  },
+  "delta_gstar": {
+    "k2": null,
+    "k3": null
+  }
+}

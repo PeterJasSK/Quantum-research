@@ -20,6 +20,8 @@ from typing import Any
 # qubits with a broken single-qubit gate or hopeless readout: never use
 DEAD_SX = 0.5
 DEAD_RO = 0.25
+# two-qubit edges worse than this are unusable (dead/1.0-error gates); never walk them
+DEAD_EDGE = 0.10
 
 
 def _pull(backend: Any):
@@ -60,6 +62,8 @@ def best_chain(backend: Any, n: int, time_budget: float = 40.0
         a, b = tuple(k)
         if a in dead or b in dead:
             continue
+        if edge[k] >= DEAD_EDGE:          # skip dead/1.0-error 2q gates entirely
+            continue
         adj[a].add(b)
         adj[b].add(a)
 
@@ -67,7 +71,8 @@ def best_chain(backend: Any, n: int, time_budget: float = 40.0
     ecost = lambda a, b: edge[frozenset((a, b))] + 0.5 * (pen(a) + pen(b))
     live = [q for q in range(nq) if q not in dead]
 
-    best_path: list[int] = []
+    longest: list[int] = []          # longest chain seen (for the failure diagnostic)
+    best_chain_n: list[int] = []      # cheapest length-n chain found so far
     best_cost = float("inf")
     t_end = time.time() + time_budget
 
@@ -75,34 +80,38 @@ def best_chain(backend: Any, n: int, time_budget: float = 40.0
     sys.setrecursionlimit(10000)
 
     def dfs(cur, used, path, cost):
-        nonlocal best_path, best_cost
+        nonlocal longest, best_chain_n, best_cost
         if time.time() > t_end:
             return
-        if len(path) > len(best_path) or (
-                len(path) == len(best_path) and cost < best_cost):
-            best_path, best_cost = path[:], cost
+        if len(path) > len(longest):
+            longest = path[:]
+        if cost >= best_cost:            # branch-and-bound: can't beat the incumbent n-chain
+            return
         if len(path) >= n:
+            best_chain_n, best_cost = path[:n], cost
             return
         for nb in sorted((x for x in adj[cur] if x not in used),
                          key=lambda x: ecost(cur, x)):
             used.add(nb); path.append(nb)
             dfs(nb, used, path, cost + ecost(cur, nb))
             path.pop(); used.discard(nb)
-            if len(best_path) >= n or time.time() > t_end:
+            if time.time() > t_end:
                 return
 
+    # search from every live seed, cheapest-readout first; keep the min-cost n-chain
     for seed in sorted(live, key=pen):
-        if time.time() > t_end or len(best_path) >= n:
+        if time.time() > t_end:
             break
         dfs(seed, {seed}, [seed], 0.0)
 
-    if len(best_path) < n:
+    if not best_chain_n:
         raise RuntimeError(
-            f"no SWAP-free chain of {n} qubits on {backend.name} "
-            f"(longest found {len(best_path)}); dead={sorted(dead)}. "
-            f"Lower genome N_SLOTS so N_BITS <= {len(best_path)}.")
+            f"no clean SWAP-free chain of {n} qubits on {backend.name} "
+            f"(longest found {len(longest)}; edges >= {DEAD_EDGE} 2q-err pruned); "
+            f"dead={sorted(dead)}. Lower genome N_SLOTS so N_BITS <= {len(longest)}, "
+            f"or pin a better-calibrated --backend.")
 
-    chain = best_path[:n]
+    chain = best_chain_n[:n]
     e2 = [edge[frozenset((chain[i], chain[i + 1]))] for i in range(n - 1)]
     stats = {
         "dead_avoided": sorted(dead),

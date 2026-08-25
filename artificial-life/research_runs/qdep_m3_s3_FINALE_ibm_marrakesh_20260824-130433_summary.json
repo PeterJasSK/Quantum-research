@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_marrakesh",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 3,
+    "gmin": 4,
+    "gmax": 4,
+    "shots": 8192,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "bond_dist": 5,
+    "anchors": "all",
+    "routing": "both",
+    "herald": false,
+    "noise_model": null,
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "run_files": [
+      "qdep_m3_s3_FINALE_quantum_swap_G4_ibm_marrakesh_seed100_20260824-130346_run.json",
+      "qdep_m3_s3_FINALE_quantum_teleport_G4_ibm_marrakesh_seed100_20260824-130355_run.json",
+      "qdep_m3_s3_FINALE_classical_G4_ibm_marrakesh_seed100_20260824-130355_run.json",
+      "qdep_m3_s3_FINALE_ideal_G4_sim_seed100_20260824-130355_run.json",
+      "qdep_m3_s3_FINALE_quantum_swap_G4_ibm_marrakesh_seed101_20260824-130404_run.json",
+      "qdep_m3_s3_FINALE_quantum_teleport_G4_ibm_marrakesh_seed101_20260824-130414_run.json",
+      "qdep_m3_s3_FINALE_classical_G4_ibm_marrakesh_seed101_20260824-130414_run.json",
+      "qdep_m3_s3_FINALE_ideal_G4_sim_seed101_20260824-130414_run.json",
+      "qdep_m3_s3_FINALE_quantum_swap_G4_ibm_marrakesh_seed102_20260824-130423_run.json",
+      "qdep_m3_s3_FINALE_quantum_teleport_G4_ibm_marrakesh_seed102_20260824-130433_run.json",
+      "qdep_m3_s3_FINALE_classical_G4_ibm_marrakesh_seed102_20260824-130433_run.json",
+      "qdep_m3_s3_FINALE_ideal_G4_sim_seed102_20260824-130433_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 4,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum_swap": 0.189975,
+            "quantum_teleport": 0.201799,
+            "classical": 0.003756,
+            "ideal": 0.173711
+          },
+          "C_g_std": {
+            "quantum_swap": 0.005487,
+            "quantum_teleport": 0.016329,
+            "classical": 0.003656,
+            "ideal": 0.008707
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum_swap": 0.017657,
+            "quantum_teleport": 0.021588,
+            "classical": 0.002043,
+            "ideal": 0.035705
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002375,
+            "quantum_teleport": 0.003274,
+            "classical": 0.001785,
+            "ideal": 0.000662
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum_swap": 0.014705,
+            "quantum_teleport": 0.006376,
+            "classical": 0.001522,
+            "ideal": 0.023421
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002423,
+            "quantum_teleport": 0.00184,
+            "classical": 0.001444,
+            "ideal": 0.000612
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum_swap": 0.006382,
+            "quantum_teleport": 0.005822,
+            "classical": 0.001126,
+            "ideal": 0.013441
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001509,
+            "quantum_teleport": 0.002472,
+            "classical": 0.001226,
+            "ideal": 0.000762
+          }
+        },
+        {
+          "gen": 4,
+          "C_g_mean": {
+            "quantum_swap": 0.006072,
+            "quantum_teleport": 0.002219,
+            "classical": 0.000598,
+            "ideal": 0.009338
+          },
+          "C_g_std": {
+            "quantum_swap": 0.000888,
+            "quantum_teleport": 0.00094,
+            "classical": 0.000562,
+            "ideal": 0.001639
+          }
+        }
+      ],
+      "gstar": {
+        "swap": {
+          "k2": 4,
+          "k3": 4
+        },
+        "teleport": {
+          "k2": 2,
+          "k3": 1
+        }
+      },
+      "delta_gstar": {
+        "k2": -2,
+        "k3": -3
+      },
+      "logical_depth": {
+        "swap": 33,
+        "teleport": 28
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum_swap": 0.189975,
+        "quantum_teleport": 0.201799,
+        "classical": 0.003756,
+        "ideal": 0.173711
+      },
+      "C_g_std": {
+        "quantum_swap": 0.005487,
+        "quantum_teleport": 0.016329,
+        "classical": 0.003656,
+        "ideal": 0.008707
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum_swap": 0.017657,
+        "quantum_teleport": 0.021588,
+        "classical": 0.002043,
+        "ideal": 0.035705
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002375,
+        "quantum_teleport": 0.003274,
+        "classical": 0.001785,
+        "ideal": 0.000662
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum_swap": 0.014705,
+        "quantum_teleport": 0.006376,
+        "classical": 0.001522,
+        "ideal": 0.023421
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002423,
+        "quantum_teleport": 0.00184,
+        "classical": 0.001444,
+        "ideal": 0.000612
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum_swap": 0.006382,
+        "quantum_teleport": 0.005822,
+        "classical": 0.001126,
+        "ideal": 0.013441
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001509,
+        "quantum_teleport": 0.002472,
+        "classical": 0.001226,
+        "ideal": 0.000762
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum_swap": 0.006072,
+        "quantum_teleport": 0.002219,
+        "classical": 0.000598,
+        "ideal": 0.009338
+      },
+      "C_g_std": {
+        "quantum_swap": 0.000888,
+        "quantum_teleport": 0.00094,
+        "classical": 0.000562,
+        "ideal": 0.001639
+      }
+    }
+  ],
+  "gstar": {
+    "swap": {
+      "k2": 4,
+      "k3": 4
+    },
+    "teleport": {
+      "k2": 2,
+      "k3": 1
+    }
+  },
+  "delta_gstar": {
+    "k2": -2,
+    "k3": -3
+  }
+}

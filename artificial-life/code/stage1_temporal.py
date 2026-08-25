@@ -282,12 +282,56 @@ def build_lineage_quantum(theta_seq: list[float], n_slots: int,
     return qc
 
 
+def build_lineage_quantum_midcircuit(theta_seq: list[float], n_slots: int,
+                                     trait_basis: float) -> QuantumCircuit:
+    """Coherent lineage, MID-CIRCUIT readout -- the original CD-3 intent (--readout midcircuit).
+
+    Same unitary spine as ``build_lineage_quantum`` (S0 ``apply_clone`` + ``m_gate``), but each
+    generation's trait is read the instant it is no longer needed: right AFTER it has cloned its
+    child, generation ``g`` is rotated into the trait basis and measured into ``c[g]``, while the
+    rest of the lineage is still being built. This is many measurements in one shot, one lineage
+    per shot (CD-3), interleaved with subsequent gates on later generations.
+
+    Coherence is preserved exactly as in the deferred arm: the clone ``CX(g-1 -> g)`` consumes the
+    still-coherent parent BEFORE the parent is measured, and no gate ever touches ``g`` again after
+    its measurement, so measuring it early rather than at the end leaves the joint outcome
+    distribution unchanged in a noiseless sim (measurement commutes with disjoint-qubit gates).
+    Deferred and mid-circuit are therefore identical under ``--sim`` (pipeline check); they diverge
+    ONLY on hardware, by the mid-circuit measurement error + the earlier idle-then-read schedule.
+    That divergence -- does mid-circuit c(g) track deferred c(g) within sigma? -- is the experiment.
+
+    NOTE the ONE difference from ``build_lineage_classical``: the classical surrogate measures AND
+    re-prepares each genotype (``Ry(+basis)``) BEFORE cloning, breaking coherence into the child;
+    here the clone fires first and there is no re-prep, so the child is seeded coherently. Same
+    measurement count, opposite coherence -- exactly the coherent/classical contrast, now with the
+    quantum arm read mid-circuit instead of deferred.
+    """
+    geno = QuantumRegister(n_slots, "q")
+    cr = ClassicalRegister(n_slots, "c")
+    qc = QuantumCircuit(geno, cr)
+
+    def read_trait(g: int) -> None:                        # mid-circuit trait-basis readout of q[g]
+        if abs(trait_basis) > 1e-12:
+            qc.ry(-trait_basis, g)
+        qc.measure(g, cr[g])
+
+    qc.append(m_gate(theta_seq[0]), [0])                    # genotype 0: |0> then mutate
+    for g in range(1, n_slots):
+        apply_clone(qc, parent=g - 1, ancilla=g)           # clone from the still-coherent parent
+        qc.append(m_gate(theta_seq[g]), [g])               # mutate the child
+        read_trait(g - 1)                                  # parent consumed -> read it mid-circuit
+    read_trait(n_slots - 1)                                # last generation is never a parent
+    return qc
+
+
 def sample_quantum_arm(qc: QuantumCircuit, shots: int, args: argparse.Namespace,
-                       backend: Any, qubit_list: list[int]) -> list[str]:
+                       backend: Any, qubit_list: list[int]) -> tuple[list[str], float | None]:
     """Dispatch the quantum lineage circuit: --sim statevector or Heron-r2 run_hw.
 
-    Returns one ``T_0...T_G`` string per shot. Qiskit's little-endian count key is
-    ``c[G]...c[0]``; reversing gives ``c[0]...c[G]`` so column g maps to generation g.
+    Returns ``(fields, qpu_seconds)``: one ``T_0...T_G`` string per shot, and the QPU time
+    the job billed (``None`` under --sim). Qiskit's little-endian count key is ``c[G]...c[0]``;
+    reversing gives ``c[0]...c[G]`` so column g maps to generation g. QPU time is recorded so the
+    deferred-vs-midcircuit feed-forward latency delta is measurable (1b Record).
     """
     if args.sim:
         counts = SIM.run(transpile(qc, SIM), shots=shots).result().get_counts()
@@ -295,15 +339,15 @@ def sample_quantum_arm(qc: QuantumCircuit, shots: int, args: argparse.Namespace,
         for bitstr, cnt in counts.items():
             rec = bitstr.replace(" ", "")[::-1]             # c[0..G]
             fields.extend([rec] * cnt)
-        return fields
+        return fields, None
     # hardware: preset pass manager + sampler (ported research_qtree.run_hw). Pin the
     # layout only when the chain matches the circuit width, else let opt-3 route.
     init = qubit_list if (qubit_list and len(qubit_list) == qc.num_qubits) else None
     pm = generate_preset_pass_manager(optimization_level=3, backend=backend,
                                       initial_layout=init)
     isa = pm.run(qc)
-    raw_meas, _jobs, _qs = run_sampler(backend, isa, shots)
-    return [s[::-1] for s in raw_meas]                       # register 'c', reversed
+    raw_meas, _jobs, qpu_s = run_sampler(backend, isa, shots)
+    return [s[::-1] for s in raw_meas], qpu_s               # register 'c', reversed
 
 
 # ---------------------------------------------------------------------------
@@ -388,6 +432,8 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, theta_seq: list[floa
     random.seed(seed)
     n_slots = len(theta_seq)
     gmax = min(args.corr_gmax, n_slots - 1)
+    readout = getattr(args, "readout", "deferred")
+    qpu_s: float | None = None
 
     if arm == "ideal":
         ideal = run_ideal(theta_seq, n_slots)
@@ -398,8 +444,11 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, theta_seq: list[floa
               f"{', '.join(f'{v:+.3f}' for v in ideal)}")
     else:
         if arm == "quantum":
-            qc = build_lineage_quantum(theta_seq, n_slots, args.trait_basis)
-            fields = sample_quantum_arm(qc, args.shots, args, backend, qubit_list)
+            if readout == "midcircuit":
+                qc = build_lineage_quantum_midcircuit(theta_seq, n_slots, args.trait_basis)
+            else:
+                qc = build_lineage_quantum(theta_seq, n_slots, args.trait_basis)
+            fields, qpu_s = sample_quantum_arm(qc, args.shots, args, backend, qubit_list)
         elif arm == "classical":
             qc = build_lineage_classical(theta_seq, n_slots, args.trait_basis)
             fields = sample_circuit(qc, args.shots)          # always sim (classical null)
@@ -427,6 +476,11 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, theta_seq: list[floa
             "shots": args.shots,
             "mut_scale": args.mut_scale,
             "corr_gmax": args.corr_gmax,
+            "readout": (readout if arm == "quantum" else "na"),
+            "num_measurements_per_shot": (0 if arm == "ideal" else n_slots),
+            "mid_circuit_measurements": (
+                (n_slots - 1) if (arm == "quantum" and readout == "midcircuit") else 0),
+            "qpu_seconds": qpu_s,
             "operators": {"M_theta": M_THETA_SPEC, "U_M": U_M_SPEC},
             "entropy_provenance": provenance,
             "calibration": calib,
@@ -505,6 +559,12 @@ def main() -> None:
                     default=TRAIT_BASIS_DEFAULT,
                     help="trait readout basis in radians (SETUP-FIX): 0=diagonal sigma_z "
                          "(classically clonable, g*=1), pi/4=off-diagonal (default, real gap)")
+    ap.add_argument("--readout", choices=["deferred", "midcircuit"], default="deferred",
+                    help="quantum-arm trait readout (1b experiment): 'deferred' = month-1 fix, "
+                         "all traits measured at circuit end, lineage stays coherent; 'midcircuit' "
+                         "= read T_g per generation mid-circuit (many measures/shot, one lineage/"
+                         "shot, CD-3 intent). Identical under --sim; diverge only on hardware by "
+                         "mid-circuit readout error. Ignored for classical/ideal arms.")
     ap.add_argument("--qrng-url", dest="qrng_url", type=str, default=None,
                     help="Q-EaaS base URL (Q5); default env QEAAS_API_URL else "
                          f"{QEAAS_URL_DEFAULT}")
@@ -620,6 +680,7 @@ def main() -> None:
                 "generations": args.generations,
                 "shots": args.shots,
                 "corr_gmax": args.corr_gmax,
+                "readout": args.readout,
                 "k": args.k,
                 "run_files": run_files,
             },

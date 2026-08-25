@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "width": 5,
+    "steps": 6,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "founder_equator": true,
+    "seed": 100,
+    "sim": true,
+    "operators": "CNOT-clone / Ry-mutation / {damping|unitary}-death / SWAP-interaction"
+  },
+  "arms": {
+    "unitary/nn": {
+      "pheno_z": [
+        1.0,
+        1.0,
+        0.923879532511287,
+        0.7071067811865476,
+        1.0
+      ],
+      "classical_z": [
+        1.0,
+        1.0,
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476
+      ],
+      "alive_population": 1,
+      "deepest_lineage": -1,
+      "classical_alive": 1,
+      "classical_deepest": -1
+    },
+    "unitary/longrange": {
+      "pheno_z": [
+        1.0,
+        0.923879532511287,
+        0.7071067811865477,
+        1.0,
+        1.0
+      ],
+      "classical_z": [
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476,
+        1.0,
+        1.0
+      ],
+      "alive_population": 1,
+      "deepest_lineage": -1,
+      "classical_alive": 1,
+      "classical_deepest": -1
+    },
+    "damping/nn": {
+      "pheno_z": [
+        0.606142977390902,
+        0.5690709764410207,
+        0.43308095567247645,
+        0.34022888395339684,
+        0.5616751787079222
+      ],
+      "classical_z": [
+        1.0,
+        1.0,
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476
+      ],
+      "alive_population": 5,
+      "deepest_lineage": 4,
+      "classical_alive": 1,
+      "classical_deepest": -1
+    },
+    "damping/longrange": {
+      "pheno_z": [
+        0.5690709764410206,
+        0.4330809556724762,
+        0.3402288839533965,
+        0.606142977390902,
+        0.5616751787079222
+      ],
+      "classical_z": [
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476,
+        1.0,
+        1.0
+      ],
+      "alive_population": 5,
+      "deepest_lineage": 4,
+      "classical_alive": 1,
+      "classical_deepest": -1
+    }
+  }
+}

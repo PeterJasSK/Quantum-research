@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "sim",
+    "sim": true,
+    "base_seed": 100,
+    "repeats": 3,
+    "gmin": 4,
+    "gmax": 4,
+    "shots": 4096,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "bond_dist": 5,
+    "anchors": "all",
+    "routing": "both",
+    "herald": false,
+    "noise_model": "fake_heron",
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "run_files": [
+      "m3_noise_bd5_quantum_swap_G4_sim_seed100_20260824-125218_run.json",
+      "m3_noise_bd5_quantum_teleport_G4_sim_seed100_20260824-125245_run.json",
+      "m3_noise_bd5_classical_G4_sim_seed100_20260824-125245_run.json",
+      "m3_noise_bd5_ideal_G4_sim_seed100_20260824-125245_run.json",
+      "m3_noise_bd5_quantum_swap_G4_sim_seed101_20260824-125257_run.json",
+      "m3_noise_bd5_quantum_teleport_G4_sim_seed101_20260824-125322_run.json",
+      "m3_noise_bd5_classical_G4_sim_seed101_20260824-125322_run.json",
+      "m3_noise_bd5_ideal_G4_sim_seed101_20260824-125322_run.json",
+      "m3_noise_bd5_quantum_swap_G4_sim_seed102_20260824-125331_run.json",
+      "m3_noise_bd5_quantum_teleport_G4_sim_seed102_20260824-125357_run.json",
+      "m3_noise_bd5_classical_G4_sim_seed102_20260824-125357_run.json",
+      "m3_noise_bd5_ideal_G4_sim_seed102_20260824-125358_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 4,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum_swap": 0.181566,
+            "quantum_teleport": 0.182261,
+            "classical": 0.002353,
+            "ideal": 0.174284
+          },
+          "C_g_std": {
+            "quantum_swap": 0.005356,
+            "quantum_teleport": 0.003663,
+            "classical": 0.000895,
+            "ideal": 0.004059
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum_swap": 0.032967,
+            "quantum_teleport": 0.032531,
+            "classical": 0.001698,
+            "ideal": 0.034847
+          },
+          "C_g_std": {
+            "quantum_swap": 0.000956,
+            "quantum_teleport": 0.000797,
+            "classical": 0.000844,
+            "ideal": 0.001401
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum_swap": 0.018574,
+            "quantum_teleport": 0.015043,
+            "classical": 0.001187,
+            "ideal": 0.022075
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001101,
+            "quantum_teleport": 0.001359,
+            "classical": 0.000706,
+            "ideal": 0.002703
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum_swap": 0.011202,
+            "quantum_teleport": 0.010623,
+            "classical": 0.000787,
+            "ideal": 0.010741
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002953,
+            "quantum_teleport": 0.001827,
+            "classical": 0.000545,
+            "ideal": 0.003748
+          }
+        },
+        {
+          "gen": 4,
+          "C_g_mean": {
+            "quantum_swap": 0.004537,
+            "quantum_teleport": 0.004518,
+            "classical": 0.000226,
+            "ideal": 0.007524
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001409,
+            "quantum_teleport": 0.002352,
+            "classical": 0.000321,
+            "ideal": 0.000397
+          }
+        }
+      ],
+      "gstar": {
+        "swap": {
+          "k2": 4,
+          "k3": 3
+        },
+        "teleport": {
+          "k2": 3,
+          "k3": 3
+        }
+      },
+      "delta_gstar": {
+        "k2": -1,
+        "k3": 0
+      },
+      "logical_depth": {
+        "swap": 33,
+        "teleport": 28
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum_swap": 0.181566,
+        "quantum_teleport": 0.182261,
+        "classical": 0.002353,
+        "ideal": 0.174284
+      },
+      "C_g_std": {
+        "quantum_swap": 0.005356,
+        "quantum_teleport": 0.003663,
+        "classical": 0.000895,
+        "ideal": 0.004059
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum_swap": 0.032967,
+        "quantum_teleport": 0.032531,
+        "classical": 0.001698,
+        "ideal": 0.034847
+      },
+      "C_g_std": {
+        "quantum_swap": 0.000956,
+        "quantum_teleport": 0.000797,
+        "classical": 0.000844,
+        "ideal": 0.001401
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum_swap": 0.018574,
+        "quantum_teleport": 0.015043,
+        "classical": 0.001187,
+        "ideal": 0.022075
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001101,
+        "quantum_teleport": 0.001359,
+        "classical": 0.000706,
+        "ideal": 0.002703
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum_swap": 0.011202,
+        "quantum_teleport": 0.010623,
+        "classical": 0.000787,
+        "ideal": 0.010741
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002953,
+        "quantum_teleport": 0.001827,
+        "classical": 0.000545,
+        "ideal": 0.003748
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum_swap": 0.004537,
+        "quantum_teleport": 0.004518,
+        "classical": 0.000226,
+        "ideal": 0.007524
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001409,
+        "quantum_teleport": 0.002352,
+        "classical": 0.000321,
+        "ideal": 0.000397
+      }
+    }
+  ],
+  "gstar": {
+    "swap": {
+      "k2": 4,
+      "k3": 3
+    },
+    "teleport": {
+      "k2": 3,
+      "k3": 3
+    }
+  },
+  "delta_gstar": {
+    "k2": -1,
+    "k3": 0
+  }
+}

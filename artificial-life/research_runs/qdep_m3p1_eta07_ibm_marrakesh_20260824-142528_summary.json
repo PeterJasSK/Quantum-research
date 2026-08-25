@@ -1,0 +1,277 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_marrakesh",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 5,
+    "gmin": 10,
+    "gmax": 10,
+    "shots": 8192,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "bond_dist": 1,
+    "anchors": "all",
+    "routing": "swap",
+    "herald": false,
+    "noise_model": null,
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "run_files": [
+      "qdep_m3p1_eta07_quantum_swap_G10_ibm_marrakesh_seed100_20260824-142453_run.json",
+      "qdep_m3p1_eta07_quantum_swap_G10_ibm_marrakesh_seed101_20260824-142502_run.json",
+      "qdep_m3p1_eta07_quantum_swap_G10_ibm_marrakesh_seed102_20260824-142510_run.json",
+      "qdep_m3p1_eta07_quantum_swap_G10_ibm_marrakesh_seed103_20260824-142519_run.json",
+      "qdep_m3p1_eta07_quantum_swap_G10_ibm_marrakesh_seed104_20260824-142528_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 10,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum_swap": 0.248929
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001099
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum_swap": 0.159852
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002168
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum_swap": 0.107572
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001698
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum_swap": 0.073763
+          },
+          "C_g_std": {
+            "quantum_swap": 0.003492
+          }
+        },
+        {
+          "gen": 4,
+          "C_g_mean": {
+            "quantum_swap": 0.051381
+          },
+          "C_g_std": {
+            "quantum_swap": 0.004027
+          }
+        },
+        {
+          "gen": 5,
+          "C_g_mean": {
+            "quantum_swap": 0.035625
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002581
+          }
+        },
+        {
+          "gen": 6,
+          "C_g_mean": {
+            "quantum_swap": 0.023848
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002231
+          }
+        },
+        {
+          "gen": 7,
+          "C_g_mean": {
+            "quantum_swap": 0.016032
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002451
+          }
+        },
+        {
+          "gen": 8,
+          "C_g_mean": {
+            "quantum_swap": 0.012293
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001195
+          }
+        },
+        {
+          "gen": 9,
+          "C_g_mean": {
+            "quantum_swap": 0.00832
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001938
+          }
+        },
+        {
+          "gen": 10,
+          "C_g_mean": {
+            "quantum_swap": 0.007089
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002608
+          }
+        }
+      ],
+      "gstar": {
+        "swap": {
+          "k2": null,
+          "k3": null,
+          "life_k2": 6,
+          "life_k3": 5
+        },
+        "teleport": {
+          "k2": null,
+          "k3": null,
+          "life_k2": null,
+          "life_k3": null
+        }
+      },
+      "delta_gstar": {
+        "k2": null,
+        "k3": null
+      },
+      "logical_depth": {
+        "swap": 23,
+        "teleport": null
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum_swap": 0.248929
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001099
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum_swap": 0.159852
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002168
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum_swap": 0.107572
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001698
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum_swap": 0.073763
+      },
+      "C_g_std": {
+        "quantum_swap": 0.003492
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum_swap": 0.051381
+      },
+      "C_g_std": {
+        "quantum_swap": 0.004027
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum_swap": 0.035625
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002581
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum_swap": 0.023848
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002231
+      }
+    },
+    {
+      "gen": 7,
+      "C_g_mean": {
+        "quantum_swap": 0.016032
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002451
+      }
+    },
+    {
+      "gen": 8,
+      "C_g_mean": {
+        "quantum_swap": 0.012293
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001195
+      }
+    },
+    {
+      "gen": 9,
+      "C_g_mean": {
+        "quantum_swap": 0.00832
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001938
+      }
+    },
+    {
+      "gen": 10,
+      "C_g_mean": {
+        "quantum_swap": 0.007089
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002608
+      }
+    }
+  ],
+  "gstar": {
+    "swap": {
+      "k2": null,
+      "k3": null,
+      "life_k2": 6,
+      "life_k3": 5
+    },
+    "teleport": {
+      "k2": null,
+      "k3": null,
+      "life_k2": null,
+      "life_k3": null
+    }
+  },
+  "delta_gstar": {
+    "k2": null,
+    "k3": null
+  }
+}

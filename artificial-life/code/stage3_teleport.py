@@ -115,6 +115,21 @@ PHI = math.acos(ETA)            # clone Ry angle: eta = cos(phi)
 PHENO_BASIS = 0.0               # phenotype-map basis; 0 => pheno tracks genotype exactly (Q2)
 UNIT_TOL = 0.03                 # operator-equivalence L1 tolerance
 
+# ---- MONTH-3 fixes (set from CLI in main; globals so the many build call-sites are
+#      untouched) -------------------------------------------------------------------
+# (1) FOUNDER_SEED: put genotype 0 on the equator (|+>) so the inherited trait actually
+#     VARIES shot-to-shot. Without it the founder is ~|0> (near-deterministic), Var(T_0)~0,
+#     and the two-point C(g) is pure shot noise -> g*=0 (the Month-2 null). With it,
+#     Var(T_0)~1 and the diagonal Z-copy chain gives a DEEP geometric C(g) for the
+#     depth-preservation (teleport vs SWAP) test to act on.
+# (2) ETA tunable via --eta: eta=0.9 is the paper phenotype lifetime, but c(g)~eta^g then
+#     stays above the noise floor past any reachable G -> g* saturates at G on BOTH routings
+#     -> Dg*=0 by pinning, not by physics. A stronger contraction (eta~0.6) lands g* INSIDE
+#     the generation window so the SWAP depth penalty can separate the two routings. This
+#     sets the OPERATING POINT; the teleport-vs-SWAP delta is what we measure and it is
+#     eta-robust (verified in sim across eta in [0.6, 0.8]).
+FOUNDER_SEED = False
+
 M_THETA_SPEC = "[[cos t, sin t], [sin t, -cos t]]"
 U_M_SPEC = f"Ry(phi={PHI:.4f}) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)={ETA}"
 
@@ -136,13 +151,27 @@ def m_gate(theta: float) -> UnitaryGate:
     return UnitaryGate(mat, label="M")
 
 
-def apply_clone(qc: QuantumCircuit, parent: int, ancilla: int, phi: float = PHI) -> None:
+def apply_clone(qc: QuantumCircuit, parent: int, ancilla: int, phi: float | None = None) -> None:
     """Approximate clone U_M: fixed Ry(phi) on the fresh ancilla, then CX(parent->ancilla).
 
-    The offspring ancilla inherits <sigma_z> at contraction eta = cos(phi).
+    The offspring ancilla inherits <sigma_z> at contraction eta = cos(phi). ``phi=None``
+    resolves to the module global PHI (set from --eta in main), so a run-time --eta takes
+    effect without threading phi through every call site.
     """
+    if phi is None:
+        phi = PHI
     qc.ry(phi, ancilla)
     qc.cx(parent, ancilla)
+
+
+def _seed_founder(qc: QuantumCircuit, q0: int) -> None:
+    """M3: optionally seed the founder genotype on the equator (Ry(pi/2) -> |+>).
+
+    Diagonal <sigma_z> readout of an equatorial founder has Var(T_0)~1, so the Z-copy
+    lineage carries a DEEP two-point C(g); without it Var(T_0)~0 and C(g) is shot noise
+    (the Month-2 g*=0 null). No-op unless --founder is set."""
+    if FOUNDER_SEED:
+        qc.ry(math.pi / 2, q0)
 
 
 def phenotype_map(qc: QuantumCircuit, genotype: int, pheno_ancilla: int,
@@ -268,6 +297,7 @@ def build_lineage_quantum(theta_seq: list[float], n_slots: int,
     # integer indices: geno[g] = g, phen[g] = n_slots + g (declaration order)
     for g in range(n_slots):
         if g == 0:
+            _seed_founder(qc, 0)                            # M3: equatorial founder (variance)
             qc.append(m_gate(theta_seq[0]), [0])            # genotype 0: |0> then mutate
         else:
             apply_clone(qc, parent=g - 1, ancilla=g)        # coherent clone parent->child
@@ -358,7 +388,7 @@ def resolve_bonds(anchors: str, n_slots: int) -> list[int]:
 # ---------------------------------------------------------------------------
 def apply_clone_routed(qc: QuantumCircuit, parent: int, ancilla: int, routing: str,
                        corridor: tuple[int, int] | None, tel: Any, k: int,
-                       feedforward: bool, phi: float = PHI) -> int:
+                       feedforward: bool, phi: float | None = None) -> int:
     """Wrap S2's ``apply_clone``: local ``Ry(phi)`` then route the parity CX (§6.6).
 
     ``routing``:
@@ -370,6 +400,8 @@ def apply_clone_routed(qc: QuantumCircuit, parent: int, ancilla: int, routing: s
     ``corridor`` holds ``(a1, a2)`` (the two spacer qubits used as teleport ancillas).
     Returns the running teleport-bond counter ``k`` (advanced only on a teleport bond).
     """
+    if phi is None:
+        phi = PHI                             # resolve current --eta (see apply_clone)
     qc.ry(phi, ancilla)                       # local clone Ry -- unchanged from apply_clone
     if routing == "direct":
         qc.cx(parent, ancilla)
@@ -387,7 +419,7 @@ def apply_clone_routed(qc: QuantumCircuit, parent: int, ancilla: int, routing: s
 
 def build_lineage_routed(theta_seq: list[float], n_slots: int, pheno_coupling: float,
                          bond_dist: int, routing: str, anchors: str,
-                         feedforward: bool = True
+                         feedforward: bool = True, defer_readout: bool = False
                          ) -> tuple[QuantumCircuit, int, int]:
     """S2's ``build_lineage_quantum`` with the clone step swapped for ``apply_clone_routed``.
 
@@ -423,6 +455,7 @@ def build_lineage_routed(theta_seq: list[float], n_slots: int, pheno_coupling: f
     k = 0
     for g in range(n_slots):
         if g == 0:
+            _seed_founder(qc, geno(0))                          # M3: equatorial founder (variance)
             qc.append(m_gate(theta_seq[0]), [geno(0)])          # genotype 0: |0> then mutate
         else:
             # per-generation routing: direct baseline unless this bond is routed long-range
@@ -438,9 +471,19 @@ def build_lineage_routed(theta_seq: list[float], n_slots: int, pheno_coupling: f
                                    routing=gen_routing, corridor=corridor, tel=tel, k=k,
                                    feedforward=feedforward)
             qc.append(m_gate(theta_seq[g]), [geno(g)])          # mutate the child
-        phenotype_map(qc, genotype=geno(g), pheno_ancilla=pheno(g),
-                      pheno_coupling=pheno_coupling)
-        qc.measure(pheno(g), cr[g])                             # mid-circuit trait readout
+        if not defer_readout:
+            phenotype_map(qc, genotype=geno(g), pheno_ancilla=pheno(g),
+                          pheno_coupling=pheno_coupling)
+            qc.measure(pheno(g), cr[g])                         # mid-circuit trait readout
+    if defer_readout:
+        # M3 (--defer-readout): kill the per-generation phenotype mid-circuit measurement so
+        # the lineage stays COHERENT to the end (QuantumLife terminal-readout setup). The
+        # correlation is then coherence-carried and MORE depth-fragile -> the SWAP ladder's
+        # extra 2q error hurts more, relative to teleport. NOTE: teleport's OWN Bell-measure +
+        # feed-forward is intrinsic and remains; --herald removes its feed-forward corrections.
+        qc.barrier()
+        for g in range(n_slots):
+            qc.measure(geno(g), cr[g])                          # deferred diagonal readout
     return qc, qc.depth(), num_teleport_bonds
 
 
@@ -451,10 +494,18 @@ def build_lineage_routed(theta_seq: list[float], n_slots: int, pheno_coupling: f
 _NOISY_CACHE: dict[str, Any] = {}
 
 
-def _get_noisy_backend(name: str) -> Any:
-    """Build (once) a noisy Aer backend from a Fake Heron device (Q7)."""
-    if name in _NOISY_CACHE:
-        return _NOISY_CACHE[name]
+def _get_noisy_backend(name: str, method: str = "matrix_product_state") -> Any:
+    """Build (once) a noisy Aer backend from a Fake Heron device (Q7).
+
+    ``method`` picks the Aer simulation engine. The routed spine is WIDE (strided genotype
+    qubits + spacer corridor + one phenotype ancilla per generation), so statevector noise
+    sim is infeasible past ~16 qubits (2^n memory). The lineage is low-entanglement (a copy
+    chain + local clones), so ``matrix_product_state`` runs it in polynomial bond dimension
+    -- the M3 off-hardware path (no live QC; §7). Pass ``statevector`` for tiny G if desired.
+    """
+    key = f"{name}:{method}"
+    if key in _NOISY_CACHE:
+        return _NOISY_CACHE[key]
     import qiskit_ibm_runtime.fake_provider as fp
     alias = {                                   # narrative "Heron" -> a concrete Fake device
         "fake_heron": "FakeFez", "heron": "FakeFez", "fake_heron_r2": "FakeFez",
@@ -464,8 +515,8 @@ def _get_noisy_backend(name: str) -> Any:
     if not cls_name.startswith("Fake"):
         cls_name = "Fake" + cls_name[:1].upper() + cls_name[1:]
     fake = getattr(fp, cls_name)()
-    backend = AerSimulator.from_backend(fake)
-    _NOISY_CACHE[name] = backend
+    backend = AerSimulator.from_backend(fake, method=method)
+    _NOISY_CACHE[key] = backend
     return backend
 
 
@@ -514,7 +565,8 @@ def sample_quantum_arm(qc: QuantumCircuit, shots: int, args: argparse.Namespace,
     if args.sim or force_sim:
         sim_backend = SIM
         if getattr(args, "noise_model", None) and not force_sim:
-            sim_backend = _get_noisy_backend(args.noise_model)
+            sim_backend = _get_noisy_backend(args.noise_model,
+                                             getattr(args, "sim_method", "matrix_product_state"))
         counts = sim_backend.run(transpile(qc, sim_backend), shots=shots).result().get_counts()
         fields: list[str] = []
         tels: list[str] = []
@@ -576,6 +628,7 @@ def _build_generation_nomeasure(gen: int, theta_seq: list[float]) -> QuantumCirc
     """S0's per-generation lineage circuit (no measurement) for exact <sigma_z>_p."""
     n = gen + 2
     qc = QuantumCircuit(n)
+    _seed_founder(qc, 0)                                     # M3: equatorial founder (variance)
     qc.append(m_gate(theta_seq[0]), [0])
     for i in range(1, gen + 1):
         apply_clone(qc, parent=i - 1, ancilla=i)
@@ -668,7 +721,8 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, G: int,
         for w in range(width):                          # parallel INDEPENDENT lineages (Q4)
             qc, logical_depth, num_teleport_bonds = build_lineage_routed(
                 theta_seq, n_slots, args.pheno_coupling, args.bond_dist, routing,
-                args.anchors, feedforward=feedforward)
+                args.anchors, feedforward=feedforward,
+                defer_readout=getattr(args, "defer_readout", False))
             out = sample_quantum_arm(qc, args.shots, args, backend, qubit_list,
                                      want_tel=want_tel)
             if want_tel:
@@ -725,6 +779,10 @@ def run_once(args: argparse.Namespace, seed: int, arm: str, G: int,
             "pheno_coupling": args.pheno_coupling,
             "mut_scale": args.mut_scale,
             "corr_gmax": gmax,
+            "eta": ETA,                               # M3: clone contraction actually used
+            "founder_seed": FOUNDER_SEED,             # M3: equatorial founder on?
+            "defer_readout": getattr(args, "defer_readout", False),  # M3: terminal readout?
+            "quantum_only": getattr(args, "quantum_only", False),    # M3: maximize-the-life mode?
             # --- S3 routing meta (§4) ---
             "bond_dist": args.bond_dist,
             "anchors": args.anchors,
@@ -767,12 +825,28 @@ def compute_gstar(per_gen_Cq: list[float], per_gen_Ccl: list[float],
     return gstar
 
 
+def gstar_lifetime(per_gen_C: list[float], sigma: list[float], k: int) -> int:
+    """M3 'life span' g*: deepest generation whose inheritance correlation is statistically
+    nonzero on its own (|C(g)| > k*sigma). No classical arm needed -- this is the raw number
+    of generations the coherent lineage survives on hardware (the 'how big is the life' metric
+    for the maximize-the-life program). Stops at the first g that falls into the noise floor."""
+    gstar = 0
+    for g in range(1, min(len(per_gen_C), len(sigma))):
+        s = sigma[g]
+        if s > 1e-12 and abs(per_gen_C[g]) > k * s:
+            gstar = g
+        else:
+            break
+    return gstar
+
+
 # ---------------------------------------------------------------------------
 # Per-G aggregation (M3/M5) -- S3 splits the quantum arm into the two routings,
 # computes g* per routing vs the SHARED classical surrogate, and Δg* (M5).
 # ---------------------------------------------------------------------------
 def _aggregate_per_generation(corr_by_arm: dict[str, list[list[float]]], n_slots: int,
-                              stat_arms: list[str]) -> tuple[list[dict], dict, dict]:
+                              stat_arms: list[str], shot_floor: float = 0.0
+                              ) -> tuple[list[dict], dict, dict]:
     """Aggregate raw C(g) over repeats into per-gen mean/std, per-routing g*, and Δg*.
 
     ``mat`` is shape ``(repeats x n_slots)`` per arm; ``mean/std(ddof=0)`` over axis 0.
@@ -797,15 +871,20 @@ def _aggregate_per_generation(corr_by_arm: dict[str, list[list[float]]], n_slots
 
     gstar: dict[str, dict] = {}
     for routing, akey in (("swap", "quantum_swap"), ("teleport", "quantum_teleport")):
+        entry: dict[str, int | None] = {"k2": None, "k3": None, "life_k2": None, "life_k3": None}
         if akey in means and "classical" in means:
             sigma = [math.sqrt(float(stds[akey][g]) ** 2 + float(stds["classical"][g]) ** 2)
                      for g in range(n_slots)]
             Cq = means[akey].tolist()
             Ccl = means["classical"].tolist()
-            gstar[routing] = {"k2": compute_gstar(Cq, Ccl, sigma, 2),
-                              "k3": compute_gstar(Cq, Ccl, sigma, 3)}
-        else:
-            gstar[routing] = {"k2": None, "k3": None}
+            entry["k2"] = compute_gstar(Cq, Ccl, sigma, 2)
+            entry["k3"] = compute_gstar(Cq, Ccl, sigma, 3)
+        if akey in means:                            # M3 lifetime g* (no classical needed)
+            sig = [math.sqrt(float(stds[akey][g]) ** 2 + shot_floor ** 2) for g in range(n_slots)]
+            Cq = means[akey].tolist()
+            entry["life_k2"] = gstar_lifetime(Cq, sig, 2)
+            entry["life_k3"] = gstar_lifetime(Cq, sig, 3)
+        gstar[routing] = entry
 
     delta_gstar: dict[str, int | None] = {}
     for kk in ("k2", "k3"):
@@ -837,6 +916,7 @@ def _read_env_key(name: str) -> str | None:
 
 
 def main() -> None:
+    global ETA, PHI, FOUNDER_SEED               # M3: --eta / --founder rebind these
     ap = argparse.ArgumentParser(description="QDEP Stage 3 -- break the SWAP ceiling: "
                                              "teleport-vs-SWAP routing of the inheritance "
                                              "bond, Δg* (M5) and logical_depth (M6).")
@@ -853,6 +933,15 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=100, help="base; repeat r uses seed+r")
     ap.add_argument("--repeats", type=int, default=8, help="sigma for g* (CD-5)")
     ap.add_argument("--backend", type=str, default=None)
+    ap.add_argument("--max-twoq-err", dest="max_twoq_err", type=float, default=0.05,
+                    help="abort if the auto-chain's worst 2q edge error exceeds this "
+                         "(guards against dead/1.0-error edges polluting the ceiling; "
+                         "set high or use --allow-bad-chain to bypass)")
+    ap.add_argument("--max-readout-err", dest="max_readout_err", type=float, default=0.15,
+                    help="abort if the auto-chain's worst readout error exceeds this")
+    ap.add_argument("--allow-bad-chain", dest="allow_bad_chain",
+                    action="store_true", default=False,
+                    help="bypass the --max-twoq-err / --max-readout-err chain-quality gate")
     ap.add_argument("--sim", action=argparse.BooleanOptionalAction, default=True)
     ap.add_argument("--corr-gmax", dest="corr_gmax", type=int, default=None,
                     help="max g for C(g) per G (default = that G)")
@@ -873,8 +962,32 @@ def main() -> None:
                     help="teleport-only heralded post-selection (tel==00); small-scale filter (§9)")
     ap.add_argument("--noise-model", dest="noise_model", type=str, default=None,
                     help="noisy Aer backend (e.g. fake_heron) so --sim shows a Δg* signal (Q7)")
+    ap.add_argument("--sim-method", dest="sim_method", type=str, default="matrix_product_state",
+                    help="Aer engine for the NOISE sim (M3): matrix_product_state scales to the "
+                         "wide routed spine; statevector only for tiny G")
+    # --- M3 fixes (see globals near top) ---
+    ap.add_argument("--eta", type=float, default=ETA,
+                    help="clone contraction eta=cos(phi) (M3). 0.9 = paper lifetime (g* saturates "
+                         "at G); ~0.6 lands g* inside the window so the SWAP depth penalty shows.")
+    ap.add_argument("--founder", action="store_true", default=False,
+                    help="M3: seed founder genotype on the equator (|+>) so the trait varies and "
+                         "C(g) is a real deep signal, not shot noise. Required for a Δg*>0 finale.")
+    ap.add_argument("--defer-readout", dest="defer_readout", action="store_true", default=False,
+                    help="M3: kill the per-generation phenotype mid-circuit measurement; read the "
+                         "genotype spine once at the end (QuantumLife terminal readout). Keeps the "
+                         "lineage coherent -> more depth-fragile -> amplifies the SWAP penalty.")
+    ap.add_argument("--quantum-only", dest="quantum_only", action="store_true", default=False,
+                    help="M3 maximize-the-life: run ONLY the quantum lineage arm (drop the "
+                         "statevector-bound classical + ideal context arms). Lets G/width scale far "
+                         "past the ~26-qubit statevector ceiling on hardware. g* becomes the lifetime "
+                         "metric (deepest g with |C(g)|>k*sigma), no classical comparison.")
     ap.add_argument("--name", type=str, default="qdep_s3")
     args = ap.parse_args()
+
+    # M3: apply --eta / --founder to the module globals the builders read.
+    ETA = args.eta
+    PHI = math.acos(max(-1.0, min(1.0, ETA)))
+    FOUNDER_SEED = args.founder
 
     if args.gmin < 2:
         print(f"[S3 ABORT] --gmin {args.gmin} < 2: the g>=1 correlation domain is trivial "
@@ -908,21 +1021,26 @@ def main() -> None:
     # --noise-model runs on the device coupling map, not the statevector).
     n_q_routed = (n_slots_max - 1) * args.bond_dist + 1 + n_slots_max
     n_q_ideal = 2 * n_slots_max
-    need_sv = n_q_ideal
+    # Only statevector-bound arms count against the ceiling. --quantum-only drops the ideal +
+    # classical arms (both statevector); a --no-sim quantum arm runs on the chip, not the sim.
+    sv_costs = [0]
+    if not args.quantum_only:
+        sv_costs += [n_q_ideal, n_slots_max]                 # ideal (2G+2) + classical (G+1)
     if args.sim and not args.noise_model:
-        need_sv = max(need_sv, n_q_routed)
+        sv_costs.append(n_q_routed)                          # routed on statevector only if noiseless
+    need_sv = max(sv_costs)
     if need_sv > args.sv_max_qubits:
         print(f"[S3 ABORT] --gmax {args.gmax} / --bond-dist {args.bond_dist} needs {need_sv} "
               f"statevector qubits > --sv-max-qubits {args.sv_max_qubits} (routed spine "
-              f"{n_q_routed}, mandatory ideal confound {n_q_ideal}, §7/§9). Reduce --gmax or "
-              f"--bond-dist, use --noise-model (device-bounded), or raise --sv-max-qubits.")
+              f"{n_q_routed}, ideal confound {n_q_ideal}, §7/§9). Reduce --gmax or --bond-dist, "
+              f"use --noise-model / --quantum-only (device-bounded), or raise --sv-max-qubits.")
         raise SystemExit(1)
 
     if args.routing == "both":
         q_arms = ["quantum_swap", "quantum_teleport"]
     else:
         q_arms = [f"quantum_{args.routing}"]
-    arms = q_arms + ["classical", "ideal"]
+    arms = q_arms + ([] if args.quantum_only else ["classical", "ideal"])
 
     # --- certified Q-EaaS client (CD-7, fail-closed) -------------------------
     api_key = _read_env_key("QEAAS_API_KEY")
@@ -965,6 +1083,21 @@ def main() -> None:
                   f"Reduce --bond-dist or --gmax.")
             raise SystemExit(1)
         print(f"Auto qubit chain (live calib): {qstats}")
+        # chain-quality gate (§ ceiling must be decoherence-limited, not dead-edge-limited)
+        if not args.allow_bad_chain:
+            _tq = qstats.get("twoq_err_max")
+            _ro = qstats.get("readout_max")
+            _bad = []
+            if _tq is not None and _tq > args.max_twoq_err:
+                _bad.append(f"twoq_err_max {_tq:.4f} > {args.max_twoq_err}")
+            if _ro is not None and _ro > args.max_readout_err:
+                _bad.append(f"readout_max {_ro:.4f} > {args.max_readout_err}")
+            if _bad:
+                print(f"[S3 ABORT] chain quality gate failed on {backend_name}: "
+                      f"{'; '.join(_bad)}. The measured ceiling would be chain-limited, "
+                      f"not physics. Pin a cleaner --backend, wait for recalibration, or "
+                      f"bypass with --allow-bad-chain (records the bad chain in meta).")
+                raise SystemExit(1)
         print("Note: teleport adds ancillas beyond the chain; the transpiler routes them "
               "(initial_layout left unpinned when it exceeds the chain, §6).")
     else:
@@ -1021,8 +1154,12 @@ def main() -> None:
 
         stat_arms = [a for a in ("quantum_swap", "quantum_teleport", "classical", "ideal")
                      if a in corr_by_arm and corr_by_arm[a] and corr_by_arm[a][0]]
+        # shot-noise floor for the lifetime g* (herald keeps ~0.25^nb of shots)
+        nb_ps = len(resolve_bonds(args.anchors, n_slots)) if (args.herald and args.bond_dist >= 3) else 0
+        kept_eff = max(1.0, args.shots * (0.25 ** nb_ps) * max(1, args.width))
+        shot_floor = 1.0 / math.sqrt(kept_eff)
         per_generation, gstar, delta_gstar = _aggregate_per_generation(
-            corr_by_arm, n_slots, stat_arms)
+            corr_by_arm, n_slots, stat_arms, shot_floor)
         logical_depth = {
             "swap": (round(float(np.mean(depth_by_arm["quantum_swap"])))
                      if depth_by_arm.get("quantum_swap") else None),
@@ -1040,6 +1177,12 @@ def main() -> None:
         else:
             print(f"  g*(G={G}) : Δg* needs both routings + the classical arm "
                   "(--routing both).")
+        # M3 lifetime g* (works quantum-only): deepest surviving generation per quantum arm
+        for routing, akey in (("swap", "quantum_swap"), ("teleport", "quantum_teleport")):
+            if akey in stat_arms:
+                gl = gstar[routing]
+                print(f"  LIFE g*(G={G}) [{routing}] : k2={gl.get('life_k2')} "
+                      f"k3={gl.get('life_k3')}  (deepest surviving generation, vs own noise)")
 
     # --- summary.json: sweep[] + top-level = largest-G entry (§4 back-compat) --
     top = sweep[-1] if sweep else {

@@ -1,0 +1,308 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "backend": "ibm_fez",
+    "sim": false,
+    "base_seed": 100,
+    "repeats": 8,
+    "gmin": 6,
+    "gmax": 6,
+    "shots": 8192,
+    "corr_gmax": null,
+    "k": 2,
+    "pheno_coupling": 0.5,
+    "width": 1,
+    "bond_dist": 9,
+    "anchors": "all",
+    "routing": "both",
+    "herald": false,
+    "noise_model": null,
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "run_files": [
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed100_20260824-112057_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed100_20260824-112116_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed100_20260824-112116_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed100_20260824-112116_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed101_20260824-112129_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed101_20260824-112139_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed101_20260824-112139_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed101_20260824-112139_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed102_20260824-112150_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed102_20260824-112200_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed102_20260824-112200_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed102_20260824-112200_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed103_20260824-112210_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed103_20260824-112219_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed103_20260824-112219_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed103_20260824-112219_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed104_20260824-112229_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed104_20260824-112238_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed104_20260824-112238_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed104_20260824-112238_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed105_20260824-112248_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed105_20260824-112259_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed105_20260824-112259_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed105_20260824-112259_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed106_20260824-112310_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed106_20260824-112326_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed106_20260824-112326_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed106_20260824-112326_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_swap_G6_ibm_fez_seed107_20260824-112339_run.json",
+      "qdep_m2_s3_FINALE_bd9_quantum_teleport_G6_ibm_fez_seed107_20260824-112349_run.json",
+      "qdep_m2_s3_FINALE_bd9_classical_G6_ibm_fez_seed107_20260824-112349_run.json",
+      "qdep_m2_s3_FINALE_bd9_ideal_G6_sim_seed107_20260824-112349_run.json"
+    ]
+  },
+  "sweep": [
+    {
+      "G": 6,
+      "per_generation": [
+        {
+          "gen": 0,
+          "C_g_mean": {
+            "quantum_swap": 0.249578,
+            "quantum_teleport": 0.247035,
+            "classical": 0.002715,
+            "ideal": 0.00146
+          },
+          "C_g_std": {
+            "quantum_swap": 0.000284,
+            "quantum_teleport": 0.005626,
+            "classical": 0.003028,
+            "ideal": 0.00165
+          }
+        },
+        {
+          "gen": 1,
+          "C_g_mean": {
+            "quantum_swap": -0.001501,
+            "quantum_teleport": 1.7e-05,
+            "classical": 0.002417,
+            "ideal": 0.000577
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002719,
+            "quantum_teleport": 0.002909,
+            "classical": 0.002733,
+            "ideal": 0.000771
+          }
+        },
+        {
+          "gen": 2,
+          "C_g_mean": {
+            "quantum_swap": -0.000593,
+            "quantum_teleport": 0.000418,
+            "classical": 0.002183,
+            "ideal": 0.000545
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002475,
+            "quantum_teleport": 0.001701,
+            "classical": 0.002454,
+            "ideal": 0.000569
+          }
+        },
+        {
+          "gen": 3,
+          "C_g_mean": {
+            "quantum_swap": 0.000686,
+            "quantum_teleport": -0.002414,
+            "classical": 0.001951,
+            "ideal": 0.000397
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002196,
+            "quantum_teleport": 0.002241,
+            "classical": 0.00229,
+            "ideal": 0.000365
+          }
+        },
+        {
+          "gen": 4,
+          "C_g_mean": {
+            "quantum_swap": 0.000387,
+            "quantum_teleport": -0.000957,
+            "classical": 0.00169,
+            "ideal": 0.000505
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002228,
+            "quantum_teleport": 0.002796,
+            "classical": 0.002008,
+            "ideal": 0.000527
+          }
+        },
+        {
+          "gen": 5,
+          "C_g_mean": {
+            "quantum_swap": 0.001048,
+            "quantum_teleport": -0.000177,
+            "classical": 0.001577,
+            "ideal": 0.000517
+          },
+          "C_g_std": {
+            "quantum_swap": 0.001364,
+            "quantum_teleport": 0.002633,
+            "classical": 0.001877,
+            "ideal": 0.000459
+          }
+        },
+        {
+          "gen": 6,
+          "C_g_mean": {
+            "quantum_swap": 0.000484,
+            "quantum_teleport": 0.000496,
+            "classical": 0.001408,
+            "ideal": 0.000352
+          },
+          "C_g_std": {
+            "quantum_swap": 0.002958,
+            "quantum_teleport": 0.002509,
+            "classical": 0.001648,
+            "ideal": 0.000291
+          }
+        }
+      ],
+      "gstar": {
+        "swap": {
+          "k2": 1,
+          "k3": 1
+        },
+        "teleport": {
+          "k2": 1,
+          "k3": 1
+        }
+      },
+      "delta_gstar": {
+        "k2": 0,
+        "k3": 0
+      },
+      "logical_depth": {
+        "swap": 74,
+        "teleport": 39
+      }
+    }
+  ],
+  "per_generation": [
+    {
+      "gen": 0,
+      "C_g_mean": {
+        "quantum_swap": 0.249578,
+        "quantum_teleport": 0.247035,
+        "classical": 0.002715,
+        "ideal": 0.00146
+      },
+      "C_g_std": {
+        "quantum_swap": 0.000284,
+        "quantum_teleport": 0.005626,
+        "classical": 0.003028,
+        "ideal": 0.00165
+      }
+    },
+    {
+      "gen": 1,
+      "C_g_mean": {
+        "quantum_swap": -0.001501,
+        "quantum_teleport": 1.7e-05,
+        "classical": 0.002417,
+        "ideal": 0.000577
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002719,
+        "quantum_teleport": 0.002909,
+        "classical": 0.002733,
+        "ideal": 0.000771
+      }
+    },
+    {
+      "gen": 2,
+      "C_g_mean": {
+        "quantum_swap": -0.000593,
+        "quantum_teleport": 0.000418,
+        "classical": 0.002183,
+        "ideal": 0.000545
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002475,
+        "quantum_teleport": 0.001701,
+        "classical": 0.002454,
+        "ideal": 0.000569
+      }
+    },
+    {
+      "gen": 3,
+      "C_g_mean": {
+        "quantum_swap": 0.000686,
+        "quantum_teleport": -0.002414,
+        "classical": 0.001951,
+        "ideal": 0.000397
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002196,
+        "quantum_teleport": 0.002241,
+        "classical": 0.00229,
+        "ideal": 0.000365
+      }
+    },
+    {
+      "gen": 4,
+      "C_g_mean": {
+        "quantum_swap": 0.000387,
+        "quantum_teleport": -0.000957,
+        "classical": 0.00169,
+        "ideal": 0.000505
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002228,
+        "quantum_teleport": 0.002796,
+        "classical": 0.002008,
+        "ideal": 0.000527
+      }
+    },
+    {
+      "gen": 5,
+      "C_g_mean": {
+        "quantum_swap": 0.001048,
+        "quantum_teleport": -0.000177,
+        "classical": 0.001577,
+        "ideal": 0.000517
+      },
+      "C_g_std": {
+        "quantum_swap": 0.001364,
+        "quantum_teleport": 0.002633,
+        "classical": 0.001877,
+        "ideal": 0.000459
+      }
+    },
+    {
+      "gen": 6,
+      "C_g_mean": {
+        "quantum_swap": 0.000484,
+        "quantum_teleport": 0.000496,
+        "classical": 0.001408,
+        "ideal": 0.000352
+      },
+      "C_g_std": {
+        "quantum_swap": 0.002958,
+        "quantum_teleport": 0.002509,
+        "classical": 0.001648,
+        "ideal": 0.000291
+      }
+    }
+  ],
+  "gstar": {
+    "swap": {
+      "k2": 1,
+      "k3": 1
+    },
+    "teleport": {
+      "k2": 1,
+      "k3": 1
+    }
+  },
+  "delta_gstar": {
+    "k2": 0,
+    "k3": 0
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "project": "artificial-life",
+    "study": "coherence-depth-genealogy",
+    "arm": "quantum_teleport",
+    "routing": "teleport",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "20260824-125833",
+    "seed": 101,
+    "generations": 3,
+    "shots": 8192,
+    "width": 1,
+    "pheno_coupling": 0.5,
+    "mut_scale": 0.1,
+    "corr_gmax": 3,
+    "eta": 0.6,
+    "founder_seed": true,
+    "bond_dist": 7,
+    "anchors": "all",
+    "logical_depth": 22,
+    "ancillas": 6,
+    "herald": false,
+    "herald_frac": null,
+    "routing_cost": "constant-depth long-range interaction at the cost of ancillas and classical feed-forward latency; not a free bypass",
+    "noise_model": "fake_heron",
+    "operators": {
+      "M_theta": "[[cos t, sin t], [sin t, -cos t]]",
+      "U_M": "Ry(phi=0.4510) on fresh ancilla + CX(parent->ancilla); eta=cos(phi)=0.9"
+    },
+    "entropy_provenance": [
+      {
+        "gen": 0,
+        "source": "qeaas",
+        "request_id": "4fefe1d382fd4caf9b53c7b54bb632ed",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTI2LCJyaWQiOiI0ZmVmZTFkMzgyZmQ0Y2FmOWI1M2M3YjU0YmI2MzJlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI0VDEwOjU2OjUxLjE1NDM1OCswMDowMCJ9.cxu2WHapIaEyrM8sEieFoU674NiaEaqUUGzwUwEjbFH2IHmyZ4qLY9jNIC6zxGLu-Ox1kIWPt5HkpQLwaVqRCw",
+        "entropy_epoch": 126,
+        "timestamp": "2026-08-24T10:56:51.154358Z",
+        "angle_rad": 0.04589905
+      },
+      {
+        "gen": 1,
+        "source": "qeaas",
+        "request_id": "4fefe1d382fd4caf9b53c7b54bb632ed",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTI2LCJyaWQiOiI0ZmVmZTFkMzgyZmQ0Y2FmOWI1M2M3YjU0YmI2MzJlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI0VDEwOjU2OjUxLjE1NDM1OCswMDowMCJ9.cxu2WHapIaEyrM8sEieFoU674NiaEaqUUGzwUwEjbFH2IHmyZ4qLY9jNIC6zxGLu-Ox1kIWPt5HkpQLwaVqRCw",
+        "entropy_epoch": 126,
+        "timestamp": "2026-08-24T10:56:51.154358Z",
+        "angle_rad": 0.08143895
+      },
+      {
+        "gen": 2,
+        "source": "qeaas",
+        "request_id": "4fefe1d382fd4caf9b53c7b54bb632ed",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTI2LCJyaWQiOiI0ZmVmZTFkMzgyZmQ0Y2FmOWI1M2M3YjU0YmI2MzJlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI0VDEwOjU2OjUxLjE1NDM1OCswMDowMCJ9.cxu2WHapIaEyrM8sEieFoU674NiaEaqUUGzwUwEjbFH2IHmyZ4qLY9jNIC6zxGLu-Ox1kIWPt5HkpQLwaVqRCw",
+        "entropy_epoch": 126,
+        "timestamp": "2026-08-24T10:56:51.154358Z",
+        "angle_rad": 0.00221718
+      },
+      {
+        "gen": 3,
+        "source": "qeaas",
+        "request_id": "4fefe1d382fd4caf9b53c7b54bb632ed",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTI2LCJyaWQiOiI0ZmVmZTFkMzgyZmQ0Y2FmOWI1M2M3YjU0YmI2MzJlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI0VDEwOjU2OjUxLjE1NDM1OCswMDowMCJ9.cxu2WHapIaEyrM8sEieFoU674NiaEaqUUGzwUwEjbFH2IHmyZ4qLY9jNIC6zxGLu-Ox1kIWPt5HkpQLwaVqRCw",
+        "entropy_epoch": 126,
+        "timestamp": "2026-08-24T10:56:51.154358Z",
+        "angle_rad": 0.0620546
+      }
+    ],
+    "calibration": null
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "trait_sigmaz": 0.546143,
+      "shots": 8192
+    },
+    {
+      "gen": 1,
+      "trait_sigmaz": 0.590332,
+      "shots": 8192
+    },
+    {
+      "gen": 2,
+      "trait_sigmaz": 0.552979,
+      "shots": 8192
+    },
+    {
+      "gen": 3,
+      "trait_sigmaz": 0.575928,
+      "shots": 8192
+    }
+  ],
+  "correlation_temporal": {
+    "C": [
+      0.175432,
+      0.033351,
+      0.015685,
+      0.010477
+    ],
+    "c": [
+      1.0,
+      0.190109,
+      0.089409,
+      0.059719
+    ],
+    "C0": 0.175432,
+    "gmax": 3
+  }
+}
