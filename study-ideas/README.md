@@ -6,6 +6,14 @@ One folder for all candidate studies. Finished ideas move to `complete/` (rename
 - `qdep-1-coherence-depth-genealogy.md` — coherence depth `g*` of an inherited-entanglement genealogy (quantum artificial life, reproduce 2018 → g* vs classical surrogate → break the SWAP ceiling)
 - `qh-13-np-problems-teleport-routing.md` — first teleport-routed QAOA on real hardware; dense-QUBO NP-hard problems as the teleport-routing target zone
 
+## 🎓 Master's thesis candidates (new 2026-08-30 — thesis-scale, one per strategic direction)
+Each is the **de-risked pivot** of a raw thesis pitch whose naive version is a trap (documented inside). Ranked build-first: thesis-1 > thesis-3 > thesis-2.
+
+[//]: # (- `thesis-1-swap-routed-quantum-virus.md` — graduate the approved Stone-Wall virus epic &#40;P0 proven on metal&#41; to thesis: cross-block transmission-witness decay curve + certify it's entanglement; teleport = negative control. **80/100 · want-to-do 5/5 · effort high · QC yes** — safest + most uniquely owned.)
+- `thesis-3-certified-entropy-provenance.md` — certified min-entropy + signed provenance under device imperfection (NOT "unbreakable encryption" — OTP already is). Builds on BC + ErrorDetectionVSRawBits + qrng-eaas. **74/100 · want-to-do 4/5 · effort medium · QC partial (stored bits)** — lowest null-risk, biggest asset reuse.
+- `thesis-4-obscure-np-query-advantage.md` — **a systematic map of where the provable quadratic quantum query advantage (Dürr–Høyer/Grover, BBBV-optimal) survives the best-classical baseline vs collapses to brute-force-only**, across 5 forgotten 1970s NP-complete problems (Betweenness, Numerical Matching, Quadratic Congruences, Kernel, MinLA). NOT "I verified advantage" (overclaim) and NOT a hardware race — advantage proven by oracle-count in sim; qualifiers locked (query model / over brute force / quadratic / not wall-clock). **76/100 · want-to-do 4/5 · effort medium · QC sim-first, optional hw feasibility arm** — real work = the per-problem best-classical exponent.
+- `thesis-5-critical-quantum-life.md` — "life you can poke": Darwinian quantum population self-organizes to the edge of chaos (σ≈1, avalanche α≈1.5) under DishBrain closed-loop feedback, recovers after between-runs pokes, certified quantum by entanglement witness; yoked control must fail. **77/100 · want-to-do 5/5 · effort high · QC yes (sim-first draft → hw thesis)** — max wow + ownership; a discovery bet, honesty-gated.
+
 ## Active — networking / RNG
 - `net-1-unpredictability-as-network-primitive.md` — umbrella: 3 attacker games + boot-entropy fix
 - `net-2-boot-entropy-fix.md` — Q-EaaS cures weak keys on headless devices (score 84, highest)

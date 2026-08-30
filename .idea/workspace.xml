@@ -2,19 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/RUNLOG_MONTH1.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/circuit-da7vp1c6l22c73do45m0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/classical_partition.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/depth_report.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/qaoa_sk.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/run_sk.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/sk_instance.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/epic-number-partitioning.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/feature-F1-sk-qaoa-poc.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/depth_report.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n4_p1_sim_20260826-183632.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n6_p1_ibm_fez_20260826-204000.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/study-ideas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/study-ideas/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,6 +168,7 @@
       <workItem from="1787559406770" duration="38877000" />
       <workItem from="1787722136350" duration="46158000" />
       <workItem from="1787922426252" duration="2001000" />
+      <workItem from="1788107493035" duration="4949000" />
     </task>
     <servers />
   </component>
