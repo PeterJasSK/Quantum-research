@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "project": "number-partitioning",
+    "study": "sk-qaoa-teleport-routing",
+    "n": 4,
+    "p": 1,
+    "A": 1.0,
+    "seed": 0,
+    "shots": 2048,
+    "grid": 4,
+    "herald": false,
+    "sim": true,
+    "backend": "aer_noiseless",
+    "instance": [
+      14,
+      7,
+      13,
+      15
+    ],
+    "couplings": {
+      "0,1": 196.0,
+      "0,2": 364.0,
+      "0,3": 420.0,
+      "1,2": 182.0,
+      "1,3": 210.0,
+      "2,3": 390.0
+    },
+    "angles": {
+      "gamma": 3.141592653589793,
+      "beta": 0.39269908169872414
+    },
+    "optimum": 25.0,
+    "worst": 2401.0,
+    "optimum_partition": "0101",
+    "timestamp": "20260826-183632"
+  },
+  "arms": {
+    "logical": {
+      "mean_energy": 662.296875,
+      "best_energy": 25.0,
+      "best_partition": "1010",
+      "shots_kept": 2048,
+      "approx_ratio_mean": 0.7317774095117845,
+      "approx_ratio_best": 1.0
+    },
+    "teleport": {
+      "mean_energy": 625.421875,
+      "best_energy": 25.0,
+      "best_partition": "1010",
+      "shots_kept": 2048,
+      "approx_ratio_mean": 0.7472971906565656,
+      "approx_ratio_best": 1.0
+    },
+    "swap": {
+      "mean_energy": 633.4453125,
+      "best_energy": 25.0,
+      "best_partition": "0101",
+      "shots_kept": 2048,
+      "approx_ratio_mean": 0.7439203230218855,
+      "approx_ratio_best": 1.0
+    }
+  },
+  "sign_check": {
+    "logical_mean": 662.296875,
+    "teleport_mean": 625.421875,
+    "swap_mean": 633.4453125,
+    "spread": 36.875,
+    "tolerance": 118.80000000000001,
+    "agree": true
+  }
+}

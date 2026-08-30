@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "stage": 5,
+    "phase": "P0",
+    "model": "stonewall_virus_fliptest",
+    "backend": "statevector_sim",
+    "sim": true,
+    "width": 3,
+    "blocks": 2,
+    "generations": 1,
+    "separations": [
+      2,
+      4
+    ],
+    "routing": "both",
+    "witness_span": "full",
+    "shots": 8192,
+    "repeats": 3,
+    "k": 2.0,
+    "herald": false,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15,
+    "mut_scale": 0.1,
+    "qrng_url": "https://api.qeaas.eu/",
+    "entropy_provenance": [
+      {
+        "request_id": "a6f39b3170f6401fb739c29861851603",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJhNmYzOWIzMTcwZjY0MDFmYjczOWMyOTg2MTg1MTYwMyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjA3LjE2MDg2OCswMDowMCJ9.QEoAbZrve1Ci1cL2mTaJNgtlHYHvO3qXi8VJf4r2wBH6mjr_HB4OqNJSBvrxuVqB33O8-7BAKxhSGCenLriADQ"
+      },
+      {
+        "request_id": "18de7c96f9d34cf3912a2fbacaa6d852",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiIxOGRlN2M5NmY5ZDM0Y2YzOTEyYTJmYmFjYWE2ZDg1MiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjExLjMzMjc4OSswMDowMCJ9.PlKVdGrQFHWmj-YDVzlysbc6i2w3DmOWf9Bc61BuNKDtd47flpRgBU38HeFnQo2N4M85skqkHDmz70bsQ59wDA"
+      },
+      {
+        "request_id": "0b1bf263c0f649f98ac20be6f6ca6e42",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiIwYjFiZjI2M2MwZjY0OWY5OGFjMjBiZTZmNmNhNmU0MiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjE1LjQ3OTk3OSswMDowMCJ9.WqQ33X_fnFX-A06nYJ5y8sNxS_3Rfi7e9jEL37HewH5J5DQhnnPBRMkId8ScuoARmXT_YJ7pGqxkr2FHrvLOAQ"
+      },
+      {
+        "request_id": "ba1dd639afb34a5fbf66b3679ffb0031",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJiYTFkZDYzOWFmYjM0YTVmYmY2NmIzNjc5ZmZiMDAzMSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjIwLjMzNTAwMSswMDowMCJ9.AFiIwuNuqenqp_CX4Ni05Fd8YT753DKuQhv6GdIob97kwHBZPS5xpQUWmEuB6810PgR7tll-x2-5wZ3VBqYeAg"
+      },
+      {
+        "request_id": "429a1683563c441abd5255f9a7038cc5",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiI0MjlhMTY4MzU2M2M0NDFhYmQ1MjU1ZjlhNzAzOGNjNSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjI0LjYzMTEwNCswMDowMCJ9.M7Bo6MDnmyLKjoU5XQ1P1tNReQNP2MjxBv6jZ4N6EyCye1mgLvp4Qxq7dyYG2FDWveOwD9XWDzAgPeUwnkBCBw"
+      },
+      {
+        "request_id": "cb9396ee020e4146bc1ad2f33ae91c55",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJjYjkzOTZlZTAyMGU0MTQ2YmMxYWQyZjMzYWU5MWM1NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjI4Ljk2NTc1MiswMDowMCJ9.0HOteA-hxcxWhUYdhe8jnn9zWgTVkyeNbs_1nH9_Eo9jV0mqOPjXVLr1le2vDlii1taaC4ozjy-rr_-HY9NlDw"
+      },
+      {
+        "request_id": "1d6c8ead1b7a4f83804318bdb9871ca7",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiIxZDZjOGVhZDFiN2E0ZjgzODA0MzE4YmRiOTg3MWNhNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjM0LjcwMjA2NSswMDowMCJ9.3XsNcEuiW8CxetxG3N6WJa07IUoh_kMB8PgzQYIP5ui01JhOPCdGMF-GSyDxAvda-WkF-VmBwXhGNWZbiVg2Aw"
+      },
+      {
+        "request_id": "e499be60d49d415f8d839a1167190fef",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJlNDk5YmU2MGQ0OWQ0MTVmOGQ4MzlhMTE2NzE5MGZlZiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjM5LjAyNzk4MCswMDowMCJ9.NxQG0ZW32LRrT5QX56E1EUC2wICv0782IrsAAURu5A3-xPWIwzAVuyV-AwB0H6lZRWO8A2_q_Sf8QFc09vHPCg"
+      },
+      {
+        "request_id": "09387e26d7ff4c64995afef960353fc0",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiIwOTM4N2UyNmQ3ZmY0YzY0OTk1YWZlZjk2MDM1M2ZjMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjQzLjIyOTc3OSswMDowMCJ9.S440LBuBST37xf_mTMCp4gC4Y1GQ7HaMIldVwdxCDSS0lvE2r2042iNgewojPjsgSqr4yNa5MbvCSyLERGXeBg"
+      },
+      {
+        "request_id": "47d2293096ed477ca0479d81ec1a4885",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiI0N2QyMjkzMDk2ZWQ0NzdjYTA0NzlkODFlYzFhNDg4NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjQ4LjE1NzU0NyswMDowMCJ9.NHk_uQaTI3me2QdMu-GupX3hFZXpi_0iR7Xs-SrxUBuRq083LiJO1UDIxD8GnUQsMec-8ZOCwiqG81p-QSi-Ag"
+      },
+      {
+        "request_id": "b1549b50779c41af813407d4cb9316f8",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJiMTU0OWI1MDc3OWM0MWFmODEzNDA3ZDRjYjkzMTZmOCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjUyLjQ4Mjk4NSswMDowMCJ9.yUjcgNw9048ozhEYq_a1sv5zryr0-PRPVovCHBEleDkbBSdthPco0coCk-V3w09hMhuNVwgJRCUBzwx-cQNSAg"
+      },
+      {
+        "request_id": "a46507d95b32417980e4ccfb7fc6af37",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQzLCJyaWQiOiJhNDY1MDdkOTViMzI0MTc5ODBlNGNjZmI3ZmM2YWYzNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjQwOjU2LjgzMTgwMyswMDowMCJ9.3ZTOcM3hrSVS-sgGQYIIST-pDK2ODOzcFvnUlBej_NpR9BtRMjZQqMXRj5ZL_MBixPe2OsZ861eiLfaHCZ4VCQ"
+      }
+    ]
+  },
+  "dsweep": [
+    {
+      "d": 2,
+      "chain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": null,
+          "readout_max": null
+        },
+        "block_b": {
+          "twoq_err_max": null,
+          "readout_max": null
+        }
+      },
+      "per_block_witness": {
+        "block_a": 1.0,
+        "block_b": 1.0
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": 1.0,
+          "separable_mean": 9.713570276896159e-05,
+          "signal_mean": 0.9999028642972311,
+          "signal_sigma": 0.011048728191700236,
+          "clears_2sigma": true,
+          "logical_depth": 10,
+          "ancillas": 0
+        },
+        "teleport": {
+          "witness_joint_mean": 1.0,
+          "separable_mean": 9.763240814208984e-05,
+          "signal_mean": 0.9999023675918579,
+          "signal_sigma": 0.01104919921603636,
+          "clears_2sigma": true,
+          "logical_depth": 12,
+          "ancillas": 2,
+          "herald_frac": null
+        }
+      },
+      "strict_flip": false,
+      "control": true
+    },
+    {
+      "d": 4,
+      "chain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": null,
+          "readout_max": null
+        },
+        "block_b": {
+          "twoq_err_max": null,
+          "readout_max": null
+        }
+      },
+      "per_block_witness": {
+        "block_a": 1.0,
+        "block_b": 1.0
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": 1.0,
+          "separable_mean": 0.00023416678110758463,
+          "signal_mean": 0.9997658332188925,
+          "signal_sigma": 0.011049053830858286,
+          "clears_2sigma": true,
+          "logical_depth": 14,
+          "ancillas": 0
+        },
+        "teleport": {
+          "witness_joint_mean": 1.0,
+          "separable_mean": 0.00014036893844604492,
+          "signal_mean": 0.999859631061554,
+          "signal_sigma": 0.011049520340800135,
+          "clears_2sigma": true,
+          "logical_depth": 12,
+          "ancillas": 2,
+          "herald_frac": null
+        }
+      },
+      "strict_flip": false,
+      "control": false
+    }
+  ],
+  "witness_ideal": 1.0,
+  "kill_gate": {
+    "flip_at": [],
+    "verdict": "STOP",
+    "note": "PASS -> proceed to P1; STOP -> re-scope epic headline (D) before build (epic \u00a77). STRICT flip = teleport clears 2sigma AND swap buried (Q1)."
+  }
+}

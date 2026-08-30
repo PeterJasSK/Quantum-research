@@ -2,6 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/RUNLOG_MONTH1.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/circuit-da7vp1c6l22c73do45m0.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/classical_partition.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/depth_report.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/qaoa_sk.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/run_sk.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/code/sk_instance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/epic-number-partitioning.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/plans/feature-F1-sk-qaoa-poc.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/depth_report.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n4_p1_sim_20260826-183632.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n6_p1_ibm_fez_20260826-204000.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,35 +52,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/artificial-life/research",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "ts.external.directory.path": "/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/number-partitioning/plans&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/number-partitioning/plans" />
+      <recent name="$PROJECT_DIR$/number-partitioning" />
       <recent name="$PROJECT_DIR$/artificial-life/research" />
       <recent name="$PROJECT_DIR$/artificial-life" />
       <recent name="$PROJECT_DIR$/artificial-life/plans" />
-      <recent name="$PROJECT_DIR$/study-ideas/QuantumAlgorithmsExplained" />
-      <recent name="$PROJECT_DIR$/QuantumLife/web" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/study-ideas" />
-      <recent name="$PROJECT_DIR$/QuantumLife/web" />
-      <recent name="$PROJECT_DIR$/DNSPoisonRace/plans" />
-      <recent name="$PROJECT_DIR$/CalibrationGuidedHighYieldQRNG/old" />
-      <recent name="$PROJECT_DIR$/QuantumAlgorithmsExplained/explenation" />
+      <recent name="$PROJECT_DIR$/number-partitioning/code" />
+      <recent name="$PROJECT_DIR$/number-partitioning/plans/code" />
+      <recent name="$PROJECT_DIR$/number-partitioning" />
+      <recent name="$PROJECT_DIR$/number-partitioning/array" />
+      <recent name="$PROJECT_DIR$/number-partitioning/math/plans" />
     </key>
   </component>
   <component name="RunManager">
@@ -164,7 +176,9 @@
       <workItem from="1787115279999" duration="19272000" />
       <workItem from="1787163460101" duration="6671000" />
       <workItem from="1787206224625" duration="1663000" />
-      <workItem from="1787559406770" duration="37959000" />
+      <workItem from="1787559406770" duration="38877000" />
+      <workItem from="1787722136350" duration="46158000" />
+      <workItem from="1787922426252" duration="2001000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,54 @@
+{
+  "single_edge": [
+    {
+      "distance": 2,
+      "teleport": 20,
+      "swap": 9
+    },
+    {
+      "distance": 4,
+      "teleport": 20,
+      "swap": 17
+    },
+    {
+      "distance": 8,
+      "teleport": 20,
+      "swap": 33
+    },
+    {
+      "distance": 16,
+      "teleport": 20,
+      "swap": 65
+    },
+    {
+      "distance": 36,
+      "teleport": 20,
+      "swap": 145
+    }
+  ],
+  "cost_layer": [
+    {
+      "n": 4,
+      "edges": 6,
+      "teleport": 100,
+      "swap": 34
+    },
+    {
+      "n": 6,
+      "edges": 15,
+      "teleport": 244,
+      "swap": 118
+    },
+    {
+      "n": 8,
+      "edges": 28,
+      "teleport": 452,
+      "swap": 290
+    }
+  ],
+  "meta": {
+    "study": "sk-qaoa-teleport-routing",
+    "seed": 0,
+    "A": 1.0
+  }
+}

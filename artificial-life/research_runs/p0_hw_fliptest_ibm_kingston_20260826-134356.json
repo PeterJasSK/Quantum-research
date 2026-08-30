@@ -1,0 +1,314 @@
+{
+  "meta": {
+    "stage": 5,
+    "phase": "P0",
+    "model": "stonewall_virus_fliptest",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "width": 12,
+    "blocks": 2,
+    "generations": 1,
+    "separations": [
+      2,
+      48
+    ],
+    "routing": "both",
+    "witness_span": "full",
+    "shots": 8192,
+    "repeats": 3,
+    "k": 2.0,
+    "herald": false,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15,
+    "mut_scale": 0.1,
+    "qrng_url": "https://api.qeaas.eu/",
+    "entropy_provenance": [
+      {
+        "request_id": "c583387258f746349043862f9b74bbb4",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJjNTgzMzg3MjU4Zjc0NjM0OTA0Mzg2MmY5Yjc0YmJiNCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjAwLjI0NjQ2NSswMDowMCJ9.kAJhtCN-cAqBbPpqTYdZWqfQhL0lGWl6qCIHUWIDoLA_HO2B1hqXrSU1_X8i53LJgzfxAv8oxo5mCXxN_7t_DA"
+      },
+      {
+        "request_id": "84fe99df4d1b4950a41c27c9173b97d4",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI4NGZlOTlkZjRkMWI0OTUwYTQxYzI3YzkxNzNiOTdkNCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjA0LjQ4NTk1MyswMDowMCJ9.vN2NWiKji6CRyREm2m9SpQakQC-iX8ekpO-QB_1Q1reCwrEuSxTx0831hM8BqQj8xASq1aAnG87FUuRDQGGTDw"
+      },
+      {
+        "request_id": "3627de8d433f47879505998436a86500",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiIzNjI3ZGU4ZDQzM2Y0Nzg3OTUwNTk5ODQzNmE4NjUwMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjI1LjU2MjY5NiswMDowMCJ9.z25i6lEAPM56wY3dmIPIARlqFlhXQbQPxkUy3ooNW18F-cSrPwPUxTOJ__zFMobpWuWgE_WnfGtxe3YCcxtNCA"
+      },
+      {
+        "request_id": "d6e77f7f774940b793e2b0fa88593a23",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJkNmU3N2Y3Zjc3NDk0MGI3OTNlMmIwZmE4ODU5M2EyMyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjI5LjYzMjEyOCswMDowMCJ9.3pUnRMHyk5NrX1VJxJI5yFYfwqjMctILqMYyJ52ENC8ftfvDWBQN5bRmU0budbrveMbvaHjTKo2t2-P6rM4gCQ"
+      },
+      {
+        "request_id": "7c86254daa024c8e9e4c51136c9a3538",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI3Yzg2MjU0ZGFhMDI0YzhlOWU0YzUxMTM2YzlhMzUzOCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjQ3LjM0MTYzNCswMDowMCJ9.Nvh8SVu-9BLSmtk96U9bpqzoliU4Vof6Xi3hGYqU9l0FTC05TgiuNxvd_ZFUmNAVGpUG80J6te-kuPEBIADpCg"
+      },
+      {
+        "request_id": "e9a8f3fdd19e4ab59d6ba128becdf30f",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJlOWE4ZjNmZGQxOWU0YWI1OWQ2YmExMjhiZWNkZjMwZiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM4OjUxLjUzMjc5NCswMDowMCJ9.MI3UyqOpq8Mq7SLl1dYa2GOmEm4-3eRuuFFRMYU1HiC5_F9-ngrzU9w0AHcpjo4tVXAM27MOBgLVfc7QJ1_hAg"
+      },
+      {
+        "request_id": "732866844a6840f59923648c91d8f31f",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI3MzI4NjY4NDRhNjg0MGY1OTkyMzY0OGM5MWQ4ZjMxZiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjA4LjMzNTEyMyswMDowMCJ9.lf_sNFmDTyh2XfDyQnRmWnvsge4fm8_KP76V-MW1YmucCNI-F9yQec9JcowMjcKE9giM5PU5nZ4vueXZpOkeCQ"
+      },
+      {
+        "request_id": "e77395f643be4668916f7c3385f1c5b7",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJlNzczOTVmNjQzYmU0NjY4OTE2ZjdjMzM4NWYxYzViNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjEyLjUxNTg3MyswMDowMCJ9.qL_XVebbBl02Dbm33K26wydx8gWmV2_wKBeFUZD6bwAdxOwgcHSvcsTgroxA4BV48HCGnGMVomiA58VfVzWMBw"
+      },
+      {
+        "request_id": "5ca2a706cc554f1f822b45400f52d77d",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI1Y2EyYTcwNmNjNTU0ZjFmODIyYjQ1NDAwZjUyZDc3ZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjI2LjUxMTA2MSswMDowMCJ9.htM7rh5m9xwSGQhU-_jdHoET4xNO063MOUtc6Y0kMh3KdvFs2ND6mOvqgRd-tzxh5CUykX4MM8Lu5lH8ykTPDw"
+      },
+      {
+        "request_id": "627d9d8f61f046a284aabcc976313fec",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI2MjdkOWQ4ZjYxZjA0NmEyODRhYWJjYzk3NjMxM2ZlYyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjMxLjMzMzU3MCswMDowMCJ9.J_jMGW0Mb7gBjDPWctUHJdU72bF5EkXg6wUdei7FPDZJxHpWaRCHYka6hLPmEyDysvtDsticQJVHHd-uY2_wAw"
+      },
+      {
+        "request_id": "fd8e368d912f44e58a3bd9dcb1be47a8",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJmZDhlMzY4ZDkxMmY0NGU1OGEzYmQ5ZGNiMWJlNDdhOCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjQ2LjM1MDk4MiswMDowMCJ9.HwbSm-a7jLP2fMemrCLcJ04jHlG-3XujdPpEgYfpfCZ_zpi9UMzYEZxQ6OP5_b0EczRhWM13s01-NqgHB-QsAA"
+      },
+      {
+        "request_id": "42c71513d76e4b5b83fe95117a1af8e2",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI0MmM3MTUxM2Q3NmU0YjViODNmZTk1MTE3YTFhZjhlMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjM5OjUwLjQ5ODk1MCswMDowMCJ9.nv2eJTBtyXxxjNEl9UQrpWeO8rJQuByk4zsmKl6SFmr7Frxrq79inMM46HyKkr0mZ3JzXKyqGt4SMtwpnsitCA"
+      },
+      {
+        "request_id": "a32987e62c2442529ea13b79503336fa",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJhMzI5ODdlNjJjMjQ0MjUyOWVhMTNiNzk1MDMzMzZmYSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQxOjU2LjExOTEwNiswMDowMCJ9.GObRYnxBPf3PIbznJrLZPYOmIzNeq_ur0z4H4aZssM0wovMifDYMZ4IClDTzi_Qn43knpZGfBooJzWD-pYoUCQ"
+      },
+      {
+        "request_id": "04405a7a793346d69056b8884ba22fca",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiIwNDQwNWE3YTc5MzM0NmQ2OTA1NmI4ODg0YmEyMmZjYSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQyOjAwLjIyODE1OCswMDowMCJ9.C4QzMpub5eTFiTKyVRUmi0hRnChg50nq8Kofzk5NrPSMUnd6mGvUqoZiDmFPmbcO_DNiM3pkyjaGDvMm8Zg-CQ"
+      },
+      {
+        "request_id": "241a11028cf148eba953b08927eeb06e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiIyNDFhMTEwMjhjZjE0OGViYTk1M2IwODkyN2VlYjA2ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQyOjIwLjMyMDI1MyswMDowMCJ9.N-KcDLN6ANczUM8DpaqasWTYTvcb77Yjok0Dc8YQqvJBijC9RUMf6T-6I_uSWTmi3aMb0606VRw7cr0Hd2ElBg"
+      },
+      {
+        "request_id": "95d8147364f4418a9bf85fb0dd4703eb",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI5NWQ4MTQ3MzY0ZjQ0MThhOWJmODVmYjBkZDQ3MDNlYiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQyOjI0LjQwOTI0OCswMDowMCJ9.iaiT7K_LFfOYHFv7egEUNrtKkw7MRrLMo7zP4IqHrT2KaRD1DOnW9Tn1SVgesn9sEh47embVsfHyPykmkvE3CQ"
+      },
+      {
+        "request_id": "f35e48e055f1483eb652da505341c8c6",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJmMzVlNDhlMDU1ZjE0ODNlYjY1MmRhNTA1MzQxYzhjNiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQyOjQxLjEyMTIzNSswMDowMCJ9.3TqjYiGsX5KMLAZrwwQewOwrmpzBkk-LOWgDPoT2B-gSKH464xWWsmvWTXl1mIG5uhMH2dhCkdG928JbSk7aCQ"
+      },
+      {
+        "request_id": "f0f4e14083c04e86af4cb3a6d2751f14",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJmMGY0ZTE0MDgzYzA0ZTg2YWY0Y2IzYTZkMjc1MWYxNCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQyOjQ1LjE4ODQ5MCswMDowMCJ9._7WE0hXT007bkUteYRrN3nNdJRtH7pokliZ3jqvq_NhS-QWSJq6vW2UpWRlQn5YopLUjPyd1ZWCuVsrxek0MAA"
+      },
+      {
+        "request_id": "72ce2a8e2f194a708cbe6c695df2ab57",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI3MmNlMmE4ZTJmMTk0YTcwOGNiZTZjNjk1ZGYyYWI1NyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjAwLjEzMDk1NiswMDowMCJ9.abpy1UpVcLI5sgALDSCmF0RpT5ae5_QX-5TFV4zvnOUAnOB9-S3h1MzrCzQY3ILXDqdfJVKixX6Kjf5RGRanBQ"
+      },
+      {
+        "request_id": "1863bcee5c0b48ed8dc46c5e85619ce0",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiIxODYzYmNlZTVjMGI0OGVkOGRjNDZjNWU4NTYxOWNlMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjA0LjMzODIwMCswMDowMCJ9.6J1noeRf-90Zkq3D7tzZTAcmI0LMvQm9D9JkCc-NWUvvondd2zqDh0_faAa8P8VlVibrgbIjVeOEgbltyh8sBw"
+      },
+      {
+        "request_id": "8cfa866866654c2a95b602dfde982761",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI4Y2ZhODY2ODY2NjU0YzJhOTViNjAyZGZkZTk4Mjc2MSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjIwLjE0NzkzNiswMDowMCJ9.I0nXIGNpy6Vzryf7I87RVG3GkL43y2I6JeQdzeifHn2OzGzkd4Qwf6J_f1zmS658pRSKZkZ73-O6ZdQtReUnAA"
+      },
+      {
+        "request_id": "3778719ffabe4f11804649bde5251b90",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiIzNzc4NzE5ZmZhYmU0ZjExODA0NjQ5YmRlNTI1MWI5MCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjI0LjMyNjgxNiswMDowMCJ9.3ALtaWoJcb1eaXUp99pHexcsGyyfQYDmw04T6WG9-Ly0rhRsyV1b4Nos4SBf3C2jAmqzmhtYkBH6B2ko74FHDA"
+      },
+      {
+        "request_id": "4da03fc4618240e9902fbfd22f2afa0a",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI0ZGEwM2ZjNDYxODI0MGU5OTAyZmJmZDIyZjJhZmEwYSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjM5LjkyMDk2OSswMDowMCJ9.IJ-tb4mnVh17YFV5M09EhCPTCLgY0nAnndLV2KwM_U9Wn--pIL9FPgd7LzmrzXK4vmoQiJECrlpgUaUCZYZaCg"
+      },
+      {
+        "request_id": "d7c1a290494740cc81c300b74769d6d0",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJkN2MxYTI5MDQ5NDc0MGNjODFjMzAwYjc0NzY5ZDZkMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjQzOjQ0LjA3NDc0OCswMDowMCJ9.kpowBOjsGv3hiyZ7Qq4uN7Ti7eAv9v3jneNIVQjXmNZ1R9f3u06lmpLX-w04CTpLNIpg1s7BaIhqRbRYwFrvCA"
+      }
+    ]
+  },
+  "dsweep": [
+    {
+      "d": 2,
+      "chain": [
+        138,
+        151,
+        150,
+        149,
+        148,
+        147,
+        137,
+        127,
+        128,
+        129,
+        118,
+        109,
+        110,
+        111,
+        98,
+        91,
+        90,
+        89,
+        88,
+        87,
+        97,
+        107,
+        106,
+        105,
+        104,
+        103
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": 0.00277,
+          "readout_max": 0.04785
+        },
+        "block_b": {
+          "twoq_err_max": 0.00277,
+          "readout_max": 0.04785
+        }
+      },
+      "per_block_witness": {
+        "block_a": 0.4432779947916667,
+        "block_b": 0.5008951822916666
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": 0.21516927083333334,
+          "separable_mean": 5.614757537841797e-05,
+          "signal_mean": 0.21511312325795492,
+          "signal_sigma": 0.018562545437395907,
+          "clears_2sigma": true,
+          "logical_depth": 28,
+          "ancillas": 0
+        },
+        "teleport": {
+          "witness_joint_mean": 0.05810546875,
+          "separable_mean": 0.0003506938616434733,
+          "signal_mean": 0.05775477488835653,
+          "signal_sigma": 0.012143218820578505,
+          "clears_2sigma": true,
+          "logical_depth": 29,
+          "ancillas": 2,
+          "herald_frac": null
+        }
+      },
+      "strict_flip": false,
+      "control": true
+    },
+    {
+      "d": 48,
+      "chain": [
+        138,
+        151,
+        150,
+        149,
+        148,
+        147,
+        137,
+        127,
+        128,
+        129,
+        118,
+        109,
+        110,
+        111,
+        98,
+        91,
+        90,
+        89,
+        88,
+        87,
+        97,
+        107,
+        106,
+        105,
+        104,
+        103,
+        96,
+        83,
+        82,
+        81,
+        76,
+        61,
+        62,
+        63,
+        56,
+        43,
+        42,
+        41,
+        36,
+        21,
+        22,
+        23,
+        16,
+        3,
+        4,
+        5,
+        6,
+        7,
+        17,
+        27,
+        26,
+        25,
+        37,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        59,
+        75,
+        74,
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": 0.00741,
+          "readout_max": 0.04785
+        },
+        "block_b": {
+          "twoq_err_max": 0.00741,
+          "readout_max": 0.04785
+        }
+      },
+      "per_block_witness": {
+        "block_a": 0.4466145833333333,
+        "block_b": 0.5584309895833334
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": 0.059977213541666664,
+          "separable_mean": -7.092952728271484e-05,
+          "signal_mean": 0.06004814306894938,
+          "signal_sigma": 0.014594838493274523,
+          "clears_2sigma": true,
+          "logical_depth": 111,
+          "ancillas": 0
+        },
+        "teleport": {
+          "witness_joint_mean": 0.028483072916666668,
+          "separable_mean": -6.0717264811197914e-05,
+          "signal_mean": 0.028543790181477863,
+          "signal_sigma": 0.017440446810128813,
+          "clears_2sigma": false,
+          "logical_depth": 29,
+          "ancillas": 2,
+          "herald_frac": null
+        }
+      },
+      "strict_flip": false,
+      "control": false
+    }
+  ],
+  "witness_ideal": null,
+  "kill_gate": {
+    "flip_at": [],
+    "verdict": "STOP",
+    "note": "PASS -> proceed to P1; STOP -> re-scope epic headline (D) before build (epic \u00a77). STRICT flip = teleport clears 2sigma AND swap buried (Q1)."
+  }
+}

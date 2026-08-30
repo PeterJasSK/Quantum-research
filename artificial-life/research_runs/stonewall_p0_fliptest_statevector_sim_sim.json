@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "stage": 5,
+    "phase": "P0",
+    "model": "stonewall_virus_fliptest",
+    "backend": "statevector_sim",
+    "sim": true,
+    "width": 3,
+    "blocks": 2,
+    "generations": 1,
+    "separations": [
+      1
+    ],
+    "routing": "swap",
+    "witness_span": "full",
+    "shots": 8192,
+    "repeats": 2,
+    "k": 2.0,
+    "herald": false,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15,
+    "mut_scale": 0.1,
+    "qrng_url": "https://api.qeaas.eu/",
+    "entropy_provenance": [
+      {
+        "request_id": "2033716ce7ac4804b2425f5b85713785",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiIyMDMzNzE2Y2U3YWM0ODA0YjI0MjVmNWI4NTcxMzc4NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMzOjM2LjQ2NDAzNSswMDowMCJ9.Rc2Mz3zy6IVJoYfD_Z6muTxeEodyl2b1zsM3p9mjC5m2ymcfZE2uCCXTfVMX4W8lk2KMswD-gIel0hXz_R_DDw"
+      },
+      {
+        "request_id": "54d087eccc504e76a99a96ed5d447147",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiI1NGQwODdlY2NjNTA0ZTc2YTk5YTk2ZWQ1ZDQ0NzE0NyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMzOjQwLjcyNDcyMCswMDowMCJ9.82DKYOhqB4c_RZKfp_glr2e2MOB-cjZH0U9BZPjwfFowCUWd_ID3nrBbl8WOryZmP7rc0SF9oZgXcM0aVY-mDQ"
+      }
+    ]
+  },
+  "dsweep": [
+    {
+      "d": 1,
+      "chain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": null,
+          "readout_max": null
+        },
+        "block_b": {
+          "twoq_err_max": null,
+          "readout_max": null
+        }
+      },
+      "per_block_witness": {
+        "block_a": 1.0,
+        "block_b": 1.0
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": 1.0,
+          "separable_mean": 3.698468208312988e-05,
+          "signal_mean": 0.9999630153179169,
+          "signal_sigma": 0.011048551273077717,
+          "clears_2sigma": true,
+          "logical_depth": 9,
+          "ancillas": 0
+        }
+      },
+      "strict_flip": false,
+      "control": true
+    }
+  ],
+  "witness_ideal": 1.0,
+  "kill_gate": {
+    "flip_at": [],
+    "verdict": "STOP",
+    "note": "PASS -> proceed to P1; STOP -> re-scope epic headline (D) before build (epic \u00a77). STRICT flip = teleport clears 2sigma AND swap buried (Q1)."
+  }
+}

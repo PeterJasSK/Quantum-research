@@ -1,0 +1,164 @@
+{
+  "meta": {
+    "stage": 5,
+    "phase": "P0",
+    "model": "stonewall_virus_fliptest",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "width": 12,
+    "blocks": 2,
+    "generations": 1,
+    "separations": [
+      48
+    ],
+    "routing": "teleport",
+    "witness_span": "full",
+    "shots": 8192,
+    "repeats": 3,
+    "k": 2.0,
+    "herald": true,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15,
+    "mut_scale": 0.1,
+    "qrng_url": "https://api.qeaas.eu/",
+    "entropy_provenance": [
+      {
+        "request_id": "75955ae3837042de805ca0299acabe02",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI3NTk1NWFlMzgzNzA0MmRlODA1Y2EwMjk5YWNhYmUwMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUxOjU1LjUzMzgzNiswMDowMCJ9.FUldWxGpvqlr0kkVk7HOQFghK5K2kTRc4qNi_-9T4jVmrbXAAYdU4netHsBVsH0B8zJ8AXzpTdqLusXfdKP-Bw"
+      },
+      {
+        "request_id": "66524b75a8d248c98f7312c09481c512",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI2NjUyNGI3NWE4ZDI0OGM5OGY3MzEyYzA5NDgxYzUxMiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUxOjU5LjY5NzU4OSswMDowMCJ9.nFSlDnRnBiedxnaGp95DEgHuLVojg2FT2dTNdh1T4mMoKJmMC6geI0zlTca93HTFh4oJavhlobUFduWRg3F1BA"
+      },
+      {
+        "request_id": "dceb572e10be44cb9ad0f58469730464",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJkY2ViNTcyZTEwYmU0NGNiOWFkMGY1ODQ2OTczMDQ2NCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUyOjE1LjU4NjMyNCswMDowMCJ9.axLihhUA761rrT_3N1UvEuoCAdjOpdDSWGRuplDXr0A2laoV19vZ8aKHosj8o0cqYM6PWCuAaG0rPa2ZkuBsBQ"
+      },
+      {
+        "request_id": "d5a05301897d447ba42e730659702777",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJkNWEwNTMwMTg5N2Q0NDdiYTQyZTczMDY1OTcwMjc3NyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUyOjE5LjY3MDA4MiswMDowMCJ9.Sqwrxzt05Oxst4MuaWcMUaaqyLDLKomxg1A6g8vqIPPIpTATEGn_YOedwDNkKZ8xHr2SN0IpoNtHHe4kX3uHBA"
+      },
+      {
+        "request_id": "c8cc78a46c3b4087aab9a063d0a301e9",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiJjOGNjNzhhNDZjM2I0MDg3YWFiOWEwNjNkMGEzMDFlOSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUyOjM1LjYwODk5NiswMDowMCJ9.Sa-yLU07ghTgdZne6ggWYjbkxIavn23ThFCltYf5Xa1v4RD8qtcq3Woo4vHAi967tdVULk8trUtdlvC71w73Cw"
+      },
+      {
+        "request_id": "4cb58abae58a4c6c8bfa8f3b2b689cee",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQ1LCJyaWQiOiI0Y2I1OGFiYWU1OGE0YzZjOGJmYThmM2IyYjY4OWNlZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDExOjUyOjM5LjcyOTY2MSswMDowMCJ9.bjxIexKFvqOTlOJHDvwSIXgbZ7WFAVKLdlQioer_ypJtFbrvFKF3XulmmDYLA3nX7gk2OwxyOVr56gdLXRZuAA"
+      }
+    ]
+  },
+  "dsweep": [
+    {
+      "d": 48,
+      "chain": [
+        138,
+        151,
+        150,
+        149,
+        148,
+        147,
+        137,
+        127,
+        128,
+        129,
+        118,
+        109,
+        110,
+        111,
+        98,
+        91,
+        90,
+        89,
+        88,
+        87,
+        97,
+        107,
+        106,
+        105,
+        104,
+        103,
+        96,
+        83,
+        82,
+        81,
+        76,
+        61,
+        62,
+        63,
+        56,
+        43,
+        42,
+        41,
+        36,
+        21,
+        22,
+        23,
+        16,
+        3,
+        4,
+        5,
+        6,
+        7,
+        17,
+        27,
+        26,
+        25,
+        37,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        59,
+        75,
+        74,
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": 0.00741,
+          "readout_max": 0.04785
+        },
+        "block_b": {
+          "twoq_err_max": 0.00741,
+          "readout_max": 0.04785
+        }
+      },
+      "per_block_witness": {
+        "block_a": 0.4630533854166667,
+        "block_b": 0.5476888020833334
+      },
+      "arms": {
+        "teleport": {
+          "witness_joint_mean": 0.0,
+          "separable_mean": 0.0,
+          "signal_mean": 0.0,
+          "signal_sigma": 0.011048543456039806,
+          "clears_2sigma": false,
+          "logical_depth": 29,
+          "ancillas": 2,
+          "herald_frac": 0.0
+        }
+      },
+      "strict_flip": false,
+      "control": true
+    }
+  ],
+  "witness_ideal": null,
+  "kill_gate": {
+    "flip_at": [],
+    "verdict": "STOP",
+    "note": "PASS -> proceed to P1; STOP -> re-scope epic headline (D) before build (epic \u00a77). STRICT flip = teleport clears 2sigma AND swap buried (Q1)."
+  }
+}

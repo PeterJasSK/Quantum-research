@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "stage": 5,
+    "phase": "P0",
+    "model": "stonewall_virus_fliptest",
+    "backend": "statevector_sim",
+    "sim": true,
+    "width": 3,
+    "blocks": 2,
+    "generations": 1,
+    "separations": [
+      2
+    ],
+    "routing": "both",
+    "witness_span": "bond",
+    "shots": 8192,
+    "repeats": 2,
+    "k": 2.0,
+    "herald": false,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15,
+    "mut_scale": 0.1,
+    "qrng_url": "https://api.qeaas.eu/",
+    "entropy_provenance": [
+      {
+        "request_id": "0f9c67a5dc834af899eec7df2ef7d7a0",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiIwZjljNjdhNWRjODM0YWY4OTllZWM3ZGYyZWY3ZDdhMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMwOjA3Ljk3NjY2OSswMDowMCJ9.bXNgcLwpHZwXmC8_pNkjYZeUdGztRqpXWzmtmegiz6IHwdPsCjC2zvUafYKCTZ1RLoz3EOA-4z2otms8hXyRBA"
+      },
+      {
+        "request_id": "afb963d8c6f0441ea176f436d0235db5",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiJhZmI5NjNkOGM2ZjA0NDFlYTE3NmY0MzZkMDIzNWRiNSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMwOjEyLjMzOTQxMyswMDowMCJ9.C_JpJItMshnO65DcmMdBD9vL1BVocEk8J2SspV_bdWEBLypEjeQWxbqw6dotkl6xkymU8nurZUMjE05oSZThBA"
+      },
+      {
+        "request_id": "bd471ab60b094ff995e06ce38f2437ea",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiJiZDQ3MWFiNjBiMDk0ZmY5OTVlMDZjZTM4ZjI0MzdlYSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMwOjE2LjYzODkxMyswMDowMCJ9.8jBfeXwD_QRXVGedZC29oRVSSIy9K_83HxFi4DeIhonGD7Foat8kbjDkjN0UnNnq8taQUAr0NJA5zOANuGtQAw"
+      },
+      {
+        "request_id": "9617807ac7494c569d2af039b8ce6450",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTQyLCJyaWQiOiI5NjE3ODA3YWM3NDk0YzU2OWQyYWYwMzliOGNlNjQ1MCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTI2VDA4OjMwOjIxLjcwNjk3NSswMDowMCJ9.bd8ePVVXRMROAjIM-7_51Dn-UdTNmLuUrprg9dI235SCtfueulFjj061FhRy6GwwmF6NqpmZk7KdZ_Vwccd9BA"
+      }
+    ]
+  },
+  "dsweep": [
+    {
+      "d": 2,
+      "chain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "chain_stats": {
+        "block_a": {
+          "twoq_err_max": null,
+          "readout_max": null
+        },
+        "block_b": {
+          "twoq_err_max": null,
+          "readout_max": null
+        }
+      },
+      "per_block_witness": {
+        "block_a": -0.0103759765625,
+        "block_b": -0.0103759765625
+      },
+      "arms": {
+        "swap": {
+          "witness_joint_mean": -0.011474609375,
+          "separable_mean": 0.0001310110092163086,
+          "signal_mean": -0.011605620384216309,
+          "signal_sigma": 0.012038382313058137,
+          "clears_2sigma": false,
+          "logical_depth": 10,
+          "ancillas": 0
+        },
+        "teleport": {
+          "witness_joint_mean": -0.005615234375,
+          "separable_mean": 1.0728836059570312e-05,
+          "signal_mean": -0.00562596321105957,
+          "signal_sigma": 0.012164013625449416,
+          "clears_2sigma": false,
+          "logical_depth": 12,
+          "ancillas": 2,
+          "herald_frac": null
+        }
+      },
+      "strict_flip": false,
+      "control": true
+    }
+  ],
+  "witness_ideal": 0.0,
+  "kill_gate": {
+    "flip_at": [],
+    "verdict": "STOP",
+    "note": "PASS -> proceed to P1; STOP -> re-scope epic headline (D) before build (epic \u00a77). STRICT flip = teleport clears 2sigma AND swap buried (Q1)."
+  }
+}
