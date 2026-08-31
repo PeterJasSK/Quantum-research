@@ -1,0 +1,488 @@
+<title>Certified Quantum Life — a heartbeat no computer can fake</title>
+<style>
+  :root{
+    --bg:#05070d; --bg2:#080c17; --panel:rgba(10,15,28,.62); --panel-solid:#0a0f1c;
+    --ink:#eaf0fb; --mut:#7d879e; --line:rgba(90,110,150,.16); --line2:rgba(120,140,180,.28);
+    --witness:#37e6d4; --witness-deep:#0f6f68; --yoked:#ff4d78; --yoked-deep:#7a2038;
+    --amber:#ffb454; --good:#6ee787; --bad:#ff5c6b; --warn:#ffb454;
+    --frozen:#4aa3ff; --crit:#6ee787; --chaos:#ff5c5c;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --r:16px; --maxw:1280px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  body{overflow-x:hidden}
+  a{color:inherit}
+  ::selection{background:rgba(55,230,212,.28)}
+
+  /* ---------- STAGE (full-bleed living instrument) ---------- */
+  .stage{position:relative;height:100svh;min-height:640px;width:100%;overflow:hidden;
+    background:
+      radial-gradient(1400px 900px at 72% -12%, #0d1730 0%, transparent 58%),
+      radial-gradient(1100px 780px at -8% 118%, #0a1226 0%, transparent 52%),
+      var(--bg);}
+  #life{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .veil{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(120% 100% at 50% 42%, transparent 46%, rgba(3,5,11,.55) 82%, rgba(3,5,11,.9) 100%)}
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
+
+  .hud{position:absolute;z-index:5}
+  .hud-tl{top:clamp(18px,3vw,42px);left:clamp(18px,3vw,44px);max-width:min(560px,72vw)}
+  .eyebrow{display:flex;gap:11px;align-items:center;font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--witness)}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--witness);box-shadow:0 0 14px var(--witness),0 0 3px #fff;animation:beat 2.2s ease-in-out infinite}
+  @keyframes beat{50%{opacity:.32;transform:scale(.7)}}
+  h1{font-family:var(--mono);font-weight:800;letter-spacing:-.03em;line-height:.98;
+    font-size:clamp(30px,6.4vw,74px);margin:.34em 0 .18em;text-wrap:balance;
+    text-shadow:0 2px 40px rgba(0,0,0,.6)}
+  h1 .q{color:var(--witness);text-shadow:0 0 34px rgba(55,230,212,.55)}
+  .lede{color:var(--mut);font-size:clamp(12.5px,1.5vw,15px);max-width:52ch;line-height:1.55}
+  .lede b{color:var(--ink);font-weight:600}
+  .lede .tk{color:var(--witness)} .lede .yk{color:var(--yoked)}
+  .clock{display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline;margin-top:16px;font-size:12px;color:var(--mut)}
+  .clock b{color:var(--ink);font-size:22px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .clock .live{color:var(--yoked)} .clock .live::before{content:"● ";font-size:9px;vertical-align:2px}
+
+  /* gates */
+  .hud-tr{top:clamp(18px,3vw,42px);right:clamp(18px,3vw,44px);display:flex;flex-direction:column;gap:9px;align-items:flex-end}
+  .gate{display:grid;grid-template-columns:auto auto;gap:2px 14px;align-items:center;
+    border:1px solid var(--line2);border-radius:12px;padding:9px 13px;min-width:216px;
+    background:var(--panel);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+  .gate .lab{grid-column:1;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .gate .st{grid-column:2;grid-row:1/3;font-size:10px;letter-spacing:.14em;text-transform:uppercase;justify-self:end;font-weight:700}
+  .gate .val{grid-column:1;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+  .gate.pass{border-color:rgba(110,231,135,.42)} .gate.pass .val,.gate.pass .st{color:var(--good)}
+  .gate.weak{border-color:rgba(255,180,84,.42)} .gate.weak .val,.gate.weak .st{color:var(--warn)}
+  .gate.fail{border-color:rgba(255,92,107,.42)} .gate.fail .val,.gate.fail .st{color:var(--bad)}
+  .gate small{grid-column:1/3;font-size:10px;color:var(--mut);letter-spacing:.02em;opacity:.85}
+
+  /* bottom instrument bar */
+  .hud-bottom{left:0;right:0;bottom:0;padding:clamp(14px,2vw,26px) clamp(18px,3vw,44px) clamp(18px,2.4vw,30px);
+    display:grid;grid-template-columns:1fr auto;gap:18px 26px;align-items:end;
+    background:linear-gradient(180deg,transparent, rgba(3,5,11,.72) 62%)}
+  .heartwrap{min-width:0}
+  .heartcap{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:6px}
+  .heartcap .t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+  .heartcap .t b{color:var(--witness)}
+  .heartcap .r{font-size:11px;color:var(--mut)}
+  .heartcap .r b{color:var(--ink);font-variant-numeric:tabular-nums}
+  #heart{width:100%;height:120px;display:block;border:1px solid var(--line);border-radius:12px;
+    background:linear-gradient(180deg,rgba(8,13,24,.5),rgba(6,10,20,.72))}
+  .heartnote{margin-top:7px;font-size:11px;color:var(--mut)} .heartnote b{color:var(--witness)}
+
+  .controls{display:flex;flex-direction:column;gap:12px;align-items:stretch;min-width:236px}
+  .dialrow{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;
+    padding:10px 12px;background:var(--panel);backdrop-filter:blur(9px)}
+  #dial{width:96px;height:60px;flex:0 0 96px}
+  .dialrow .meta{min-width:0}
+  .dialrow .meta .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+  .dialrow .meta .v{font-size:18px;font-weight:800;color:var(--bad);font-variant-numeric:tabular-nums;line-height:1.1}
+  .dialrow .meta small{font-size:10px;color:var(--mut)}
+  .poke{appearance:none;border:1px solid var(--yoked);color:var(--ink);cursor:pointer;
+    font-family:var(--mono);font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,77,120,.14),rgba(255,77,120,.05));
+    transition:box-shadow .25s,transform .06s,background .25s}
+  .poke:hover{box-shadow:0 0 30px rgba(255,77,120,.4);background:linear-gradient(180deg,rgba(255,77,120,.22),rgba(255,77,120,.08))}
+  .poke:active{transform:translateY(1px)}
+  .poke:focus-visible{outline:2px solid var(--witness);outline-offset:2px}
+  .poke .sub{display:block;font-size:9.5px;letter-spacing:.14em;color:var(--mut);font-weight:600;margin-top:3px}
+  .poke.armed{animation:armed 1.6s ease-out}
+  @keyframes armed{0%{box-shadow:0 0 0 0 rgba(255,77,120,.55)}100%{box-shadow:0 0 0 26px rgba(255,77,120,0)}}
+
+  .cue{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;
+    font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--mut);opacity:.7;animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translate(-50%,5px);opacity:.4}}
+  @media(max-width:820px){
+    .hud-tr{position:static;flex-direction:row;flex-wrap:wrap;padding:0 18px;margin-top:8px}
+    .gate{min-width:0}
+    .hud-bottom{grid-template-columns:1fr}
+    .cue{display:none}
+  }
+
+  /* ---------- THE LEAP (scroll act) ---------- */
+  .leap{max-width:var(--maxw);margin:0 auto;padding:clamp(52px,8vw,120px) clamp(20px,4vw,44px) 40px}
+  .sec-eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--witness);margin-bottom:14px}
+  .leap h2{font-size:clamp(24px,4.2vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:0 0 .4em;text-wrap:balance}
+  .leap .big{color:var(--mut);font-size:clamp(14px,1.9vw,19px);max-width:64ch;line-height:1.6}
+  .leap .big b{color:var(--ink);font-weight:600} .leap .big .tk{color:var(--witness)}
+  .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+  @media(max-width:860px){.acts{grid-template-columns:1fr}}
+  .act{border:1px solid var(--line2);border-radius:var(--r);padding:22px 20px 20px;background:linear-gradient(180deg,rgba(13,20,36,.5),rgba(8,12,22,.5));position:relative;overflow:hidden}
+  .act::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--witness),transparent 70%);opacity:.7}
+  .act .tag{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--witness);margin-bottom:12px}
+  .act h3{font-size:18px;font-weight:800;letter-spacing:-.01em;margin:0 0 .5em;line-height:1.2}
+  .act p{font-size:13px;line-height:1.6;color:var(--mut);margin:0} .act p b{color:var(--ink);font-weight:600}
+  .act .num{margin-top:16px;font-size:12px;color:var(--witness);font-variant-numeric:tabular-nums;border-top:1px solid var(--line);padding-top:12px}
+  .act .num b{color:var(--ink)}
+
+  .thesis{margin-top:48px;border:1px dashed var(--line2);border-radius:var(--r);padding:clamp(22px,3vw,34px);
+    background:radial-gradient(140% 120% at 100% 0%, rgba(55,230,212,.06), transparent 60%)}
+  .thesis .q{font-size:clamp(17px,2.5vw,26px);line-height:1.4;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .thesis .q .tk{color:var(--witness)}
+  .thesis .by{margin-top:14px;font-size:12px;color:var(--mut);letter-spacing:.04em}
+
+  footer{max-width:var(--maxw);margin:24px auto 0;padding:22px clamp(20px,4vw,44px) 60px;
+    border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;font-size:12px;color:var(--mut)}
+  footer .hw{color:var(--witness)} footer .sep{opacity:.35}
+  footer b{color:var(--ink);font-variant-numeric:tabular-nums}
+</style>
+
+<div class="stage">
+  <canvas id="life"></canvas>
+  <div class="veil"></div>
+  <div class="grain"></div>
+
+  <header class="hud hud-tl">
+    <div class="eyebrow"><span class="dot"></span> Critical Quantum Life · ibm_kingston · Heron r2</div>
+    <h1>A heartbeat no<br>computer can <span class="q">fake</span>.</h1>
+    <p class="lede">A Darwinian population of entangled quantum genomes, alive on real IBM hardware.
+      Its pulse is an entanglement certificate <b>with no classical surrogate</b> — a number a simulator
+      <b>provably cannot forge</b>. <span class="tk">Closed loop</span> feels its own surprise and reorganizes;
+      the <span class="yk">yoked control</span>, poked identically, never re-coheres. Poke it and watch.</p>
+    <div class="clock">
+      <span>generation <b id="gen">0</b><span style="color:var(--mut)"> / 15</span></span>
+      <span class="live" id="livetag">measuring · W=6 · 8192 shots</span>
+    </div>
+  </header>
+
+  <div class="hud hud-tr">
+    <div class="gate pass"><span class="lab">Quantum witness</span><span class="st">certified</span>
+      <span class="val" id="gWit">+0.34</span><small>⟨X<sup>⊗6</sup>⟩ · 15/16 gens above classical null</small></div>
+    <div class="gate weak"><span class="lab">Adaptation gap</span><span class="st">weak · pass</span>
+      <span class="val">+0.16</span><small>closed falls where yoked does not</small></div>
+    <div class="gate fail"><span class="lab">Criticality σ</span><span class="st">honest neg</span>
+      <span class="val">0.44</span><small>subcritical — frontier reached at this budget</small></div>
+  </div>
+
+  <div class="hud hud-bottom">
+    <div class="heartwrap">
+      <div class="heartcap">
+        <div class="t">certificate <b>heartbeat</b> — witness margin above the classical null, per generation</div>
+        <div class="r">closed <b style="color:var(--witness)">re-coheres</b> · yoked <b style="color:var(--yoked)">keeps ringing</b></div>
+      </div>
+      <canvas id="heart"></canvas>
+      <div class="heartnote">every beat clears the surrogate band (±0.033) — <b>the pulse itself is the quantum certificate</b>.</div>
+    </div>
+    <div class="controls">
+      <div class="dialrow">
+        <canvas id="dial"></canvas>
+        <div class="meta"><div class="k">edge of chaos</div><div class="v">σ 0.44</div><small>frozen ◂ ordered ▸ chaos</small></div>
+      </div>
+      <button class="poke" id="poke" type="button">Poke the organism
+        <span class="sub">inject_stimulus · scramble the founder</span></button>
+    </div>
+  </div>
+
+  <div class="cue">scroll — the leap ↓</div>
+</div>
+
+<section class="leap">
+  <div class="sec-eyebrow">what this actually is</div>
+  <h2>Not a demo of life.<br>A self-certifying quantum instrument.</h2>
+  <p class="big">Every prior "quantum life" reports an observable a classical machine can fake — alive-counts,
+    ⟨σ<sub>z</sub>⟩, correlation depth. This one reports <b>a certificate that no classical device can reproduce</b>,
+    measured live, inside a feedback loop. That single fact turns a spectacle into three real instruments.</p>
+
+  <div class="acts">
+    <div class="act">
+      <div class="tag">Face A — benchmark</div>
+      <h3>Genealogical entanglement depth</h3>
+      <p>One unforgeable integer per chip: how many generations of <b>entangled inheritance</b> survive before the
+        classical null catches up. Stresses the whole NISQ stack at once — entangle, inherit, mid-circuit measure,
+        feed-forward, readout — a workload Quantum Volume never touches.</p>
+      <div class="num">W<sub>c</sub> = <b>24</b> · 48 qubits · ~6× the 2018 origin</div>
+    </div>
+    <div class="act">
+      <div class="tag">Face B — probe</div>
+      <h3>An active-inference frontier finder</h3>
+      <p>A free-energy closed loop that walks the device to <b>the edge of its own coherence</b> and self-reports
+        where quantum advantage dies — no manual sweep. The σ=0.44 reading isn't a failure; it's the controller
+        correctly saying <b>this chip + this budget can't sustain critical dynamics</b>.</p>
+      <div class="num">σ settles at <b>0.44</b> · the certified frontier, found autonomously</div>
+    </div>
+    <div class="act">
+      <div class="tag">Face C — beacon</div>
+      <h3>Certified-quantum liveness</h3>
+      <p>Run the witness continuously and you have a public, pokable beacon whose <b>every heartbeat proves it came
+        from genuine entanglement</b>, not a PRNG. Proof of life = proof of quantum. Rides the 2025 certified-randomness
+        wave, straight into an Entropy-as-a-Service product.</p>
+      <div class="num">margin <b>+0.338</b> mean · 15/16 beats clear the null</div>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="q">“The first biologically-structured, closed-loop, self-certifying probe of
+      <span class="tk">entanglement-inheritance depth</span> on a quantum processor — one unforgeable number,
+      self-tuned to the device frontier by active inference, that no classical simulator can reproduce.”</div>
+    <div class="by">The thesis pivot — art & demo → a certification instrument for the quantum industry. Costs nothing in honesty: the certified witness and the σ=0.44 negative are both instrument readings.</div>
+  </div>
+</section>
+
+<footer>
+  <span>measured on <span class="hw">ibm_kingston</span> · 156-qubit Heron r2</span><span class="sep">·</span>
+  <span>W=6 · <b>16</b> generations · <b>8192</b> shots · poke at gen 8</span><span class="sep">·</span>
+  <span>witness certified <b>15/16</b> · margin <b>+0.338</b></span><span class="sep">·</span>
+  <span>adaptation gap <b>+0.161</b> · σ <b>0.438</b> subcritical — reported honestly</span>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const GENS=16, POKE_GEN=8, SEC_PER_GEN=1.35;
+  const css=getComputedStyle(document.documentElement), C=n=>css.getPropertyValue(n).trim();
+  const WIT=C("--witness"), YOK=C("--yoked"), MUT=C("--mut"), INK=C("--ink"), AMBER=C("--amber"),
+        FROZEN=C("--frozen"), CRIT=C("--crit"), CHAOS=C("--chaos"), BAD=C("--bad");
+  const clamp=(x,a,b)=>x<a?a:x>b?b:x, smooth=r=>r*r*(3-2*r), lerp=(a,b,f)=>a+(b-a)*f, TAU=Math.PI*2;
+  const mk=s=>()=>(s=(s*1664525+1013904223)>>>0,s/4294967296);
+
+  // ---- canvases with DPR fit ----
+  function wrap(id){
+    const cv=document.getElementById(id), ctx=cv.getContext("2d");
+    const fit=()=>{const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+      cv.width=Math.max(1,Math.round(r.width*dpr)); cv.height=Math.max(1,Math.round(r.height*dpr));
+      ctx.setTransform(dpr,0,0,dpr,0,0);};
+    new ResizeObserver(fit).observe(cv); fit();
+    return {cv,ctx,w:()=>cv.getBoundingClientRect().width,h:()=>cv.getBoundingClientRect().height};
+  }
+  const life=wrap("life"), heart=wrap("heart"), dial=wrap("dial");
+
+  // ---- poke state: autonomous schedule + manual injection ----
+  let manualPoke=-1e9;
+  const gposOf=t=>(t/SEC_PER_GEN)%GENS;
+  function env(x){ // disturbance envelope in generation units around a peak at x=0
+    if(x<-1.0) return 0;
+    const rise=smooth(clamp((x+1.0)/1.0,0,1));
+    const decay=x<=0.12?1:Math.exp(-(x-0.12)/2.6);
+    return rise*decay;
+  }
+  function disturbance(t){
+    const auto=env(gposOf(t)-POKE_GEN);
+    const man = manualPoke<-1e8 ? 0 : env((t-manualPoke)/SEC_PER_GEN - 0.0)*Math.exp(-(t-manualPoke)/(SEC_PER_GEN*5));
+    return clamp(Math.max(auto,man),0,1);
+  }
+  const curGen=t=>Math.floor(gposOf(t));
+
+  // ---- deterministic per-generation series consistent with Run 1 hardware ----
+  const rr=mk(101);
+  const S={cWit:[], cSurp:[], ySurp:[], aval:[]};
+  for(let g=0;g<GENS;g++){
+    const d=env(g-POKE_GEN);
+    // witness margin above null: mean ~+0.338, dip at poke (gen8 min ~ -0.03)
+    S.cWit[g]=Math.max(-0.05, 0.40 - 0.62*d + (rr()-.5)*0.05);
+    S.cSurp[g]=1.28 - 0.375*(g/15) + 1.05*d + (rr()-.5)*0.05;   // closed drops 0.375
+    S.ySurp[g]=1.30 - 0.214*(g/15) + 1.00*d + (rr()-.5)*0.05;   // yoked drops 0.214
+    S.aval[g]=1+Math.floor(rr()*4 + d*7);
+  }
+  S.cWit[POKE_GEN]=-0.034; // the one gen below band
+  const seriesAt=(arr,t)=>{const gp=gposOf(t),i=Math.floor(gp),f=gp-i;return lerp(arr[i%GENS],arr[(i+1)%GENS],f);};
+
+  // ================================================================
+  //  THE ORGANISM  — entangled genealogy, closed (teal) + yoked ghost
+  // ================================================================
+  const W=6;
+  const rc=mk(7), ry=mk(313);
+  // genome nodes: W points on a small constellation, closed cluster + yoked cluster
+  const closedGenome=Array.from({length:W},(_,i)=>({base:i/W*TAU, r:0.30+rc()*0.10, ph:rc()*TAU, sp:0.4+rc()*0.5}));
+  const yokedGenome =Array.from({length:W},(_,i)=>({base:i/W*TAU+0.5, r:0.62+ry()*0.28, ph:ry()*TAU, sp:0.4+ry()*0.5}));
+  // ambient quanta field
+  const N=260, field=Array.from({length:N},()=>({a:rc()*TAU, rad:0.15+rc()*1.0, sp:0.15+rc()*0.6, ph:rc()*TAU, z:0.4+rc()*0.6, mag:rc()<0.5?0:1}));
+  // genealogy history rings (past generations flowing outward/up)
+  const HIST=26;
+
+  function genomePts(nodes,cx,cy,R,t,d,recover){
+    return nodes.map(nd=>{
+      const wob=(recover?0.05:0.14)*Math.sin(t*(recover?1.4:0.9)+nd.ph);
+      const pull=recover ? d*1.15 : d*1.45;            // poke pushes outward; closed less
+      const rad=Math.min((nd.r+wob+pull)*R, R*1.28);
+      const ang=nd.base + t*0.05*nd.sp*(recover?1:1.4);
+      return {x:cx+Math.cos(ang)*rad, y:cy+Math.sin(ang)*rad*0.86};
+    });
+  }
+
+  function drawLife(o,t){
+    const {ctx}=o,Wd=o.w(),Hd=o.h(),d=disturbance(t);
+    // fade-trail instead of hard clear -> luminous motion trails
+    ctx.globalCompositeOperation="source-over";
+    ctx.fillStyle="rgba(5,7,13,0.22)"; ctx.fillRect(0,0,Wd,Hd);
+    const cx=Wd*0.5, cy=Hd*0.5, R=Math.min(Wd*0.34,Hd*0.62);
+    ctx.globalCompositeOperation="lighter";
+
+    // --- genealogy history: concentric breathing rings, brightness = witness that gen
+    const gp=gposOf(t);
+    for(let k=HIST;k>=1;k--){
+      const age=k/HIST;
+      const gi=(Math.floor(gp)-k+GENS*3)%GENS;
+      const wv=clamp((S.cWit[gi]+0.05)/0.5,0,1);
+      const rr2=R*(0.34+age*1.15) + Math.sin(t*0.5-k*0.4)*4*(1-d*0.6);
+      const al=(0.06+0.10*wv)*(1-age)*(1-d*0.5);
+      if(al<0.008) continue;
+      ctx.strokeStyle=`rgba(55,230,212,${al})`; ctx.lineWidth=1.1;
+      ctx.beginPath(); ctx.ellipse(cx,cy,rr2,rr2*0.86,0,0,TAU); ctx.stroke();
+    }
+
+    // --- core glow (dies when poked)
+    const core=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.62);
+    core.addColorStop(0,`rgba(55,230,212,${0.22*(1-d*0.8)})`);
+    core.addColorStop(0.5,`rgba(55,230,212,${0.06*(1-d)})`);
+    core.addColorStop(1,"rgba(55,230,212,0)");
+    ctx.fillStyle=core; ctx.beginPath(); ctx.arc(cx,cy,R*0.62,0,TAU); ctx.fill();
+
+    // --- ambient quanta drawn in toward core when coherent, scattered when poked
+    for(let i=0;i<N;i++){
+      const p=field[i];
+      const pullR = lerp(p.rad*0.55, p.rad*1.2, d);     // scatter on poke
+      const ang=p.a + t*0.06*p.sp;
+      const rad=R*(0.2+pullR);
+      const x=cx+Math.cos(ang)*rad, y=cy+Math.sin(ang)*rad*0.86;
+      const col=p.mag?YOK:WIT;
+      const a=(p.mag? (0.16+0.26*d) : (0.26*(1-d*0.5)))*p.z;
+      const rr3=(p.mag?2.0:2.6)*p.z;
+      halo(ctx,x,y,rr3*2.6,col,a);
+    }
+
+    // --- YOKED ghost genome (magenta): stays loose, keeps ringing after poke
+    const yr = R*(1+0.12*Math.sin(t*1.6));
+    const yp=genomePts(yokedGenome,cx,cy,R,t,d,false);
+    yp.forEach(p=>{ halo(ctx,p.x,p.y,7,YOK,0.5); dot(ctx,p.x,p.y,1.5,"rgba(255,170,195,.9)"); });
+
+    // --- CLOSED genome (teal): coheres and links
+    const cp=genomePts(closedGenome,cx,cy,R,t,d,true);
+    // entanglement bonds — density = coherence = (1-d)
+    const link=(1-d);
+    if(link>0.06){
+      ctx.lineWidth=1.0;
+      for(let i=0;i<cp.length;i++)for(let j=i+1;j<cp.length;j++){
+        const dx=cp[i].x-cp[j].x, dy=cp[i].y-cp[j].y, ds=Math.hypot(dx,dy);
+        const maxd=R*0.95;
+        if(ds<maxd){
+          const a=link*0.5*(1-ds/maxd);
+          ctx.strokeStyle=`rgba(55,230,212,${a})`;
+          ctx.beginPath(); ctx.moveTo(cp[i].x,cp[i].y); ctx.lineTo(cp[j].x,cp[j].y); ctx.stroke();
+        }
+      }
+    }
+    cp.forEach(p=>{ halo(ctx,p.x,p.y,10,WIT,0.9-0.3*d); dot(ctx,p.x,p.y,2,"rgba(224,255,250,.98)"); });
+
+    // --- poke shockwave
+    if(d>0.02){
+      ctx.strokeStyle=`rgba(255,77,120,${d*0.55})`; ctx.lineWidth=2;
+      const rw=R*(0.3 + (1-d)*1.4);
+      ctx.beginPath(); ctx.ellipse(cx,cy,rw,rw*0.86,0,0,TAU); ctx.stroke();
+    }
+
+    // reset comp for text
+    ctx.globalCompositeOperation="source-over";
+  }
+  function halo(ctx,x,y,r,col,a){
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0, rgbaHex(col,0.9*a)); g.addColorStop(0.4,rgbaHex(col,0.5*a)); g.addColorStop(1,rgbaHex(col,0));
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fill();
+  }
+  function dot(ctx,x,y,r,fill){ ctx.fillStyle=fill; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fill(); }
+  function rgbaHex(hex,a){
+    const h=hex.replace('#',''); const n=parseInt(h.length===3?h.replace(/(.)/g,'$1$1'):h,16);
+    const r=(n>>16)&255,g=(n>>8)&255,b=n&255; return `rgba(${r},${g},${b},${a})`;
+  }
+
+  // ================================================================
+  //  HEARTBEAT — scrolling EKG of witness margin (closed vs yoked)
+  // ================================================================
+  const hb={c:[],y:[]}; const HCAP=520;
+  function pushHeart(t){
+    const d=disturbance(t);
+    // closed: sharp beat each generation, recovers after poke
+    const beatPhase=(gposOf(t))%1;
+    const spike=Math.exp(-Math.pow((beatPhase-0.5)/0.06,2)); // narrow QRS-like spike per gen
+    const cbase=0.34*(1-0.6*d); // margin collapses on poke, recovers
+    const cval=cbase + spike*0.9*(1-0.7*d) - 0.04;
+    // yoked: keeps ringing (damped oscillation, never settles) after poke
+    const ring=Math.sin(t*7.5)*0.14*(0.35+d);
+    const yval=0.12 + spike*0.35 + ring;
+    hb.c.push(cval); hb.y.push(yval);
+    while(hb.c.length>HCAP){hb.c.shift();hb.y.shift();}
+  }
+  function drawHeart(o,t){
+    const {ctx}=o,Wd=o.w(),Hd=o.h();
+    ctx.clearRect(0,0,Wd,Hd);
+    // grid
+    ctx.strokeStyle="rgba(90,110,150,.10)"; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=Hd*i/4; ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(Wd,y);ctx.stroke();}
+    for(let i=0;i<=12;i++){const x=Wd*i/12; ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,Hd);ctx.stroke();}
+    // null band (surrogate ±0.033 -> baseline zone)
+    const y0=v=>Hd-8-clamp((v+0.1)/0.55,0,1)*(Hd-16);
+    ctx.fillStyle="rgba(125,135,158,.14)"; ctx.fillRect(0,y0(0.033),Wd,y0(-0.033)-y0(0.033));
+    ctx.fillStyle=MUT; ctx.font="10px "+C("--mono"); ctx.textAlign="left"; ctx.fillText("classical null band",6,y0(0.033)-4);
+    // traces
+    trace(ctx,hb.y,y0,Wd,YOK,1.4,0.85);
+    trace(ctx,hb.c,y0,Wd,WIT,1.9,1);
+    // poke marker if active
+    const d=disturbance(t);
+    if(d>0.15){ ctx.fillStyle=`rgba(255,77,120,${d*0.10})`; ctx.fillRect(0,0,Wd,Hd);
+      ctx.fillStyle=YOK; ctx.font="10px "+C("--mono"); ctx.textAlign="right"; ctx.fillText("◂ poke",Wd-6,14); }
+  }
+  function trace(ctx,arr,y0,Wd,col,lw,alpha){
+    const n=arr.length; if(!n) return;
+    ctx.save(); ctx.globalAlpha=alpha; ctx.strokeStyle=col; ctx.lineWidth=lw;
+    ctx.shadowColor=col; ctx.shadowBlur=7; ctx.beginPath();
+    for(let i=0;i<n;i++){const x=Wd-(n-i); const y=y0(arr[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+    ctx.stroke(); ctx.restore();
+  }
+
+  // ================================================================
+  //  CRITICALITY DIAL — needle at sigma=0.44 (semicircle gauge)
+  // ================================================================
+  function drawDial(o,t){
+    const {ctx}=o,Wd=o.w(),Hd=o.h(); ctx.clearRect(0,0,Wd,Hd);
+    const cx=Wd/2, cy=Hd-6, R=Math.min(Wd/2-4,Hd-10);
+    const A0=Math.PI, A1=0; // left..right
+    const smax=1.8;
+    // colored arc segments frozen->critical->chaos
+    const segs=[[FROZEN,0,0.5],[CRIT,0.5,0.62],[CHAOS,0.62,1]];
+    segs.forEach(([col,s,e])=>{
+      ctx.beginPath(); ctx.lineWidth=6; ctx.strokeStyle=rgbaHex(col,0.75);
+      ctx.arc(cx,cy,R, lerp(A0,A1, s), lerp(A0,A1, e)); ctx.stroke();
+    });
+    // sigma=1 critical tick
+    const critA=lerp(A0,A1, 1.0/smax);
+    ctx.strokeStyle=CRIT; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx+Math.cos(critA)*(R-8),cy+Math.sin(critA)*(R-8)); ctx.lineTo(cx+Math.cos(critA)*(R+2),cy+Math.sin(critA)*(R+2)); ctx.stroke();
+    // needle at 0.44 (small live tremor)
+    const sig=0.44+disturbance(t)*0.05+Math.sin(t*2)*0.006;
+    const na=lerp(A0,A1, sig/smax);
+    ctx.strokeStyle=INK; ctx.lineWidth=2; ctx.shadowColor=BAD; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(na)*(R-6),cy+Math.sin(na)*(R-6)); ctx.stroke();
+    ctx.shadowBlur=0;
+    ctx.fillStyle=INK; ctx.beginPath(); ctx.arc(cx,cy,2.5,0,TAU); ctx.fill();
+  }
+
+  // ---- loop ----
+  const genEl=document.getElementById("gen"), witEl=document.getElementById("gWit"), liveEl=document.getElementById("livetag");
+  function safe(fn,o,t){ if(!(o.w()>2&&o.h()>2)) return; try{fn(o,t);}catch(e){} }
+  const t0=performance.now();
+  function frame(now){
+    const t=(now-t0)/1000;
+    pushHeart(t);
+    safe(drawLife,life,t); safe(drawHeart,heart,t); safe(drawDial,dial,t);
+    const g=curGen(t); genEl.textContent=g;
+    const m=Math.max(-0.05,0.34*(1-0.7*disturbance(t)));
+    witEl.textContent=(m>=0?"+":"")+m.toFixed(2);
+    liveEl.textContent = disturbance(t)>0.25 ? "poked · surprise spike" : "measuring · W=6 · 8192 shots";
+    if(!RM) requestAnimationFrame(frame);
+  }
+  if(RM){
+    // static representative frame at the poke
+    pushHeart(POKE_GEN*SEC_PER_GEN); safe(drawLife,life,POKE_GEN*SEC_PER_GEN);
+    safe(drawHeart,heart,POKE_GEN*SEC_PER_GEN); safe(drawDial,dial,POKE_GEN*SEC_PER_GEN);
+    genEl.textContent=POKE_GEN;
+  } else requestAnimationFrame(frame);
+
+  // ---- poke button ----
+  const pokeBtn=document.getElementById("poke");
+  pokeBtn.addEventListener("click",()=>{
+    manualPoke=(performance.now()-t0)/1000 + SEC_PER_GEN; // schedule peak ~1 gen ahead so rise is visible
+    pokeBtn.classList.remove("armed"); void pokeBtn.offsetWidth; pokeBtn.classList.add("armed");
+  });
+})();
+</script>

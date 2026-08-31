@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/THESIS/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,6 +42,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JavaScript Debug.concept_mockups.html.executor": "Coverage",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -72,7 +72,10 @@
       <recent name="$PROJECT_DIR$/CriticalQuantumLife/plans" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JavaScript Debug.concept_mockups.html">
+    <configuration name="concept_mockups.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/Quantum-research/THESIS/CriticalQuantumLife/web/concept_mockups.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Quantum-research" />
       <option name="ENV_FILES" value="" />
@@ -98,6 +101,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.concept_mockups.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -169,11 +177,22 @@
       <workItem from="1787722136350" duration="46158000" />
       <workItem from="1787922426252" duration="2001000" />
       <workItem from="1788107493035" duration="6309000" />
-      <workItem from="1788162774684" duration="20575000" />
+      <workItem from="1788162774684" duration="26118000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
