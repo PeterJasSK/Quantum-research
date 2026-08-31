@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "timestamp": "20260831-174725",
+    "seed": null,
+    "width": 6,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": null,
+    "nbins": null,
+    "death": null,
+    "interaction": null,
+    "poke_gen": null,
+    "poke_events": [],
+    "entropy_source": "qrng",
+    "entropy_provenance": [
+      {
+        "request_id": "9bc8814017ac453c98ebaef1cd8d65dd",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI5YmM4ODE0MDE3YWM0NTNjOThlYmFlZjFjZDhkNjVkZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQyOjQ1LjYxOTYzOCswMDowMCJ9.Wt9H6p3yYCEAqOdSTdZul7LC43D0ItcUrhNbDghxjOZRkzntJbc6lPzljo4sntbToh9glG9H9jNy_clb95nRCg"
+      },
+      {
+        "request_id": "7daae68928e04df783d639e02f69b573",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI3ZGFhZTY4OTI4ZTA0ZGY3ODNkNjM5ZTAyZjY5YjU3MyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQyOjUwLjU2MDA1NyswMDowMCJ9.j2jvlb2xo6Il3J2s6lo9sCULXsrMcD8OdxDTGEcts2etYRYCnfcHIjXArAW66rLPJ34R95NGB_GmpbD6TP5sAg"
+      },
+      {
+        "request_id": "138da2687df64b6a86ed94f2a896bc07",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIxMzhkYTI2ODdkZjY0YjZhODZlZDk0ZjJhODk2YmMwNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQyOjU1LjQ4MDA3OSswMDowMCJ9.Xq3e9lbqNphlgO29NCqCS_ywzAacKrb-LSS_k0OBqdWeErthHhbZyhHSxyM9uppNXutV9e1xLH0RpCVWrbDVCA"
+      },
+      {
+        "request_id": "bdd38242cd8c4f4e9717b273493a98c8",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJiZGQzODI0MmNkOGM0ZjRlOTcxN2IyNzM0OTNhOThjOCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQyOjU5LjY1NzM3NiswMDowMCJ9.G26q9LTJxyPO-Vdvu0FbjB9TDhxqdte24G1Bb1rF8JVJ3AeTM1ytsAwsqiWNfjUVfRcvwNjmaR68IevPMI7VAQ"
+      },
+      {
+        "request_id": "6d75ee6d1668465bb5e633a7170e5511",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2ZDc1ZWU2ZDE2Njg0NjViYjVlNjMzYTcxNzBlNTUxMSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQzOjAzLjg5NTM4MyswMDowMCJ9.zLa_HISq0BgSJNum1pYZAfi0UxxPu6cE0fTuKYk9DkMYJ8eef_LMKEW5yVpDGcyqqSnF44Ot2DETEzRwIfyiAw"
+      },
+      {
+        "request_id": "c69e97df64d5477bbf4f652d1bdf8428",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJjNjllOTdkZjY0ZDU0NzdiYmY0ZjY1MmQxYmRmODQyOCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQzOjA4LjY3NzY3NyswMDowMCJ9.0xiXVGZjzXPPAyneLeSANpVV2h8ohRSUTivJb0uEs5lfSefywReWODJvI5DGZCugrg9Thdvsr1aS2WkWVybrAw"
+      },
+      {
+        "request_id": "d52562867235406f8c75155d8e364594",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJkNTI1NjI4NjcyMzU0MDZmOGM3NTE1NWQ4ZTM2NDU5NCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQzOjEyLjgyNjU1MSswMDowMCJ9.5qA3hE2xo40ARs2ETNXB08XRa5PF8DV2AifqZS-xfWBbR0ZgS3m2AqdBUG8svZHWzUqWCL5qXScpADnsYBL-DQ"
+      },
+      {
+        "request_id": "07d6cea424da42d694a2f44f0e676a98",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIwN2Q2Y2VhNDI0ZGE0MmQ2OTRhMmY0NGYwZTY3NmE5OCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQzOjE2Ljg5Njg0OSswMDowMCJ9.YOdbuNvkPOTAZzCpFT9dsn3lnECxzD5QsDJNjDbY7DzdB4wrWocYJPB3DpRNg9sqmw1jccEiQN2tUia0nSsPAQ"
+      }
+    ],
+    "calibration": {
+      "twoq_err_mean": 0.00224,
+      "twoq_err_max": 0.00583,
+      "readout_max": 0.01917,
+      "sx_max": 0.000732,
+      "dead_avoided": [
+        113,
+        120,
+        121,
+        146
+      ],
+      "gated": true,
+      "max_twoq_err": 0.05,
+      "max_readout_err": 0.15
+    },
+    "session_id": "sess_caec0e51",
+    "batch": 0,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "outcome": "4",
+      "surprise": 1.3862943611198908,
+      "witness_joint": -0.001220703125,
+      "witness_separable": -1.8009078145989283e-09,
+      "witness_signal": -0.0012207013240921854,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 1,
+      "outcome": "5",
+      "surprise": 1.511457504073897,
+      "witness_joint": 0.131591796875,
+      "witness_separable": -1.385470575850816e-09,
+      "witness_signal": 0.13159179826047057,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.6869615765973233,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 2,
+      "outcome": "6",
+      "surprise": 1.6014057407368363,
+      "witness_joint": 0.381591796875,
+      "witness_separable": -5.4812550220098e-12,
+      "witness_signal": 0.3815917968804813,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.0822187715729612,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 3,
+      "outcome": "6",
+      "surprise": 1.2405143464191688,
+      "witness_joint": 0.272705078125,
+      "witness_separable": -7.266701888657134e-11,
+      "witness_signal": 0.27270507819766704,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.936939628851031,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 4,
+      "outcome": "7",
+      "surprise": 1.7181846882359921,
+      "witness_joint": 0.551025390625,
+      "witness_separable": -5.054316950321887e-13,
+      "witness_signal": 0.5510253906255055,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.266932997599924,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 5,
+      "outcome": "6",
+      "surprise": 1.1867760096661086,
+      "witness_joint": 0.37890625,
+      "witness_separable": 4.32065028286438e-12,
+      "witness_signal": 0.37890624999567935,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.104965075348395,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 6,
+      "outcome": "7",
+      "surprise": 1.431006796742215,
+      "witness_joint": 0.56982421875,
+      "witness_separable": -5.125652506599021e-13,
+      "witness_signal": 0.5698242187505126,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.1134117062244973,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 7,
+      "outcome": "5",
+      "surprise": 1.6484392882785535,
+      "witness_joint": 0.2119140625,
+      "witness_separable": -3.6889901777834716e-11,
+      "witness_signal": 0.2119140625368899,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.242323521431608,
+      "active": true,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 8192
+    }
+  ]
+}

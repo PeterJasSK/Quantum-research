@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "gate",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 100,
+    "width": 4,
+    "generations": 15,
+    "shots": 4096,
+    "mut_scale": 0.6,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": 8,
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "thresholds": {
+    "adapt_min": 0.15,
+    "sigma_dead": 0.3,
+    "relax_win": 4,
+    "relax_frac": 0.5,
+    "early_win": 3,
+    "late_win": 3
+  },
+  "runs": {
+    "closed": "cql_f1_closed_sim_seed100_sim_run.json",
+    "yoked": "cql_f1_yoked_sim_seed100_sim_run.json"
+  },
+  "signals": {
+    "adaptation": {
+      "closed_surprise_drop": 0.007646121629412139,
+      "yoked_surprise_drop": 0.2469347574220293,
+      "gap": -0.23928863579261717,
+      "pass": false
+    },
+    "criticality": {
+      "sigma_early_window_mean": 1.1666666666666667,
+      "sigma_final_window_mean": 1.1666666666666667,
+      "trends_to_one": false,
+      "pass": false
+    },
+    "poke_recover": {
+      "poke_gen": 8,
+      "baseline": 1.5285126095732637,
+      "spike": -0.48914219097693135,
+      "relaxed": true,
+      "pass": false
+    }
+  },
+  "kill_gate": {
+    "verdict": "NO-GO",
+    "note": "NO-GO -> documented no-go, evidence blocks retained. Absent signal(s): adaptation, criticality, poke_recover. Honest fix is F0's knobs (Q2/Q3), not loosening F1's threshold."
+  }
+}

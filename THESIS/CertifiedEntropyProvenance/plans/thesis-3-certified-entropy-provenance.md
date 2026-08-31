@@ -1,0 +1,31 @@
+# Thesis Idea 3 — Certified Quantum Entropy with Signed Provenance under Device Imperfection: not "unbreakable encryption," but a rigorous, auditable min-entropy floor for the key material that feeds it
+
+**Tag: QUANTUM · thesis (net / QRNG-EaaS family) · effort: medium · QC: partial (stored bits + API; some device runs)**
+
+## Pitch
+The "provably unbreakable encryption" dream is a trap: the one-time pad is *already* information-theoretically unbreakable (Shannon), so security is never won at the cipher — it is won at **entropy and key distribution**, a problem BB84/QKD already own and a master's student will not out-invent. The defensible, provable, and genuinely novel thesis is the layer under the cipher: take the author's own QRNG stack and deliver **certified min-entropy with cryptographic provenance under real device imperfection** — estimate the source min-entropy under a stated model (NIST SP 800-90B), apply a Leftover-Hash-Lemma extractor with a *quantified* uniformity bound, emit each batch with an Ed25519-signed provenance receipt, and measure how bias/decoherence/readout/reset error and error-detection-vs-raw-bits move the *certifiable* floor — anchored on the repo's existing honest negative result (error detection did **not** reduce bias).
+**Paper strength score: 74/100** — rigorous, low null-risk, huge asset reuse, and the provenance angle is fresh in the QRNG-service niche; docked because certified-entropy is a populated field (weakest "sole world expert" of the three) and the contribution is certification+engineering, not new physics.
+
+## How it becomes a study
+**Research question:** Under a stated device model, what certified min-entropy floor can this QRNG stack guarantee per batch after LHL extraction, how does device imperfection (bias, decoherence, readout/reset error, mid-circuit correlation) degrade that floor, and does error-detection or calibration-guided qubit selection actually *raise* it?
+**Hypothesis:** SP 800-90B min-entropy estimate + LHL extractor yields near-uniform output with a rigorous bound; error detection (Bell forbidden-state discard) does **not** raise the certified floor versus raw Hadamard bits (extending the existing empirical negative into a certification statement); calibration-guided selection *does* raise usable certified bits per free-tier minute.
+**Method:** Reuse stored QRNG bits and the `qrng-eaas` pipeline (HMAC-DRBG, AES-256-GCM pool, Ed25519 receipts, `/v1/verify` "never an oracle"). Compute SP 800-90B (IID + Markov) estimates on the existing Bell vs raw-Hadamard streams from `ErrorDetectionVSRawBits/` and the Heron runs (`ibm_marrakesh`, `ibm_fez`); apply a 2-universal-hash extractor; attach the min-entropy floor to a signed receipt; run the same-bit-budget comparison `CalibrationGuidedHighYieldQRNG` EPIC 2 flagged as missing.
+**Baseline:** Raw bits with no certification, and a CSPRNG — report honestly where QRNG loses (per the `net-1` house rule).
+**Metrics:** certified min-entropy per bit under the model; safe extractor output rate; certified bits per free-tier minute; NIST SP 800-22 pass (necessary-not-sufficient screen, explicitly not equated with a min-entropy guarantee); receipt-verification correctness.
+**Novel contribution:** A quantum entropy source that ships a *rigorous, auditable, signed min-entropy guarantee* under a real device model — the honest, provable substrate that "unbreakable encryption" hand-waves past.
+
+## Connection to what already exists
+Builds directly on `BC/` (the bachelor Bell-pair QRNG — replaces its MD5 whitening with a proven LHL extractor), `ErrorDetectionVSRawBits/` (the honest negative that error detection didn't help — the empirical anchor), `CalibrationGuidedHighYieldQRNG/` (the inconclusive EPIC 2 same-bit-budget follow-up), and `qrng-eaas/` (the mature API: signed receipts, HMAC-DRBG SP 800-90A, ML-KEM-768 demo). Sits next to `net-2-boot-entropy-fix.md` (highest-scored idea at 84 — weak-key/Heninger reproduction, a natural applied chapter), `viz-10-entropy-with-proof.md` (CHSH self-certification), and `viz-8-quantum-randomness-beacon.md`. Real anchors: Shannon 1949 (OTP); Leftover Hash Lemma (Impagliazzo–Levin–Luby / HILL); NIST SP 800-90B, 800-90A, 800-22; Pironio *et al.* 2010 (DI randomness — cited only as the loophole caution, **not** claimed); FIPS 203 (ML-KEM). **Needs citation check** on exact years/venues before thesis.
+
+## Bull case / Bear case / Likely outcome / Value if null
+**Bull:** Everything needed already exists (bachelor QRNG + 3 built studies + a deployed API), so it is buildable now with low hardware dependence (mostly stored bits); the result — a signed, model-conditional min-entropy guarantee — is rigorous, hard to null, and continuous with the author's bachelor work into a coherent 5-year research identity.
+**Bear:** Certified randomness is a crowded field; without the DI/loophole-free apparatus the guarantee is explicitly model-conditional, and a committee may see "solid certification engineering" rather than new science; the "unbreakable" excitement is gone by design.
+**Likely outcome:** A defensible, publishable certified-entropy-with-provenance result plus a quantified statement that error detection doesn't raise the floor and calibration selection does — clean and honest.
+**Value if null:** If no imperfection lever raises the certified floor, that is itself a useful null for practitioners choosing a QRNG configuration, and the LHL+provenance framework stands as a reusable contribution.
+
+## Thesis — IEEE short paper (6–8 pp, double-column)
+**Central question:** What certified, auditable min-entropy floor can a real quantum RNG guarantee under device imperfection, and which imperfection levers move it?
+**Single defended claim:** With an SP 800-90B estimate and an LHL extractor, this QRNG stack ships a signed, model-conditional min-entropy guarantee; error detection does not raise it while calibration-guided selection does — and this, not the cipher, is where quantum buys real, provable security.
+**Why it fits 6–8 pp:** One extractor, one certification pipeline, one imperfection sweep, one provenance-verification result.
+**Target venue:** Applied-crypto / quantum-security or hardware-security short-paper track.
+**Compelling-study likelihood: 74/100.**

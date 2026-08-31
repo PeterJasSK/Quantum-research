@@ -1,0 +1,101 @@
+{
+  "session_id": "sess_7244cf63",
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 42,
+    "width": 8,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": 0.6,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": null,
+    "poke_events": [
+      {
+        "at_generation": 8,
+        "kind": "flip_expected",
+        "params": {}
+      }
+    ],
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)",
+    "session_id": "sess_7244cf63"
+  },
+  "state": {
+    "generation": 16,
+    "running_dist": {
+      "4": 0.02851171089776641,
+      "5": 0.6382530822471679,
+      "6": 0.239551709184,
+      "8": 0.065536
+    },
+    "mut_scale": 0.294,
+    "recent": [
+      1.3862943611198908,
+      1.511457504073897,
+      1.1739617259098964,
+      0.9950138880036826,
+      1.7181846882359921,
+      1.5590426789862248,
+      1.180473566559677,
+      1.0212226299822968,
+      1.5862245303369076,
+      1.2813017711658956,
+      1.8532206843125385,
+      1.2943287299772184,
+      1.106165203535106,
+      1.4168277628672916,
+      1.1095464418400598,
+      0.9824420406983059
+    ],
+    "active_hist": [
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "poke_log": [
+    {
+      "at_generation": 8,
+      "kind": "flip_expected",
+      "params": {},
+      "wall_clock": "2026-08-31T15:06:08.748959+00:00"
+    }
+  ],
+  "resume_args": {
+    "width": 8,
+    "shots": 8192,
+    "seed": 42,
+    "name": "cql_f5_s42",
+    "mut_scale": 0.6,
+    "poke_gen": null,
+    "death": "unitary",
+    "interaction": "nn",
+    "nbins": 10,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "sim": true,
+    "qrng_url": "https://api.qeaas.eu/"
+  }
+}

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/THESIS/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/study-ideas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/study-ideas/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,35 +41,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/number-partitioning/plans&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/THESIS",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "ts.external.directory.path": "/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/THESIS" />
       <recent name="$PROJECT_DIR$/number-partitioning/plans" />
       <recent name="$PROJECT_DIR$/number-partitioning" />
       <recent name="$PROJECT_DIR$/artificial-life/research" />
       <recent name="$PROJECT_DIR$/artificial-life" />
-      <recent name="$PROJECT_DIR$/artificial-life/plans" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/number-partitioning/code" />
-      <recent name="$PROJECT_DIR$/number-partitioning/plans/code" />
-      <recent name="$PROJECT_DIR$/number-partitioning" />
-      <recent name="$PROJECT_DIR$/number-partitioning/array" />
-      <recent name="$PROJECT_DIR$/number-partitioning/math/plans" />
+      <recent name="$PROJECT_DIR$/THESIS/NPQuantumAdvantage" />
+      <recent name="$PROJECT_DIR$/THESIS/CriticalQuantumLife" />
+      <recent name="$PROJECT_DIR$/THESIS/CertifiedEntropyProvenance" />
+      <recent name="$PROJECT_DIR$/THESIS" />
+      <recent name="$PROJECT_DIR$/CriticalQuantumLife/plans" />
     </key>
   </component>
   <component name="RunManager">
@@ -168,7 +168,8 @@
       <workItem from="1787559406770" duration="38877000" />
       <workItem from="1787722136350" duration="46158000" />
       <workItem from="1787922426252" duration="2001000" />
-      <workItem from="1788107493035" duration="4949000" />
+      <workItem from="1788107493035" duration="6309000" />
+      <workItem from="1788162774684" duration="20575000" />
     </task>
     <servers />
   </component>

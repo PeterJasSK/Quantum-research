@@ -1,0 +1,134 @@
+{
+  "session_id": "sess_caec0e51",
+  "arm": "yoked",
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "yoked",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "timestamp": "20260831-175257",
+    "seed": null,
+    "width": 6,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": null,
+    "nbins": null,
+    "death": null,
+    "interaction": null,
+    "poke_gen": 8,
+    "poke_events": [
+      {
+        "at_generation": 8,
+        "kind": "inject_stimulus",
+        "params": {}
+      }
+    ],
+    "entropy_source": "qrng",
+    "entropy_provenance": [
+      {
+        "request_id": "c99802c0d87d40f899f4d359a1ce8e92",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJjOTk4MDJjMGQ4N2Q0MGY4OTlmNGQzNTlhMWNlOGU5MiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjMyLjgyOTYxOSswMDowMCJ9.tSpiwmID6Xt9JNqc5A13nvItikxFMzfQU7_G6aU5SlptDpczf90XIYcqoVzgW_28cB7jn0qY9Kx75mnNOqN6Dw"
+      },
+      {
+        "request_id": "792366d3a1f44c04a8bc72749c5e77ba",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI3OTIzNjZkM2ExZjQ0YzA0YThiYzcyNzQ5YzVlNzdiYSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjM2Ljk3NTY0NiswMDowMCJ9.Jp5LvXZdclveQ6bS9dOEc-aB8MjxFpFpKtDvHmGtRHbMq6_IsPV8pJsAmzh-6urRdWpbiF3unEed6cEnK90nBg"
+      },
+      {
+        "request_id": "1f4229c9efa246d49f1abe7f0cc42584",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIxZjQyMjljOWVmYTI0NmQ0OWYxYWJlN2YwY2M0MjU4NCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjQxLjA1OTkzNCswMDowMCJ9.4jdOd20OhiDDj2Api0XbtTkGL3iK2Hzg4ABZHlXjEFLAu10cBJbQQuCT6U8fmxao9SIBEixOWaUKHlmKRufODg"
+      },
+      {
+        "request_id": "e05c02460ea2470bac7260d1a38e932b",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJlMDVjMDI0NjBlYTI0NzBiYWM3MjYwZDFhMzhlOTMyYiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjQ1LjgzMzEwMCswMDowMCJ9.5Qoa30yiyGW1Wz1OSU99PuNGFVKhgqGaDuiXxoWoGTa3w8VOiy7PHhtFt53_-6QkRpYC1yR88pMg83pzDOVKDg"
+      },
+      {
+        "request_id": "6928509c188f413ebbd93cde572c76c0",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2OTI4NTA5YzE4OGY0MTNlYmJkOTNjZGU1NzJjNzZjMCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjQ5Ljk2Mzg0MSswMDowMCJ9.n4lkeDL0Bca1HfqCueFkNbxTU66ia647NMaRQkPJ5-sVj1lifrHvudGFOQMxBYQYX-nUpnCwjW6g7x6PDBLkDw"
+      },
+      {
+        "request_id": "259a2d3d8ceb4ac998a5f7afd77d2ee4",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIyNTlhMmQzZDhjZWI0YWM5OThhNWY3YWZkNzdkMmVlNCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjU0LjE1NTA5NCswMDowMCJ9.Pnn4vXrsQAVGoJ4zghKUT2fvA-WdQPlfqVaMH9iwVc67zridc1AnJSD7ve3wgVJqguK4GpqkbE2lggYiNMAYBA"
+      },
+      {
+        "request_id": "6aebfba4fcfa4bce8a79510905d91be7",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2YWViZmJhNGZjZmE0YmNlOGE3OTUxMDkwNWQ5MWJlNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjU4Ljk5Njk3NCswMDowMCJ9.4awYr5uFIyzDUOisoKgrtIhQLrImTvRfooNbYBQW-h6th4rsO3tVceIrG7xbZgJTPA0eG9iuu-xB11IAXkWrAg"
+      },
+      {
+        "request_id": "61fb732e79864934a9bc261bc6d9f395",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2MWZiNzMyZTc5ODY0OTM0YTliYzI2MWJjNmQ5ZjM5NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjUwOjAzLjE3OTA0NyswMDowMCJ9.ssYZDAPjNumKwLWfw0ZmhrXBTQ_rjWB_Z3-CsLW__PjYFib3NpdfPBLFUtrs1_Qr04bJ8nyKb9TttN9feXjhBg"
+      }
+    ],
+    "calibration": {
+      "twoq_err_mean": 0.00224,
+      "twoq_err_max": 0.00583,
+      "readout_max": 0.01917,
+      "sx_max": 0.000732,
+      "dead_avoided": [
+        113,
+        120,
+        121,
+        146
+      ],
+      "gated": true,
+      "max_twoq_err": 0.05,
+      "max_readout_err": 0.15
+    },
+    "session_id": "sess_caec0e51",
+    "batch": 1,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "state": {
+    "generation": 16,
+    "running_dist": {
+      "6": 0.7654477401227263,
+      "4": 0.008796093022208004,
+      "5": 0.145179869184,
+      "7": 0.0524288
+    },
+    "mut_scale": 0.147,
+    "recent": [
+      1.3862943611198908,
+      1.511457504073897,
+      1.2460650198112404,
+      1.0395274954058547,
+      1.7181846882359921,
+      1.070274169788666,
+      0.9437050482454612,
+      0.8573341207815475,
+      0.7957516072765999,
+      1.841937990664845,
+      0.9043616916035983,
+      0.8327001827136312,
+      0.7796868722785334,
+      1.7891852351278652,
+      0.8900658938483762,
+      0.8234817447334277
+    ],
+    "active_hist": [
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "poke_log": [
+    {
+      "at_generation": 8,
+      "kind": "inject_stimulus",
+      "params": {}
+    }
+  ]
+}

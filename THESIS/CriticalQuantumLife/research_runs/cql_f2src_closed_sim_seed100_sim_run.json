@@ -1,0 +1,694 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 100,
+    "width": 4,
+    "generations": 30,
+    "shots": 4096,
+    "mut_scale": 0.6,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": 8,
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "outcome": "5",
+      "surprise": 1.3862943611198908,
+      "witness_joint": 0.0224609375,
+      "witness_separable": -6.990376277826726e-08,
+      "witness_signal": 0.02246100740376278,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 1,
+      "outcome": "7",
+      "surprise": 1.511457504073897,
+      "witness_joint": 0.56689453125,
+      "witness_separable": 2.3559368855785578e-07,
+      "witness_signal": 0.5668942956563114,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6869615765973233,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 2,
+      "outcome": "4",
+      "surprise": 1.6014057407368363,
+      "witness_joint": -0.00244140625,
+      "witness_separable": -1.4787224245083053e-06,
+      "witness_signal": -0.0024399275275754917,
+      "witness_sigma": 0.015625,
+      "entropy": 1.0822187715729612,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 3,
+      "outcome": "5",
+      "surprise": 1.37429421711678,
+      "witness_joint": 0.0498046875,
+      "witness_separable": -1.6450940165668726e-08,
+      "witness_signal": 0.049804703950940166,
+      "witness_sigma": 0.015625,
+      "entropy": 1.0279529171597899,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 4,
+      "outcome": "5",
+      "surprise": 1.1268487738227315,
+      "witness_joint": 0.16943359375,
+      "witness_separable": 4.408889253681991e-07,
+      "witness_signal": 0.16943315286107463,
+      "witness_sigma": 0.015625,
+      "entropy": 0.8782237925368461,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 5,
+      "outcome": "6",
+      "surprise": 1.7566249738815605,
+      "witness_joint": 0.42333984375,
+      "witness_separable": -6.418417797249276e-09,
+      "witness_signal": 0.4233398501684178,
+      "witness_sigma": 0.015625,
+      "entropy": 1.224482254715987,
+      "active": true,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 6,
+      "outcome": "5",
+      "surprise": 1.122236502614451,
+      "witness_joint": 0.01123046875,
+      "witness_separable": -6.77113121128059e-08,
+      "witness_signal": 0.011230536461312113,
+      "witness_sigma": 0.015625,
+      "entropy": 1.0658373788405102,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 7,
+      "outcome": "6",
+      "surprise": 1.454164708731595,
+      "witness_joint": 0.3017578125,
+      "witness_separable": 7.793460099492222e-09,
+      "witness_signal": 0.3017578047065399,
+      "witness_sigma": 0.015625,
+      "entropy": 1.0975318980716327,
+      "active": true,
+      "sigma": 2.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 8,
+      "outcome": "5",
+      "surprise": 1.1196002956433886,
+      "witness_joint": 0.13671875,
+      "witness_separable": 1.5212877769954503e-05,
+      "witness_signal": 0.13670353712223005,
+      "witness_sigma": 0.015625,
+      "entropy": 0.9905570299015601,
+      "active": true,
+      "sigma": 2.0,
+      "poke": true,
+      "shots": 4096
+    },
+    {
+      "gen": 9,
+      "outcome": "5",
+      "surprise": 0.9843951531622649,
+      "witness_joint": 0.00439453125,
+      "witness_separable": 4.770868144987617e-08,
+      "witness_signal": 0.00439448354131855,
+      "witness_sigma": 0.015625,
+      "entropy": 0.8695124144220512,
+      "active": false,
+      "sigma": 2.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 10,
+      "outcome": "6",
+      "surprise": 1.408671624539271,
+      "witness_joint": 0.33984375,
+      "witness_separable": -1.8774153431877494e-06,
+      "witness_signal": 0.3398456274153432,
+      "witness_sigma": 0.015625,
+      "entropy": 0.9271764105525186,
+      "active": true,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 11,
+      "outcome": "5",
+      "surprise": 1.031258620371189,
+      "witness_joint": 0.064453125,
+      "witness_separable": -2.6643647288437933e-08,
+      "witness_signal": 0.06445315164364729,
+      "witness_sigma": 0.015625,
+      "entropy": 0.8431775634828391,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 12,
+      "outcome": "5",
+      "surprise": 0.9254832460515984,
+      "witness_joint": 0.07666015625,
+      "witness_separable": -1.755779521772638e-08,
+      "witness_signal": 0.07666017380779522,
+      "witness_sigma": 0.015625,
+      "entropy": 0.7483245382523477,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 13,
+      "outcome": "7",
+      "surprise": 1.830089804510951,
+      "witness_joint": 0.4892578125,
+      "witness_separable": -6.101709004724398e-08,
+      "witness_signal": 0.48925787351709005,
+      "witness_sigma": 0.015625,
+      "entropy": 1.051315708337467,
+      "active": true,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 14,
+      "outcome": "4",
+      "surprise": 1.834576658670222,
+      "witness_joint": -0.146484375,
+      "witness_separable": -5.762558430433273e-07,
+      "witness_signal": -0.14648379874415696,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2908652623421562,
+      "active": true,
+      "sigma": 2.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 15,
+      "outcome": "7",
+      "surprise": 1.5072622565415146,
+      "witness_joint": 0.533203125,
+      "witness_separable": 3.415038918319624e-08,
+      "witness_signal": 0.5332030908496108,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2994713020581774,
+      "active": true,
+      "sigma": 3.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 16,
+      "outcome": "4",
+      "surprise": 1.5101131182960756,
+      "witness_joint": -0.00390625,
+      "witness_separable": 3.798868419835344e-07,
+      "witness_signal": -0.0039066298868419835,
+      "witness_sigma": 0.015625,
+      "entropy": 1.307589592771353,
+      "active": true,
+      "sigma": 3.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 17,
+      "outcome": "4",
+      "surprise": 1.2472065173504348,
+      "witness_joint": -0.00244140625,
+      "witness_separable": 1.2119016901124269e-09,
+      "witness_signal": -0.00244140746190169,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2206117585925151,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 18,
+      "outcome": "5",
+      "surprise": 1.4285259800297438,
+      "witness_joint": 0.21435546875,
+      "witness_separable": -1.0405346984043717e-07,
+      "witness_signal": 0.21435557280346984,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2137933585083343,
+      "active": true,
+      "sigma": 0.6666666666666666,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 19,
+      "outcome": "5",
+      "surprise": 1.197032236788282,
+      "witness_joint": 0.00244140625,
+      "witness_separable": 3.0828800845483784e-08,
+      "witness_signal": 0.0024413754211991545,
+      "witness_sigma": 0.015625,
+      "entropy": 1.1310324808188994,
+      "active": false,
+      "sigma": 0.3333333333333333,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 20,
+      "outcome": "7",
+      "surprise": 1.5792420090869395,
+      "witness_joint": 0.4892578125,
+      "witness_separable": 5.371703082346357e-09,
+      "witness_signal": 0.4892578071282969,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2018173376138266,
+      "active": true,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 21,
+      "outcome": "4",
+      "surprise": 1.3981558983250741,
+      "witness_joint": -0.0966796875,
+      "witness_separable": 8.692131814314052e-08,
+      "witness_signal": -0.09667977442131814,
+      "witness_sigma": 0.015625,
+      "entropy": 1.1882702160661203,
+      "active": false,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 22,
+      "outcome": "5",
+      "surprise": 1.276537632559724,
+      "witness_joint": 0.02490234375,
+      "witness_separable": 1.815768655433203e-07,
+      "witness_signal": 0.024902162173134457,
+      "witness_sigma": 0.015625,
+      "entropy": 1.1365583288027974,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 23,
+      "outcome": "6",
+      "surprise": 1.8295068176234777,
+      "witness_joint": 0.43505859375,
+      "witness_separable": -4.619482751877513e-07,
+      "witness_signal": 0.4350590556982752,
+      "witness_sigma": 0.015625,
+      "entropy": 1.3419984063437604,
+      "active": true,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 24,
+      "outcome": "5",
+      "surprise": 1.2153901389168573,
+      "witness_joint": 0.00927734375,
+      "witness_separable": 1.396301740896888e-08,
+      "witness_signal": 0.009277329786982591,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2403609231999067,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 25,
+      "outcome": "6",
+      "surprise": 1.5104686540003036,
+      "witness_joint": 0.30126953125,
+      "witness_separable": -6.960533482924802e-08,
+      "witness_signal": 0.30126960085533483,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2608924039567504,
+      "active": true,
+      "sigma": 2.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 26,
+      "outcome": "6",
+      "surprise": 1.249232171286063,
+      "witness_joint": 0.26220703125,
+      "witness_separable": -3.2741809263825417e-09,
+      "witness_signal": 0.2622070345241809,
+      "witness_sigma": 0.015625,
+      "entropy": 1.1863268443483708,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 27,
+      "outcome": "6",
+      "surprise": 1.0804849801882646,
+      "witness_joint": 0.39697265625,
+      "witness_separable": 2.5538611225783825e-08,
+      "witness_signal": 0.3969726307113888,
+      "witness_sigma": 0.015625,
+      "entropy": 1.0759509760071058,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 28,
+      "outcome": "7",
+      "surprise": 1.7362984478998305,
+      "witness_joint": 0.65576171875,
+      "witness_separable": -1.4611032383982092e-07,
+      "witness_signal": 0.6557618648603238,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2326616968776307,
+      "active": true,
+      "sigma": 0.5,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 29,
+      "outcome": "7",
+      "surprise": 1.3823686831768236,
+      "witness_joint": 0.59375,
+      "witness_separable": 2.2885160433361307e-08,
+      "witness_signal": 0.5937499771148396,
+      "witness_sigma": 0.015625,
+      "entropy": 1.2078212937212753,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    }
+  ],
+  "stimulation": [
+    {
+      "gen": 0,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 1,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 2,
+      "mut_scale_used": 0.6,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 3,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 4,
+      "mut_scale_used": 0.42,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 5,
+      "mut_scale_used": 0.294,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 6,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 7,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 8,
+      "mut_scale_used": 0.6,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 9,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 10,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 11,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 12,
+      "mut_scale_used": 0.42,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 13,
+      "mut_scale_used": 0.294,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 14,
+      "mut_scale_used": 0.6,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 15,
+      "mut_scale_used": 0.6,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 16,
+      "mut_scale_used": 0.6,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 17,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 18,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 19,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 20,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 21,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 22,
+      "mut_scale_used": 0.42,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 23,
+      "mut_scale_used": 0.294,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 24,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 25,
+      "mut_scale_used": 0.42,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 26,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 27,
+      "mut_scale_used": 0.42,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 28,
+      "mut_scale_used": 0.294,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 29,
+      "mut_scale_used": 0.6,
+      "expected": true,
+      "feedback_kind": "predictable"
+    }
+  ],
+  "criticality": {
+    "sigma": {
+      "mean": 1.16,
+      "ci95": [
+        0.88,
+        1.4933333333333332
+      ],
+      "n_gen": 25
+    },
+    "avalanche_alpha": {
+      "alpha": 1.5616479619498815,
+      "xmin": 0.03630085030726149,
+      "n_avalanches": 10,
+      "ks_stat": 0.26844318416785423,
+      "gof_pvalue": 0.062,
+      "warning": "only 10 avalanches (< 20); alpha=1.56 is low-confidence \u2014 do not over-claim the 1.5 fit",
+      "n_tail": 9
+    },
+    "entropy": {
+      "plateau": true,
+      "plateau_mean": 1.2072658426937546,
+      "slope_late": -0.002331781809455617,
+      "collapsed": false
+    },
+    "susceptibility": {
+      "peak_gen": 1,
+      "peak_value": 0.25,
+      "series": [
+        0.0,
+        0.25,
+        0.22222222222222224,
+        0.25,
+        0.25,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.25,
+        0.25,
+        0.1875,
+        0.0,
+        0.1875,
+        0.1875,
+        0.25,
+        0.25,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.25,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875
+      ]
+    },
+    "relaxation_tau": {
+      "tau": 2.5212986740206396,
+      "r2": 0.1556934764113478,
+      "poke_gen": 8,
+      "observable": "surprise"
+    }
+  }
+}

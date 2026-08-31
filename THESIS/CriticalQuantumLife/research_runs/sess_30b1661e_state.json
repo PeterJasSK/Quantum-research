@@ -1,0 +1,80 @@
+{
+  "session_id": "sess_30b1661e",
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 7,
+    "width": 3,
+    "generations": 3,
+    "shots": 4096,
+    "mut_scale": 0.6,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": null,
+    "poke_events": [
+      {
+        "at_generation": 3,
+        "kind": "alter_selection",
+        "params": {}
+      }
+    ],
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)",
+    "session_id": "sess_30b1661e"
+  },
+  "state": {
+    "generation": 6,
+    "running_dist": {
+      "7": 0.249856,
+      "5": 0.32799999999999996,
+      "1": 0.15999999999999998
+    },
+    "mut_scale": 1.2,
+    "recent": [
+      1.3862943611198908,
+      1.0840134892469568,
+      0.9284612674944103,
+      1.6679583612461086,
+      1.7181846882359921,
+      1.4012842529559646
+    ],
+    "active_hist": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "poke_log": [
+    {
+      "at_generation": 3,
+      "kind": "alter_selection",
+      "params": {},
+      "wall_clock": "2026-08-31T11:36:11.143464+00:00"
+    }
+  ],
+  "resume_args": {
+    "width": 3,
+    "shots": 4096,
+    "seed": 7,
+    "name": "_pk_alter_selection",
+    "mut_scale": 0.6,
+    "poke_gen": null,
+    "death": "unitary",
+    "interaction": "nn",
+    "nbins": 10,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "sim": true,
+    "qrng_url": "https://api.qeaas.eu/"
+  }
+}

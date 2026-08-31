@@ -1,0 +1,355 @@
+<title>Life You Can Poke — F6 Concepts v3</title>
+<style>
+  :root{
+    --bg:#07090f; --panel:#0b1020; --ink:#e8ecf6; --mut:#8a94ad;
+    --line:#1b2540; --line-2:#28345a;
+    --witness:#35e0d0; --witness-dim:#1a7a72;
+    --yoked:#ff5c7a; --amber:#ffb454; --surro:#7a83a0;
+    --frozen:#4aa3ff; --critical:#6ee787; --chaos:#ff5c5c;
+    --good:#6ee787; --warn:#ffb454; --bad:#ff6b7d;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --r:14px;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:
+      radial-gradient(1200px 600px at 78% -10%, #10182e 0%, transparent 55%),
+      radial-gradient(900px 500px at 0% 110%, #0c1330 0%, transparent 50%), var(--bg);
+    color:var(--ink); font-family:var(--mono); -webkit-font-smoothing:antialiased;
+    line-height:1.5; padding:clamp(16px,3vw,40px);}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{border:1px solid var(--line);border-radius:var(--r);
+    background:linear-gradient(180deg,rgba(19,27,48,.55),rgba(11,16,32,.55));padding:clamp(18px,2.4vw,30px)}
+  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--witness);
+    display:flex;gap:10px;align-items:center}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--witness);
+    box-shadow:0 0 12px var(--witness);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  h1{font-size:clamp(26px,4.4vw,46px);margin:.35em 0 .1em;letter-spacing:-.02em;font-weight:700;text-wrap:balance}
+  h1 .q{color:var(--witness)}
+  .lede{color:var(--mut);max-width:66ch;font-size:clamp(13px,1.5vw,15px)}
+  .clockrow{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin-top:18px}
+  .genclock{font-size:13px;color:var(--mut)} .genclock b{color:var(--ink);font-size:20px;font-variant-numeric:tabular-nums}
+  .pokebanner{margin-left:auto;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--yoked);
+    border:1px solid var(--yoked);border-radius:999px;padding:6px 14px;opacity:.22;transition:opacity .3s, box-shadow .4s}
+  .pokebanner.on{opacity:1;box-shadow:0 0 26px rgba(255,92,122,.5);background:rgba(255,92,122,.08)}
+  .gates{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .chip{border:1px solid var(--line-2);border-radius:10px;padding:9px 13px;background:rgba(13,20,36,.7);
+    display:flex;gap:10px;align-items:baseline;font-size:12px}
+  .chip .k{color:var(--mut);letter-spacing:.06em} .chip .v{font-weight:700;font-variant-numeric:tabular-nums}
+  .chip.pass{border-color:rgba(110,231,135,.4)} .chip.pass .v{color:var(--good)}
+  .chip.weak{border-color:rgba(255,180,84,.4)} .chip.weak .v{color:var(--warn)}
+  .chip.fail{border-color:rgba(255,107,125,.4)} .chip.fail .v{color:var(--bad)}
+  .chip .tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+
+  .panel{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden}
+  .cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 16px 11px;border-bottom:1px solid var(--line)}
+  .cap .n{font-size:11px;letter-spacing:.2em;color:var(--mut)} .cap .t{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .cap .p{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--witness);
+    border:1px solid var(--witness-dim);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .cvwrap{position:relative;width:100%;aspect-ratio:16/10;
+    background:radial-gradient(120% 90% at 50% 0%, #0f1730 0%, #080c17 70%)}
+  canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+  .desc{padding:11px 16px 15px;font-size:12px;color:var(--mut);border-top:1px solid var(--line)}
+  .desc b{color:var(--ink);font-weight:600} .desc .tk{color:var(--witness)} .desc .yk{color:var(--yoked)}
+  .hero{margin-top:18px} .hero .cvwrap{aspect-ratio:20/9}
+  @media(max-width:760px){.hero .cvwrap{aspect-ratio:4/3}}
+  .sub{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut);margin:26px 4px 2px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:12px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  footer{margin-top:20px;border:1px dashed var(--line-2);border-radius:var(--r);padding:14px 18px;
+    display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;font-size:12px;color:var(--mut)}
+  footer .hw{color:var(--witness)} footer .sep{opacity:.4}
+  .note{font-size:11px;color:var(--mut);margin-top:14px;max-width:82ch;opacity:.85}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span class="dot"></span> Critical Quantum Life · F6 spectacle · concept board v3</div>
+    <h1>Life you can <span class="q">poke</span></h1>
+    <p class="lede">A certified-quantum Darwinian population on IBM&nbsp;Heron — it senses its own surprise,
+      gets prodded at generation&nbsp;8, and reorganizes. Autonomous films: the poke fires by itself, with a
+      smooth spike-then-relax. Below the hero: four ways (A–D) to read the metrics against the control.</p>
+    <div class="clockrow">
+      <div class="genclock">generation <b id="genNum">0</b> / 15 &nbsp;·&nbsp; ibm_kingston · W=6 · 8192 shots</div>
+      <div class="pokebanner" id="pokeBanner">poke · inject_stimulus</div>
+    </div>
+    <div class="gates">
+      <div class="chip pass"><span class="k">quantum witness</span><span class="v">+0.34</span><span class="tag">certified 15/16</span></div>
+      <div class="chip weak"><span class="k">adaptation gap</span><span class="v">+0.16</span><span class="tag">closed &gt; yoked</span></div>
+      <div class="chip fail"><span class="k">criticality σ</span><span class="v">0.44</span><span class="tag">subcritical · target 1.0</span></div>
+      <div class="chip pass"><span class="k">poke</span><span class="v">gen 8</span><span class="tag">spike → relax</span></div>
+    </div>
+  </header>
+
+  <div class="panel hero">
+    <div class="cap"><div><div class="n">THE HEADLINE</div><div class="t">Closed vs yoked — same arena</div></div>
+      <div class="p">adaptation gap, made visible</div></div>
+    <div class="cvwrap"><canvas data-concept="swarm"></canvas></div>
+    <div class="desc"><b class="tk">Closed (teal)</b> gets real feedback — its genomes pull into a bound,
+      linked core. <b class="yk">Yoked (magenta)</b> gets the same poke, scrambled feedback — stays loose.
+      The poke now swells and fades smoothly; only teal re-gathers and re-links.</div>
+  </div>
+
+  <div class="sub">Concept 3 — four instrument readouts · pick one</div>
+  <div class="grid">
+    <div class="panel">
+      <div class="cap"><div><div class="n">READOUT 1</div><div class="t">Vitals monitor</div></div>
+        <div class="p">everything at once</div></div>
+      <div class="cvwrap"><canvas data-concept="mon1"></canvas></div>
+      <div class="desc">A patient monitor. The <b>surprise EKG</b> scrolls — <b class="tk">closed</b> over
+        <b class="yk">yoked</b> — and flatlines-then-spikes at the poke. Big live vitals on the right:
+        <b class="tk">witness</b>, <b>σ</b>, adaptation <b>gap</b>. One glance = the whole state.</div>
+    </div>
+
+    <div class="panel">
+      <div class="cap"><div><div class="n">READOUT 2</div><div class="t">Twin oscilloscopes</div></div>
+        <div class="p">closed vs yoked, side by side</div></div>
+      <div class="cvwrap"><canvas data-concept="mon2"></canvas></div>
+      <div class="desc">Two phosphor scopes on one bench. Same poke hits both; the <b class="tk">closed</b>
+        trace settles back to a calm baseline, the <b class="yk">yoked</b> one keeps ringing. Each carries a
+        witness glow-bar — the control never lights up the same.</div>
+    </div>
+
+    <div class="panel">
+      <div class="cap"><div><div class="n">READOUT 3</div><div class="t">Witness spectrum</div></div>
+        <div class="p">undeniably quantum</div></div>
+      <div class="cvwrap"><canvas data-concept="mon3"></canvas></div>
+      <div class="desc">Per-generation <b class="tk">witness</b> bars march in like an equalizer, standing tall
+        above the grey <b>surrogate null band</b>; the <b class="yk">surprise</b> line rides over the top,
+        avalanche ticks below. <b>15/16 bars clear the band</b> — the quantum certificate.</div>
+    </div>
+
+    <div class="panel">
+      <div class="cap"><div><div class="n">READOUT 4</div><div class="t">Criticality console</div></div>
+        <div class="p">honest σ = 0.44</div></div>
+      <div class="cvwrap"><canvas data-concept="mon4"></canvas></div>
+      <div class="desc">The edge-of-chaos gauge: a <b>σ meter</b> spanning frozen → critical → chaos, needle
+        parked at 0.44 in the ordered zone. Below, the <b>entropy</b> line (plateau vs collapse) and the
+        live <b>avalanche</b> bars. The criticality story, instrument-style.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>measured on <span class="hw">ibm_kingston</span></span><span class="sep">·</span>
+    <span>W=6 · 16 generations · 8192 shots</span><span class="sep">·</span>
+    <span>witness &gt; classical null (15/16)</span><span class="sep">·</span>
+    <span>σ 0.44 — subcritical, honest</span>
+  </footer>
+  <p class="note">v3 · Concept 1 dropped; poke transition smoothed. A–D are alternative metric panels — pick
+    one (or a pair) and I lock it into the F6 build wired to <code>research_runs/</code>. Numbers are the real
+    Run&nbsp;1 hardware result.</p>
+</div>
+
+<script>
+(() => {
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const GENS=16, POKE_GEN=8, SEC_PER_GEN=1.25;
+  const C=getComputedStyle(document.documentElement), col=n=>C.getPropertyValue(n).trim();
+  const WIT=col("--witness"), YOK=col("--yoked"), MUT=col("--mut"), INK=col("--ink"), SUR=col("--surro"),
+        FROZEN=col("--frozen"), CRIT=col("--critical"), CHAOS=col("--chaos"), AMBER=col("--amber");
+  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), smooth=r=>r*r*(3-2*r);
+
+  const canvases=[...document.querySelectorAll("canvas")].map(cv=>{
+    const ctx=cv.getContext("2d");
+    const fit=()=>{const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+      cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);};
+    new ResizeObserver(fit).observe(cv); fit();
+    return {cv,ctx,kind:cv.dataset.concept,w:()=>cv.getBoundingClientRect().width,h:()=>cv.getBoundingClientRect().height};
+  });
+  const mk=s=>()=>(s=(s*1664525+1013904223)>>>0,s/4294967296);
+
+  // SMOOTH poke envelope: eased swell up to the poke, smooth exponential relax after.
+  function disturbanceAt(gpos){
+    const x=gpos-POKE_GEN;
+    if(x<-0.9) return 0;
+    const rise=smooth(clamp((x+0.9)/1.0,0,1));        // ease in over ~1 gen before peak
+    const decay=x<=0.1?1:Math.exp(-(x-0.1)/2.8);       // smooth relax over ~4 gens
+    return rise*decay;
+  }
+  const gposOf=t=>(t/SEC_PER_GEN)%GENS;
+  const disturbance=t=>disturbanceAt(gposOf(t));
+  const curGen=t=>Math.floor(gposOf(t));
+
+  // ---- deterministic per-generation series (consistent with Run 1) ----
+  const rr=mk(21);
+  const S={cSurp:[], ySurp:[],cWit:[],surSig:[],aval:[]};
+  for(let g=0; g<GENS; g++){
+    const d=disturbanceAt(g);
+    S.cSurp[g]=1.35 - 0.40*(g/15) + 1.05*d + (rr()-.5)*0.05;
+    S.ySurp[g]=1.34 - 0.10*(g/15) + 1.00*d + (rr()-.5)*0.05;
+    S.cWit[g]=Math.max(0.05, 0.44*(1-0.60*d) + (rr()-.5)*0.03);
+    S.surSig[g]=(rr()-.5)*0.03;
+    S.aval[g]=1+Math.floor(rr()*6 + d*6);
+  }
+
+  // helper: current fractional progress for growing traces
+  function prog(t){ const gp=gposOf(t); return {g:Math.floor(gp), f:gp-Math.floor(gp)}; }
+  function lerp(a,b,f){return a+(b-a)*f;}
+  function axes(ctx,x0,y0,x1,y1){ ctx.strokeStyle="rgba(40,52,90,.6)"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x0,y1); ctx.lineTo(x1,y1); ctx.moveTo(x0,y0); ctx.lineTo(x0,y1); ctx.stroke(); }
+
+  // ================= HERO : overlaid swarm =================
+  const rc=mk(3), ry=mk(88);
+  const closed=Array.from({length:30},()=>({a:rc()*7,tr:0.14+rc()*0.26,sp:0.25+rc()*0.5,ph:rc()*7}));
+  const yoked =Array.from({length:30},()=>({a:ry()*7,tr:0.55+ry()*0.5, sp:0.25+ry()*0.5,ph:ry()*7}));
+  const pts=(arr,cx,cy,R,t,d,rec)=>arr.map(p=>{const ang=p.a+t*p.sp*0.26;
+    const wob=(rec?0.04:0.12)*Math.sin(t*(rec?1.3:0.9)+p.ph);
+    let r=Math.min((p.tr+wob+d*(rec?1.05:1.3))*R,R*1.25);
+    return {x:cx+Math.cos(ang)*r,y:cy+Math.sin(ang)*r*0.9};});
+  function drawSwarm(o,t){
+    const {ctx}=o,W=o.w(),H=o.h(),d=disturbance(t),cx=W*0.5,cy=H*0.52,R=Math.min(W*0.3,H*0.62);
+    ctx.clearRect(0,0,W,H);
+    const core=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.5);
+    core.addColorStop(0,`rgba(53,224,208,${0.16*(1-d)})`); core.addColorStop(1,"rgba(53,224,208,0)");
+    ctx.fillStyle=core; ctx.beginPath(); ctx.arc(cx,cy,R*0.5,0,7); ctx.fill();
+    const yp=pts(yoked,cx,cy,R,t,d,false), cp=pts(closed,cx,cy,R,t,d,true);
+    yp.forEach(p=>{const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,7);
+      g.addColorStop(0,"rgba(255,92,122,.5)"); g.addColorStop(1,"rgba(255,92,122,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,7,0,7); ctx.fill();
+      ctx.fillStyle="rgba(255,150,175,.9)"; ctx.beginPath(); ctx.arc(p.x,p.y,1.4,0,7); ctx.fill();});
+    const la=(1-d)*0.5;
+    if(la>0.04){ctx.lineWidth=0.8;
+      for(let i=0;i<cp.length;i++)for(let j=i+1;j<cp.length;j++){
+        const dx=cp[i].x-cp[j].x,dy=cp[i].y-cp[j].y,ds=Math.hypot(dx,dy);
+        if(ds<R*0.34){ctx.strokeStyle=`rgba(53,224,208,${la*(1-ds/(R*0.34))})`;
+          ctx.beginPath(); ctx.moveTo(cp[i].x,cp[i].y); ctx.lineTo(cp[j].x,cp[j].y); ctx.stroke();}}}
+    cp.forEach(p=>{const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,9);
+      g.addColorStop(0,`rgba(53,224,208,${0.85-0.3*d})`); g.addColorStop(1,"rgba(53,224,208,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,9,0,7); ctx.fill();
+      ctx.fillStyle="rgba(224,255,250,.95)"; ctx.beginPath(); ctx.arc(p.x,p.y,1.8,0,7); ctx.fill();});
+    if(d>0.02){ctx.strokeStyle=`rgba(255,92,122,${d*0.5})`; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(cx,cy,Math.max(6,R*(1.1-d)*1.05),0,7); ctx.stroke();}
+    ctx.font="12px "+col("--mono"); ctx.textAlign="left";
+    ctx.fillStyle=WIT; ctx.beginPath(); ctx.arc(20,24,4,0,7); ctx.fill(); ctx.fillText("closed — coheres & links",30,28);
+    ctx.fillStyle=YOK; ctx.beginPath(); ctx.arc(20,46,4,0,7); ctx.fill(); ctx.fillText("yoked — stays scattered",30,50);
+    ctx.fillStyle=AMBER; ctx.textAlign="right"; ctx.fillText("adaptation gap +0.16",W-16,28);
+  }
+
+  // ---- instrument helpers ----
+  function grid(ctx,x,y,w,h){ ctx.strokeStyle="rgba(40,60,95,.35)"; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const yy=y+h*i/4; ctx.beginPath();ctx.moveTo(x,yy);ctx.lineTo(x+w,yy);ctx.stroke();}
+    for(let i=0;i<=8;i++){const xx=x+w*i/8; ctx.beginPath();ctx.moveTo(xx,y);ctx.lineTo(xx,y+h);ctx.stroke();} }
+  const surpAt=(arr,t)=>{const gp=gposOf(t),i=Math.floor(gp),ff=gp-i; return lerp(arr[i%GENS],arr[(i+1)%GENS],ff);};
+  const buf={}; // rolling scope buffers keyed by id
+  function push(id,v,cap){ (buf[id]||(buf[id]=[])).push(v); while(buf[id].length>cap) buf[id].shift(); return buf[id]; }
+  function scope(ctx,x,y,w,h,arr,color,lo,hi){ ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+    ctx.strokeStyle=color; ctx.lineWidth=1.8; ctx.shadowColor=color; ctx.shadowBlur=6; ctx.beginPath();
+    const n=arr.length; for(let i=0;i<n;i++){const px=x+w-(n-i), py=y+h-clamp((arr[i]-lo)/(hi-lo),0,1)*h; i?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+    ctx.stroke(); ctx.restore(); }
+
+  // ================= READOUT 1 : vitals monitor =================
+  function drawMon1(o,t){
+    const {ctx}=o,W=o.w(),H=o.h(),d=disturbance(t); ctx.clearRect(0,0,W,H);
+    const vx=W*0.68, gx=14,gy=16,gw=vx-26,gh=H-30;
+    grid(ctx,gx,gy,gw,gh);
+    const cap=Math.floor(gw);
+    const cb=push("m1c",surpAt(S.cSurp,t)+(Math.random()-.5)*0.02,cap);
+    const yb=push("m1y",surpAt(S.ySurp,t)+(Math.random()-.5)*0.02,cap);
+    scope(ctx,gx,gy,gw,gh, yb, YOK, 0.7,2.6);
+    scope(ctx,gx,gy,gw,gh, cb, WIT, 0.7,2.6);
+    ctx.fillStyle=MUT; ctx.font="10px "+col("--mono"); ctx.textAlign="left"; ctx.fillText("surprise EKG",gx+4,gy+12);
+    if(d>0.25){ ctx.fillStyle=`rgba(255,92,122,${d*0.12})`; ctx.fillRect(gx,gy,gw,gh); }
+    // vitals column
+    const vitals=[["WITNESS","+"+Math.max(0.05,0.44*(1-0.6*d)).toFixed(2),WIT],
+                  ["σ  BRANCHING","0.44",col("--bad")],
+                  ["ADAPT GAP","+0.16",AMBER]];
+    let vy=gy+16;
+    vitals.forEach(([k,v,c])=>{
+      ctx.fillStyle=MUT; ctx.font="10px "+col("--mono"); ctx.textAlign="left";
+      ctx.fillText(k,vx,vy);
+      ctx.fillStyle=c; ctx.font="700 30px "+col("--mono"); ctx.fillText(v,vx,vy+30);
+      vy+=Math.max(56,gh/3);
+    });
+    ctx.strokeStyle="rgba(40,60,95,.6)"; ctx.beginPath(); ctx.moveTo(vx-12,gy); ctx.lineTo(vx-12,gy+gh); ctx.stroke();
+  }
+
+  // ================= READOUT 2 : twin oscilloscopes =================
+  function twinScope(ctx,x,y,w,h,arr,color,label,recover,d,t){
+    ctx.fillStyle="rgba(6,14,10,.5)"; ctx.fillRect(x,y,w,h);
+    ctx.save(); ctx.strokeStyle="rgba(60,120,90,.25)"; ctx.lineWidth=1;
+    for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x,y+h*i/4);ctx.lineTo(x+w,y+h*i/4);ctx.stroke();}
+    for(let i=1;i<6;i++){ctx.beginPath();ctx.moveTo(x+w*i/6,y);ctx.lineTo(x+w*i/6,y+h);ctx.stroke();} ctx.restore();
+    scope(ctx,x,y+4,w,h-24,arr,color,0.7,2.6);
+    // witness glow bar at bottom
+    const wit=recover? Math.max(0.06,0.44*(1-0.6*d)) : 0.12;
+    ctx.fillStyle=color; ctx.globalAlpha=.25+wit; ctx.fillRect(x+6,y+h-14,(w-12)*clamp(wit/0.5,0,1),8); ctx.globalAlpha=1;
+    ctx.strokeStyle=color; ctx.strokeRect(x,y,w,h);
+    ctx.fillStyle=color; ctx.font="700 11px "+col("--mono"); ctx.textAlign="left"; ctx.fillText(label,x+8,y+16);
+    ctx.fillStyle=MUT; ctx.font="10px "+col("--mono"); ctx.textAlign="right"; ctx.fillText("witness "+wit.toFixed(2),x+w-8,y+h-18);
+  }
+  function drawMon2(o,t){
+    const {ctx}=o,W=o.w(),H=o.h(),d=disturbance(t); ctx.clearRect(0,0,W,H);
+    const cap=Math.floor(W/2-24);
+    const cb=push("m2c",surpAt(S.cSurp,t),cap), yb=push("m2y",surpAt(S.ySurp,t),cap);
+    const pad=12, w=(W-pad*3)/2, h=H-24;
+    twinScope(ctx,pad,12,w,h, cb, WIT, "CLOSED", true, d, t);
+    twinScope(ctx,pad*2+w,12,w,h, yb, YOK, "YOKED", false, d, t);
+  }
+
+  // ================= READOUT 3 : witness spectrum bars =================
+  function drawMon3(o,t){
+    const {ctx}=o,W=o.w(),H=o.h(); ctx.clearRect(0,0,W,H);
+    const L=40,Rp=14,Tp=20,B=H-26, x=g=>L+(g/(GENS-1))*(W-L-Rp), y=v=>Tp+(1-clamp((v+0.08)/0.55,0,1))*(B-Tp);
+    grid(ctx,L,Tp,W-L-Rp,B-Tp);
+    const band=0.033; ctx.fillStyle="rgba(122,131,160,.22)"; ctx.fillRect(L,y(band),W-L-Rp,y(-band)-y(band));
+    ctx.fillStyle=SUR; ctx.font="10px "+col("--mono"); ctx.textAlign="left"; ctx.fillText("surrogate null band",L+4,y(band)-4);
+    const {g,f}=prog(t), upto=g, bw=(W-L-Rp)/GENS*0.6;
+    for(let i=0;i<=upto;i++){ const xx=x(i),h1=y(S.cWit[i]),h0=y(0), tw=0.5+0.5*Math.sin(t*3+i);
+      const gr=ctx.createLinearGradient(0,h1,0,h0); gr.addColorStop(0,`rgba(53,224,208,${0.6+tw*0.35})`); gr.addColorStop(1,"rgba(53,224,208,.12)");
+      ctx.fillStyle=gr; ctx.fillRect(xx-bw/2,h1,bw,h0-h1); }
+    // surprise line over the top
+    ctx.strokeStyle=YOK; ctx.lineWidth=1.6; ctx.globalAlpha=.85; ctx.beginPath();
+    for(let i=0;i<=upto;i++){const xx=x(i),yy=Tp+(1-clamp((S.cSurp[i]-0.7)/1.7,0,1))*(B-Tp)*0.5; i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);} ctx.stroke(); ctx.globalAlpha=1;
+    // avalanche ticks along floor
+    for(let i=0;i<=upto;i++){ ctx.fillStyle=`rgba(255,180,84,.6)`; const hh=S.aval[i]/12*14; ctx.fillRect(x(i)-1.5,B-hh,3,hh); }
+    ctx.fillStyle=WIT; ctx.font="10px "+col("--mono"); ctx.textAlign="right"; ctx.fillText("witness bars · 15/16 above null",W-Rp,Tp+12);
+    ctx.fillStyle=YOK; ctx.fillText("surprise",W-Rp,Tp+26);
+    if(gposOf(t)>=POKE_GEN-0.9){ctx.strokeStyle="rgba(255,92,122,.4)"; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(x(POKE_GEN),Tp); ctx.lineTo(x(POKE_GEN),B); ctx.stroke(); ctx.setLineDash([]);}
+  }
+
+  // ================= READOUT 4 : criticality console =================
+  function drawMon4(o,t){
+    const {ctx}=o,W=o.w(),H=o.h(),d=disturbance(t); ctx.clearRect(0,0,W,H);
+    // sigma horizontal meter (top)
+    const mx=16,mw=W-32,my=30,mh=16;
+    const seg=[[FROZEN,0,.5],[CRIT,.5,.62],[CHAOS,.62,1]];
+    seg.forEach(([c,s,e])=>{ ctx.fillStyle=c; ctx.globalAlpha=.35; ctx.fillRect(mx+mw*s,my,mw*(e-s),mh); }); ctx.globalAlpha=1;
+    ctx.strokeStyle="rgba(60,80,120,.6)"; ctx.strokeRect(mx,my,mw,mh);
+    // critical tick at sigma=1.0 (maps to 0.56 of 0..1.8 scale)
+    const scaleMax=1.8, critX=mx+mw*(1.0/scaleMax);
+    ctx.strokeStyle=CRIT; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(critX,my-4); ctx.lineTo(critX,my+mh+4); ctx.stroke();
+    ctx.fillStyle=CRIT; ctx.font="10px "+col("--mono"); ctx.textAlign="center"; ctx.fillText("σ=1 critical",critX,my-8);
+    // needle at 0.44
+    const nx=mx+mw*((0.44+d*0.05)/scaleMax);
+    ctx.fillStyle=INK; ctx.beginPath(); ctx.moveTo(nx,my-2); ctx.lineTo(nx-5,my-12); ctx.lineTo(nx+5,my-12); ctx.closePath(); ctx.fill();
+    ctx.fillStyle=col("--bad"); ctx.font="700 12px "+col("--mono"); ctx.textAlign="left"; ctx.fillText("σ 0.44 · subcritical",mx,my+mh+18);
+    ctx.fillStyle=FROZEN; ctx.textAlign="left"; ctx.font="9px "+col("--mono"); ctx.fillText("frozen",mx+2,my+mh+30);
+    ctx.fillStyle=CHAOS; ctx.textAlign="right"; ctx.fillText("chaos",mx+mw-2,my+mh+30);
+    // entropy trace + avalanche bars (bottom half)
+    const by=H*0.56, L=40,Rp=14,B=H-24, x=g=>L+(g/(GENS-1))*(W-L-Rp);
+    grid(ctx,L,by,W-L-Rp,B-by);
+    const {g,f}=prog(t), upto=g;
+    // avalanche bars
+    for(let i=0;i<=upto;i++){ const hh=S.aval[i]/12*(B-by)*0.9; ctx.fillStyle=`rgba(255,180,84,${0.3+0.3*((i%3)/2)})`; ctx.fillRect(x(i)-4,B-hh,8,hh); }
+    // entropy line (plateau)
+    ctx.strokeStyle=WIT; ctx.lineWidth=1.8; ctx.beginPath();
+    for(let i=0;i<=upto;i++){ const ent=0.62 - 0.04*(i/15) + 0.18*disturbanceAt(i); const yy=by+(1-clamp(ent,0,1))*(B-by); i?ctx.lineTo(x(i),yy):ctx.moveTo(x(i),yy);} ctx.stroke();
+    ctx.fillStyle=WIT; ctx.font="10px "+col("--mono"); ctx.textAlign="left"; ctx.fillText("entropy (plateau)",L,by+12);
+    ctx.fillStyle=AMBER; ctx.textAlign="right"; ctx.fillText("avalanches",W-Rp,by+12);
+  }
+
+  const drawers={swarm:drawSwarm,mon1:drawMon1,mon2:drawMon2,mon3:drawMon3,mon4:drawMon4};
+  const genNum=document.getElementById("genNum"), banner=document.getElementById("pokeBanner");
+  // draw one canvas safely: skip until it has real size; never let one panel kill the loop
+  function safe(o,t){ if(!(o.w()>2&&o.h()>2)) return; try{ drawers[o.kind](o,t); }catch(e){ /* keep others alive */ } }
+  const t0=performance.now();
+  function frame(now){const t=(now-t0)/1000; canvases.forEach(o=>safe(o,t));
+    const g=curGen(t); genNum.textContent=g;
+    banner.classList.toggle("on", disturbance(t)>0.25);
+    if(!reduce) requestAnimationFrame(frame);}
+  if(reduce){canvases.forEach(o=>safe(o,POKE_GEN*SEC_PER_GEN+0.3));
+    genNum.textContent=POKE_GEN; banner.classList.add("on");}
+  else requestAnimationFrame(frame);
+})();
+</script>

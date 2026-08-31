@@ -1,0 +1,202 @@
+{
+  "session_id": "sess_caec0e51",
+  "width": 6,
+  "backend": "ibm_kingston",
+  "generations_total": 16,
+  "poke_gen": 8,
+  "adaptation_gap": {
+    "closed_drop": 0.3749966722855125,
+    "yoked_drop": 0.21369467043178658,
+    "gap": 0.1613020018537259
+  },
+  "criticality": {
+    "sigma": {
+      "mean": 0.4375,
+      "ci95": [
+        0.1875,
+        0.75
+      ],
+      "n_gen": 8
+    },
+    "avalanche_alpha": {
+      "alpha": null,
+      "xmin": null,
+      "n_avalanches": 3,
+      "ks_stat": null,
+      "gof_pvalue": null,
+      "warning": "too few avalanches to fit (n=3); alpha not estimable"
+    },
+    "entropy": {
+      "plateau": false,
+      "plateau_mean": 0.9534208052997614,
+      "slope_late": -0.04793686468476835,
+      "collapsed": false
+    },
+    "susceptibility": {
+      "peak_gen": 1,
+      "peak_value": 0.25,
+      "series": [
+        0.0,
+        0.25,
+        0.22222222222222224,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.25,
+        0.1875,
+        0.1875,
+        0.1875,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "relaxation_tau": {
+      "tau": 34740.13789247841,
+      "r2": 0.5419000922448798,
+      "poke_gen": 8,
+      "observable": "surprise"
+    },
+    "alpha_underpowered": true
+  },
+  "relaxation_tau": {
+    "tau": 34740.13789247841,
+    "poke_gen": 8,
+    "r2": 0.5419000922448798
+  },
+  "certification": {
+    "quantum_run": "sess_caec0e51_closed",
+    "surrogate_run": "computed(sim)",
+    "certification": {
+      "null_band": 0.03314563036811941,
+      "null_band_analytic": 0.03314563036811941,
+      "null_band_empirical_surrogate": 0.025634765625052108,
+      "k": 3.0,
+      "shots": 8192,
+      "cert_frac": 0.8,
+      "gens_total": 16,
+      "gens_above_band": 15,
+      "frac_above_band": 0.9375,
+      "witness_margin_mean": 0.33750561496045983,
+      "witness_margin_min": -0.0343663316922116,
+      "certified": true
+    },
+    "panel": [
+      {
+        "gen": 0,
+        "quantum_signal": -0.0012207013240921854,
+        "surrogate_signal": 0.020996093751049646,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 1,
+        "quantum_signal": 0.13159179826047057,
+        "surrogate_signal": 0.0021972656250341966,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 2,
+        "quantum_signal": 0.3815917968804813,
+        "surrogate_signal": -0.014648437500974245,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 3,
+        "quantum_signal": 0.27270507819766704,
+        "surrogate_signal": -0.007812500002340638,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 4,
+        "quantum_signal": 0.5510253906255055,
+        "surrogate_signal": -0.0002441406261121359,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 5,
+        "quantum_signal": 0.37890624999567935,
+        "surrogate_signal": 0.004638671875283043,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 6,
+        "quantum_signal": 0.5698242187505126,
+        "surrogate_signal": -0.0061035156251825744,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 7,
+        "quantum_signal": 0.2119140625368899,
+        "surrogate_signal": 0.0034179687499934683,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 8,
+        "quantum_signal": 0.23535156258253895,
+        "surrogate_signal": 0.017089843749970562,
+        "null_band": 0.03314563036811941,
+        "poke": true
+      },
+      {
+        "gen": 9,
+        "quantum_signal": 0.5021972654765688,
+        "surrogate_signal": 0.0009765625050167546,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 10,
+        "quantum_signal": 0.5637207031283358,
+        "surrogate_signal": 0.014404296874087492,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 11,
+        "quantum_signal": 0.40429687497927763,
+        "surrogate_signal": 0.003906249999997596,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 12,
+        "quantum_signal": 0.43286132809172206,
+        "surrogate_signal": -0.004638671875148503,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 13,
+        "quantum_signal": 0.6054687500056806,
+        "surrogate_signal": 0.025634765625052108,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 14,
+        "quantum_signal": 0.2656250000045555,
+        "surrogate_signal": 0.005126953125151361,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      },
+      {
+        "gen": 15,
+        "quantum_signal": 0.424560547065474,
+        "surrogate_signal": 0.007080078124980116,
+        "null_band": 0.03314563036811941,
+        "poke": false
+      }
+    ]
+  }
+}

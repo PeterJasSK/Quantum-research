@@ -1,0 +1,99 @@
+{
+  "session_id": "sess_87dc8a07",
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 100,
+    "width": 6,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": 0.15,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": null,
+    "poke_events": [
+      {
+        "at_generation": 8,
+        "kind": "flip_expected",
+        "params": {}
+      }
+    ],
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)",
+    "session_id": "sess_87dc8a07"
+  },
+  "state": {
+    "generation": 16,
+    "running_dist": {
+      "8": 0.36914556976496643,
+      "9": 0.602706932563968
+    },
+    "mut_scale": 0.105,
+    "recent": [
+      1.3862943611198908,
+      1.511457504073897,
+      1.1739617259098964,
+      1.37429421711678,
+      1.1483357240205403,
+      0.9922119514346174,
+      0.8896392773214917,
+      0.8182744625325349,
+      0.7667522118539492,
+      1.6074659283271597,
+      1.296623014927861,
+      1.025563562927549,
+      1.2256625959540346,
+      1.0613058747411896,
+      1.1806004359336433,
+      1.0317888126267474
+    ],
+    "active_hist": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false
+    ]
+  },
+  "poke_log": [
+    {
+      "at_generation": 8,
+      "kind": "flip_expected",
+      "params": {},
+      "wall_clock": "2026-08-31T15:23:03.879460+00:00"
+    }
+  ],
+  "resume_args": {
+    "width": 6,
+    "shots": 8192,
+    "seed": 100,
+    "name": "cql_f5_w6_m0.15",
+    "mut_scale": 0.15,
+    "poke_gen": null,
+    "death": "unitary",
+    "interaction": "nn",
+    "nbins": 10,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "sim": true,
+    "qrng_url": "https://api.qeaas.eu/"
+  }
+}

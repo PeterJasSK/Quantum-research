@@ -1,0 +1,101 @@
+{
+  "session_id": "sess_4b7357e6",
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 101,
+    "width": 8,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": 0.6,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": null,
+    "poke_events": [
+      {
+        "at_generation": 8,
+        "kind": "flip_expected",
+        "params": {}
+      }
+    ],
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)",
+    "session_id": "sess_4b7357e6"
+  },
+  "state": {
+    "generation": 16,
+    "running_dist": {
+      "4": 0.28655610641776635,
+      "6": 0.111196093022208,
+      "5": 0.54725675728896,
+      "7": 0.026843545600000004
+    },
+    "mut_scale": 0.20579999999999998,
+    "recent": [
+      1.3862943611198908,
+      1.511457504073897,
+      1.6014057407368363,
+      1.2405143464191688,
+      1.0452402149935662,
+      0.9231363087685432,
+      1.7863475176678107,
+      1.6786437308293316,
+      1.1307052697892603,
+      1.4257669613262407,
+      1.1873165202064508,
+      1.2430684729917607,
+      1.813560786893836,
+      1.2728589660429084,
+      1.3026250029084923,
+      1.113985677810436
+    ],
+    "active_hist": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "poke_log": [
+    {
+      "at_generation": 8,
+      "kind": "flip_expected",
+      "params": {},
+      "wall_clock": "2026-08-31T15:06:18.263684+00:00"
+    }
+  ],
+  "resume_args": {
+    "width": 8,
+    "shots": 8192,
+    "seed": 101,
+    "name": "cql_f5_s101",
+    "mut_scale": 0.6,
+    "poke_gen": null,
+    "death": "unitary",
+    "interaction": "nn",
+    "nbins": 10,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "sim": true,
+    "qrng_url": "https://api.qeaas.eu/"
+  }
+}

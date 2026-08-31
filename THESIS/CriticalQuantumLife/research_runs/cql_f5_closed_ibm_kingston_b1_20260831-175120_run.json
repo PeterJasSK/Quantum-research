@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "timestamp": "20260831-175120",
+    "seed": null,
+    "width": 6,
+    "generations": 8,
+    "shots": 8192,
+    "mut_scale": null,
+    "nbins": null,
+    "death": null,
+    "interaction": null,
+    "poke_gen": 8,
+    "poke_events": [
+      {
+        "at_generation": 8,
+        "kind": "inject_stimulus",
+        "params": {}
+      }
+    ],
+    "entropy_source": "qrng",
+    "entropy_provenance": [
+      {
+        "request_id": "6fccace5e1c048189f0362067e2cb09e",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2ZmNjYWNlNWUxYzA0ODE4OWYwMzYyMDY3ZTJjYjA5ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ4OjU0LjY1ODc1NCswMDowMCJ9.SMspFpUHGJYl1TmIx5SXTsOt6sNJMbb48cqwiGPMz6avHnZjIUNxO_fcHTIRUEaBO25TtHwbO4ZekNi0ukDIAQ"
+      },
+      {
+        "request_id": "0496dbf433634ea7b3e050e66cb88f4b",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIwNDk2ZGJmNDMzNjM0ZWE3YjNlMDUwZTY2Y2I4OGY0YiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ4OjU5LjQ3MTkwNSswMDowMCJ9.MgMtxB-5WwNXAECZf3bmMnCYyerVADoSQ3HJq4b0f5i6lhPeaTOGsJNv0hc9ao12sRqoQNWOxIyXSTnm0Q5DDA"
+      },
+      {
+        "request_id": "5077e452be08496891cc8f7781f2a1c7",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI1MDc3ZTQ1MmJlMDg0OTY4OTFjYzhmNzc4MWYyYTFjNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjAzLjY5MTc0MCswMDowMCJ9.LuhpyTGoSy077QM7Ovc_hTpOd8GooxRX7F3cBMWAxljgYx3YFNHdwjioqexkbSg38-6wEmGqAzE5iXaAcZeuBA"
+      },
+      {
+        "request_id": "b2808a2ae3a7409aaa7eeee7509f1326",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJiMjgwOGEyYWUzYTc0MDlhYWE3ZWVlZTc1MDlmMTMyNiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjA4LjUxNDE5NiswMDowMCJ9.2DJR1OeXVrpY1-ZcyIkzpokTs5uUGcstR7tKBOSprhYUgUvXNlLAjDrVNvDyd8Vj6yxlUqNdqRuXewqO6o8gCw"
+      },
+      {
+        "request_id": "eb89eee66aba4302a797de9d5919c5b9",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJlYjg5ZWVlNjZhYmE0MzAyYTc5N2RlOWQ1OTE5YzViOSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjEyLjU3NzQ5NCswMDowMCJ9.MIgwSzHrEUKBejWUgXkUzpWNyTEo-vGIEMQjB5u1QTiK7vV0P10CUPpggCYoeKLgN3R7nf9cUwvDeP1HUPwHCw"
+      },
+      {
+        "request_id": "efdba2e47c604b268721bacc54376bad",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJlZmRiYTJlNDdjNjA0YjI2ODcyMWJhY2M1NDM3NmJhZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjE2LjY2NzUyMCswMDowMCJ9.tmKsTdk5AI2nVZI3Jq2Zk4oEcd5j7rAi-2McMmsp1F7gWWLOuFdiy3LMWp-CizP-JDuhdF5GVJVjL8FNk1hzAw"
+      },
+      {
+        "request_id": "a0cbbc6cc77546daa18196d64501bb55",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJhMGNiYmM2Y2M3NzU0NmRhYTE4MTk2ZDY0NTAxYmI1NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjIxLjUxNzU0MSswMDowMCJ9.vW21vstMj3TrsP_UwsJUciGQp1bKM-b8Y__46CZo1_8KHGdGPxI5ynd0RoiSItAgnyEsrtx3u4PiIfHj44X3Cg"
+      },
+      {
+        "request_id": "cbce6a7bed564c0d92e4deea16e737ed",
+        "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJjYmNlNmE3YmVkNTY0YzBkOTJlNGRlZWExNmU3MzdlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjI1LjcxNTYwOSswMDowMCJ9.24ff9OL62xQr_kAqKPdDCSnn0a_HYubmFm0A-QQEFKkXcenmXVoAwebLTRgwOaN6Mz5RUFOUef7cZoOyaIL0BQ"
+      }
+    ],
+    "calibration": {
+      "twoq_err_mean": 0.00224,
+      "twoq_err_max": 0.00583,
+      "readout_max": 0.01917,
+      "sx_max": 0.000732,
+      "dead_avoided": [
+        113,
+        120,
+        121,
+        146
+      ],
+      "gated": true,
+      "max_twoq_err": 0.05,
+      "max_readout_err": 0.15
+    },
+    "session_id": "sess_caec0e51",
+    "batch": 1,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "generations": [
+    {
+      "gen": 8,
+      "outcome": "6",
+      "surprise": 1.2769055888534941,
+      "witness_joint": 0.2353515625,
+      "witness_separable": -8.253893739800189e-11,
+      "witness_signal": 0.23535156258253895,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.15985343265499,
+      "active": false,
+      "sigma": 1.0,
+      "poke": true,
+      "shots": 8192
+    },
+    {
+      "gen": 9,
+      "outcome": "7",
+      "surprise": 1.3973889308915772,
+      "witness_joint": 0.502197265625,
+      "witness_separable": 1.4843112566690405e-10,
+      "witness_signal": 0.5021972654765688,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.147830544067161,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 10,
+      "outcome": "7",
+      "surprise": 1.1695368065565108,
+      "witness_joint": 0.563720703125,
+      "witness_separable": -3.335782638883098e-12,
+      "witness_signal": 0.5637207031283358,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.0571232806425617,
+      "active": false,
+      "sigma": 0.0,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 11,
+      "outcome": "6",
+      "surprise": 1.3213313968527405,
+      "witness_joint": 0.404296875,
+      "witness_separable": 2.0722357062922018e-11,
+      "witness_signal": 0.40429687497927763,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 1.0415391829907739,
+      "active": false,
+      "sigma": 0.0,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 12,
+      "outcome": "6",
+      "surprise": 1.1238533973235152,
+      "witness_joint": 0.432861328125,
+      "witness_separable": 3.327796168511345e-11,
+      "witness_signal": 0.43286132809172206,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.9644421633026476,
+      "active": false,
+      "sigma": 0.0,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 13,
+      "outcome": "7",
+      "surprise": 1.2631161140695404,
+      "witness_joint": 0.60546875,
+      "witness_separable": -5.6805260873567156e-12,
+      "witness_signal": 0.6054687500056806,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.9503208705336961,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 14,
+      "outcome": "6",
+      "surprise": 1.1207545269368724,
+      "witness_joint": 0.265625,
+      "witness_separable": -4.555540027238042e-12,
+      "witness_signal": 0.2656250000045555,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.8944658453286274,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    },
+    {
+      "gen": 15,
+      "outcome": "6",
+      "surprise": 0.9902969480676747,
+      "witness_joint": 0.424560546875,
+      "witness_separable": -1.9047403221729778e-10,
+      "witness_signal": 0.424560547065474,
+      "witness_sigma": 0.011048543456039806,
+      "entropy": 0.8126334890002618,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 8192
+    }
+  ]
+}

@@ -1,0 +1,481 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "closed",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 7,
+    "width": 4,
+    "generations": 20,
+    "shots": 4096,
+    "mut_scale": 0.02,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": null,
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "outcome": "9",
+      "surprise": 1.3862943611198908,
+      "witness_joint": 0.99951171875,
+      "witness_separable": 6.589289114344865e-09,
+      "witness_signal": 0.9995117121607109,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 1,
+      "outcome": "9",
+      "surprise": 1.0840134892469568,
+      "witness_joint": 1.0,
+      "witness_separable": 1.6507328837178648e-09,
+      "witness_signal": 0.9999999983492671,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 2,
+      "outcome": "9",
+      "surprise": 0.9284612674944103,
+      "witness_joint": 0.99951171875,
+      "witness_separable": 1.3917656360717956e-08,
+      "witness_signal": 0.9995117048323436,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 3,
+      "outcome": "9",
+      "surprise": 0.8344696961330914,
+      "witness_joint": 0.99951171875,
+      "witness_separable": 8.803283435554476e-08,
+      "witness_signal": 0.9995116307171656,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 4,
+      "outcome": "9",
+      "surprise": 0.7725681909800104,
+      "witness_joint": 1.0,
+      "witness_separable": -4.602043190971017e-09,
+      "witness_signal": 1.0000000046020432,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 5,
+      "outcome": "9",
+      "surprise": 0.7295612005302995,
+      "witness_joint": 0.99951171875,
+      "witness_separable": -1.2105374480597675e-09,
+      "witness_signal": 0.9995117199605374,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 6,
+      "outcome": "9",
+      "surprise": 0.6985885807869062,
+      "witness_joint": 1.0,
+      "witness_separable": -4.143885234952904e-09,
+      "witness_signal": 1.0000000041438852,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 7,
+      "outcome": "9",
+      "surprise": 0.6757106559848244,
+      "witness_joint": 0.9990234375,
+      "witness_separable": 9.647919796407223e-09,
+      "witness_signal": 0.9990234278520802,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 8,
+      "outcome": "9",
+      "surprise": 0.6584972754236949,
+      "witness_joint": 0.99951171875,
+      "witness_separable": -1.6298145055770874e-09,
+      "witness_signal": 0.9995117203798145,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 9,
+      "outcome": "9",
+      "surprise": 0.6453666924314098,
+      "witness_joint": 0.9990234375,
+      "witness_separable": -2.1609594114124775e-08,
+      "witness_signal": 0.9990234591095941,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 10,
+      "outcome": "9",
+      "surprise": 0.6352457153652951,
+      "witness_joint": 0.9990234375,
+      "witness_separable": 4.902676664642058e-08,
+      "witness_signal": 0.9990233884732334,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 11,
+      "outcome": "9",
+      "surprise": 0.6273820099200268,
+      "witness_joint": 1.0,
+      "witness_separable": 4.6820787247270346e-08,
+      "witness_signal": 0.9999999531792128,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 12,
+      "outcome": "9",
+      "surprise": 0.6212342793116631,
+      "witness_joint": 0.9990234375,
+      "witness_separable": 6.151879006210947e-09,
+      "witness_signal": 0.999023431348121,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 13,
+      "outcome": "9",
+      "surprise": 0.6164048746639541,
+      "witness_joint": 0.99853515625,
+      "witness_separable": -4.338744474807754e-09,
+      "witness_signal": 0.9985351605887445,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 14,
+      "outcome": "9",
+      "surprise": 0.6125967480417995,
+      "witness_joint": 0.99951171875,
+      "witness_separable": -1.4572378859156743e-08,
+      "witness_signal": 0.9995117333223789,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 15,
+      "outcome": "9",
+      "surprise": 0.6095849953328264,
+      "witness_joint": 1.0,
+      "witness_separable": 4.604316927725449e-10,
+      "witness_signal": 0.9999999995395683,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 16,
+      "outcome": "9",
+      "surprise": 0.6071974799094325,
+      "witness_joint": 0.99951171875,
+      "witness_separable": 1.6727426555007696e-08,
+      "witness_signal": 0.9995117020225734,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 17,
+      "outcome": "9",
+      "surprise": 0.6053012982192499,
+      "witness_joint": 1.0,
+      "witness_separable": 2.449496605549939e-09,
+      "witness_signal": 0.9999999975505034,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 18,
+      "outcome": "9",
+      "surprise": 0.6037931153418545,
+      "witness_joint": 1.0,
+      "witness_separable": 9.337554729427211e-09,
+      "witness_signal": 0.9999999906624453,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 19,
+      "outcome": "9",
+      "surprise": 0.6025921319533273,
+      "witness_joint": 0.9990234375,
+      "witness_separable": -2.2155290935188532e-08,
+      "witness_signal": 0.9990234596552909,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    }
+  ],
+  "stimulation": [
+    {
+      "gen": 0,
+      "mut_scale_used": 0.02,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 1,
+      "mut_scale_used": 0.013999999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 2,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 3,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 4,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 5,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 6,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 7,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 8,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 9,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 10,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 11,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 12,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 13,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 14,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 15,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 16,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 17,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 18,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 19,
+      "mut_scale_used": 0.01,
+      "expected": true,
+      "feedback_kind": "predictable"
+    }
+  ],
+  "criticality": {
+    "sigma": {
+      "mean": null,
+      "ci95": null,
+      "n_gen": 0
+    },
+    "avalanche_alpha": {
+      "alpha": null,
+      "xmin": null,
+      "n_avalanches": 0,
+      "ks_stat": null,
+      "gof_pvalue": null,
+      "warning": "too few avalanches to fit (n=0); alpha not estimable"
+    },
+    "entropy": {
+      "plateau": false,
+      "plateau_mean": 0.0,
+      "slope_late": 0.0,
+      "collapsed": true
+    },
+    "susceptibility": {
+      "peak_gen": 0,
+      "peak_value": 0.0,
+      "series": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "relaxation_tau": {
+      "tau": null,
+      "r2": null,
+      "poke_gen": null,
+      "observable": "surprise",
+      "note": "no poke in this run"
+    }
+  }
+}

@@ -1,0 +1,327 @@
+{
+  "meta": {
+    "project": "critical-quantum-life",
+    "study": "critical-quantum-life",
+    "arm": "surrogate",
+    "backend": "sim",
+    "sim": true,
+    "timestamp": "sim",
+    "seed": 100,
+    "width": 4,
+    "generations": 15,
+    "shots": 4096,
+    "mut_scale": 0.12,
+    "nbins": 10,
+    "death": "unitary",
+    "interaction": "nn",
+    "poke_gen": 8,
+    "entropy_source": "prng",
+    "entropy_provenance": [],
+    "calibration": null,
+    "outcome_model": "witness-bin (Option A)"
+  },
+  "generations": [
+    {
+      "gen": 0,
+      "outcome": "5",
+      "surprise": 1.3862943611198908,
+      "witness_joint": 0.0380859375,
+      "witness_separable": 2.1100277081131935e-08,
+      "witness_signal": 0.03808591639972292,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 1,
+      "outcome": "5",
+      "surprise": 1.0840134892469568,
+      "witness_joint": 0.02197265625,
+      "witness_separable": 2.2737367544323206e-11,
+      "witness_signal": 0.021972656227262632,
+      "witness_sigma": 0.015625,
+      "entropy": 0.0,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 2,
+      "outcome": "4",
+      "surprise": 1.6014057407368363,
+      "witness_joint": -0.01611328125,
+      "witness_separable": -4.297362465877086e-10,
+      "witness_signal": -0.016113280820263753,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6767988247286394,
+      "active": true,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 3,
+      "outcome": "5",
+      "surprise": 1.0981093970306568,
+      "witness_joint": 0.005859375,
+      "witness_separable": -3.1063791539054364e-09,
+      "witness_signal": 0.005859378106379154,
+      "witness_sigma": 0.015625,
+      "entropy": 0.5842536095914652,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 4,
+      "outcome": "5",
+      "surprise": 0.953771665789049,
+      "witness_joint": 0.01806640625,
+      "witness_separable": 1.9895196601282805e-10,
+      "witness_signal": 0.018066406051048034,
+      "witness_sigma": 0.015625,
+      "entropy": 0.4867815054577783,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 5,
+      "outcome": "4",
+      "surprise": 1.4629608297522319,
+      "witness_joint": -0.037109375,
+      "witness_separable": -3.830791683867574e-09,
+      "witness_signal": -0.037109371169208316,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6767988247286394,
+      "active": true,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 6,
+      "outcome": "4",
+      "surprise": 1.1950116032545501,
+      "witness_joint": -0.005859375,
+      "witness_separable": 4.297362465877086e-11,
+      "witness_signal": -0.005859375042973625,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6861236168709465,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 7,
+      "outcome": "5",
+      "surprise": 1.1525177964032565,
+      "witness_joint": 0.00537109375,
+      "witness_separable": 5.1149982027709484e-08,
+      "witness_signal": 0.005371042600017972,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6817961150931899,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 8,
+      "outcome": "4",
+      "surprise": 1.1635422032178668,
+      "witness_joint": -0.01025390625,
+      "witness_separable": 5.1022652769461274e-09,
+      "witness_signal": -0.010253911352265277,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6864785542018441,
+      "active": true,
+      "sigma": 1.0,
+      "poke": true,
+      "shots": 4096
+    },
+    {
+      "gen": 9,
+      "outcome": "5",
+      "surprise": 1.1382420154626238,
+      "witness_joint": 0.015625,
+      "witness_separable": 0.0,
+      "witness_signal": 0.015625,
+      "witness_sigma": 0.015625,
+      "entropy": 0.684068282578109,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 10,
+      "outcome": "5",
+      "surprise": 0.9986773897629588,
+      "witness_joint": 0.00634765625,
+      "witness_separable": -1.1044676284654997e-09,
+      "witness_signal": 0.0063476573544676285,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6397326223114813,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 11,
+      "outcome": "5",
+      "surprise": 0.9014374659877253,
+      "witness_joint": 0.00830078125,
+      "witness_separable": 2.1760342860943638e-08,
+      "witness_signal": 0.008300759489657139,
+      "witness_sigma": 0.015625,
+      "entropy": 0.5786805260936317,
+      "active": false,
+      "sigma": 0.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 12,
+      "outcome": "4",
+      "surprise": 1.362898364419787,
+      "witness_joint": -0.02783203125,
+      "witness_separable": -1.2892087397631258e-08,
+      "witness_signal": -0.027832018357912602,
+      "witness_sigma": 0.015625,
+      "entropy": 0.6805828255743698,
+      "active": true,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 13,
+      "outcome": "4",
+      "surprise": 1.1518332275494476,
+      "witness_joint": -0.0107421875,
+      "witness_separable": -2.1827872842550278e-08,
+      "witness_signal": -0.010742165672127157,
+      "witness_sigma": 0.015625,
+      "entropy": 0.689606074331309,
+      "active": false,
+      "sigma": 1.0,
+      "poke": false,
+      "shots": 4096
+    },
+    {
+      "gen": 14,
+      "outcome": "5",
+      "surprise": 1.1058045461773591,
+      "witness_joint": 0.0009765625,
+      "witness_separable": 1.613898348296061e-08,
+      "witness_signal": 0.000976546361016517,
+      "witness_sigma": 0.015625,
+      "entropy": 0.683227063657072,
+      "active": false,
+      "sigma": null,
+      "poke": false,
+      "shots": 4096
+    }
+  ],
+  "stimulation": [
+    {
+      "gen": 0,
+      "mut_scale_used": 0.12,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 1,
+      "mut_scale_used": 0.08399999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 2,
+      "mut_scale_used": 0.05879999999999999,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 3,
+      "mut_scale_used": 0.12,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 4,
+      "mut_scale_used": 0.08399999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 5,
+      "mut_scale_used": 0.05879999999999999,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 6,
+      "mut_scale_used": 0.12,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 7,
+      "mut_scale_used": 0.08399999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 8,
+      "mut_scale_used": 0.05879999999999999,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 9,
+      "mut_scale_used": 0.12,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 10,
+      "mut_scale_used": 0.08399999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 11,
+      "mut_scale_used": 0.05879999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 12,
+      "mut_scale_used": 0.04115999999999999,
+      "expected": false,
+      "feedback_kind": "high-entropy"
+    },
+    {
+      "gen": 13,
+      "mut_scale_used": 0.12,
+      "expected": true,
+      "feedback_kind": "predictable"
+    },
+    {
+      "gen": 14,
+      "mut_scale_used": 0.08399999999999999,
+      "expected": true,
+      "feedback_kind": "predictable"
+    }
+  ]
+}

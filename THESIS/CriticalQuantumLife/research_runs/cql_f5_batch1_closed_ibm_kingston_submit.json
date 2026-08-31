@@ -1,0 +1,113 @@
+{
+  "session_id": "sess_caec0e51",
+  "batch": 1,
+  "arm": "closed",
+  "backend": "ibm_kingston",
+  "width": 6,
+  "shots": 8192,
+  "generations_in_batch": 8,
+  "global_gens": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "chain": [
+    26,
+    25,
+    37,
+    45,
+    46,
+    47,
+    48,
+    49,
+    38,
+    29,
+    30,
+    31
+  ],
+  "calibration": {
+    "twoq_err_mean": 0.00224,
+    "twoq_err_max": 0.00583,
+    "readout_max": 0.01917,
+    "sx_max": 0.000732,
+    "dead_avoided": [
+      113,
+      120,
+      121,
+      146
+    ],
+    "gated": true,
+    "max_twoq_err": 0.05,
+    "max_readout_err": 0.15
+  },
+  "circuits": [
+    "cql_f5_batch1_closed_gen8.qpy",
+    "cql_f5_batch1_closed_gen9.qpy",
+    "cql_f5_batch1_closed_gen10.qpy",
+    "cql_f5_batch1_closed_gen11.qpy",
+    "cql_f5_batch1_closed_gen12.qpy",
+    "cql_f5_batch1_closed_gen13.qpy",
+    "cql_f5_batch1_closed_gen14.qpy",
+    "cql_f5_batch1_closed_gen15.qpy"
+  ],
+  "geno_qubits": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+  ],
+  "resume_state": "/home/peter/PycharmProjects/Quantum-research/THESIS/CriticalQuantumLife/research_runs/sess_caec0e51_closed_state.json",
+  "poke_before_batch": {
+    "kind": "inject_stimulus",
+    "params": {}
+  },
+  "entropy_source": "qrng",
+  "entropy_provenance": [
+    {
+      "request_id": "6fccace5e1c048189f0362067e2cb09e",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI2ZmNjYWNlNWUxYzA0ODE4OWYwMzYyMDY3ZTJjYjA5ZSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ4OjU0LjY1ODc1NCswMDowMCJ9.SMspFpUHGJYl1TmIx5SXTsOt6sNJMbb48cqwiGPMz6avHnZjIUNxO_fcHTIRUEaBO25TtHwbO4ZekNi0ukDIAQ"
+    },
+    {
+      "request_id": "0496dbf433634ea7b3e050e66cb88f4b",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiIwNDk2ZGJmNDMzNjM0ZWE3YjNlMDUwZTY2Y2I4OGY0YiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ4OjU5LjQ3MTkwNSswMDowMCJ9.MgMtxB-5WwNXAECZf3bmMnCYyerVADoSQ3HJq4b0f5i6lhPeaTOGsJNv0hc9ao12sRqoQNWOxIyXSTnm0Q5DDA"
+    },
+    {
+      "request_id": "5077e452be08496891cc8f7781f2a1c7",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiI1MDc3ZTQ1MmJlMDg0OTY4OTFjYzhmNzc4MWYyYTFjNyIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjAzLjY5MTc0MCswMDowMCJ9.LuhpyTGoSy077QM7Ovc_hTpOd8GooxRX7F3cBMWAxljgYx3YFNHdwjioqexkbSg38-6wEmGqAzE5iXaAcZeuBA"
+    },
+    {
+      "request_id": "b2808a2ae3a7409aaa7eeee7509f1326",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJiMjgwOGEyYWUzYTc0MDlhYWE3ZWVlZTc1MDlmMTMyNiIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjA4LjUxNDE5NiswMDowMCJ9.2DJR1OeXVrpY1-ZcyIkzpokTs5uUGcstR7tKBOSprhYUgUvXNlLAjDrVNvDyd8Vj6yxlUqNdqRuXewqO6o8gCw"
+    },
+    {
+      "request_id": "eb89eee66aba4302a797de9d5919c5b9",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJlYjg5ZWVlNjZhYmE0MzAyYTc5N2RlOWQ1OTE5YzViOSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjEyLjU3NzQ5NCswMDowMCJ9.MIgwSzHrEUKBejWUgXkUzpWNyTEo-vGIEMQjB5u1QTiK7vV0P10CUPpggCYoeKLgN3R7nf9cUwvDeP1HUPwHCw"
+    },
+    {
+      "request_id": "efdba2e47c604b268721bacc54376bad",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJlZmRiYTJlNDdjNjA0YjI2ODcyMWJhY2M1NDM3NmJhZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjE2LjY2NzUyMCswMDowMCJ9.tmKsTdk5AI2nVZI3Jq2Zk4oEcd5j7rAi-2McMmsp1F7gWWLOuFdiy3LMWp-CizP-JDuhdF5GVJVjL8FNk1hzAw"
+    },
+    {
+      "request_id": "a0cbbc6cc77546daa18196d64501bb55",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJhMGNiYmM2Y2M3NzU0NmRhYTE4MTk2ZDY0NTAxYmI1NSIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjIxLjUxNzU0MSswMDowMCJ9.vW21vstMj3TrsP_UwsJUciGQp1bKM-b8Y__46CZo1_8KHGdGPxI5ynd0RoiSItAgnyEsrtx3u4PiIfHj44X3Cg"
+    },
+    {
+      "request_id": "cbce6a7bed564c0d92e4deea16e737ed",
+      "receipt": "qeaas1.eyJlcG9jaCI6MTYyLCJyaWQiOiJjYmNlNmE3YmVkNTY0YzBkOTJlNGRlZWExNmU3MzdlZCIsInN6IjozMiwidHMiOiIyMDI2LTA4LTMxVDE1OjQ5OjI1LjcxNTYwOSswMDowMCJ9.24ff9OL62xQr_kAqKPdDCSnn0a_HYubmFm0A-QQEFKkXcenmXVoAwebLTRgwOaN6Mz5RUFOUef7cZoOyaIL0BQ"
+    }
+  ],
+  "sim_signcheck": {
+    "null_band": 0.03314563036811941,
+    "gens_above_band": 8,
+    "gens_total": 8,
+    "frac_above_band": 1.0,
+    "surprise_drop": 0.16416936937893922
+  }
+}
