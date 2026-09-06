@@ -1,0 +1,37 @@
+{
+  "backend": "ibm_kingston",
+  "samples": [
+    {
+      "timestamp": "20260906-101143",
+      "backend": "ibm_kingston",
+      "num_qubits": 156,
+      "operational": true,
+      "pending_jobs": 10,
+      "twoq_gate": "cz",
+      "twoq_err_mean": 0.00548,
+      "twoq_err_max_live": 0.15343,
+      "twoq_dead_edges": 8,
+      "readout_err_mean": 0.01941,
+      "readout_err_max_live": 0.49573,
+      "readout_dead_qubits": 0,
+      "chain_n": 6,
+      "chain": [
+        128,
+        129,
+        118,
+        109,
+        110,
+        111
+      ],
+      "chain_stats": {
+        "twoq_err_mean": 0.00196,
+        "twoq_err_max": 0.00223,
+        "readout_max": 0.00745
+      },
+      "t1_us_mean": 189.8,
+      "t2_us_mean": 122.7,
+      "credits": 0,
+      "source": "backend.target/properties/status (metadata only, no job submitted)"
+    }
+  ]
+}

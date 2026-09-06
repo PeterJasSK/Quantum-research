@@ -1,7 +1,7 @@
 # Epic: Life You Can Poke — a certified-quantum Darwinian population that self-organizes to the edge of chaos, recovers when you prod it, and stands one class above the 2018 model it grew from
 
 **Slug:** critical-quantum-life
-**Tickets:** F0, F1, F2, F3, F4, F5, F6, F7 (8)
+**Tickets:** F0, F1, F2, F3, F4, F5, F6, F7, F8 (9) + Thesis (shelved, numberless)
 **Author:** Claude (Opus)
 **Date:** 2026-08-31
 **Status:** Approved
@@ -62,7 +62,9 @@ never recovers — the best figure in the whole program.
 | F4 | Interactive poke + inter-batch state persistence | open | The "life you can poke" spine: a `poke()` API (user-triggered, not scripted) that changes contingency/selection mid-session, plus persistence of inherited quantum+classical state between runs so a session continues across batches. |
 | F5 | Hardware batch runs (scaled, manual) | open | Scale genome width, run generations in hardware batches on a current Heron backend (manual user submission), persist state between jobs, poke between batches; produce the thesis figures + witness-vs-surrogate panel. |
 | F6 | Web spectacle — "Life You Can Poke" | open | Single-file static HTML canvas dashboard in `QuantumLife/web/` style: glowing genome swarm, criticality dial, avalanche histogram, falling surprise meter, **interactive POKE button**, ghosted yoked-control panel. The primary public artefact. |
-| F7 | Thesis synthesis / IEEE short paper | open | The 6–8pp writeup: one criticality figure, one poke-and-recover trace, one witness-vs-surrogate panel, the yoked control as the spine, honesty gates foregrounded, the "standing on 2018's shoulders" framing. |
+| F7 | The Quantum Canary — always-on QPU health monitor | open | Post-LEAP (`LEAP-candidates-ranked.md` §9). Entanglement-native health monitor: OpenMetrics exporter around the F0 engine (small W, spare chain) + fault-injection coverage study. Runs on the PASSED quantum gate; needs no unmet gate. The shippable product. Plan: `feature-F7-quantum-canary.md`. |
+| F8 | The Quantum Sandpile — self-organized absorbing-state criticality | open | Post-LEAP (`LEAP-candidates-ranked.md` §10). New dynamic-circuit builder (mid-circuit measure + feed-forward reset + drive-when-quiet) that self-organizes to a DP critical point; fixes the failed criticality gate by design. ~2h Heron swing, tiered budgets. Plan: `feature-F8-quantum-sandpile.md`. |
+| — | Thesis synthesis (shelved, numberless) | shelved | The 6–8pp writeup: criticality figure, poke-and-recover trace, witness-vs-surrogate panel, yoked control as the spine, honesty gates foregrounded, "standing on 2018's shoulders." **Assembled only once F7 + F8 are built and validated** — stripped of a ticket number until then. |
 
 ## 3. Cross-cutting decisions
 
@@ -323,7 +325,10 @@ Decisions made once for the whole epic. Every `/plan-feature` output must respec
   ghost panel and the honest hardware-trace overlay are required.
 - **Out of scope:** any live QC call from the browser; a Next.js app (single-file static HTML only).
 
-### F7 — Thesis synthesis / IEEE short paper
+### Thesis synthesis / IEEE short paper (shelved, numberless — was F7)
+> Ticket number freed for the Canary (F7). This deliverable is shelved until F7 + F8 are built and
+> validated; the brief below still governs it when it is picked up. New post-LEAP tickets: **F7 Canary**
+> (`feature-F7-quantum-canary.md`), **F8 Sandpile** (`feature-F8-quantum-sandpile.md`).
 - **What it delivers:** The 6–8pp double-column writeup: central question, single defended claim, one
   criticality figure, one poke-and-recover trace, one witness-vs-surrogate panel, the yoked control as the
   spine, the three honesty gates foregrounded, and the "standing on the shoulders of the 2018 model —

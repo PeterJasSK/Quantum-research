@@ -1,0 +1,69 @@
+{
+  "config": {
+    "cycles": 18,
+    "width": 6,
+    "shots": 3072,
+    "seed": 100
+  },
+  "faults": [
+    {
+      "id": "entanglement_collapse",
+      "kind": "entanglement_collapse",
+      "magnitude": 0.3,
+      "onset": 8,
+      "canary_latency": 1,
+      "baseline_latency": null,
+      "canary_specificity": 1.0,
+      "verdict": "win",
+      "note": "genealogical entanglement collapse \u2014 invisible to single-gate RB; witness catches it"
+    },
+    {
+      "id": "dephasing_drift",
+      "kind": "dephasing_drift",
+      "magnitude": 0.2,
+      "onset": 8,
+      "canary_latency": 6,
+      "baseline_latency": null,
+      "canary_specificity": 1.0,
+      "verdict": "win",
+      "note": "coherence loss with UNCHANGED reported 2q/readout \u2014 incumbent misses it"
+    },
+    {
+      "id": "stale_calibration",
+      "kind": "stale_calibration",
+      "magnitude": 0.3,
+      "onset": 8,
+      "canary_latency": 1,
+      "baseline_latency": null,
+      "canary_specificity": 1.0,
+      "verdict": "win",
+      "note": "real errors drifted up but dashboard shows stale good numbers \u2014 incumbent blind"
+    },
+    {
+      "id": "twoq_degrade",
+      "kind": "twoq_degrade",
+      "magnitude": 0.06,
+      "onset": 8,
+      "canary_latency": 9,
+      "baseline_latency": 0,
+      "canary_specificity": 1.0,
+      "verdict": "lose",
+      "note": "moderate 2q degradation \u2014 reported 2q err rises; RB catches it (honest tie/lose)"
+    },
+    {
+      "id": "readout_error",
+      "kind": "readout_error",
+      "magnitude": 0.14,
+      "onset": 8,
+      "canary_latency": 1,
+      "baseline_latency": 0,
+      "canary_specificity": 1.0,
+      "verdict": "lose",
+      "note": "readout drift \u2014 incumbent readout threshold catches it at onset (RB territory)"
+    }
+  ],
+  "summary": {
+    "win": 3,
+    "lose": 2
+  }
+}

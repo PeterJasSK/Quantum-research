@@ -1,0 +1,90 @@
+{
+  "backend": "ibm_kingston",
+  "width": 4,
+  "shots": 1000,
+  "poke_gen": 4,
+  "chain": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "qpu_seconds": 0.0,
+  "job_ids": [],
+  "band": 0.09486832980505139,
+  "rows": [
+    {
+      "gen": 0,
+      "witness_signal": 0.978000036288,
+      "margin": 0.8831317064829487,
+      "poke": false
+    },
+    {
+      "gen": 1,
+      "witness_signal": 0.9859988768,
+      "margin": 0.8911305469949486,
+      "poke": false
+    },
+    {
+      "gen": 2,
+      "witness_signal": 0.995999186,
+      "margin": 0.9011308561949487,
+      "poke": false
+    },
+    {
+      "gen": 3,
+      "witness_signal": 0.9679967856,
+      "margin": 0.8731284557949486,
+      "poke": false
+    },
+    {
+      "gen": 4,
+      "witness_signal": 0.04800368928,
+      "margin": -0.04686464052505139,
+      "poke": true
+    },
+    {
+      "gen": 5,
+      "witness_signal": 0.970000059616,
+      "margin": 0.8751317298109487,
+      "poke": false
+    },
+    {
+      "gen": 6,
+      "witness_signal": 0.97999996928,
+      "margin": 0.8851316394749487,
+      "poke": false
+    },
+    {
+      "gen": 7,
+      "witness_signal": 0.97800021504,
+      "margin": 0.8831318852349486,
+      "poke": false
+    },
+    {
+      "gen": 8,
+      "witness_signal": 0.989999936352,
+      "margin": 0.8951316065469486,
+      "poke": false
+    },
+    {
+      "gen": 9,
+      "witness_signal": 0.9839999952,
+      "margin": 0.8891316653949486,
+      "poke": false
+    }
+  ],
+  "healthy_mean": 0.8871303913669486,
+  "poke_margin": -0.04686464052505139,
+  "recovery_mean": 0.8855317052925485,
+  "verdict": {
+    "real": true,
+    "responsive": true,
+    "self_healing": true,
+    "pass": true
+  }
+}

@@ -1,0 +1,322 @@
+<!--
+  Critical Quantum Life — F7: the Quantum Canary ops console (AC-F7.6).
+
+  A NEW single-file console (spectacle.html is left untouched as the science-demo template).
+  Poke -> "Inject drift"; heartbeat -> live witness-margin health trace; yoked ghost -> the
+  drift baseline; plus an anomaly timeline. A live in-browser TOY loop gives instant
+  interactivity (a faithful cartoon of code/canary_probe.py, NOT a physics engine); a file
+  loader overlays real research_runs/canary_<session>.json as the "this happened on IBM" layer.
+
+  Self-contained: inline CSS/JS, canvas-driven, theme-aware (prefers-color-scheme + data-theme),
+  no external requests. Mirrors QuantumLife/web/quantum_tree.html discipline.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantum Canary — QPU Health Ops Console</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1a1d21; --muted: #6b7280; --line: #e3e6ea;
+    --good: #16a34a; --warn: #d97706; --bad: #dc2626; --ghost: #9ca3af; --accent: #2563eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --panel: #161b22; --ink: #e6edf3; --muted: #8b949e; --line: #262c34;
+      --good: #3fb950; --warn: #d29922; --bad: #f85149; --ghost: #545d68; --accent: #58a6ff;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1a1d21; --muted: #6b7280; --line: #e3e6ea;
+    --good: #16a34a; --warn: #d97706; --bad: #dc2626; --ghost: #9ca3af; --accent: #2563eb;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1117; --panel: #161b22; --ink: #e6edf3; --muted: #8b949e; --line: #262c34;
+    --good: #3fb950; --warn: #d29922; --bad: #f85149; --ghost: #545d68; --accent: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 18px 22px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 20px 22px 60px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin: 18px 0; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .tile .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .tile .v { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px; margin: 16px 0; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); margin: 0 0 10px; }
+  canvas { width: 100%; display: block; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button, select { font: inherit; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+  button:hover { filter: brightness(1.05); }
+  .legend { display: flex; gap: 16px; color: var(--muted); font-size: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .banner { padding: 8px 12px; border-radius: 8px; font-weight: 600; display: none; }
+  .banner.on { display: block; background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+  .note { color: var(--muted); font-size: 12px; }
+  a { color: var(--accent); }
+  .free, .cost { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    text-transform: none; letter-spacing: 0; margin-left: 8px; vertical-align: middle; }
+  .free { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+  .cost { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+  .calrow { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+  .cal { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 120px; }
+  .cal .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .cal .v { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+</style>
+
+<header>
+  <h1>🐤 Quantum Canary</h1>
+  <span class="sub">entanglement-native, always-on QPU health &amp; anomaly monitor</span>
+</header>
+
+<div class="wrap">
+  <div id="alertBanner" class="banner">⚠ <span id="alertText"></span></div>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">witness margin</div><div class="v" id="tMargin">—</div></div>
+    <div class="tile"><div class="k">surprise</div><div class="v" id="tSurprise">—</div></div>
+    <div class="tile"><div class="k">σ set-point</div><div class="v" id="tSigma">—</div></div>
+    <div class="tile"><div class="k">adaptation gap</div><div class="v" id="tGap">—</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Live QPU — free calibration layer <span class="free">zero credits · metadata only</span></h2>
+    <div class="calrow" id="calRow"><span class="note">Load a
+      <code>research_runs/canary_calibration_&lt;backend&gt;.json</code> to show a real backend's
+      published calibration (no jobs, no shots). Produced by <code>calibration_poller.py</code>.</span></div>
+    <canvas id="calTrend" height="90"></canvas>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--accent)"></span>chain 2q error over time</span>
+      <span class="note">source: <code>backend.target/properties/status</code></span>
+      <label class="note">Load calibration: <input id="calFile" type="file" accept="application/json"></label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Witness heartbeat <span class="cost">cost layer · runs on allocation</span> — margin above the classical null</h2>
+    <canvas id="heart" height="220"></canvas>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--good)"></span>closed (monitored)</span>
+      <span><span class="swatch" style="background:var(--ghost)"></span>yoked ghost (baseline)</span>
+      <span><span class="swatch" style="background:var(--bad)"></span>null band (margin = 0)</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Anomaly timeline</h2>
+    <canvas id="timeline" height="40"></canvas>
+    <div class="note">Each mark = a cycle where the Canary raised a health alert
+      (witness below null for N cycles, or a surprise spike above the yoked baseline).</div>
+  </div>
+
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="controls">
+      <button id="toggle" class="primary">⏸ Pause</button>
+      <label>Inject drift:
+        <select id="drift">
+          <option value="none">— healthy —</option>
+          <option value="entanglement_collapse">entanglement_collapse (Canary win)</option>
+          <option value="dephasing_drift">dephasing_drift (Canary win)</option>
+          <option value="stale_calibration">stale_calibration (Canary win)</option>
+          <option value="readout_error">readout_error (RB territory)</option>
+        </select>
+      </label>
+      <button id="inject">Inject</button>
+      <button id="clear">Clear fault</button>
+      <label class="note">Overlay real run:
+        <input id="file" type="file" accept="application/json"></label>
+    </div>
+    <div class="note" style="margin-top:10px">
+      Live trace is an in-browser <em>toy</em> loop — a cartoon of <code>code/canary_probe.py</code>.
+      Load a real <code>research_runs/canary_&lt;session&gt;.json</code> to overlay the hardware/Aer trace.
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+// ---- toy canary loop: a faithful cartoon of code/canary_probe.py (NOT physics) ----
+const NULL_BAND = 0.047;          // k/sqrt(shots) at 3072 shots ~ matches the Python default
+const MARGIN_ALERT_N = 3;
+const HEALTHY_MARGIN = 0.30;
+const FAULT = {                    // steady-state margin pull per injected fault (cartoon)
+  none: 0.0,
+  entanglement_collapse: -0.42,   // pushes margin below the null band -> Canary catches
+  dephasing_drift: -0.34,
+  stale_calibration: -0.40,
+  readout_error: -0.30,           // Canary also dips, but this is RB's job (see coverage map)
+};
+let cycles = [];                  // {c, margin, ghost, surprise, sigma, gap, alert}
+let t = 0, fault = "none", running = true, belowRun = 0;
+let rng = 12345;
+function rand() { rng = (rng * 1103515245 + 12345) & 0x7fffffff; return rng / 0x7fffffff; }
+function noise(a) { return (rand() - 0.5) * a; }
+
+function step() {
+  t++;
+  const pull = FAULT[fault] || 0;
+  const margin = HEALTHY_MARGIN + pull + noise(0.06);
+  const ghost = HEALTHY_MARGIN + noise(0.06);           // yoked baseline: unaffected by contingency
+  const surprise = Math.max(0, 1.0 - Math.min(1, margin + 0.4) + noise(0.2) + (pull < -0.2 ? 1.2 : 0));
+  const sigma = 0.44 + noise(0.12);                     // homeostatic set-point (Run-1 value)
+  const gap = 0.16 + noise(0.05);
+  belowRun = margin < 0 ? belowRun + 1 : 0;
+  let alert = null;
+  if (belowRun >= MARGIN_ALERT_N) alert = "entanglement_below_null";
+  else if (surprise > 1.6) alert = "surprise_spike";
+  cycles.push({ c: t, margin, ghost, surprise, sigma, gap, alert });
+  if (cycles.length > 160) cycles.shift();
+  render();
+}
+
+let overlay = null;               // real loaded run (array of {cycle, witness_margin, ...})
+
+function fmt(x, d = 3) { return (x >= 0 ? "+" : "") + x.toFixed(d); }
+
+function render() {
+  const last = cycles[cycles.length - 1];
+  if (last) {
+    document.getElementById("tMargin").textContent = fmt(last.margin);
+    document.getElementById("tMargin").style.color =
+      last.margin < 0 ? "var(--bad)" : (last.margin < NULL_BAND ? "var(--warn)" : "var(--good)");
+    document.getElementById("tSurprise").textContent = last.surprise.toFixed(2);
+    document.getElementById("tSigma").textContent = last.sigma.toFixed(2);
+    document.getElementById("tGap").textContent = fmt(last.gap);
+  }
+  const firing = last && last.alert;
+  const b = document.getElementById("alertBanner");
+  b.className = "banner" + (firing ? " on" : "");
+  if (firing) document.getElementById("alertText").textContent =
+    "ALERT: " + last.alert + " — device entanglement health degrading";
+  drawHeart();
+  drawTimeline();
+}
+
+function csvar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function fit(cv) {
+  const w = cv.clientWidth || cv.parentElement.clientWidth;
+  const cssH = parseInt(cv.getAttribute("height"));
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = w * dpr; cv.height = cssH * dpr; cv.style.height = cssH + "px";
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w, h: cssH };
+}
+
+function drawHeart() {
+  const cv = document.getElementById("heart");
+  const { ctx, w, h } = fit(cv);
+  ctx.clearRect(0, 0, w, h);
+  const data = cycles;
+  if (!data.length) return;
+  const lo = -0.6, hi = 0.6;
+  const y = v => h - ((v - lo) / (hi - lo)) * h;
+  const x = i => (i / Math.max(1, data.length - 1)) * w;
+  // null band (margin = 0)
+  ctx.strokeStyle = csvar("--bad"); ctx.globalAlpha = .5; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(0, y(0)); ctx.lineTo(w, y(0)); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha = 1;
+  // yoked ghost
+  line(ctx, data.map((d, i) => [x(i), y(d.ghost)]), csvar("--ghost"), 1.5);
+  // closed monitored
+  line(ctx, data.map((d, i) => [x(i), y(d.margin)]), csvar("--good"), 2);
+  // overlay real run
+  if (overlay && overlay.length) {
+    const ov = overlay.slice(-data.length);
+    line(ctx, ov.map((d, i) => [x(i), y(d)]), csvar("--accent"), 2);
+  }
+}
+
+function line(ctx, pts, color, lw) {
+  ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.stroke();
+}
+
+function drawTimeline() {
+  const cv = document.getElementById("timeline");
+  const { ctx, w, h } = fit(cv);
+  ctx.clearRect(0, 0, w, h);
+  cycles.forEach((d, i) => {
+    if (!d.alert) return;
+    const x = (i / Math.max(1, cycles.length - 1)) * w;
+    ctx.fillStyle = d.alert === "entanglement_below_null" ? csvar("--bad") : csvar("--warn");
+    ctx.fillRect(x - 1.5, 6, 3, h - 12);
+  });
+}
+
+// ---- controls ----
+document.getElementById("toggle").onclick = e => {
+  running = !running; e.target.textContent = running ? "⏸ Pause" : "▶ Resume";
+};
+document.getElementById("inject").onclick = () => { fault = document.getElementById("drift").value; };
+document.getElementById("clear").onclick = () => { fault = "none"; document.getElementById("drift").value = "none"; };
+document.getElementById("file").onchange = ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const j = JSON.parse(r.result);
+      const rows = j.cycles || j.generations || [];
+      overlay = rows.map(x => x.witness_margin != null ? x.witness_margin
+        : (x.witness_signal != null ? x.witness_signal - NULL_BAND : 0));
+    } catch (e) { alert("Could not parse JSON: " + e.message); }
+  };
+  r.readAsText(f);
+};
+
+// ---- free calibration layer (real backend, zero credits) ----
+let calSeries = null;
+function renderCal() {
+  const row = document.getElementById("calRow");
+  if (!calSeries || !calSeries.length) return;
+  const s = calSeries[calSeries.length - 1];
+  const cs = s.chain_stats || {};
+  const tiles = [
+    ["backend", s.backend],
+    ["operational", s.operational ? "yes" : "NO"],
+    ["queue", s.pending_jobs],
+    ["chain 2q err", cs.twoq_err_mean != null ? cs.twoq_err_mean : s.twoq_err_mean],
+    ["chain readout", cs.readout_max != null ? cs.readout_max : s.readout_err_mean],
+    ["T1 µs", s.t1_us_mean], ["T2 µs", s.t2_us_mean],
+    ["credits", s.credits],
+  ];
+  row.innerHTML = tiles.map(t =>
+    `<div class="cal"><div class="k">${t[0]}</div><div class="v">${t[1]}</div></div>`).join("");
+  drawCalTrend();
+}
+function drawCalTrend() {
+  const cv = document.getElementById("calTrend");
+  const { ctx, w, h } = fit(cv);
+  ctx.clearRect(0, 0, w, h);
+  if (!calSeries || calSeries.length < 2) return;
+  const vals = calSeries.map(s => (s.chain_stats && s.chain_stats.twoq_err_mean != null)
+    ? s.chain_stats.twoq_err_mean : (s.twoq_err_mean || 0));
+  const hi = Math.max(...vals) * 1.2 || 1, lo = 0;
+  const x = i => (i / Math.max(1, vals.length - 1)) * w;
+  const y = v => h - ((v - lo) / (hi - lo)) * h;
+  line(ctx, vals.map((v, i) => [x(i), y(v)]), csvar("--accent"), 2);
+}
+document.getElementById("calFile").onchange = ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { calSeries = (JSON.parse(r.result).samples) || []; renderCal(); }
+    catch (e) { alert("Could not parse calibration JSON: " + e.message); }
+  };
+  r.readAsText(f);
+};
+
+// ---- run loop ----
+setInterval(() => { if (running) step(); }, 500);
+window.addEventListener("resize", render);
+render();
+</script>

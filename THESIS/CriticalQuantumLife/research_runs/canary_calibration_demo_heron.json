@@ -1,0 +1,37 @@
+{
+  "backend": "demo_heron",
+  "samples": [
+    {
+      "timestamp": "20260906-101136",
+      "backend": "demo_heron",
+      "num_qubits": 156,
+      "operational": true,
+      "pending_jobs": 7,
+      "twoq_gate": "cz",
+      "twoq_err_mean": 0.0072,
+      "twoq_err_max_live": 0.031,
+      "twoq_dead_edges": 3,
+      "readout_err_mean": 0.0138,
+      "readout_err_max_live": 0.089,
+      "readout_dead_qubits": 1,
+      "chain_n": 6,
+      "chain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "chain_stats": {
+        "twoq_err_mean": 0.0061,
+        "twoq_err_max": 0.0102,
+        "readout_max": 0.0152
+      },
+      "t1_us_mean": 271.0,
+      "t2_us_mean": 188.0,
+      "credits": 0,
+      "source": "DEMO synthetic sample (no backend contacted)"
+    }
+  ]
+}
