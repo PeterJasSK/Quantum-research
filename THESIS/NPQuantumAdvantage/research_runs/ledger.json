@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "grover_exponent": 0.5,
+  "threshold": 0.5,
+  "rows": [
+    {
+      "id": "_3sat_reference",
+      "name": "3-SAT (reference survivor)",
+      "citation": "POC: 3-SAT on ibm_kingston (51.9% vs 6.2% floor); SETH-hard",
+      "search_space": "subset",
+      "search_space_size_expr": "2^n",
+      "classical_bruteforce_exponent": 1.0,
+      "quantum_exponent": 0.5,
+      "verdict": "SURVIVES",
+      "hardness_assumption": "SETH",
+      "best_classical_exponent": 1.0,
+      "best_classical_source": "SETH (Impagliazzo\u2013Paturi): no 2^{cn}, c<1 for k-SAT as k\u2192\u221e",
+      "margin_to_line": 0.5,
+      "collapse_mechanism": null,
+      "ft_logical_qubits": null,
+      "ft_t_count_order": null,
+      "instance_seed": 0,
+      "n_swept": [
+        4,
+        6,
+        8,
+        10,
+        12,
+        14
+      ],
+      "fit_r2_classical": 1.0,
+      "fit_r2_quantum": 1.0,
+      "notes": "the cleanest point above the \u221a2 line; already on hardware"
+    }
+  ]
+}
