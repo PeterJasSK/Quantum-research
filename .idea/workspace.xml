@@ -3,7 +3,31 @@
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/THESIS/CriticalQuantumLife/plans/epic-critical-quantum-life.md" beforeDir="false" afterPath="$PROJECT_DIR$/THESIS/CriticalQuantumLife/plans/epic-critical-quantum-life.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/THESIS/CriticalQuantumLife/plans/feature-F8-quantum-sandpile.md" beforeDir="false" afterPath="$PROJECT_DIR$/THESIS/CriticalQuantumLife/plans/feature-F8-quantum-sandpile.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/QDEP_Living_Genealogies.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/epic-qdep-coherence-depth-genealogy.md" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/plans/OLD_epic-qdep-coherence-depth-genealogy.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-M4-web-demo.md" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/plans/OLD_feature-M4-web-demo.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-S0-reproduce.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-S1-temporal.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-S2-scale.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-S3-teleport.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/qdep-1-coherence-depth-genealogy.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/code/classical_reference.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/code/qc_phase1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/code/qc_phase2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/code/qc_simplified.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/RUNLOG_MONTH1.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/circuit-da7vp1c6l22c73do45m0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/code/classical_partition.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/code/depth_report.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/code/qaoa_sk.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/code/run_sk.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/code/sk_instance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/epic-number-partitioning.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/plans/feature-F1-sk-qaoa-poc.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/research_runs/depth_report.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n4_p1_sim_20260826-183632.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/number-partitioning/research_runs/sk_n6_p1_ibm_fez_20260826-204000.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,7 +203,11 @@
       <workItem from="1787922426252" duration="2001000" />
       <workItem from="1788107493035" duration="6309000" />
       <workItem from="1788162774684" duration="26704000" />
-      <workItem from="1788672604437" duration="9418000" />
+      <workItem from="1788672604437" duration="17878000" />
+      <workItem from="1788797913144" duration="712000" />
+      <workItem from="1788870462745" duration="8690000" />
+      <workItem from="1788890470275" duration="3245000" />
+      <workItem from="1788930346078" duration="4552000" />
     </task>
     <servers />
   </component>

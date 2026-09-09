@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "width": 4,
+    "steps": 6,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "founder_equator": true,
+    "seed": 100,
+    "sim": true,
+    "operators": "CNOT-clone / Ry-mutation / {damping|unitary}-death / SWAP-interaction"
+  },
+  "arms": {
+    "unitary/nn": {
+      "pheno_z": [
+        1.0,
+        1.0,
+        0.923879532511287,
+        1.0
+      ],
+      "classical_z": [
+        1.0,
+        1.0,
+        1.0,
+        0.9238795325112867
+      ],
+      "alive_population": 0,
+      "deepest_lineage": -1,
+      "classical_alive": 0,
+      "classical_deepest": -1
+    },
+    "unitary/longrange": {
+      "pheno_z": [
+        1.0,
+        0.923879532511287,
+        1.0,
+        1.0
+      ],
+      "classical_z": [
+        1.0,
+        0.9238795325112867,
+        1.0,
+        1.0
+      ],
+      "alive_population": 0,
+      "deepest_lineage": -1,
+      "classical_alive": 0,
+      "classical_deepest": -1
+    },
+    "damping/nn": {
+      "pheno_z": [
+        0.6061429773909017,
+        0.5690709764410204,
+        0.4330809556724765,
+        0.5616751787079222
+      ],
+      "classical_z": [
+        0.6959933285759998,
+        0.6292601567999998,
+        0.5478782399999998,
+        0.4486319999999999
+      ],
+      "alive_population": 4,
+      "deepest_lineage": 3,
+      "classical_alive": 4,
+      "classical_deepest": 3
+    },
+    "damping/longrange": {
+      "pheno_z": [
+        0.5690709764410204,
+        0.4330809556724764,
+        0.5616751787079222,
+        0.606142977390902
+      ],
+      "classical_z": [
+        0.5478782399999998,
+        0.4486319999999999,
+        0.6959933285759998,
+        0.6292601567999998
+      ],
+      "alive_population": 4,
+      "deepest_lineage": 3,
+      "classical_alive": 4,
+      "classical_deepest": 3
+    }
+  }
+}

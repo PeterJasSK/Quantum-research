@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stage 4 scale driver -- the full 2018 quantum-artificial-life model, ON HARDWARE.
 
-Runs the model built + sim-verified in ``stage4_qalife.py`` on a 156-qubit Heron-r2, pushes
+Runs the model built + sim-verified in ``qalife.py`` on a 156-qubit Heron-r2, pushes
 the population width, and reports the Month-4 headline:
 
   * QUANTUM headline -- genealogical entanglement depth: the largest width W whose witness
@@ -20,8 +20,8 @@ abort); ``pipeline_common`` connect/run_sampler.
 
 Usage:
     cd artificial-life/code
-    python stage4_scale.py --sim --widths 3,4,5 --steps 4 --interaction nn --death unitary
-    python stage4_scale.py --no-sim --backend ibm_marrakesh --widths 4,6,8 --steps 4 \\
+    python run_qalife.py --sim --widths 3,4,5 --steps 4 --interaction nn --death unitary
+    python run_qalife.py --no-sim --backend ibm_marrakesh --widths 4,6,8 --steps 4 \\
         --interaction nn --death unitary --repeats 3 --name qalife_m4p2
 """
 
@@ -41,7 +41,7 @@ from qiskit import QuantumCircuit, transpile
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_aer import AerSimulator
 
-import stage4_qalife as q4
+import qalife as q4
 
 print = functools.partial(print, flush=True)
 

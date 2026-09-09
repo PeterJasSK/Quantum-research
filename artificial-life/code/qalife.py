@@ -5,7 +5,7 @@ Month 4 re-targets the study. Months 1-3 collapsed 2018 to a single temporal clo
 lineage measuring C(g) -- a depth benchmark of no scientific value, and a model missing
 two of the four biomimetic operators. Stage 4 rebuilds the WHOLE model faithfully and
 lays it out as a *population line* so it can scale to the largest healthy line a
-156-qubit Heron-r2 sustains (the hardware driver is ``stage4_scale.py``).
+156-qubit Heron-r2 sustains (the hardware driver is ``run_qalife.py``).
 
 The EXACT 2018 operators (Sci. Rep. 8:14793, 2018), reproduced here:
 
@@ -30,12 +30,12 @@ The EXACT 2018 operators (Sci. Rep. 8:14793, 2018), reproduced here:
 
 This file is self-contained (CD-1: operators copied, not imported) and hits NOTHING on
 hardware. ``--selftest`` verifies every operator against the paper's exact values; only
-after it passes does ``stage4_scale.py`` run the model live.
+after it passes does ``run_qalife.py`` run the model live.
 
 Usage:
     cd artificial-life/code
-    python stage4_qalife.py --selftest
-    python stage4_qalife.py --sim --width 4 --steps 6 --interaction both --death both
+    python qalife.py --selftest
+    python qalife.py --sim --width 4 --steps 6 --interaction both --death both
 """
 
 from __future__ import annotations
@@ -521,7 +521,7 @@ def selftest() -> bool:
 
 def _sim_thetas(width: int, seed: int, mut_scale: float = 1.0) -> list[float]:
     """PRNG mutation angles for --sim/--selftest ONLY. Hardware draws from certified Q-EaaS
-    (CD-7 fail-closed) in stage4_scale."""
+    (CD-7 fail-closed) in run_qalife."""
     rng = random.Random(seed)
     return [mut_scale * rng.uniform(0, math.pi) for _ in range(width)]
 
