@@ -53,7 +53,7 @@ QEAAS_URL = "https://api.qeaas.eu/"
 INTERACTION = "nn"          # interaction topology: none | nn | longrange
 REPEATS = 1                 # repeats per width for sigma error bars (1 = single run)
 K = 2.0                     # witness must beat the separable null by K*sigma to survive
-MUT_SCALE = 0.10            # mutation strength (fraction of pi); small => witness survives deep
+MUT_SCALE = 0.0             # mutation strength (fraction of pi); 0 = faithful 2018 (clean GHZ witness)
 MAX_TWOQ_ERR = 0.05         # chain-quality gate: max 2-qubit error along the chain
 MAX_READOUT_ERR = 0.15      # chain-quality gate: max readout error along the chain
 ALLOW_BAD_CHAIN = False     # True bypasses the chain-quality gate
@@ -93,20 +93,23 @@ def qrng_thetas(client: QRNGClient, width: int, mut_scale: float, repeat: int) -
     return out
 
 
-# Full model + dual-basis readout: genotypes in X (witness), phenotypes in Z (alive-count).
-def build_measured(width: int, steps: int, thetas: list[float], interaction: str,death: str, annotate: bool = False) -> QuantumCircuit:
-
-    qc = q4.build_population(width, steps, thetas, interaction, death=death, measure=False,annotate=annotate)
+# Readout basis. unitary: genotypes in X (witness), phenotypes in Z (alive-count).
+# damping: cx(g,p) extends the GHZ onto the phenotypes, so the witness must span geno+pheno
+# -- H all data qubits and read the full 2W-parity in X. (Alive-count is then unavailable
+# from this circuit: the phenotypes are in X, not Z.)
+def build_measured(width: int, steps: int, thetas: list[float], interaction: str, death: str,
+                   annotate: bool = False) -> QuantumCircuit:
+    qc = q4.build_population(width, steps, thetas, interaction, death=death, measure=False,
+                             annotate=annotate)
     q4._bar(qc, annotate, "X-basis (witness)")
-
     for k in range(width):
-        qc.h(q4.geno_q(k))
-    n_data = 2 * width + (1 if death == "damping" else 0)
+        qc.h(q4.geno_q(k))                     # genotypes -> X
+        if death == "damping":
+            qc.h(q4.pheno_q(k))                # phenotypes -> X too (they carry half the GHZ)
+    n_data = 2 * width + (width if death == "damping" else 0)
     creg = ClassicalRegister(n_data, "c")
-
     qc.add_register(creg)
     qc.measure(range(n_data), creg)
-
     return qc
 
 
@@ -117,14 +120,15 @@ def dump_circuit(width: int, steps: int, thetas: list[float], interaction: str, 
     qc = build_measured(width, steps, thetas, interaction, death, annotate=True)
     print("\n--- CIRCUIT (each barrier = one Darwinian operator / individual) ---")
     print(f"  qubits: genotype g_k = 2k, phenotype p_k = 2k+1"
-          + (f", shared bath = {q4.bath_q(width)}" if death == "damping" else ""))
+          + (f", bath_k = 2W+k = {q4.bath_q(width, 0)}..{q4.bath_q(width, width - 1)}"
+             if death == "damping" else ""))
     print("  gate -> Darwinian meaning:")
     print("    Ry(pi/2) on g_0        = FOUNDER  (ancestral genotype seeded on the equator)")
     print("    CX(g_{k-1} -> g_k)     = SELF-REPLICATION  (partial sigma_z clone, eta=1)")
     print("    Ry(theta_k) on g_k     = MUTATION  (theta from certified QRNG)")
     if death == "damping":
         print("    CX(g_k -> p_k)         = PHENOTYPE  (2nd partial clone)")
-        print("    CRY+CX+reset(bath)     = DEATH  (amplitude damping of the phenotype -> |0> dark state)")
+        print("    CRY+CX(p_k, bath_k)    = DEATH  (amplitude damping -> |0> dark state; fresh bath, no reset)")
     else:
         print("    Ry(aged) on p_k        = PHENOTYPE + DEATH  (phenotype angle reduced by aging)")
     print("    SWAP(p_k, p_j)         = INTERACTION  (predation: phenotypes exchanged)")
@@ -168,12 +172,23 @@ def gated_chain(backend: Any, nq: int) -> list[int]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="QDEP Stage 4 -- full 2018 model at scale (HW driver)")
+    ap = argparse.ArgumentParser(
+        description="QDEP Stage 4 -- 2018 quantum-artificial-life model. Defaults reproduce the "
+                    "Sci.Rep.8:14793 origin (2 individuals / 4 qubits, unitary death, nn interaction, "
+                    "no mutation); widen --widths / raise --steps to scale past it.")
     ap.add_argument("--backend", type=str, default=None,
                     help="hardware backend name; omit to run on the density-matrix Aer sim")
-    ap.add_argument("--widths", type=str, default="3,4,5", help="comma list of population widths to sweep")
-    ap.add_argument("--steps", type=int, default=4)
-    ap.add_argument("--death", choices=["unitary", "damping"], default="unitary")
+    ap.add_argument("--widths", type=str, default="2",
+                    help="comma list of population widths to sweep (2 = faithful 2018 origin, 4 qubits)")
+    ap.add_argument("--steps", type=int, default=1,
+                    help="life-cycle steps (1 = 2018 origin: replication + entanglement, all alive; "
+                         "raise to see aging/death)")
+    ap.add_argument("--death", choices=["unitary", "damping"], default="unitary",
+                    help="how the phenotype dies. 'unitary' = reversible Ry rotation toward |0> on a "
+                         "product-state phenotype (the 2018 paper's stand-in; cheap, statevector, no "
+                         "ancilla). 'damping' = real amplitude-damping channel via a bath ancilla "
+                         "(irreversible, keeps genotype-phenotype entanglement; needs +1 qubit + "
+                         "density-matrix sim).")
     ap.add_argument("--shots", type=int, default=8192)
     ap.add_argument("--dump-circuit", dest="dump_circuit", action="store_true",
                     help="print + save the annotated circuit (each Darwinian operator labeled) then run")
@@ -247,7 +262,7 @@ def main() -> None:
 
     # ---- main run ----
     for W in widths:
-        nq = 2 * W + (1 if args.death == "damping" else 0)
+        nq = 2 * W + (W if args.death == "damping" else 0)
         qubit_list: list[int] = []
         if not args.sim:
             qubit_list = gated_chain(backend, nq)
@@ -270,14 +285,17 @@ def main() -> None:
                     counts[s] = counts.get(s, 0) + 1
 
 
-            geno_qs = [q4.geno_q(k) for k in range(W)]
-            joint, sep = q4.xbasis_witness_from_counts(counts, geno_qs)
-
-            #-- translates from raw data to lineage ----------
-            pz = q4.phenotype_z_from_counts(counts, W)
+            # witness qubits: genotypes always; + phenotypes for damping (they carry half the GHZ)
+            witness_qs = [q4.geno_q(k) for k in range(W)]
+            if args.death == "damping":
+                witness_qs += [q4.pheno_q(k) for k in range(W)]
+            joint, sep = q4.xbasis_witness_from_counts(counts, witness_qs)
             w_reps.append(joint); s_reps.append(sep)
-            alive_reps.append(q4.alive_population(pz))
-            deep_reps.append(q4.deepest_surviving_lineage(pz))
+            # alive-count needs phenotypes in Z -- only the unitary arm reads them that way
+            if args.death != "damping":
+                pz = q4.phenotype_z_from_counts(counts, W)
+                alive_reps.append(q4.alive_population(pz))
+                deep_reps.append(q4.deepest_surviving_lineage(pz))
 
         wm, ws = float(np.mean(w_reps)), float(np.std(w_reps))
         sm = float(np.mean(s_reps))
@@ -286,14 +304,19 @@ def main() -> None:
         witness_mean.append(wm); witness_sig.append(ws); sep_mean.append(sm)
         signal = wm - sm
         survives = signal > K * ws
+        # alive-count only exists for the unitary arm (damping reads phenotypes in X)
+        alive_mean = float(np.mean(alive_reps)) if alive_reps else None
+        deep_mean = float(np.mean(deep_reps)) if deep_reps else None
         result["by_width"][str(W)] = {
             "witness_joint_mean": wm, "witness_joint_sigma": ws, "separable_mean": sm,
             "entanglement_signal": signal, "survives": bool(survives),
-            "alive_mean": float(np.mean(alive_reps)), "deepest_mean": float(np.mean(deep_reps)),
+            "alive_mean": alive_mean, "deepest_mean": deep_mean,
         }
-        print(f"  W={W:2}  witness<X^W>={wm:+.3f}+-{ws:.3f}  sep={sm:+.3f}  "
-              f"signal={signal:+.3f}  {'ALIVE' if survives else 'dead '}  | "
-              f"pop alive~{np.mean(alive_reps):.1f}/{W} deepest~{np.mean(deep_reps):.1f}")
+        pop = (f"pop alive~{alive_mean:.1f}/{W} deepest~{deep_mean:.1f}"
+               if alive_mean is not None else "pop n/a (phenotypes in X for the witness)")
+        wlabel = "X^2W" if args.death == "damping" else "X^W"
+        print(f"  W={W:2}  witness<{wlabel}>={wm:+.3f}+-{ws:.3f}  sep={sm:+.3f}  "
+              f"signal={signal:+.3f}  {'ALIVE' if survives else 'dead '}  | {pop}")
 
     depth = q4.entanglement_depth(witness_mean, sep_mean, witness_sig, k=K)
     depth_W = widths[depth] if depth >= 0 else None

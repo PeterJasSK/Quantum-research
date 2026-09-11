@@ -65,9 +65,10 @@ def pheno_q(k: int) -> int:
     return 2 * k + 1
 
 
-def bath_q(width: int) -> int:
-    """Single shared bath ancilla (reused with reset), only for the damping arm."""
-    return 2 * width
+def bath_q(width: int, k: int) -> int:
+    """Bath ancilla for individual k (damping arm only). One fresh bath per individual,
+    never reset -- so the damping channel needs NO mid-circuit reset (hardware-safe)."""
+    return 2 * width + k
 
 
 def interaction_partner(k: int, width: int, mode: str) -> int | None:
@@ -112,12 +113,11 @@ def build_population(width: int, steps: int, thetas: list[float], interaction: s
     The long-range interaction SWAP is left plain -- the transpiler routes it as an
     O(distance) SWAP ladder. `annotate` inserts labeled barriers per Darwinian operator
     (for --dump-circuit)."""
-    n_data = 2 * width + (1 if death == "damping" else 0)  # +1 shared bath (damping only)
+    n_data = 2 * width + (width if death == "damping" else 0)  # +1 bath per individual (damping)
     qc = QuantumCircuit(n_data, n_data if measure else 0)
 
     # genotype line + phenotype-with-death, one individual per step. g_k = 2k, p_k = 2k+1.
     z_geno = _z_geno_chain(width, thetas, founder_equator) if death == "unitary" else None
-    bath = bath_q(width) if death == "damping" else None
     for k in range(width):
         g, p = geno_q(k), pheno_q(k)
         # FOUNDER (k=0, seed ancestral genotype on the equator) or SELF-REPLICATION
@@ -138,12 +138,13 @@ def build_population(width: int, steps: int, thetas: list[float], interaction: s
         else:
             qc.cx(g, p)                                          # PHENOTYPE: 2nd partial clone (CNOT)
             # DEATH: true amplitude damping toward |0> (Lindblad sigma=|0><1|). Effective damping
-            # over `age` steps g_eff = 1-(1-gamma)^age, one block via a shared bath ancilla.
+            # over `age` steps g_eff = 1-(1-gamma)^age, via a FRESH bath ancilla (no reset ->
+            # no dynamic circuit; the bath is simply traced out = discarded at readout).
             if age > 0:
+                bath = bath_q(width, k)
                 g_eff = 1.0 - (1.0 - gamma) ** age
                 qc.cry(2.0 * math.asin(math.sqrt(min(1.0, g_eff))), p, bath)
                 qc.cx(bath, p)
-                qc.reset(bath)                                   # discard bath so it can be reused
         _bar(qc, annotate, f"ind{k}")
 
     # INTERACTION sweep (predation): U_I = SWAP the two phenotype qubits of each pair, once
