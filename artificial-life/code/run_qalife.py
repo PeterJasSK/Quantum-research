@@ -276,9 +276,10 @@ def main() -> None:
             if args.sim:
                 counts = SIM.run(transpile(qc, SIM), shots=args.shots).result().get_counts()
             else:
-                init = qubit_list if len(qubit_list) == qc.num_qubits else None
-                pm = generate_preset_pass_manager(optimization_level=3, backend=backend,
-                                                  initial_layout=init)
+                # let opt-3 (VF2/Sabre) choose layout+routing. Pinning the chain order forces the
+                # model's ladder connectivity through a line -> ~3-4x more routing SWAPs (measured).
+                # gated_chain above still vets that the backend has a clean n-qubit region.
+                pm = generate_preset_pass_manager(optimization_level=3, backend=backend)
                 raw_meas, _jobs, _qs = run_sampler(backend, pm.run(qc), args.shots)
                 counts = {}
                 for s in raw_meas:               # run_sampler returns per-shot 'c' strings
