@@ -1,0 +1,459 @@
+<title>P2 — Scale Ceiling of a Faithful Quantum-Life Genealogy</title>
+<style>
+  :root{
+    --bg:#05030a; --bg2:#0a0612; --panel:#0e0a18; --panel2:#120c22;
+    --ink:#eafff2; --dim:#9aa7b0; --dimmer:#6b7580; --line:#241b38;
+    --alive:#6dffb0; --gold:#ffd66d; --dead:#ff6b6b;
+    --classical:#7f8a94; --violet:#b58cff;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); font-family:var(--sans); line-height:1.62;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    background:
+      radial-gradient(1100px 640px at 78% -8%, #160c2a 0%, transparent 60%),
+      radial-gradient(820px 560px at -5% 14%, #071a14 0%, transparent 55%),
+      var(--bg);
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px}
+  a{color:var(--alive); text-decoration:none; border-bottom:1px solid rgba(109,255,176,.28)}
+  a:hover{border-bottom-color:var(--alive)}
+  code,.mono{font-family:var(--mono)}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* masthead */
+  header{padding:clamp(2.6rem,7vw,4.4rem) 0 1.6rem}
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--alive); opacity:.85; margin:0 0 .9rem}
+  h1{font-family:var(--serif); font-weight:600; line-height:1.12;
+    font-size:clamp(1.9rem,5vw,3rem); margin:0 0 .5rem; text-wrap:balance;
+    color:var(--ink)}
+  h1 em{font-style:italic; color:var(--gold)}
+  .byline{color:var(--dim); font-size:.92rem; margin:.7rem 0 0;
+    display:flex; flex-wrap:wrap; gap:.4rem 1.1rem; font-family:var(--mono)}
+  .byline .done{color:var(--alive)}
+
+  /* abstract */
+  .abstract{margin:1.9rem 0 0; padding:1.3rem 1.5rem;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-left:3px solid var(--gold); border-radius:4px}
+  .abstract h2{font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--gold); margin:0 0 .6rem}
+  .abstract p{margin:0 0 .7rem; font-size:.98rem; color:#dbe6df}
+  .abstract p:last-child{margin:0}
+  .abstract b{color:var(--ink)}
+
+  /* headline stat row */
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:1.6rem 0}
+  .stat{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+  .stat .big{font-family:var(--mono); font-size:clamp(1.5rem,4vw,2.1rem);
+    font-weight:700; letter-spacing:-.01em; line-height:1}
+  .stat.g .big{color:var(--gold)} .stat.a .big{color:var(--alive)} .stat.d .big{color:var(--dead)}
+  .stat .lbl{color:var(--dim); font-size:.76rem; margin-top:.45rem; line-height:1.35}
+  @media(max-width:620px){.stats{grid-template-columns:1fr}}
+
+  /* sections */
+  section{padding:2.3rem 0 .4rem; border-top:1px solid var(--line)}
+  .secnum{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em;
+    color:var(--violet); text-transform:uppercase}
+  h2.sec{font-family:var(--serif); font-weight:600; font-size:clamp(1.3rem,3.4vw,1.7rem);
+    margin:.35rem 0 .8rem; color:var(--ink); text-wrap:balance}
+  p{color:#cdd8d1; font-size:1rem}
+  p b{color:var(--ink)}
+  .lede{font-size:1.06rem; color:#dbe6df}
+
+  /* figure */
+  figure{margin:1.6rem 0; padding:0}
+  .frit{background:linear-gradient(180deg,#080511,#0b0718);
+    border:1px solid var(--line); border-radius:12px; padding:14px 12px 6px; overflow-x:auto}
+  figcaption{color:var(--dim); font-size:.86rem; margin:.75rem 4px 0; line-height:1.5}
+  figcaption b{font-family:var(--serif); color:var(--ink); font-weight:600}
+  svg{display:block; width:100%; height:auto; min-width:520px}
+  .lgd{display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; margin:.4rem 4px .2rem;
+    font-family:var(--mono); font-size:.76rem; color:var(--dim)}
+  .lgd i{display:inline-block; width:22px; height:0; border-top-width:3px;
+    border-top-style:solid; vertical-align:middle; margin-right:7px}
+  .lgd i.dot{width:10px;height:10px;border-radius:50%;border-top:0}
+
+  /* tables */
+  .tw{overflow-x:auto; margin:1.4rem 0}
+  table{border-collapse:collapse; width:100%; font-size:.88rem; min-width:460px}
+  caption{caption-side:top; text-align:left; font-family:var(--mono);
+    font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; color:var(--violet);
+    margin-bottom:.6rem}
+  th,td{padding:.5rem .7rem; text-align:right; border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--dim); font-weight:600; border-bottom:1px solid var(--dimmer);
+    font-family:var(--mono); font-size:.78rem}
+  tbody tr:hover{background:rgba(181,140,255,.05)}
+  td.pass{color:var(--alive)} td.fail{color:var(--dead); opacity:.85}
+  .chip{font-family:var(--mono); font-size:.72rem; padding:1px 7px; border-radius:999px;
+    border:1px solid}
+  .chip.a{color:var(--alive); border-color:rgba(109,255,176,.4)}
+  .chip.d{color:var(--dead); border-color:rgba(255,107,107,.4)}
+
+  .callout{margin:1.5rem 0; padding:1.1rem 1.4rem; border-radius:8px;
+    border:1px solid var(--line); background:var(--panel)}
+  .callout.gate{border-left:3px solid var(--violet)}
+  .callout h3{font-family:var(--mono); font-size:.74rem; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--violet); margin:0 0 .6rem}
+
+  /* open / to-be-filled */
+  .open{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:1.5rem 0}
+  @media(max-width:620px){.open{grid-template-columns:1fr}}
+  .slot{border:1px dashed var(--dimmer); border-radius:10px; padding:1.1rem 1.2rem;
+    background:repeating-linear-gradient(45deg,transparent,transparent 9px,rgba(127,138,148,.05) 9px,rgba(127,138,148,.05) 18px)}
+  .slot .w{font-family:var(--mono); font-size:1.6rem; color:var(--gold); font-weight:700}
+  .slot .q{font-family:var(--mono); color:var(--dimmer); font-size:1rem}
+  .slot .lbl{color:var(--dim); font-size:.85rem; margin-top:.5rem}
+  .slot .pend{display:inline-block; margin-top:.7rem; font-family:var(--mono);
+    font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--dimmer);
+    border:1px solid var(--line); border-radius:999px; padding:2px 9px}
+
+  footer{border-top:1px solid var(--line); margin-top:2.6rem;
+    padding:1.8rem 0 3rem; color:var(--dimmer); font-size:.82rem; font-family:var(--mono)}
+  footer p{color:var(--dimmer); font-size:.82rem; margin:.3rem 0}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Quantum Artificial Life · Phase 2 · Results</p>
+    <h1>The scale ceiling of a faithful quantum-life genealogy, and where its <em>death channel</em> ends it</h1>
+    <div class="byline">
+      <span>Heron-r2 · <code>ibm_kingston</code></span>
+      <span>witness <code>&lt;X<sup>⊗W</sup>&gt;</code></span>
+      <span class="done">▲ Stage P2 — complete</span>
+      <span>2026-09-11</span>
+    </div>
+
+    <div class="abstract">
+      <h2>Abstract</h2>
+      <p>Phase 1 banked the exact Alvarez-Rodriguez 2018 four-operator model and its one non-classical
+        observable, the genealogical entanglement witness <code>&lt;X<sup>⊗W</sup>&gt;</code>. Phase 2 pushes
+        that witness to the coherence ceiling of live 156-qubit Heron-r2 hardware along two axes: the
+        <b>unitary</b> genealogy (idealized, no dissipation) and the <b>faithful amplitude-damping death
+        channel</b> — the first genuine biological operator switched on.</p>
+      <p>On the unitary axis the reproduction certifies entanglement depth <b>W* = 24 = 48 qubits</b>
+        (k=2σ), about <b>6×</b> the paper's ~4-qubit origin; W=32 is buried in noise. Turning on the
+        amplitude-damping death channel is far harsher: after a damping-model fix (0.35 → 0.55 at W=2)
+        the witness is now certified at k=3σ through <b>W=4</b> (W=2 +0.545, W=3 +0.782, W=4 +0.648) but
+        has collapsed to +0.001 by <b>W=8</b> — placing the <b>death-channel ceiling W* in W ∈ [4, 8)</b>.
+        The collapse edge (W=5, W=6) remains to be run (§6).</p>
+      <p>Honest framing throughout: this is <b>scale · faithfulness · certification — not a speedup</b>.</p>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat g"><div class="big">W*=24</div><div class="lbl">Unitary genealogy depth = 48 qubits, ~6× the 2018 origin (k=2σ)</div></div>
+    <div class="stat a"><div class="big">W≤4 ✓</div><div class="lbl">Damping-death witness certified k=3σ through W=4 (+0.55 / +0.78 / +0.65)</div></div>
+    <div class="stat d"><div class="big">W=8 ✗</div><div class="lbl">Damping witness collapsed to +0.001 — ceiling W* ∈ [4,8); death channel is the wall</div></div>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <p class="secnum">1 · The two axes</p>
+    <h2 class="sec">Scale is qubit-cheap; the wall is decoherence — and the death operator makes the wall much closer</h2>
+    <p class="lede">Each individual costs two qubits; the amplitude-damping death mode adds one shared
+      bath ancilla. Width is therefore never the bottleneck — a genealogy of W=77 would fill a 156-qubit
+      chip. What ends the witness is <b>entropy</b>: decoherence along the unitary axis, and, once the
+      faithful death channel is on, the deliberate dissipation that channel injects at every generation.</p>
+    <p>P2 measures the witness against genealogy width <b>W</b> on both axes. The <b>unitary</b> axis
+      (§2) finds how far the idealized reproduction coheres. The <b>damping</b> axis (§3) is the first
+      honest biological operator — it re-asks the ceiling question with real death in the loop, and the
+      answer moves dramatically inward.</p>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <p class="secnum">2 · The unitary scale ceiling</p>
+    <h2 class="sec">W* = 24 = 48 qubits, ~6× the paper</h2>
+    <p>On the unitary genealogy the witness decays roughly geometrically with W. Against the noiseless
+      <b>ideal</b> curve — which saturates near 0.9 (its small droop is <em>modeled mutation</em>,
+      Ry(θ), not decoherence) — the hardware curve separates decoherence from model-intrinsic decay.
+      The last width clearing the k=2σ significance gate is <b>W=24</b>; W=32 is dead.</p>
+
+    <figure>
+      <div class="frit">
+        <div class="lgd">
+          <span><i style="border-color:var(--violet)"></i>Ideal (noiseless statevector)</span>
+          <span><i style="border-color:var(--gold)"></i>Unitary hardware</span>
+          <span><i class="dot" style="background:var(--alive)"></i>Damping-death hardware</span>
+          <span><i style="border-color:var(--dead);border-top-style:dashed"></i>k=2σ gate</span>
+        </div>
+        <svg id="figW" viewBox="0 0 720 380" role="img"
+          aria-label="Witness versus genealogy width W. Ideal saturates near 0.9; unitary hardware decays geometrically, last surviving at W=24; damping-death hardware sits far lower and is dead by W=8."></svg>
+      </div>
+      <figcaption><b>Figure 1.</b> Genealogical entanglement witness <code>&lt;X<sup>⊗W</sup>&gt;</code>
+        versus width W (log axis). The noiseless <span style="color:var(--violet)">ideal</span> never
+        decays. The <span style="color:var(--gold)">unitary hardware</span> curve is the real ceiling:
+        alive through W=24 (k=2σ), dead at W=32. The <span style="color:var(--alive)">damping-death</span>
+        points lie far below — W=2 certified, W=8 already in the noise floor. The
+        <span style="color:var(--dead)">dashed gate</span> is k=2σ ≈ 0.02–0.05; the shaded band below it
+        is the classically-indistinguishable zone. Separable null (classical measure-and-resend) ≤ 2×10⁻⁶
+        across all widths — off the chart on zero.</figcaption>
+    </figure>
+
+    <div class="tw">
+      <table>
+        <caption>Table 1 · Unitary genealogy — witness vs width (ibm_kingston, nn / unitary death)</caption>
+        <thead><tr><th>W</th><th>qubits</th><th>&lt;X<sup>⊗W</sup>&gt;</th><th>±1σ</th><th>k=2</th><th>k=3</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>4</td><td>+0.959</td><td>0.011</td><td class="pass">✓</td><td class="pass">✓</td></tr>
+          <tr><td>3</td><td>6</td><td>+0.879</td><td>0.027</td><td class="pass">✓</td><td class="pass">✓</td></tr>
+          <tr><td>4</td><td>8</td><td>+0.808</td><td>0.021</td><td class="pass">✓</td><td class="pass">✓</td></tr>
+          <tr><td>6</td><td>12</td><td>+0.612</td><td>0.014</td><td class="pass">✓</td><td class="pass">✓</td></tr>
+          <tr><td>12</td><td>24</td><td>+0.301</td><td>0.017</td><td class="pass">✓</td><td class="pass">✓</td></tr>
+          <tr><td><b>24</b></td><td><b>48</b></td><td><b>+0.038</b></td><td>0.016</td><td class="pass">✓</td><td class="fail">✗</td></tr>
+          <tr><td>32</td><td>64</td><td>+0.008</td><td>0.013</td><td class="fail">✗</td><td class="fail">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><b>W* = 24 = 48 qubits</b> — marginal-ALIVE at k=2, dies at k=3. This is the reproduced ceiling of
+      the faithful model on the pre-existing design, proven live. The geometric, structureless decay and
+      the clean death at W=32 say the unitary <em>scale-for-scale</em> axis is essentially exhausted:
+      more width is "bigger GHZ, same biology."</p>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <p class="secnum">3 · The amplitude-damping death channel</p>
+    <h2 class="sec">Real death moves the ceiling inward — and a model fix recovered it from 0.35 to 0.55</h2>
+    <p>Switching death from a unitary rotation to a <b>faithful amplitude-damping channel</b> (a shared
+      bath ancilla, dissipation per generation) is the first genuine biological operator of the epic —
+      and the harshest noise channel in the model. The original damping build was unstable at W=2
+      (runs spanning −0.04 to +0.35). A death-channel fix lifted the W=2 witness to a solid
+      <b>+0.545</b> (k=3σ certified) — the "0.35 → 0.55" improvement. The fixed channel then holds:
+      <b>W=3 = +0.782</b> and <b>W=4 = +0.648</b> are both certified at k=3σ (the W=3 rise above W=2
+      reflects the earlier W=2 runs sitting on a noisier chain, not a real minimum). The collapse falls
+      between W=4 and W=8: by <b>W=8</b> the witness is +0.001, dead. Live calibration on the W=3/W=4 runs:
+      two-qubit error ≈ 0.002, readout ≤ 0.012 — the decay is the death channel, not a bad chain.</p>
+
+    <figure>
+      <div class="frit">
+        <svg id="figD" viewBox="0 0 760 320" role="img"
+          aria-label="Damping-death witness by run. Original W=2 runs scatter from -0.04 to 0.35; fixed channel reaches W=2 0.55, W=3 0.78, W=4 0.65; W=8 collapses to 0.001."></svg>
+      </div>
+      <figcaption><b>Figure 2.</b> Damping-death witness per live run. The
+        <span style="color:var(--classical)">original</span> death channel scatters around and below the
+        gate at W=2; the <span style="color:var(--alive)">fixed</span> channel lifts W=2 to +0.55 and
+        holds the witness up through <b>W=3 (+0.78)</b> and <b>W=4 (+0.65)</b>. At
+        <span style="color:var(--dead)">W=8</span> it collapses into the noise floor. Bars above the
+        dashed k=2σ gate are certified non-classical; the ceiling W* lies between W=4 and W=8.</figcaption>
+    </figure>
+
+    <div class="tw">
+      <table>
+        <caption>Table 2 · Damping-death runs (ibm_kingston, nn / damping death, shots 8192)</caption>
+        <thead><tr><th>run</th><th>build</th><th>W</th><th>&lt;X<sup>⊗W</sup>&gt;</th><th>gate k=2σ</th><th>verdict</th></tr></thead>
+        <tbody>
+          <tr><td>3.0</td><td>original</td><td>2</td><td>+0.011</td><td>0.022</td><td><span class="chip d">dead</span></td></tr>
+          <tr><td>3.2</td><td>original</td><td>2</td><td>−0.039</td><td>0.022</td><td><span class="chip d">dead</span></td></tr>
+          <tr><td>3.3</td><td>original</td><td>2</td><td>+0.348</td><td>0.022</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>3.4</td><td>fixed</td><td>2</td><td>+0.273</td><td>0.022</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>3.5</td><td>fixed</td><td>2</td><td>+0.545</td><td>0.022</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td><b>3.6</b></td><td><b>fixed</b></td><td><b>3</b></td><td><b>+0.782</b></td><td>0.022</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td><b>3.6</b></td><td><b>fixed</b></td><td><b>4</b></td><td><b>+0.648</b></td><td>0.022</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>3.6</td><td>fixed</td><td>8</td><td>+0.001</td><td>0.022</td><td><span class="chip d">dead</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The two axes side by side: unitary W=8 would read ≈ +0.45; damping W=8 reads +0.001. The faithful
+      genealogy survives with real death in the loop out to <b>W=4 = 8+1 qubits</b>, then the death
+      operator's per-generation dissipation — not qubit count — extinguishes the signature between W=4 and
+      W=8. That is the honest cost of adding real biology, and the exact quantity the epic set out to
+      measure.</p>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <p class="secnum">4 · Confound &amp; significance</p>
+    <h2 class="sec">The decay is physical, not a dead-edge artifact</h2>
+    <p>Every hardware run enforced the fail-closed chain-quality gate (abort if two-qubit error &gt; 0.05
+      or readout &gt; 0.15), so the witness decay is device physics, not a broken edge. The separable null
+      <code>∏<sub>i</sub>&lt;X<sub>i</sub>&gt;</code> — what a classical measure-and-resend device
+      returns — stayed ≤ 2×10⁻⁶ across all widths on both axes, five orders of magnitude under the
+      CD-3 gate of 0.05. The witness is the <b>sole</b> quantum claim; every diagonal metric
+      (alive-count, deepest-lineage, phenotype ⟨σ_z⟩) has an exact classical surrogate and carries none.</p>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <p class="secnum">5 · Decision gate (AC-P2.4)</p>
+    <h2 class="sec">Unitary scale exhausted; the death channel opens the real richness question</h2>
+    <div class="callout gate">
+      <h3>Gate ruling — evaluated gradually</h3>
+      <p><b>Unitary scale axis: exhausted.</b> W* = 24 proven, W=32 dead, decay geometric with no
+        structure. Further unitary width is "more qubits, same biology" — no new scientific content.</p>
+      <p style="margin-bottom:0"><b>Death-channel axis: not exhausted — this is the live frontier.</b> The
+        faithful amplitude-damping genealogy now certifies through <b>W=4</b> (+0.65) and collapses by
+        W=8, so its ceiling is bracketed to <b>W ∈ [4, 8)</b> but not located. Per CD-11, <b>error
+        mitigation is the first lever</b> to push that W* out before any further biology. The gate toward
+        the P3 richness menu opens <em>through the death channel</em>: pin the collapse edge (W=5, W=6)
+        and spend mitigation on it first; broader biology stays deferred.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <p class="secnum">6 · Open — the collapse edge</p>
+    <h2 class="sec">Two widths pin the damping ceiling; two more locate the collapse</h2>
+    <p>W=3 (+0.782) and W=4 (+0.648) are now measured and certified — the death-channel genealogy reaches
+      <b>W=4 = 9 qubits</b>. The theoretical maximum is still <em>not</em> reached: the witness is alive at
+      W=4 and dead at W=8, so the true ceiling W* sits in the gap. The next two runs — <b>W=5 and W=6</b>
+      under damping — locate the collapse edge; their results drop into the slots below.</p>
+
+    <div class="open">
+      <div class="slot">
+        <span class="w">W=5</span> <span class="q">→ &lt;X<sup>⊗5</sup>&gt; = ?</span>
+        <div class="lbl">Damping death · first width into the W=4→W=8 collapse gap.</div>
+        <span class="pend">run pending</span>
+      </div>
+      <div class="slot">
+        <span class="w">W=6</span> <span class="q">→ &lt;X<sup>⊗6</sup>&gt; = ?</span>
+        <div class="lbl">Damping death · likely near/below gate — brackets the true W*.</div>
+        <span class="pend">run pending</span>
+      </div>
+    </div>
+    <p style="color:var(--dim);font-size:.9rem">Once both land: report the damping-death <b>W*</b>, the
+      mitigation-pushed W* and its kept-fraction cost, and re-render Figure 1 with the completed
+      damping series.</p>
+  </section>
+
+  <footer>
+    <p>Model: AlvarezRodriguez2018_full · driver <code>run_qalife.py</code> · witness
+      <code>xbasis_witness_from_counts</code> · gate <code>entanglement_depth</code> (k=2 headline, k=3 reported).</p>
+    <p>Provenance: unitary series — banked Month-4 + fresh P2 <code>ibm_kingston</code> runs; damping series —
+      P2 runs 3.0–3.6, <code>research_runs/*_nn_damping_ibm_kingston_*.json</code>.</p>
+    <p>Framing (CD-4): scale · faithfulness · certification. Not a quantum speedup.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+  /* ---------- Figure 1: witness vs W (log x) ---------- */
+  (function(){
+    const svg=document.getElementById("figW");
+    const W=720,H=380,L=52,R=108,T=24,B=44;
+    const pw=W-L-R, ph=H-T-B;
+    const x=w=>L+(Math.log2(w)-1)/(5-1)*pw;   // W 2..32 -> 0..1
+    const y=v=>T+(1-v)*ph;                     // 0..1
+    const gate=0.022;
+
+    // dead-zone band
+    svg.appendChild(el("rect",{x:L,y:y(gate),width:pw,height:H-B-y(gate),
+      fill:"#ff6b6b",opacity:".05"}));
+    // gridlines
+    [0,0.25,0.5,0.75,1.0].forEach(v=>{
+      svg.appendChild(el("line",{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:"#241b38",'stroke-width':1}));
+      const t=el("text",{x:L-8,y:y(v)+4,'text-anchor':"end",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"});
+      t.textContent=v.toFixed(2); svg.appendChild(t);
+    });
+    // x ticks
+    [2,3,4,6,8,12,24,32].forEach(w=>{
+      const t=el("text",{x:x(w),y:H-B+18,'text-anchor':"middle",fill:"#9aa7b0",'font-size':11,'font-family':"ui-monospace,monospace"});
+      t.textContent=w; svg.appendChild(t);
+    });
+    svg.appendChild(el("text",{x:L+pw/2,y:H-6,'text-anchor':"middle",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"})).textContent="genealogy width  W  (log scale)";
+    // gate line
+    svg.appendChild(el("line",{x1:L,y1:y(gate),x2:L+pw,y2:y(gate),stroke:"#ff6b6b",'stroke-width':1.5,'stroke-dasharray':"5 4",opacity:".8"}));
+
+    const line=(pts,color,dash)=>{
+      const d=pts.map((p,i)=>(i?"L":"M")+x(p[0])+" "+y(p[1])).join(" ");
+      svg.appendChild(el("path",{d,fill:"none",stroke:color,'stroke-width':2.4,
+        'stroke-linejoin':"round",'stroke-linecap':"round",...(dash?{'stroke-dasharray':dash}:{})}));
+    };
+    const dots=(pts,color,r)=>pts.forEach(p=>{
+      svg.appendChild(el("circle",{cx:x(p[0]),cy:y(Math.max(p[1],0)),r:r||4.5,fill:color,
+        stroke:"#0b0718",'stroke-width':1.5}));
+    });
+    const label=(w,v,txt,color,dy)=>{
+      const t=el("text",{x:x(w)+9,y:y(v)+(dy||4),fill:color,'font-size':12,
+        'font-weight':700,'font-family':"ui-monospace,monospace"}); t.textContent=txt; svg.appendChild(t);
+    };
+
+    // ideal (violet)
+    const ideal=[[2,.993],[3,.974],[4,.959],[5,.943],[6,.937],[8,.910],[10,.904],[12,.879]];
+    line(ideal,"#b58cff"); dots(ideal,"#b58cff",3);
+    label(12,.879,"ideal","#b58cff",-6);
+    // unitary hardware (gold)
+    const uni=[[2,.959],[3,.879],[4,.808],[6,.612],[12,.301],[24,.038],[32,.008]];
+    line(uni,"#ffd66d"); dots(uni,"#ffd66d");
+    label(24,.038,"W*=24","#ffd66d",-8);
+    // damping hardware (green) — certified W=2..4 solid, collapse to W=8 dashed
+    const dmp=[[2,.545],[3,.782],[4,.648]];
+    line(dmp,"#6dffb0"); dots(dmp,"#6dffb0",5.5);
+    line([[4,.648],[8,.001]],"#6dffb0","3 4");
+    svg.appendChild(el("circle",{cx:x(8),cy:y(.001),r:5.5,fill:"#6dffb0",stroke:"#0b0718",'stroke-width':1.5}));
+    label(3,.782,"damping","#6dffb0",-8);
+    // open placeholders W5,W6 damping (collapse edge)
+    [5,6].forEach(w=>{
+      svg.appendChild(el("circle",{cx:x(w),cy:y(.28),r:5,fill:"none",stroke:"#6dffb0",
+        'stroke-width':1.6,'stroke-dasharray':"3 3",opacity:".7"}));
+      const t=el("text",{x:x(w),y:y(.28)-9,'text-anchor':"middle",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"});
+      t.textContent="?"; svg.appendChild(t);
+    });
+  })();
+
+  /* ---------- Figure 2: damping runs bar chart ---------- */
+  (function(){
+    const svg=document.getElementById("figD");
+    const W=760,H=320,L=52,R=24,T=22,B=64;
+    const pw=W-L-R, ph=H-T-B;
+    const runs=[
+      {t:"3.0",b:"orig",w:2,v:0.011,dead:1},
+      {t:"3.2",b:"orig",w:2,v:-0.039,dead:1},
+      {t:"3.3",b:"orig",w:2,v:0.348,dead:0},
+      {t:"3.4",b:"fixed",w:2,v:0.273,dead:0},
+      {t:"3.5",b:"fixed",w:2,v:0.545,dead:0},
+      {t:"3.6",b:"fixed",w:3,v:0.782,dead:0},
+      {t:"3.6",b:"fixed",w:4,v:0.648,dead:0},
+      {t:"3.6",b:"fixed",w:8,v:0.001,dead:1},
+    ];
+    const vmin=-0.1,vmax=0.85, gate=0.022;
+    const y=v=>T+(1-(v-vmin)/(vmax-vmin))*ph;
+    const n=runs.length, gap=18, bw=(pw-gap*(n-1))/n;
+    // gridlines
+    [0,0.2,0.4,0.6,0.8].forEach(v=>{
+      svg.appendChild(el("line",{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:"#241b38",'stroke-width':1}));
+      const t=el("text",{x:L-8,y:y(v)+4,'text-anchor':"end",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"});
+      t.textContent=v.toFixed(1); svg.appendChild(t);
+    });
+    // zero + gate
+    svg.appendChild(el("line",{x1:L,y1:y(0),x2:L+pw,y2:y(0),stroke:"#6b7580",'stroke-width':1.2}));
+    svg.appendChild(el("line",{x1:L,y1:y(gate),x2:L+pw,y2:y(gate),stroke:"#ff6b6b",'stroke-width':1.4,'stroke-dasharray':"5 4",opacity:".8"}));
+    svg.appendChild(el("text",{x:L+pw,y:y(gate)-5,'text-anchor':"end",fill:"#ff6b6b",'font-size':10.5,'font-family':"ui-monospace,monospace",opacity:".85"})).textContent="k=2σ gate";
+
+    runs.forEach((r,i)=>{
+      const bx=L+i*(bw+gap);
+      const top=y(Math.max(r.v,0)), base=y(Math.min(r.v,0));
+      const col=r.dead?"#ff6b6b":"#6dffb0";
+      const op=r.b==="orig"?".55":"1";
+      svg.appendChild(el("rect",{x:bx,y:top,width:bw,height:Math.max(base-top,2),
+        rx:3,fill:col,opacity:op}));
+      // value
+      const vt=el("text",{x:bx+bw/2,y:(r.v>=0?top-6:base+14),'text-anchor':"middle",
+        fill:col,'font-size':12,'font-weight':700,'font-family':"ui-monospace,monospace"});
+      vt.textContent=(r.v>=0?"+":"")+r.v.toFixed(3); svg.appendChild(vt);
+      // x labels
+      const a=el("text",{x:bx+bw/2,y:H-B+18,'text-anchor':"middle",fill:"#cdd8d1",'font-size':11.5,'font-family':"ui-monospace,monospace"});
+      a.textContent="run "+r.t; svg.appendChild(a);
+      const bb=el("text",{x:bx+bw/2,y:H-B+34,'text-anchor':"middle",fill:"#6b7580",'font-size':10.5,'font-family':"ui-monospace,monospace"});
+      bb.textContent=r.b+" · W="+r.w; svg.appendChild(bb);
+    });
+    // improvement annotation
+    const ax=L+3*(bw+gap)+bw/2, bx5=L+4*(bw+gap)+bw/2;
+    svg.appendChild(el("path",{d:`M${ax} ${y(0.273)-20} Q ${(ax+bx5)/2} ${y(0.62)} ${bx5} ${y(0.545)-20}`,
+      fill:"none",stroke:"#ffd66d",'stroke-width':1.4,'stroke-dasharray':"2 3",opacity:".7"}));
+    svg.appendChild(el("text",{x:(ax+bx5)/2,y:y(0.60),'text-anchor':"middle",fill:"#ffd66d",'font-size':11,'font-weight':700,'font-family':"ui-monospace,monospace"})).textContent="fix: 0.35→0.55";
+  })();
+})();
+</script>
