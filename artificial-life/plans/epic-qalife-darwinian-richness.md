@@ -183,6 +183,12 @@ No stage except R0 is independently pickup-able.
 ### P3 — Richness investigations (spend more qubits on more complete / more complex life) — **late-stage, exploratory**
 - **Delivers:** one or more biological extensions that use the qubit headroom Heron-r2 gives (§6: W=77 fills a 156-q chip) to make the life *more complete and more complex*, each measured identically — witness collapse per added complexity. **Exploratory:** direction chosen from P2 evidence, not locked up front. "This is what we explore," not a rigid build. Not started until the P2 scale axis (incl. mitigation) is judged exhausted.
 - **Framing:** P2 shows scale is qubit-cheap — the wall is decoherence, not width (§6). P3 asks the positive question the faithful four operators leave open: **given spare qubits, what richer biology can we add that still carries a certified witness?** Every candidate is an explicit, entropy-traced biological process — never noise dressed as selection (CD-8).
+- **Potential moves (candidate menu, evaluated-not-locked):** `plans/P3-candidate-moves.md` — the
+  running list of *potential* richness investigations (measured selection, energy-transfer
+  competition, multiple competing lineages, teleport-routed QRNG-chosen fights), each honestly
+  costed against the witness, plus a quantum-random environment that presses on survival. Add to it
+  freely; commit to nothing until the P2 gate. The menu below
+  is the epic-level seed of that list.
 - **Where to look (menu — QDEP §6/§7 Part C; explore, don't exhaust):**
   - **adaptive measured selection (best-specified entry point, QDEP §6.5, verbatim):** *"Selection is explicit and measured: a mid-circuit measurement of the phenotype (the 'lifetime' observable) determines survival; individuals below threshold are reset/removed via conditional feed-forward."* Implement as `death_mode='selection'`, swapping passive amplitude-damping for measured fitness culling. Mid-circuit measure is the dominant noise channel on this chip — the witness cost *is* the finding.
   - **interaction dynamics (§6.3):** competition/cooperation two-qubit gates between individuals.

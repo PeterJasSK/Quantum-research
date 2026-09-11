@@ -1,0 +1,169 @@
+Resolved config: width=4, steps=6, shots=8000, death=unitary (default), INTERACTION="nn" (global), MUT_SCALE=0.10, K=2.0, repeats=3 (all globals/hardcoded). --backend set → hardware path. Qubit count = 2*4 = 8 (unitary, no bath).
+
+  ---
+  0. Module load (before main)
+
+  - Imports. print wrapped with flush=True (line 46) so output streams live during a long HW job.
+  - Constants: SIM = AerSimulator(...) built but unused on HW. QEAAS_URL, and the globals block (INTERACTION/K/MUT_SCALE/MAX_TWOQ_ERR/MAX_READOUT_ERR/ALLOW_BAD_CHAIN).
+  - pipeline_common probe (60-75): walks candidate paths in the sibling CalibrationGuidedHighYieldQRNG repo, sys.path.insert, imports connect/run_sampler/timestamp. Found here → real submission functions (the stub fallback is sim-only insurance).
+  - from qrng_client import QRNGClient, QRNGUnavailable.
+
+  1. main() — setup
+
+  1. argparse → args.backend="ibm_kingston", widths="4", steps=6, shots=8000, dump/draw False.
+  2. args.sim = args.backend is None → False (hardware).
+  3. INTERACTION=="both"? no.
+  4. widths = [4]. repeats = 3.
+  5. Entropy setup:
+    - api_key = env QEAAS_API_KEY or _read_env_key(...) — _read_env_key (bottom of file) hand-parses ../.env / .env for the key line.
+    - qrng_url = env QEAAS_API_URL or QEAAS_URL → https://api.qeaas.eu/.
+    - client = QRNGClient(url, key) → client.health() → prints Q-EaaS : … health: ok. On HW, if health != "ok" → abort (fail-closed). No key on HW → abort.
+  6. thetas_for(width, repeat) closure defined: client present → qrng_thetas(...); else q4._sim_thetas(...) (the PRNG fallback — not taken here).
+  7. Backend connect: not sim → backend = connect("ibm_kingston"); backend_name="ibm_kingston"; prints Backend : ibm_kingston (N qubits).
+  8. --dump-circuit False → skip dump_circuit.
+  9. Build result dict skeleton (meta records the globals for provenance).
+  10. Print === Stage 4 SCALE: widths=[4] steps=6 interaction=nn death=unitary on ibm_kingston ===.
+
+  2. Per-width loop — for W in [4]
+
+  1. nq = 2*4 + 0 = 8.
+  2. Not sim → qubit_list = gated_chain(backend, 8):
+    - layout.best_chain(backend, 8) — reads live calibration, branch-and-bound DFS through the coupling graph for the cheapest 8-qubit SWAP-free chain (avoids dead qubits, minimizes 2q+readout+sx error). Returns (qubit_list, qstats). Prints Auto qubit chain
+  (live calib): {...}.
+    - Gate (ALLOW_BAD_CHAIN=False): if twoq_err_max > 0.05 or readout_max > 0.15 → abort with reason. Else return the 8 physical qubits.
+
+  3. Per-repeat loop — for r in 0,1,2
+
+  Three independent circuits/jobs → error bars.
+
+  a. Mutation angles — thetas = thetas_for(4, r) → qrng_thetas(client, 4, 0.10, r):
+  - need = 16 bytes. Fetch 32-byte certified hex blocks until ≥16 (one fetch suffices).
+  - Each theta_k = 0.10*π*(u32/2^32) from a disjoint 4-byte slice → 4 small angles in [0, 0.1π). QRNGUnavailable propagates → abort.
+b. Build circuit — qc = build_measured(4, 6, thetas, "nn", "unitary"):  MORE INFO AT THE END
+  - Calls q4.build_population(4, 6, thetas, "nn", death="unitary") — the model, 8 qubits (g_k=2k, p_k=2k+1):
+    - _z_geno_chain(4, thetas, True) — analytic genotype ⟨σz⟩. Founder on equator ⇒ z[0]=0, CNOT copies, mutation cos(θ)·z ⇒ all ≈0.
+    - Per individual k=0..3:
+        - FOUNDER k=0: qc.ry(π/2, 0) (genotype → |+>). Else SELF-REPLICATION qc.cx(g_{k-1}, g_k).
+      - MUTATION qc.ry(θ_k, g_k).
+      - PHENOTYPE+DEATH (unitary): age=6-k; angle0=acos(z_geno[k])=acos(0)=π/2; aged=max(0, π/2 − (π/8)·age); qc.ry(aged, p_k). Aging shrinks the angle toward 0 (→|0⟩ dark = dead).
+    - INTERACTION (nn): interaction_partner(k,4,"nn")=k−1; swaps phenotypes of neighbor pairs → qc.swap(3,1), swap(5,3), swap(7,5).
+  - Back in build_measured: qc.h(g_k) for k=0..3 → rotate genotypes to X basis (witness readout). Add ClassicalRegister(8,"c"), qc.measure(range(8), creg) — genotypes read in X (witness), phenotypes in Z (alive), one job.
+
+  c. Run — counts = run_counts(qc, 8000, False, backend, qubit_list):
+  - sim False → init = qubit_list (len 8 == num_qubits). generate_preset_pass_manager(opt_level=3, backend, initial_layout=init) → isa = pm.run(qc) transpiles onto ibm_kingston's basis+coupling pinned to the chosen chain.
+  - run_sampler(backend, isa, 8000) submits the job, waits, returns per-shot c strings → tallied into counts (bitstring → count).
+
+  d. Extract observables:
+  - geno_qs=[0,2,4,6]. q4.xbasis_witness_from_counts(counts, geno_qs) → joint = ⟨∏ x_i⟩ (the entanglement witness) and sep = ∏⟨x_i⟩ (the separable/classical null).
+  - q4.phenotype_z_from_counts(counts, 4) → ⟨σz⟩ for phenotype qubits [1,3,5,7].
+  - q4.alive_population(pz) (count z<0.80) and q4.deepest_surviving_lineage(pz) (longest unbroken alive prefix).
+  - Append to w_reps/s_reps/alive_reps/deep_reps.
+
+  4. Per-width stats
+
+  - wm=mean(w_reps), ws=std(w_reps), sm=mean(s_reps).
+  - ws = sqrt(ws² + 1/8000) — add shot-noise floor in quadrature.
+  - signal = wm − sm; survives = signal > K*ws (K=2.0).
+  - Store in result["by_width"]["4"]. Print:
+  W= 4  witness<X^W>=…±…  sep=…  signal=…  ALIVE/dead  | pop alive~…/4 deepest~…
+
+  5. Headline + save
+
+  - q4.entanglement_depth([wm],[sm],[ws], k=2.0) → deepest width index beating null by 2σ (single width → 0 if it survives, else −1). depth_W = 4 or None.
+  - Print HEADLINE genealogical entanglement depth: W=4 / none survived.
+  - tag = timestamp() (real, since HW). Write JSON → research_runs/qalife_m4_nn_unitary_ibm_kingston_<timestamp>.json. Print -> {path}.
+
+  ---
+
+ Function roles (both files)
+
+  run_qalife.py
+  - _read_env_key — read API key from .env.
+  - qrng_thetas — certified quantum mutation angles.
+  - build_measured — wrap the model + add X-basis H + measurement.
+  - dump_circuit — (unused here) diagram/QASM + operator legend.
+  - gated_chain — live-calibration chain pick + quality abort.
+  - run_counts — dispatch sim vs HW sampler, return counts.
+  - main — orchestrates entropy → backend → per-width/per-repeat → stats → headline → JSON.
+
+  qalife.py (imported as q4)
+  - build_population — the 4-operator model circuit (founder/self-rep/mutation/death + interaction).
+  - _z_geno_chain — analytic genotype ⟨σz⟩ (feeds unitary phenotype prep).
+  - geno_q/pheno_q/bath_q — qubit index maps.
+  - interaction_partner — pairing rule (nn = k−1).
+  - _bar — labeled barrier (no-op unless annotate).
+  - xbasis_witness_from_counts — witness (joint) + classical null (sep).
+  - phenotype_z_from_counts — ⟨σz⟩ per phenotype from counts.
+  - alive_population / deepest_surviving_lineage — population metrics.
+  - entanglement_depth — deepest surviving width.
+  - Constants AGING_DELTA/DAMP_GAMMA/ALIVE_THRESH; _sim_thetas used only on sim fallback.
+
+
+
+
+##### CIRCUITE ###
+
+
+Step 1 — analytic genotype ⟨σz⟩: _z_geno_chain(4, thetas, True)
+
+  z = [0,0,0,0]
+  for k: base = 0.0 if (k==0 and founder_equator) else (1.0 if k==0 else z[k-1]); z[k]=cos(θ_k)*base
+  - k=0: founder on equator → base=0 → z0 = cos(θ0)·0 = 0.
+  - k=1: base=z0=0 → z1=0. k=2,3: also 0.
+  - All zero. Genotype sits on the equator (⟨σz⟩=0) the whole line — that's what makes it a superposition chain (needed for the witness). Used next to set the phenotype prep angle.
+
+  Step 2 — build_population loop, exact gate order
+
+  Per individual g,p = 2k, 2k+1; age = 6−k; angle0 = acos(z_geno[k]) = acos(0) = π/2; aged = max(0, π/2 − δ·age):
+
+  k=0:  ry(π/2, q0)      # FOUNDER: |0>→ on equator (|+>-like)
+        ry(θ0,  q0)      # MUTATION g0     (θ0 small)
+        ry(0,   q1)      # PHENOTYPE+DEATH p0   aged0 = max(0, π/2 − 6·π/8) = max(0,−π/4)=0
+  k=1:  cx(q0,  q2)      # SELF-REPLICATION g0→g1  (partial σz clone, CNOT)
+        ry(θ1,  q2)      # MUTATION g1
+        ry(0,   q3)      # PHENOTYPE+DEATH p1   aged1 = max(0, π/2 − 5·π/8)=0
+  k=2:  cx(q2,  q4)      # SELF-REPLICATION g1→g2
+        ry(θ2,  q4)      # MUTATION g2
+        ry(0,   q5)      # PHENOTYPE+DEATH p2   aged2 = π/2 − 4·π/8 = 0
+  k=3:  cx(q4,  q6)      # SELF-REPLICATION g2→g3
+        ry(θ3,  q6)      # MUTATION g3
+        ry(π/8, q7)      # PHENOTYPE+DEATH p3   aged3 = π/2 − 3·π/8 = π/8 ≈ 0.393
+
+  Phenotype/death math: phenotype prepped from |0⟩ by ry(aged). ⟨σz⟩ = cos(aged). Aging subtracts δ·age from the angle → drives it to 0 → |0⟩ = dark = dead.
+  - p0,p1,p2: aged=0 → stay |0⟩ → ⟨σz⟩=+1 → dead.
+  - p3: aged=π/8 → ⟨σz⟩=cos(π/8)=0.924 ≥ 0.80 → also dead (youngest, barely).
+  - → this is why pop alive~0/4 at steps=6 unitary.
+
+  Genotype line = GHZ-like chain: founder ry(π/2) puts g0 in superposition; each cx(g_{k-1},g_k) spreads it → (|0000⟩+|1111⟩)/√2-type state across q0,q2,q4,q6, tilted by the small mutations. This entanglement is the quantum signal.
+
+  Note (unitary arm): phenotype is a product state prepped by ry — not entangled to its genotype (no cx(g,p) here; that only happens in the damping arm). So the phenotype carries no genealogical entanglement — it's the classical/diagonal observable. The
+  witness lives purely on the genotype qubits.
+
+Step 3 — INTERACTION sweep (nn)
+
+  interaction_partner(k,4,"nn") = k−1 (None for k=0). Swaps run in order:
+  k=1: swap(pheno_q(1), pheno_q(0)) = swap(q3, q1)
+  k=2: swap(pheno_q(2), pheno_q(1)) = swap(q5, q3)
+  k=3: swap(pheno_q(3), pheno_q(2)) = swap(q7, q5)
+  These overlap (share q3, q5) → a cascade, not disjoint pairs. Trace phenotype values P0..P3 on (q1,q3,q5,q7):
+  start:        q1=P0 q3=P1 q5=P2 q7=P3
+  swap(q3,q1):  q1=P1 q3=P0
+  swap(q5,q3):  q3=P2 q5=P0
+  swap(q7,q5):  q5=P3 q7=P0
+  final:        q1=P1 q3=P2 q5=P3 q7=P0
+  → founder phenotype P0 shifts to q7; the rest cyclically shift down. (All ~dead here, so alive-count unaffected.)
+
+  Step 4 — back in build_measured: readout prep
+
+  q4._bar(qc, annotate, "X-basis (witness)")   # no-op unless --dump-circuit
+  for k in 0..3: qc.h(q4.geno_q(k))            # H on q0,q2,q4,q6
+  creg = ClassicalRegister(8, "c")
+  qc.measure(range(8), creg)                    # q_i -> c_i
+  - H on the 4 genotype qubits rotates their basis: measuring Z after H = measuring X. So genotypes come out in the X basis → their joint parity is ⟨X⊗X⊗X⊗X⟩ = the entanglement witness.
+  - Phenotype qubits (q1,q3,q5,q7) get no H → measured in native Z → ⟨σz⟩ = alive/dead.
+  - One 8-bit classical register c, q_i → c_i. Single circuit, dual-basis: witness (genotypes) + population (phenotypes) in one job.
+
+  Result
+
+  8-qubit circuit, shallow depth: 1 founder Ry + 3 CX (genotype chain) + 4 mutation Ry + 4 phenotype Ry + 3 SWAP + 4 H + 8 measure. Returned to the run block, which executes it for args.shots and tallies counts. Downstream: genotype bits → witness
+  (xbasis_witness_from_counts), phenotype bits → alive-count.
