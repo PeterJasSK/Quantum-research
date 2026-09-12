@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "backend": "ibm_kingston",
+    "steps": 4,
+    "interaction": "nn",
+    "death": "damping",
+    "mut_scale": 0.0,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "shots": 8192,
+    "repeats": 1,
+    "k": 2.0,
+    "widths": [
+      5
+    ],
+    "sim": false,
+    "genealogical_entanglement_depth_W": 5
+  },
+  "by_width": {
+    "5": {
+      "witness_joint_mean": 0.110595703125,
+      "witness_joint_sigma": 0.011048543456039806,
+      "separable_mean": 7.150736302647584e-18,
+      "entanglement_signal": 0.11059570312499999,
+      "survives": true,
+      "alive_mean": null,
+      "deepest_mean": null
+    }
+  }
+}

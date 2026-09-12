@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artificial-life/plans/P3-candidate-moves.md" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/plans/P3-candidate-movess.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,6 +184,7 @@
       <workItem from="1788890470275" duration="3245000" />
       <workItem from="1788930346078" duration="15798000" />
       <workItem from="1789030248099" duration="33124000" />
+      <workItem from="1789220252949" duration="1845000" />
     </task>
     <servers />
   </component>
