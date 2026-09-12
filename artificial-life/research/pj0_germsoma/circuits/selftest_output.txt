@@ -1,0 +1,24 @@
+=== PJ0 germ/soma --selftest (STATIC circuit-structure checks; no sim) ===
+
+-- width W=2, steps=6 --
+  [OK ] Static Test 1 (geno/soma qubit-disjoint)  (natural=disjoint, local_damping=disjoint, none=disjoint)
+  [OK ] ordering: gene passed before any death (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on genotype qubits only  (H(geno)=2 H(soma)=0)
+  [OK ] separable <sigma_z> matches closed form (rung 1)  (max|cos(ry)-z|=0.00e+00)
+  [OK ] entangled A/B: cx(g,p) present, same ry angle (gratuitous)  (disjoint=False same_ry_angle=True)
+
+-- width W=4, steps=6 --
+  [OK ] Static Test 1 (geno/soma qubit-disjoint)  (natural=disjoint, local_damping=disjoint, none=disjoint)
+  [OK ] ordering: gene passed before any death (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on genotype qubits only  (H(geno)=4 H(soma)=0)
+  [OK ] separable <sigma_z> matches closed form (rung 1)  (max|cos(ry)-z|=0.00e+00)
+  [OK ] entangled A/B: cx(g,p) present, same ry angle (gratuitous)  (disjoint=False same_ry_angle=True)
+
+-- width W=12, steps=6 --
+  [OK ] Static Test 1 (geno/soma qubit-disjoint)  (natural=disjoint, local_damping=disjoint, none=disjoint)
+  [OK ] ordering: gene passed before any death (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on genotype qubits only  (H(geno)=12 H(soma)=0)
+  [OK ] separable <sigma_z> matches closed form (rung 1)  (max|cos(ry)-z|=0.00e+00)
+  [OK ] entangled A/B: cx(g,p) present, same ry angle (gratuitous)  (disjoint=False same_ry_angle=True)
+
+SELFTEST PASS
