@@ -1,0 +1,5 @@
+(base) peter@home:~/PycharmProjects/Quantum-research/artificial-life/code$ python pj_run_qalife.py --backend ibm_kingston  --widths 54 --steps 27 --name ./pj/pj_1.2_LIVE_LIMIT_w54_27
+Q-EaaS  : https://api.qeaas.eu/  health: ok
+Backend : ibm_kingston  (156 qubits)
+=== PJ0 germ/soma: widths=[54] steps=27 soma_death=natural phenotype=separable on ibm_kingston ===
+[PJ0 ABORT] no clean chain of 108 qubits: no clean SWAP-free chain of 108 qubits on ibm_kingston (longest found 107; edges >= 0.1 2q-err pruned); dead=[112, 113, 120, 121, 146]. Lower genome N_SLOTS so N_BITS <= 107, or pin a better-calibrated --backend.

@@ -479,7 +479,6 @@ def main() -> None:
                     help="natural (gate) | local_damping (reference) | none (control)")
     ap.add_argument("--phenotype", choices=["separable", "entangled"], default="separable",
                     help="separable (faithful) | entangled (A/B: gratuitous cx(g,p))")
-    ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--selftest", action="store_true",
                     help="run the static circuit-structure checks and exit")
     ap.add_argument("--dump-circuit", dest="dump_circuit", action="store_true",
@@ -487,9 +486,10 @@ def main() -> None:
     args = ap.parse_args()
 
     if args.selftest:
-        raise SystemExit(run_selftest(steps=args.steps, seed=args.seed))
+        raise SystemExit(run_selftest(steps=args.steps))
 
-    thetas = q4._sim_thetas(args.width, args.seed, mut_scale=0.0)   # faithful (Q5)
+
+    thetas = q4._sim_thetas(args.width, 0, mut_scale=0.0)   # faithful (Q5)
     print_correctness_report(args.width, args.steps, thetas,
                              phenotype=args.phenotype, soma_death=args.soma_death)
 

@@ -1,30 +1,31 @@
 #!/usr/bin/env python3
-"""PJ0 germ/soma hardware driver -- BUILD + EVALUATE STATICALLY (no run in this ticket).
+"""PJ0 germ/soma hardware driver -- BUILD + RUN the Weismann-barrier organism.
 
-Mirrors ``run_qalife.py`` structure but for the germ/soma organism (``pj_qalife.py``). This
-ticket delivers a transpile-ready, chain-quality-gated, measured germ/soma circuit at ANY W
-(W12 anchor) whose correctness is shown by ``--dump-circuit`` + scheduled-circuit inspection --
-NOT by submitting to hardware (OQ-4). The sampler run path is WIRED BUT DORMANT: the developer
-runs the sweeps later. ``--dump-circuit`` NEVER submits (draw-only is implied); the live path is
-reachable only with an explicit ``--run`` + ``--backend`` (still gated so nothing fires here).
+Mirrors ``run_qalife.py`` structure but for the germ/soma organism (``pj_qalife.py``). Runs the
+single-lineage germ/soma model on hardware (or the density-matrix Aer sim) and reports the
+genotype-only genealogical entanglement witness <X^W>:
 
-What this driver builds + evaluates statically:
-  * build_measured_germsoma -- H on GENOTYPE qubits only (separable soma stays in Z; entangled
-    A/B H's phenotypes too), classical register, measure. Witness = genotype-only (CD-3).
-  * transpile-readiness + fail-closed chain-quality gate (CD-5) so the circuit is submit-ready.
-  * selective DD (rung 2, AC-PJ0.3): PadDynamicalDecoupling targeted at GENOTYPE physical qubits
-    only; phenotypes DD-free (the physical Weismann barrier). Verified by inspecting the
-    SCHEDULED circuit.
-  * natural-decay aging clock (rung 2, AC-PJ0.2): per-soma delay scaled by age; aging_order
-    deviation measured statically, gated on AGING_ORDER_TOL (bounded, not rigid -- Q6).
-  * JSON run schema (dormant) extended with soma_death / phenotype / selective_dd / kept_fraction
-    / meta.calibration / meta.t1_band / witness_soma_on|off for the developer's later runs.
+  * QUANTUM headline -- germ-line witness <X^{otimes W}> over the GENOTYPE qubits beats the
+    separable (classical) null by k*sigma. Soma stays diagonal (Z), excluded from the witness
+    (CD-3). The 'entangled' A/B mode restores cx(g,p) and folds the phenotypes into the witness
+    to DEMONSTRATE the coupling would cost it.
+  * POPULATION context -- alive-count + deepest-surviving-lineage from the soma Z readout
+    (classical diagonal observable; reported as context, not the quantum claim). Unavailable in
+    the 'entangled' arm (phenotypes are then in X).
 
-Usage (static evaluation only -- no hardware fired):
+What the driver runs:
+  * build_measured_germsoma -- germ line rotated into X (witness), soma diagonal, measured.
+  * transpile via opt-3 preset (VF2/Sabre layout+routing), chain-quality gate (CD-5) on hardware.
+  * selective DD (AC-PJ0.3): PadDynamicalDecoupling on GENOTYPE physical qubits only; phenotypes
+    DD-free (the physical Weismann barrier). Enabled on hardware via SELECTIVE_DD.
+  * certified Q-EaaS entropy for mutation angles (fail-closed on hardware).
+  * JSON run schema with soma_death / phenotype / selective_dd / kept_fraction / meta.calibration.
+
+Usage (omit --backend for the Aer sim; pass one to run on that hardware):
     cd artificial-life/code
-    python pj_run_qalife.py --dump-circuit --widths 12 --steps 6
-    python pj_run_qalife.py --dump-circuit --widths 4 --phenotype entangled
-    python pj_run_qalife.py --schedule-report --widths 12 --steps 6   # DD + aging-order (needs --backend for real timing)
+    python pj_run_qalife.py --widths 12 --steps 6
+    python pj_run_qalife.py --backend ibm_kingston --widths 12 --steps 6 --name pj0_germsoma
+    python pj_run_qalife.py --dump-circuit --draw-only --widths 12 --steps 6   # draw, no run
 """
 
 from __future__ import annotations
@@ -38,8 +39,10 @@ import sys
 import types
 from typing import Any
 
-from qiskit import ClassicalRegister, QuantumCircuit
+import numpy as np
+from qiskit import ClassicalRegister, QuantumCircuit, transpile
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_aer import AerSimulator
 
 import pj_qalife as pj
 import qalife as q4
@@ -48,15 +51,30 @@ print = functools.partial(print, flush=True)
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.normpath(os.path.join(_HERE, "..", "research_runs"))
+SIM = AerSimulator(method="density_matrix")   # density_matrix so the local_damping arm sims too
 QEAAS_URL = "https://api.qeaas.eu/"
 
 # --- fixed study parameters (edit here; not CLI knobs) -------------------------
 INTERACTION = "none"        # single organism, no competition (PJ1 adds it)
-REPEATS = 1                 # repeats per width for sigma error bars (developer's runs)
+REPEATS = 1                 # repeats per width for sigma error bars
 K = 2.0                     # witness must beat the separable null by K*sigma to survive
 MUT_SCALE = 0.0             # faithful 2018: clean GHZ witness (Q5)
-SOMA_DEATH = "natural"      # acceptance gate (Q6); 'local_damping' selectable as reference
-PHENOTYPE = "separable"     # faithful diagonal soma; 'entangled' is the A/B contrast
+
+# SOMA_DEATH -- HOW the mortal soma (phenotype) qubit dies each life-cycle step.
+#   "natural"       : T1 idle toward |0>; NO death operator, NO bath ancilla. The aging clock
+#                     is the scheduler's idle pattern (per-soma delay + selective DD on the germ
+#                     line only). Leanest segment (2W qubits: germ + soma, no bath).
+#   "local_damping" : the faithful damping arm WITH the cx(g,p) back-action removed and the bath
+#                     scoped to the phenotype -- controlled, reproducible rate. Segment = 3W.
+#   "none"          : control arm -- no death applied, age ignored.
+SOMA_DEATH = "natural"
+
+# PHENOTYPE -- HOW the soma expresses the genotype.
+#   "separable" : faithful diagonal soma via ry(aged); NO cx(g,p) -> soma excluded from the
+#                 witness, the certified claim is the genotype-only <X^W>.
+#   "entangled" : A/B contrast -- restores cx(g,p) before the SAME ry(aged), folding the mortal
+#                 soma into the witness to show it would cost the signal.
+PHENOTYPE = "separable"
 SELECTIVE_DD = True         # DD on genotype (germ-line) qubits only -- the Weismann barrier (I6)
 AGING_ORDER_TOL = 2         # bounded aging-order deviation, in generations (studied param, Q6)
 MAX_TWOQ_ERR = 0.05         # chain-quality gate: max 2-qubit error along the chain (CD-5)
@@ -70,21 +88,22 @@ for _cand in ("code", os.path.join("old", "code"), os.path.join("new", "code")):
         sys.path.insert(0, _p)
         break
 try:
-    from pipeline_common import connect  # noqa: E402  (run_sampler/timestamp: dormant run path)
+    from pipeline_common import connect, run_sampler, timestamp  # noqa: E402
 except Exception:
     _stub = types.ModuleType("pipeline_common")
-    _stub.connect = lambda *x, **k: None
-    _stub.run_sampler = lambda *x, **k: None
+    for _a in ("connect", "run_sampler"):
+        setattr(_stub, _a, lambda *x, **k: None)
     _stub.timestamp = lambda: "sim"
     sys.modules["pipeline_common"] = _stub
-    from pipeline_common import connect  # noqa: E402
+    from pipeline_common import connect, run_sampler, timestamp  # noqa: E402
 
-from qrng_client import QRNGClient  # noqa: E402  (QRNGUnavailable used by the dormant run path)
+from qrng_client import QRNGClient, QRNGUnavailable  # noqa: E402
 
 
+# Mutation angles from the certified Q-EaaS stream (CD-6 fail-closed on hardware).
 def qrng_thetas(client: QRNGClient, width: int, mut_scale: float, repeat: int) -> list[float]:
-    """`width` mutation angles in [0, mut_scale*pi) from certified quantum entropy (CD-6
-    fail-closed). Same slicing as run_qalife.qrng_thetas."""
+    """`width` mutation angles in [0, mut_scale*pi) from certified quantum entropy. Same slicing
+    as run_qalife.qrng_thetas; QRNGUnavailable propagates (fail-closed)."""
     need = 4 * width
     flat = bytearray()
     while len(flat) < need:
@@ -116,14 +135,36 @@ def build_measured_germsoma(width: int, steps: int, thetas: list[float], *,
     return qc
 
 
+def witness_qs_for(width: int, soma_death: str, phenotype: str) -> list[int]:
+    """Witness qubit set fed to xbasis_witness_from_counts. Genotype only (separable); genotype
+    + phenotype for the entangled A/B arm (the soma then carries half the GHZ)."""
+    has_bath = soma_death in pj._BATH_MODES
+    qs = pj.witness_qubits(width, has_bath=has_bath)
+    if phenotype == "entangled":
+        qs = qs + [pj.pheno_q(0, k, width, has_bath) for k in range(width)]
+    return qs
+
+
+def soma_z_from_counts(counts: dict[str, int], width: int, has_bath: bool) -> list[float]:
+    """Soma <sigma_z> per individual from counts (germ/soma layout). Only meaningful in the
+    separable arm, where phenotypes stay diagonal (Z)."""
+    total = sum(counts.values()) or 1
+    out = []
+    for k in range(width):
+        q = pj.pheno_q(0, k, width, has_bath)
+        p1 = sum(c for bits, c in counts.items() if bits[-(q + 1)] == "1") / total
+        out.append(1.0 - 2.0 * p1)
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Selective DD (rung 2, AC-PJ0.3) -- DD on GENOTYPE physical qubits only.
 # ---------------------------------------------------------------------------
 def schedule_with_selective_dd(qc: QuantumCircuit, backend: Any, width: int, *,
                                soma_death: str = SOMA_DEATH) -> QuantumCircuit:
     """Transpile + schedule with dynamical decoupling padded on the GENOTYPE physical qubits
-    only (phenotypes DD-free = the Weismann barrier). Needs a real backend for gate timing;
-    returns the scheduled circuit for static inspection. No submission."""
+    only (phenotypes DD-free = the Weismann barrier). Returns the scheduled, submit-ready
+    circuit."""
     from qiskit.circuit.library import XGate
     from qiskit.transpiler import PassManager
     from qiskit.transpiler.passes import ALAPScheduleAnalysis, PadDynamicalDecoupling
@@ -153,12 +194,10 @@ def schedule_with_selective_dd(qc: QuantumCircuit, backend: Any, width: int, *,
 def dump_circuit(width: int, steps: int, thetas: list[float], *, soma_death: str,
                  phenotype: str, name: str) -> None:
     """Build the measured germ/soma circuit, annotate operators, print the diagram + legend +
-    static correctness report, save the drawing. NEVER submits (draw-only)."""
+    static correctness report, save the drawing + QASM."""
     qc = build_measured_germsoma(width, steps, thetas, soma_death=soma_death,
                                  phenotype=phenotype, annotate=True)
     has_bath = soma_death in pj._BATH_MODES
-    # rung-0 / Static-Test-1 concern the BIOLOGY -> report on the bare build (the readout-basis
-    # H on genotypes legitimately lands after the soma phase and is not gene-passing).
     bare = pj.build_germsoma(width, steps, thetas, phenotype=phenotype, soma_death=soma_death)
     rep = pj.germsoma_coupling_report(bare, width, has_bath=has_bath)
 
@@ -187,50 +226,15 @@ def dump_circuit(width: int, steps: int, thetas: list[float], *, soma_death: str
     txt = os.path.join(OUTPUT_DIR, f"{name}_circuit_w{width}_s{steps}_{soma_death}_{phenotype}.txt")
     with open(txt, "w") as f:
         f.write(str(draw))
+    try:
+        from qiskit.qasm3 import dumps
+        with open(os.path.join(OUTPUT_DIR,
+                               f"{name}_circuit_w{width}_s{steps}_{soma_death}_{phenotype}.qasm"),
+                  "w") as f:
+            f.write(dumps(qc))
+    except Exception as e:
+        print(f"  (qasm export skipped: {e})")
     print(f"\n  circuit saved -> {txt}")
-
-
-def schedule_report(width: int, steps: int, thetas: list[float], backend: Any, *,
-                    soma_death: str, phenotype: str) -> None:
-    """Static rung-2 evaluation: schedule with selective DD, then confirm (a) DD lands on
-    genotype qubits only (phenotypes DD-free) and (b) aging-order deviation is bounded. Reads
-    the scheduled circuit -- no submission."""
-    qc = build_measured_germsoma(width, steps, thetas, soma_death=soma_death, phenotype=phenotype)
-    if backend is None:
-        print("[PJ0] --schedule-report needs --backend for gate timing (no submission is made).")
-        print("      DD/aging-order require a scheduled circuit; on an unscheduled circuit the")
-        print("      aging-order deviation is trivially 0. Pass --backend to evaluate for real.")
-        return
-    scheduled = schedule_with_selective_dd(qc, backend, width, soma_death=soma_death)
-    has_bath = soma_death in pj._BATH_MODES
-
-    # (a) DD placement: count DD X-gate pairs per physical qubit; confirm phenotypes DD-free.
-    layout = scheduled.layout
-    v2p = layout.final_index_layout() if layout is not None else []
-    germ_phys = {v2p[v] for v in pj.witness_qubits(width, has_bath=has_bath) if v < len(v2p)}
-    soma_phys = {v2p[v] for v in pj.soma_qubits(width, has_bath=has_bath) if v < len(v2p)}
-    dd_on: dict[int, int] = {}
-    for inst in scheduled.data:
-        if inst.operation.name != "x":
-            continue
-        for b in inst.qubits:
-            qi = scheduled.find_bit(b).index
-            dd_on[qi] = dd_on.get(qi, 0) + 1
-    dd_germ = sum(v for q, v in dd_on.items() if q in germ_phys)
-    dd_soma = sum(v for q, v in dd_on.items() if q in soma_phys)
-    print("\n--- RUNG 2: SELECTIVE DD (AC-PJ0.3) ---")
-    print(f"  DD X-gates on germ-line qubits: {dd_germ}")
-    print(f"  DD X-gates on soma qubits:      {dd_soma}  ({'DD-free -> OK' if dd_soma == 0 else 'LEAK'})")
-
-    # (b) aging-order deviation on the scheduled circuit (bounded, not rigid -- Q6).
-    dev = pj.aging_order_deviation(scheduled, width, has_bath=has_bath)
-    print("\n--- RUNG 2: AGING-ORDER DEVIATION (AC-PJ0.2, bounded not rigid) ---")
-    print(f"  max_deviation = {dev['max_deviation']} generations  "
-          f"(tolerance AGING_ORDER_TOL = {AGING_ORDER_TOL})  "
-          f"{'OK' if dev['max_deviation'] <= AGING_ORDER_TOL else 'EXCEEDS -> targeted delays / fallback local_damping'}")
-    for row in dev["per_soma"]:
-        print(f"    ind {row['individual']:2}  q{row['qubit']:<3}  birth_rank={row['birth_rank']:2} "
-              f"idle_rank={row['idle_rank']:2}  shift={row['shift']:+d}")
 
 
 # ---------------------------------------------------------------------------
@@ -252,93 +256,170 @@ def gated_chain(backend: Any, nq: int) -> list[int]:
         if ro is not None and ro > MAX_READOUT_ERR:
             bad.append(f"readout_max {ro:.4f} > {MAX_READOUT_ERR}")
         if bad:
-            print(f"[PJ0 ABORT] chain-quality gate failed: {'; '.join(bad)}.")
+            print(f"[PJ0 ABORT] chain-quality gate failed: {'; '.join(bad)}. "
+                  f"Pin a cleaner --backend or set ALLOW_BAD_CHAIN=True.")
             raise SystemExit(1)
     return qubit_list
 
 
-def _run_schema(width: int, backend_name: str, soma_death: str, phenotype: str) -> dict[str, Any]:
-    """The (dormant) JSON schema the developer's later runs bank into. Fields present so runs
-    accumulate uniformly; no run data is produced in this ticket (OQ-4)."""
-    has_bath = soma_death in pj._BATH_MODES
-    return {
-        "meta": {"stage": "PJ0", "model": "germsoma_weismann", "backend": backend_name,
-                 "width": width, "soma_death": soma_death, "phenotype": phenotype,
-                 "selective_dd": SELECTIVE_DD, "aging_order_tol": AGING_ORDER_TOL,
-                 "interaction": INTERACTION, "mut_scale": MUT_SCALE, "k": K,
-                 "delta": pj.AGING_DELTA, "gamma": pj.DAMP_GAMMA, "alive_thresh": pj.ALIVE_THRESH,
-                 "calibration": None, "t1_band": None,          # AC-PJ0.5: filled at run time
-                 "witness_qubits": pj.witness_qubits(width, has_bath=has_bath)},
-        # AC-PJ0.7 comparison hooks -- soma-on / soma-off pairing (hardware analogue of Static
-        # Test 1) and kept-fraction; left for the developer to execute.
-        "witness_soma_on": None, "witness_soma_off": None, "kept_fraction": None,
-    }
+def _read_env_key(name: str) -> str | None:
+    for envp in (os.path.join(_HERE, "..", ".env"), os.path.join(_HERE, ".env")):
+        p = os.path.normpath(envp)
+        if os.path.exists(p):
+            with open(p) as f:
+                for line in f:
+                    if line.strip().startswith(f"{name}="):
+                        return line.strip().split("=", 1)[1].strip().strip('"').strip("'")
+    return None
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="PJ0 germ/soma driver -- build + evaluate statically (no run in this ticket).")
+        description="PJ0 germ/soma driver -- run the Weismann-barrier organism on hardware "
+                    "(or the density-matrix Aer sim) and report the genotype-only witness <X^W>.")
     ap.add_argument("--backend", type=str, default=None,
-                    help="hardware backend name (only used for gate timing in --schedule-report; "
-                         "NEVER submitted unless --run is also passed)")
+                    help="hardware backend name; omit to run on the density-matrix Aer sim")
     ap.add_argument("--widths", type=str, default="12",
                     help="comma list of widths (any W; 12 anchor/default)")
     ap.add_argument("--steps", type=int, default=6)
-    ap.add_argument("--soma-death", dest="soma_death",
-                    choices=["natural", "local_damping", "none"], default=SOMA_DEATH)
-    ap.add_argument("--phenotype", choices=["separable", "entangled"], default=PHENOTYPE)
     ap.add_argument("--shots", type=int, default=8192)
     ap.add_argument("--dump-circuit", dest="dump_circuit", action="store_true",
-                    help="print + save the annotated measured circuit; NEVER submits (draw-only)")
+                    help="print + save the annotated measured circuit then run")
     ap.add_argument("--draw-only", dest="draw_only", action="store_true",
-                    help="accepted for parity with run_qalife; --dump-circuit already implies it")
-    ap.add_argument("--schedule-report", dest="schedule_report", action="store_true",
-                    help="static rung-2 report: selective-DD placement + aging-order deviation")
-    ap.add_argument("--run", action="store_true",
-                    help="DORMANT in PJ0 (OQ-4): the live sampler path; refuses without --backend")
-    ap.add_argument("--seed", type=int, default=100)
+                    help="with --dump-circuit: draw and exit, do NOT submit")
     ap.add_argument("--name", type=str, default="pj0_germsoma")
     args = ap.parse_args()
+    args.sim = args.backend is None      # no --backend => density-matrix Aer sim
 
     widths = [int(w) for w in args.widths.split(",") if w.strip()]
+    has_bath = SOMA_DEATH in pj._BATH_MODES
 
-    backend = None
-    backend_name = "none"
-    if args.backend is not None:
-        backend = connect(args.backend)
-        backend_name = getattr(backend, "name", str(args.backend))
-        print(f"Backend : {backend_name} (timing/layout only; no submission unless --run)")
+    # --- certified entropy (fail-closed on hardware; sim may PRNG-fallback) --------
+    client = None
+    api_key = os.environ.get("QEAAS_API_KEY") or _read_env_key("QEAAS_API_KEY")
+    qrng_url = os.environ.get("QEAAS_API_URL") or QEAAS_URL
+    if api_key:
+        client = QRNGClient(qrng_url, api_key)
+        try:
+            h = client.health()
+            print(f"Q-EaaS  : {qrng_url}  health: {h.status}")
+            if h.status != "ok" and not args.sim:
+                print("[PJ0 ABORT] Q-EaaS not ok (fail-closed on hardware)."); raise SystemExit(1)
+        except QRNGUnavailable as exc:
+            if not args.sim:
+                print(f"[PJ0 ABORT] Q-EaaS unavailable (fail-closed on hardware): {exc}")
+                raise SystemExit(1)
+            client = None
+    elif not args.sim:
+        print("[PJ0 ABORT] QEAAS_API_KEY not set (fail-closed on hardware)."); raise SystemExit(1)
 
     def thetas_for(width: int, repeat: int = 0) -> list[float]:
-        # PJ0 is static; faithful clean GHZ (MUT_SCALE=0) -> PRNG angles suffice for building.
+        if client is not None:
+            return qrng_thetas(client, width, MUT_SCALE, repeat)
         return q4._sim_thetas(width, 1000 * repeat + width, mut_scale=MUT_SCALE)
 
-    # ---- static evaluation surfaces (the deliverable) ----
+    # --- backend ---------------------------------------------------------------
+    backend = None
+    backend_name = "density_matrix_sim"
+    if not args.sim:
+        backend = connect(args.backend)
+        backend_name = backend.name
+        print(f"Backend : {backend.name}  ({backend.num_qubits} qubits)")
+
+    # --- print circuit ---------------------------------------------------------
     if args.dump_circuit:
         for W in widths:
-            dump_circuit(W, args.steps, thetas_for(W), soma_death=args.soma_death,
-                         phenotype=args.phenotype, name=args.name)
-        raise SystemExit(0)   # dump NEVER submits (draw-only implied)
+            dump_circuit(W, args.steps, thetas_for(W), soma_death=SOMA_DEATH,
+                         phenotype=PHENOTYPE, name=args.name)
+        if args.draw_only:
+            raise SystemExit(0)
 
-    if args.schedule_report:
-        for W in widths:
-            schedule_report(W, args.steps, thetas_for(W), backend,
-                            soma_death=args.soma_death, phenotype=args.phenotype)
-        raise SystemExit(0)
+    result: dict[str, Any] = {
+        "meta": {"stage": "PJ0", "model": "germsoma_weismann", "backend": backend_name,
+                 "steps": args.steps, "soma_death": SOMA_DEATH, "phenotype": PHENOTYPE,
+                 "selective_dd": SELECTIVE_DD, "aging_order_tol": AGING_ORDER_TOL,
+                 "interaction": INTERACTION, "mut_scale": MUT_SCALE, "k": K,
+                 "delta": pj.AGING_DELTA, "gamma": pj.DAMP_GAMMA, "alive_thresh": pj.ALIVE_THRESH,
+                 "shots": args.shots, "repeats": REPEATS, "widths": widths, "sim": args.sim,
+                 "calibration": None, "t1_band": None},
+        "by_width": {},
+    }
 
-    # ---- live run path: DORMANT in this ticket (OQ-4) ----
-    if args.run:
-        print("[PJ0] the live sampler run path is DORMANT in this ticket (OQ-4: no hardware).")
-        print("      The developer runs the sweeps later. Build/schema is verified via")
-        print("      --dump-circuit and --schedule-report. Refusing to submit.")
-        raise SystemExit(2)
+    print(f"=== PJ0 germ/soma: widths={widths} steps={args.steps} soma_death={SOMA_DEATH} "
+          f"phenotype={PHENOTYPE} on {backend_name} ===")
 
-    print("PJ0 germ/soma driver -- static evaluation only. Choose one of:")
-    print("  --dump-circuit     print + save the measured circuit (never submits)")
-    print("  --schedule-report  selective-DD + aging-order (add --backend for real timing)")
-    print(f"\n  (dormant run schema for W={widths[0]}):")
-    print("  " + json.dumps(_run_schema(widths[0], backend_name, args.soma_death, args.phenotype),
-                            indent=2, default=str))
+    witness_mean: list[float] = []
+    witness_sig: list[float] = []
+    sep_mean: list[float] = []
+
+    # ---- main run ----
+    for W in widths:
+        nq = pj.segment_len(W, has_bath)
+        qubit_list: list[int] = []
+        if not args.sim:
+            qubit_list = gated_chain(backend, nq)
+
+        w_reps, s_reps, alive_reps, deep_reps = [], [], [], []
+        for r in range(REPEATS):
+            thetas = thetas_for(W, r)
+            qc = build_measured_germsoma(W, args.steps, thetas, soma_death=SOMA_DEATH,
+                                         phenotype=PHENOTYPE)
+            # run: density-matrix Aer sim, or the hardware backend via the sampler pipeline
+            if args.sim:
+                counts = SIM.run(transpile(qc, SIM), shots=args.shots).result().get_counts()
+            else:
+                # opt-3 (VF2/Sabre) layout+routing; selective DD on genotype qubits only.
+                if SELECTIVE_DD:
+                    submit_qc = schedule_with_selective_dd(qc, backend, W, soma_death=SOMA_DEATH)
+                else:
+                    pm = generate_preset_pass_manager(optimization_level=3, backend=backend)
+                    submit_qc = pm.run(qc)
+                raw_meas, _jobs, _qs = run_sampler(backend, submit_qc, args.shots)
+                counts = {}
+                for s in raw_meas:               # run_sampler returns per-shot 'c' strings
+                    counts[s] = counts.get(s, 0) + 1
+
+            witness_qs = witness_qs_for(W, SOMA_DEATH, PHENOTYPE)
+            joint, sep = q4.xbasis_witness_from_counts(counts, witness_qs)
+            w_reps.append(joint); s_reps.append(sep)
+            # alive-count needs soma in Z -- only the separable arm reads it that way
+            if PHENOTYPE != "entangled":
+                pz = soma_z_from_counts(counts, W, has_bath)
+                alive_reps.append(q4.alive_population(pz))
+                deep_reps.append(q4.deepest_surviving_lineage(pz))
+
+        wm, ws = float(np.mean(w_reps)), float(np.std(w_reps))
+        sm = float(np.mean(s_reps))
+        ws = math.sqrt(ws ** 2 + 1.0 / args.shots)      # shot-noise floor in quadrature
+        witness_mean.append(wm); witness_sig.append(ws); sep_mean.append(sm)
+        signal = wm - sm
+        survives = signal > K * ws
+        alive_mean = float(np.mean(alive_reps)) if alive_reps else None
+        deep_mean = float(np.mean(deep_reps)) if deep_reps else None
+        result["by_width"][str(W)] = {
+            "witness_joint_mean": wm, "witness_joint_sigma": ws, "separable_mean": sm,
+            "entanglement_signal": signal, "survives": bool(survives),
+            "alive_mean": alive_mean, "deepest_mean": deep_mean,
+        }
+        pop = (f"pop alive~{alive_mean:.1f}/{W} deepest~{deep_mean:.1f}"
+               if alive_mean is not None else "pop n/a (phenotypes in X for the witness)")
+        wlabel = "X^2W" if PHENOTYPE == "entangled" else "X^W"
+        print(f"  W={W:2}  witness<{wlabel}>={wm:+.3f}+-{ws:.3f}  sep={sm:+.3f}  "
+              f"signal={signal:+.3f}  {'ALIVE' if survives else 'dead '}  | {pop}")
+
+    depth = q4.entanglement_depth(witness_mean, sep_mean, witness_sig, k=K)
+    depth_W = widths[depth] if depth >= 0 else None
+    result["meta"]["genealogical_entanglement_depth_W"] = depth_W
+    print(f"\n  genealogical entanglement depth: "
+          f"{'W=' + str(depth_W) if depth_W else 'none survived'} "
+          f"(deepest width whose witness beats the classical null by {K}sigma)")
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    tag = timestamp() if not args.sim else "sim"
+    out = os.path.join(OUTPUT_DIR, f"{args.name}_{SOMA_DEATH}_{PHENOTYPE}_{backend_name}_{tag}.json")
+    with open(out, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  -> {out}")
 
 
 if __name__ == "__main__":

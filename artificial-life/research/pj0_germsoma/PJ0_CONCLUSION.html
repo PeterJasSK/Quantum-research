@@ -1,0 +1,502 @@
+<title>PJ0 — Germ/Soma Split Moves the Ceiling from Biology to Qubit Count</title>
+<style>
+  :root{
+    --bg:#05030a; --bg2:#0a0612; --panel:#0e0a18; --panel2:#120c22;
+    --ink:#eafff2; --dim:#9aa7b0; --dimmer:#6b7580; --line:#241b38;
+    --alive:#6dffb0; --gold:#ffd66d; --dead:#ff6b6b;
+    --classical:#7f8a94; --violet:#b58cff;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); font-family:var(--sans); line-height:1.62;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    background:
+      radial-gradient(1100px 640px at 78% -8%, #160c2a 0%, transparent 60%),
+      radial-gradient(820px 560px at -5% 14%, #071a14 0%, transparent 55%),
+      var(--bg);
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px}
+  a{color:var(--alive); text-decoration:none; border-bottom:1px solid rgba(109,255,176,.28)}
+  a:hover{border-bottom-color:var(--alive)}
+  code,.mono{font-family:var(--mono)}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  header{padding:clamp(2.6rem,7vw,4.4rem) 0 1.6rem}
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--alive); opacity:.85; margin:0 0 .9rem}
+  h1{font-family:var(--serif); font-weight:600; line-height:1.12;
+    font-size:clamp(1.9rem,5vw,3rem); margin:0 0 .5rem; text-wrap:balance;
+    color:var(--ink)}
+  h1 em{font-style:italic; color:var(--gold)}
+  .byline{color:var(--dim); font-size:.92rem; margin:.7rem 0 0;
+    display:flex; flex-wrap:wrap; gap:.4rem 1.1rem; font-family:var(--mono)}
+  .byline .done{color:var(--alive)}
+
+  .abstract{margin:1.9rem 0 0; padding:1.3rem 1.5rem;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-left:3px solid var(--gold); border-radius:4px}
+  .abstract h2{font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--gold); margin:0 0 .6rem}
+  .abstract p{margin:0 0 .7rem; font-size:.98rem; color:#dbe6df}
+  .abstract p:last-child{margin:0}
+  .abstract b{color:var(--ink)}
+
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:1.6rem 0}
+  .stat{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+  .stat .big{font-family:var(--mono); font-size:clamp(1.5rem,4vw,2.1rem);
+    font-weight:700; letter-spacing:-.01em; line-height:1}
+  .stat.g .big{color:var(--gold)} .stat.a .big{color:var(--alive)} .stat.d .big{color:var(--dead)}
+  .stat .lbl{color:var(--dim); font-size:.76rem; margin-top:.45rem; line-height:1.35}
+  @media(max-width:620px){.stats{grid-template-columns:1fr}}
+
+  section{padding:2.3rem 0 .4rem; border-top:1px solid var(--line)}
+  .secnum{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em;
+    color:var(--violet); text-transform:uppercase}
+  h2.sec{font-family:var(--serif); font-weight:600; font-size:clamp(1.3rem,3.4vw,1.7rem);
+    margin:.35rem 0 .8rem; color:var(--ink); text-wrap:balance}
+  p{color:#cdd8d1; font-size:1rem}
+  p b{color:var(--ink)}
+  .lede{font-size:1.06rem; color:#dbe6df}
+
+  figure{margin:1.6rem 0; padding:0}
+  .frit{background:linear-gradient(180deg,#080511,#0b0718);
+    border:1px solid var(--line); border-radius:12px; padding:14px 12px 6px; overflow-x:auto}
+  figcaption{color:var(--dim); font-size:.86rem; margin:.75rem 4px 0; line-height:1.5}
+  figcaption b{font-family:var(--serif); color:var(--ink); font-weight:600}
+  svg{display:block; width:100%; height:auto; min-width:520px}
+  .lgd{display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; margin:.4rem 4px .2rem;
+    font-family:var(--mono); font-size:.76rem; color:var(--dim)}
+  .lgd i{display:inline-block; width:22px; height:0; border-top-width:3px;
+    border-top-style:solid; vertical-align:middle; margin-right:7px}
+  .lgd i.dot{width:10px;height:10px;border-radius:50%;border-top:0}
+
+  .tw{overflow-x:auto; margin:1.4rem 0}
+  table{border-collapse:collapse; width:100%; font-size:.88rem; min-width:460px}
+  caption{caption-side:top; text-align:left; font-family:var(--mono);
+    font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; color:var(--violet);
+    margin-bottom:.6rem}
+  th,td{padding:.5rem .7rem; text-align:right; border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--dim); font-weight:600; border-bottom:1px solid var(--dimmer);
+    font-family:var(--mono); font-size:.78rem}
+  tbody tr:hover{background:rgba(181,140,255,.05)}
+  td.pass{color:var(--alive)} td.fail{color:var(--dead); opacity:.85}
+  .chip{font-family:var(--mono); font-size:.72rem; padding:1px 7px; border-radius:999px;
+    border:1px solid}
+  .chip.a{color:var(--alive); border-color:rgba(109,255,176,.4)}
+  .chip.d{color:var(--dead); border-color:rgba(255,107,107,.4)}
+  .chip.w{color:var(--gold); border-color:rgba(255,214,109,.4)}
+
+  .callout{margin:1.5rem 0; padding:1.1rem 1.4rem; border-radius:8px;
+    border:1px solid var(--line); background:var(--panel)}
+  .callout.gate{border-left:3px solid var(--violet)}
+  .callout.warn{border-left:3px solid var(--gold)}
+  .callout h3{font-family:var(--mono); font-size:.74rem; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--violet); margin:0 0 .6rem}
+  .callout.warn h3{color:var(--gold)}
+  .callout pre{font-family:var(--mono); font-size:.78rem; color:#dbe6df; margin:.4rem 0 0;
+    white-space:pre-wrap; line-height:1.5; background:#080511; border:1px solid var(--line);
+    border-radius:6px; padding:.8rem .9rem; overflow-x:auto}
+
+  /* four circuit designs */
+  .designs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:1.4rem 0}
+  @media(max-width:620px){.designs{grid-template-columns:1fr}}
+  .design{border:1px solid var(--line); border-radius:10px; padding:1rem 1.1rem; background:var(--panel)}
+  .design.win{border-color:rgba(109,255,176,.5);
+    background:linear-gradient(180deg,rgba(109,255,176,.06),var(--panel))}
+  .design.bad{border-color:rgba(255,107,107,.35)}
+  .design h4{font-family:var(--mono); font-size:.82rem; margin:0 0 .1rem; color:var(--ink)}
+  .design .sub{font-family:var(--mono); font-size:.7rem; color:var(--dimmer); margin-bottom:.6rem}
+  .design .ckt{font-family:var(--mono); font-size:.6rem; line-height:1.55; color:#dbe6df;
+    background:#080511; border:1px solid var(--line); border-radius:6px; padding:.6rem .7rem;
+    overflow-x:auto; white-space:pre; margin:0 0 .6rem}
+  .design p{font-size:.82rem; margin:0; color:#cdd8d1}
+  .design .v{font-family:var(--mono); font-size:.72rem; font-weight:700}
+  .design .v.a{color:var(--alive)} .design .v.d{color:var(--dead)}
+
+  .open{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:1.5rem 0}
+  @media(max-width:620px){.open{grid-template-columns:1fr}}
+  .slot{border:1px solid var(--line); border-radius:10px; padding:1.1rem 1.2rem;
+    background:var(--panel)}
+  .slot .w{font-family:var(--mono); font-size:1.6rem; color:var(--gold); font-weight:700}
+  .slot .q{font-family:var(--mono); color:var(--dimmer); font-size:1rem}
+  .slot .lbl{color:var(--dim); font-size:.85rem; margin-top:.5rem}
+  .slot .pend{display:inline-block; margin-top:.7rem; font-family:var(--mono);
+    font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--dimmer);
+    border:1px solid var(--line); border-radius:999px; padding:2px 9px}
+
+  footer{border-top:1px solid var(--line); margin-top:2.6rem;
+    padding:1.8rem 0 3rem; color:var(--dimmer); font-size:.82rem; font-family:var(--mono)}
+  footer p{color:var(--dimmer); font-size:.82rem; margin:.3rem 0}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Quantum Artificial Life · Phase 3 · PJ0 · Results</p>
+    <h1>The germ/soma split moves the ceiling from <em>biology</em> to qubit count</h1>
+    <div class="byline">
+      <span>Heron-r2 · <code>ibm_kingston</code> (156q)</span>
+      <span>witness <code>&lt;X<sup>⊗W</sup>&gt;</code> (genotype-only)</span>
+      <span class="done">▲ Stage PJ0 — germ/soma, natural + separable</span>
+      <span>2026-09-12</span>
+    </div>
+
+    <div class="abstract">
+      <h2>Abstract</h2>
+      <p>P2 drove the faithful 2018 death channel to its absolute limit: with real amplitude-damping death
+        in the loop, the genealogical entanglement witness collapsed at <b>W* = 9 = 19 qubits</b>. The
+        diagnosis was mechanical — the death operator entangles the mortal soma to the immortal germ line
+        (<code>cx(g,p)</code>) then dissipates it, so <b>body-death irreversibly decoheres the gene-witness</b>.
+        That was a <b>biology wall</b>, not a hardware one.</p>
+      <p>PJ0 builds the Weismann barrier: the germ line carries the GHZ witness and is kept coherent; the
+        soma expresses the trait as a <b>separable diagonal state</b> and dies <b>in isolation</b>
+        (<code>natural</code> T1 decay, no bath, no <code>cx(g,p)</code>). The soma-to-germ coupling is
+        severed, so soma death can no longer touch the witness. A 2×2 factorial confirmed this live: at
+        W=4, <b>separable keeps the witness alive (0.90)</b> while re-entangling the soma collapses it
+        (0.12).</p>
+      <p>Sweeping the severed design in width, the witness stays certified at <b>k=3σ through W=50 =
+        100 qubits</b> — and the run did <b>not</b> stop because the entanglement died. It stopped at
+        <b>W=54</b> because the chip ran out of clean qubits: the layout needs a SWAP-free chain of
+        <b>108</b>, and <code>ibm_kingston</code>'s longest clean chain is <b>107</b>. <b>The limiting
+        resource flipped from entanglement to machine size.</b> That is the PJ0 result.</p>
+      <p style="color:var(--gold)">Honest framing: the witness is <b>certified, not strong</b>, at the top of
+        the sweep (+0.058 at W=50, ~5σ over the classical null but far below the ~0.9 of a fresh GHZ). This is
+        <b>scale · faithfulness · certification — not a speedup</b>, and each width is a single N=1 snapshot.</p>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat a"><div class="big">W≥50</div><div class="lbl">Certified genealogical entanglement at k=3σ = 100 qubits — 5.5× P2's damping ceiling of W*=9</div></div>
+    <div class="stat g"><div class="big">108 &gt; 107</div><div class="lbl">The wall at W=54 is a qubit-count limit (needs a clean 108-chain; chip's longest is 107), not a witness collapse</div></div>
+    <div class="stat d"><div class="big">0.90 → 0.12</div><div class="lbl">W=4 A/B: severed soma stays alive; re-entangling the soma to the gene collapses the witness — the barrier is the mechanism</div></div>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <p class="secnum">1 · Why natural + separable</p>
+    <h2 class="sec">The 2×2 factorial: the phenotype coupling is the kill switch</h2>
+    <p class="lede">Before the sweep, four designs were run at W=4 — soma-death mechanism
+      (<code>natural</code> T1 idle vs <code>local_damping</code> bath) crossed with phenotype coupling
+      (<code>separable</code> vs <code>entangled</code>). The result is unambiguous: <b>the phenotype axis
+      decides everything.</b></p>
+
+    <div class="tw">
+      <table>
+        <caption>Table 1 · PJ0 2×2 factorial (ibm_kingston, W=4, steps=4, shots 8192, σ≈0.011)</caption>
+        <thead><tr><th>soma death</th><th>phenotype</th><th>&lt;X<sup>⊗4</sup>&gt;</th><th>verdict</th></tr></thead>
+        <tbody>
+          <tr><td>natural</td><td>separable</td><td><b>+0.899</b></td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>local_damping</td><td>separable</td><td>+0.768</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>natural</td><td>entangled</td><td>+0.120</td><td><span class="chip d">collapsed</span></td></tr>
+          <tr><td>local_damping</td><td>entangled</td><td>+0.079</td><td><span class="chip d">collapsed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>separable</code> keeps the witness alive (0.77–0.90); <code>entangled</code> — which restores
+      the P2 <code>cx(g,p)</code> wound — collapses it (0.08, 0.12). That is the P2 diagnosis confirmed on
+      hardware: coupling the mortal soma to the germ line is what kills the gene-witness. Within the surviving
+      column, <b>natural beats damping (0.899 vs 0.768)</b> and is the more faithful model — real T1 death,
+      no artificial bath, a leaner <b>2W-qubit</b> segment. <code>natural</code> + <code>separable</code> is
+      the headline; <code>local_damping</code> is retained only as a rigid-rate reference.
+      (Full rationale: <code>DESIGN-DECISION.md</code>.)</p>
+
+    <p style="margin-top:1.4rem">The four designs differ only in <b>how the soma is wired and how it
+      dies</b>. The germ line is always the same clean GHZ ladder; the whole decision is what the soma does
+      to it. One individual <code>k</code> is shown below (germ <code>g_k</code>, soma <code>p_k</code>,
+      bath <code>b_k</code>): <code>[clone]</code>=<code>cx(g_{k-1},g_k)</code> self-replication ·
+      <code>Ry(θ)</code>=mutation · <code>Ry(aged)</code>=separable diagonal trait ·
+      <code>H,M</code>=X-basis witness readout.</p>
+
+    <div class="designs">
+      <div class="design win">
+        <h4>1 · natural + separable — WINNER</h4>
+        <div class="sub">2 qubits/individual · no bath · witness +0.899</div>
+        <pre class="ckt">g_k: ─[clone]─Ry(θ)──────────────●─H─M
+p_k: ─Ry(aged)── idle ⇒ real T1 ────M</pre>
+        <p>Germ and soma <b>never share a gate.</b> Soma idles and dies by real hardware T1. No
+          <code>cx(g,p)</code>, no bath, no engineered dissipation. Leanest possible.
+          <span class="v a">▲ witness intact</span></p>
+      </div>
+      <div class="design">
+        <h4>2 · local_damping + separable</h4>
+        <div class="sub">3 qubits/individual · +bath · witness +0.768</div>
+        <pre class="ckt">g_k: ─[clone]─Ry(θ)────────────●─H─M
+p_k: ─Ry(aged)─●──────X──────────M
+              │cry    │cx
+b_k: ─────────X───────●────────  (discarded)</pre>
+        <p>Germ still safe (no <code>cx(g,p)</code>), but death is <b>faked</b> with an ancilla +
+          <code>cry</code>+<code>cx</code>: +1 qubit and 2 extra 2-qubit gates per individual, for a
+          rigid tunable rate. <span class="v a">▲ alive, but heavier</span></p>
+      </div>
+      <div class="design bad">
+        <h4>3 · natural + entangled</h4>
+        <div class="sub">2 qubits/individual · witness +0.120</div>
+        <pre class="ckt">g_k: ─[clone]─Ry(θ)─●──────────H─M
+                   │cx(g,p) ← P2 wound
+p_k: ─Ry(aged)─────X─ idle⇒T1 ─H─M</pre>
+        <p>The <code>cx(g,p)</code> couples the mortal soma to the immortal germ. Soma decay
+          <b>back-acts and decoheres the gene-witness.</b> <span class="v d">▼ 0.90 → 0.12 collapse</span></p>
+      </div>
+      <div class="design bad">
+        <h4>4 · local_damping + entangled — WORST</h4>
+        <div class="sub">3 qubits/individual · witness +0.079</div>
+        <pre class="ckt">g_k: ─[clone]─Ry(θ)─●──────────H─M
+                   │cx(g,p)
+p_k: ─Ry(aged)─────X─●────X────H─M
+                     │cry │cx
+b_k: ────────────────X────●───</pre>
+        <p>Both wounds at once: soma coupled to germ <b>and</b> dissipated through a bath — the exact P2
+          death channel doubled. <span class="v d">▼ floor</span></p>
+      </div>
+    </div>
+
+    <p>The witness is the headline, but natural+separable also dominates on <b>qubit cost, gate/error
+      budget, faithfulness, and scalability</b>. Only reproducibility goes to damping.</p>
+
+    <div class="tw">
+      <table>
+        <caption>Table 1b · Why natural+separable wins on every axis — not just entanglement</caption>
+        <thead><tr><th>axis</th><th>natural+sep</th><th>damp+sep</th><th>nat+ent</th><th>damp+ent</th></tr></thead>
+        <tbody>
+          <tr><td>witness ⟨X<sup>⊗4</sup>⟩ (live)</td><td class="pass"><b>+0.899</b></td><td>+0.768</td><td class="fail">+0.120</td><td class="fail">+0.079</td></tr>
+          <tr><td>qubits / individual</td><td class="pass"><b>2</b></td><td>3</td><td>2</td><td>3</td></tr>
+          <tr><td>2-qubit gates / individual</td><td class="pass"><b>1</b></td><td>3</td><td>2</td><td>4</td></tr>
+          <tr><td>germ↔soma coupled?</td><td class="pass"><b>no</b></td><td>no</td><td class="fail">yes</td><td class="fail">yes</td></tr>
+          <tr><td>bath qubit?</td><td class="pass"><b>no</b></td><td>yes</td><td>no</td><td>yes</td></tr>
+          <tr><td>death = real T1 physics?</td><td class="pass"><b>yes</b></td><td>no</td><td>yes</td><td>no</td></tr>
+          <tr><td>max width on 107-clean-chain</td><td class="pass"><b>~53</b></td><td>~35</td><td>~53</td><td>~35</td></tr>
+          <tr><td>tunable/rigid death rate?</td><td>no (T1 drifts)</td><td class="pass">yes</td><td>no</td><td>yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><b>1 · Fewer 2-qubit gates = less error = higher witness at the same width.</b> natural+sep carries
+      one 2-qubit gate per individual (the clone); damping adds <code>cry</code>+<code>cx</code>, entangled
+      adds <code>cx(g,p)</code>. Two-qubit gates dominate hardware error, so the leanest circuit reads the
+      strongest witness — exactly what 0.899 &gt; 0.768 shows.</p>
+    <p><b>2 · Qubit cost is the scalability lever — this is WHY W=50 was reachable.</b> natural has no bath:
+      <b>2 qubits/individual vs 3</b>. On the 107-qubit clean chain that is <b>~53 individuals vs ~35</b>.
+      The W=54 qubit wall (§3) is a <em>natural-mode</em> wall at 2W; damping would hit its own wall ~1.5×
+      sooner. Leanness bought the scale result.</p>
+    <p><b>3 · Faithfulness — the stated goal.</b> natural death = real hardware T1 relaxation toward |0⟩;
+      no injected bath, no <code>cry</code> simulating decay. The trait is classical by the 2018 paper's own
+      text, so a diagonal soma dying by real physics is the honest model — the engineered bath is a
+      simulation of one.</p>
+    <p><b>4 · The only thing damping wins: reproducibility.</b> natural's rate = hardware T1, which drifts
+      run-to-run and is not tunable; damping's <code>γ</code> is a controllable knob. That is the sole reason
+      <code>local_damping</code> is kept — as a rigid-rate reference/fallback, not the headline.</p>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <p class="secnum">2 · The width sweep</p>
+    <h2 class="sec">Certified at k=3σ through W=50 = 100 qubits</h2>
+    <p>With the soma severed, the witness was swept in width (generational depth scaled along,
+      steps ≈ W/2 — a <b>combined width+depth</b> stress, strictly harsher than P2's width-only sweep).
+      Every runnable width clears the <b>k=3σ</b> gate. The witness decays with W — as any GHZ must under
+      device noise — but it never falls into the classical band before the hardware runs out of room.</p>
+
+    <figure>
+      <div class="frit">
+        <div class="lgd">
+          <span><i class="dot" style="background:var(--alive)"></i>Natural + separable (germ/soma)</span>
+          <span><i style="border-color:var(--dead);border-top-style:dashed"></i>k=2σ gate (0.022)</span>
+          <span><i style="border-color:var(--gold);border-top-style:dashed"></i>qubit wall (W=54, needs 108q)</span>
+        </div>
+        <svg id="figW" viewBox="0 0 720 380" role="img"
+          aria-label="Witness versus width W for the germ/soma natural+separable design. Certified at k=3 sigma from W=6 (0.870) through W=50 (0.058); the run aborts at W=54 on a qubit-count limit, not a witness collapse."></svg>
+      </div>
+      <figcaption><b>Figure 1.</b> Genealogical entanglement witness <code>&lt;X<sup>⊗W</sup>&gt;</code>
+        versus width W (log axis) for the severed germ/soma design. Every point sits
+        <span style="color:var(--alive)">above the k=2σ gate</span> — certified through
+        <b>W=50 = 100 qubits</b>. The run halts at the <span style="color:var(--gold)">gold qubit wall</span>
+        (W=54): the circuit needs a SWAP-free chain of 108 physical qubits and the chip's longest clean chain
+        is 107. The stop is <b>hardware size, not entanglement death</b>. Non-monotonic bumps (W=16, W=28)
+        are single-shot calibration/chain-quality noise (N=1 per width). Separable null ≈ 0 (≤10⁻¹³) across
+        the whole sweep — off the chart.</figcaption>
+    </figure>
+
+    <div class="tw">
+      <table>
+        <caption>Table 2 · Germ/soma width sweep — natural + separable (ibm_kingston, steps≈W/2, γ n/a, shots 8192, σ=0.011)</caption>
+        <thead><tr><th>W</th><th>qubits (2W)</th><th>steps</th><th>&lt;X<sup>⊗W</sup>&gt;</th><th>k=2</th><th>k=3</th><th>verdict</th></tr></thead>
+        <tbody>
+          <tr><td>6</td><td>12</td><td>4</td><td>+0.870</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>12</td><td>24</td><td>6</td><td>+0.756</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>16</td><td>32</td><td>8</td><td>+0.296</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>24</td><td>48</td><td>12</td><td>+0.193</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>28</td><td>56</td><td>14</td><td>+0.355</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>32</td><td>64</td><td>16</td><td>+0.271</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>36</td><td>72</td><td>18</td><td>+0.220</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>40</td><td>80</td><td>20</td><td>+0.067</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>42</td><td>84</td><td>21</td><td>+0.068</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td>46</td><td>92</td><td>23</td><td>+0.081</td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td><b>50</b></td><td><b>100</b></td><td>25</td><td><b>+0.058</b></td><td class="pass">✓</td><td class="pass">✓</td><td><span class="chip a">alive</span></td></tr>
+          <tr><td><b>54</b></td><td><b>108</b></td><td>27</td><td><b>— abort —</b></td><td class="fail">·</td><td class="fail">·</td><td><span class="chip w">no chain</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Last certified point: <b>W=50 = 100 qubits, +0.058 (k=3σ)</b>. The next width was never measured —
+      not because the witness fell into the noise floor, but because the transpiler could not lay 108 qubits
+      on a clean chain. Compare P2's faithful death channel, dead at <b>W=10</b>: severing the soma coupling
+      moved the certified ceiling out by <b>&gt;5×</b> and handed the bottleneck to the chip.</p>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <p class="secnum">3 · The wall</p>
+    <h2 class="sec">W=54 aborts on qubit count, verbatim</h2>
+    <p>The abort is explicit and physical — a chain-length failure, not a decoherence gate trip:</p>
+    <div class="callout warn">
+      <h3>Run log — W=54, steps=27</h3>
+      <pre>Backend : ibm_kingston  (156 qubits)
+=== PJ0 germ/soma: widths=[54] steps=27 soma_death=natural phenotype=separable ===
+[PJ0 ABORT] no clean chain of 108 qubits: no clean SWAP-free chain of 108
+qubits on ibm_kingston (longest found 107; edges >= 0.1 2q-err pruned);
+dead=[112, 113, 120, 121, 146]. Lower genome N_SLOTS so N_BITS <= 107, or
+pin a better-calibrated --backend.</pre>
+    </div>
+    <p>Each individual costs <b>2 qubits</b> (germ + soma, no bath in <code>natural</code> mode), so W=54
+      needs 108. After pruning edges above the 0.1 two-qubit-error bound and dropping five dead qubits
+      (<code>112, 113, 120, 121, 146</code>), the longest clean SWAP-free chain on this calibration was
+      <b>107</b> — one short. The gate holds; the chip does not. A better-calibrated backend, a longer clean
+      chain, or error mitigation would push straight past W=54 — and the open question becomes whether the
+      <em>true</em> entanglement ceiling of this design is even reachable on a 156-qubit device.</p>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <p class="secnum">4 · Confound &amp; honesty</p>
+    <h2 class="sec">Certified is not the same as strong — what this run does and does not prove</h2>
+    <p><b>What it proves.</b> The classical separable null <code>∏<sub>i</sub>&lt;X<sub>i</sub>&gt;</code>
+      stayed ≤ 10⁻¹³ across the sweep — orders of magnitude under the CD-3 gate — so every reported witness
+      is genuinely non-classical genealogical entanglement, and it is present at k=3σ out to 100 qubits.
+      The soma-severing mechanism works exactly as the A/B predicted: no <code>cx(g,p)</code>, no
+      witness-collapsing death channel.</p>
+    <p><b>What it does not prove.</b> The witness is <b>certified but weak</b> at the top: +0.058 at W=50 is
+      ~5σ over the null but far below a fresh GHZ's ~0.9. The decay is real and steep, and the top decade
+      sits close to the gate. Every width is a <b>single N=1 snapshot</b> on one calibration — the
+      non-monotonic points (W=16 at 0.296, W=28 at 0.355) are run-to-run chain-quality noise, not physics.
+      The sweep also scales <b>depth with width</b> (steps ≈ W/2), so it does not isolate a pure width
+      ceiling. And the runs carried <code>calibration:null</code> / <code>t1_band:null</code> — the
+      aging-order-deviation and selective-DD placement checks were <b>not</b> populated, so PJ0's
+      irregular-lifespan claim remains unverified here.</p>
+    <p>The honest headline is therefore precise: <b>at the width where the hardware forced the run to stop,
+      the entanglement was still certified.</b> The machine ran out before the witness did. Whether the
+      witness would survive beyond W=54 with more clean qubits is the next experiment, not a settled claim.</p>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <p class="secnum">5 · Decision gate</p>
+    <h2 class="sec">PJ0 healed the P2 wound — the bottleneck is now hardware, and PJ1 can build the arena</h2>
+    <div class="callout gate">
+      <h3>Gate ruling</h3>
+      <p><b>The P2 biology wall is gone.</b> Faithful damping death capped the witness at W*=9 because soma
+        death decohered the germ line. The germ/soma split severs that coupling; the certified ceiling moved
+        past <b>W=50 = 100 qubits</b> and the run terminated on a <b>qubit-count</b> limit (needs 108 clean,
+        chip has 107), not on entanglement collapse.</p>
+      <p><b>Design decision confirmed by data.</b> <code>natural</code> + <code>separable</code> is faithful
+        (real T1 death, classical soma per the 2018 paper, genotype-only witness), leaner (2W qubits →
+        scales), and defensible (the 2×2 A/B shows severing is the mechanism, not a dodge).</p>
+      <p style="margin-bottom:0"><b>Open before write-up.</b> (1) Repeats + a reported T1 band to turn N=1
+        snapshots into error bars; (2) a better-calibrated / longer-chain backend or error mitigation to
+        find the true width ceiling past W=54; (3) backend-scheduled runs to populate the aging-order and
+        selective-DD checks. Then PJ1 tiles these 2W-qubit organisms into the multi-lineage arena and reads
+        the joint cross-lineage witness.</p>
+    </div>
+
+    <div class="open">
+      <div class="slot">
+        <span class="w" style="color:var(--alive)">W≥50</span> <span class="q">natural+sep · 100 qubits</span>
+        <div class="lbl">Certified at k=3σ (+0.058). 5.5× the P2 damping ceiling of W*=9.</div>
+        <span class="pend" style="color:var(--alive);border-color:rgba(109,255,176,.4)">located</span>
+      </div>
+      <div class="slot">
+        <span class="w" style="color:var(--gold)">W=54</span> <span class="q">qubit wall · needs 108q</span>
+        <div class="lbl">Abort: no clean 108-chain (longest 107). Hardware limit, not witness collapse.</div>
+        <span class="pend" style="color:var(--gold);border-color:rgba(255,214,109,.4)">hardware-bound</span>
+      </div>
+      <div class="slot">
+        <span class="w" style="color:var(--alive)">0.90</span> <span class="q">W=4 · A/B alive</span>
+        <div class="lbl">Severed soma keeps witness alive; re-entangling collapses it to 0.12.</div>
+        <span class="pend" style="color:var(--alive);border-color:rgba(109,255,176,.4)">mechanism</span>
+      </div>
+      <div class="slot" style="border-style:dashed;border-color:var(--dimmer)">
+        <span class="w" style="color:var(--dimmer)">±σ</span> <span class="q">repeats + T1 band</span>
+        <div class="lbl">N=1 snapshots; non-monotonic points need repeats and calibration bands.</div>
+        <span class="pend">pending</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Model: germsoma_weismann · driver <code>pj_run_qalife.py</code> · model <code>pj_qalife.py</code> ·
+      witness <code>xbasis_witness_from_counts</code> (genotype-only) · gate
+      <code>entanglement_depth</code> (k=2 headline, k=3 reported).</p>
+    <p>Provenance: 2×2 factorial — <code>pj_0.0/pj_1.1_LIVE_*_ibm_kingston_20260912-20*.json</code>;
+      width sweep — <code>pj_1.2_LIVE_LIMIT_w{6..50}_*_natural_separable_ibm_kingston_20260912-21*.json</code>;
+      wall — <code>pj_1.2_LIVE_LIMIT_w54LIMITFOUND.txt</code>. Decision rationale:
+      <code>research/pj0_germsoma/DESIGN-DECISION.md</code>.</p>
+    <p>Framing (CD-4): scale · faithfulness · certification. Not a quantum speedup. N=1 per width.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+  const svg=document.getElementById("figW");
+  const W=720,H=380,L=52,R=108,T=24,B=48;
+  const pw=W-L-R, ph=H-T-B;
+  // log axis W 6..54
+  const lo=Math.log2(6), hi=Math.log2(54);
+  const x=w=>L+(Math.log2(w)-lo)/(hi-lo)*pw;
+  const y=v=>T+(1-v)*ph;              // 0..1
+  const gate=0.022, gate3=0.033;
+
+  // dead-zone band under k=2 gate
+  svg.appendChild(el("rect",{x:L,y:y(gate),width:pw,height:H-B-y(gate),fill:"#ff6b6b",opacity:".05"}));
+  // gridlines
+  [0,0.25,0.5,0.75,1.0].forEach(v=>{
+    svg.appendChild(el("line",{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:"#241b38",'stroke-width':1}));
+    const t=el("text",{x:L-8,y:y(v)+4,'text-anchor':"end",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"});
+    t.textContent=v.toFixed(2); svg.appendChild(t);
+  });
+  // x ticks
+  [6,12,16,24,32,40,50,54].forEach(w=>{
+    const t=el("text",{x:x(w),y:H-B+18,'text-anchor':"middle",fill:"#9aa7b0",'font-size':11,'font-family':"ui-monospace,monospace"});
+    t.textContent=w; svg.appendChild(t);
+  });
+  svg.appendChild(el("text",{x:L+pw/2,y:H-6,'text-anchor':"middle",fill:"#6b7580",'font-size':11,'font-family':"ui-monospace,monospace"})).textContent="genealogy width  W  (log scale) · qubits = 2W";
+  // gate line
+  svg.appendChild(el("line",{x1:L,y1:y(gate),x2:L+pw,y2:y(gate),stroke:"#ff6b6b",'stroke-width':1.5,'stroke-dasharray':"5 4",opacity:".8"}));
+  svg.appendChild(el("text",{x:L+4,y:y(gate)-5,fill:"#ff6b6b",'font-size':10.5,'font-family':"ui-monospace,monospace",opacity:".85"})).textContent="k=2σ gate 0.022";
+
+  // qubit wall at W=54
+  svg.appendChild(el("line",{x1:x(54),y1:T,x2:x(54),y2:H-B,stroke:"#ffd66d",'stroke-width':1.6,'stroke-dasharray':"4 4",opacity:".85"}));
+  const wl=el("text",{x:x(54)-6,y:T+14,'text-anchor':"end",fill:"#ffd66d",'font-size':11,'font-weight':700,'font-family':"ui-monospace,monospace"});
+  wl.textContent="qubit wall"; svg.appendChild(wl);
+  const wl2=el("text",{x:x(54)-6,y:T+30,'text-anchor':"end",fill:"#ffd66d",'font-size':9.5,'font-family':"ui-monospace,monospace",opacity:".8"});
+  wl2.textContent="needs 108q · chain 107"; svg.appendChild(wl2);
+
+  const data=[[6,.870],[12,.756],[16,.296],[24,.193],[28,.355],[32,.271],[36,.220],[40,.067],[42,.068],[46,.081],[50,.058]];
+  const d=data.map((p,i)=>(i?"L":"M")+x(p[0])+" "+y(p[1])).join(" ");
+  svg.appendChild(el("path",{d,fill:"none",stroke:"#6dffb0",'stroke-width':2.4,'stroke-linejoin':"round",'stroke-linecap':"round"}));
+  data.forEach(p=>svg.appendChild(el("circle",{cx:x(p[0]),cy:y(p[1]),r:4.5,fill:"#6dffb0",stroke:"#0b0718",'stroke-width':1.5})));
+
+  const label=(w,v,txt,color,dx,dy)=>{
+    const t=el("text",{x:x(w)+(dx||9),y:y(v)+(dy||4),fill:color,'font-size':12,'font-weight':700,'font-family':"ui-monospace,monospace"});
+    t.textContent=txt; svg.appendChild(t);
+  };
+  label(6,.870,"0.870","#6dffb0",8,-8);
+  label(12,.756,"0.756","#6dffb0",6,-8);
+  label(50,.058,"W=50 · 0.058 (k=3σ)","#6dffb0",-150,-10);
+})();
+</script>

@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "backend": "ibm_kingston",
+    "steps": 4,
+    "soma_death": "natural",
+    "phenotype": "entangled",
+    "selective_dd": true,
+    "aging_order_tol": 2,
+    "interaction": "none",
+    "mut_scale": 0.0,
+    "k": 2.0,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "shots": 8192,
+    "repeats": 1,
+    "widths": [
+      4
+    ],
+    "sim": false,
+    "calibration": null,
+    "t1_band": null,
+    "genealogical_entanglement_depth_W": 4
+  },
+  "by_width": {
+    "4": {
+      "witness_joint_mean": 0.11962890625,
+      "witness_joint_sigma": 0.011048543456039806,
+      "separable_mean": -8.417661007694869e-14,
+      "entanglement_signal": 0.11962890625008418,
+      "survives": true,
+      "alive_mean": null,
+      "deepest_mean": null
+    }
+  }
+}
