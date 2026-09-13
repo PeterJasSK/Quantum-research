@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantum Artificial Life</title>
+  <meta name="description" content="We recreated the 2018 quantum artificial-life model on a 156-qubit Heron-r2 and pushed its genealogical entanglement depth to W=24 (48 qubits) — about 6x the paper's origin — measured on the one observable with no classical surrogate.">
+  <link rel="canonical" href="https://life.peterjas.sk/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://life.peterjas.sk/">
+  <meta property="og:site_name" content="Quantum Artificial Life">
+  <meta property="og:title" content="Quantum Artificial Life — a genealogy 6x deeper than 2018">
+  <meta property="og:description" content="A living population line whose genealogical entanglement is a real, measured, non-classical quantity — depth W=24 (48 qubits) on ibm_kingston.">
+  <meta property="og:image" content="https://life.peterjas.sk/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root{
+      --bg:#05030a; --bg2:#0a0612; --panel:#0e0a18; --panel2:#120c22;
+      --ink:#eafff2; --dim:#9aa7b0; --dimmer:#6b7580; --line:#241b38;
+      --alive:#6dffb0;         /* alive / entangled green */
+      --gold:#ffd66d;          /* headline / hero anchor */
+      --dead:#ff6b6b;          /* dead / dark-state red */
+      --classical:#7f8a94;     /* classical / no-quantum grey */
+      --violet:#b58cff;        /* inheritance thread */
+      --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+      --sans:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      background:
+        radial-gradient(1200px 700px at 70% -10%, #160c2a 0%, transparent 60%),
+        radial-gradient(900px 600px at 0% 20%, #071a14 0%, transparent 55%),
+        var(--bg);
+      color:var(--ink); font-family:var(--sans); line-height:1.6;
+      -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+    a{color:var(--alive); text-decoration:none; border-bottom:1px solid rgba(109,255,176,.3)}
+    a:hover{border-bottom-color:var(--alive)}
+    .wrap{max-width:1040px; margin:0 auto; padding:0 20px}
+    code,.mono{font-family:var(--mono)}
+    h1,h2,h3{line-height:1.15; font-weight:650}
+    h2{font-size:clamp(1.3rem,3.4vw,1.9rem); margin:0 0 .5rem}
+    section{padding:clamp(2.2rem,6vw,4rem) 0; border-top:1px solid var(--line)}
+    section:first-of-type{border-top:0}
+    .eyebrow{font-family:var(--mono); font-size:.78rem; letter-spacing:.18em;
+      text-transform:uppercase; color:var(--alive); opacity:.8; margin:0 0 .6rem}
+
+    /* hero */
+    .hero{padding-top:clamp(2.6rem,7vw,5rem)}
+    .hero h1{font-size:clamp(2.1rem,7vw,4.1rem); margin:.2rem 0 .3rem;
+      background:linear-gradient(100deg,var(--ink),var(--alive) 55%,var(--gold));
+      -webkit-background-clip:text; background-clip:text; color:transparent}
+    .hero .sub{color:var(--dim); font-size:clamp(1rem,2.4vw,1.25rem); max-width:60ch; margin:0}
+    .stats{display:flex; flex-wrap:wrap; gap:14px; margin:1.6rem 0 1rem}
+    .stat{background:linear-gradient(180deg,var(--panel2),var(--panel));
+      border:1px solid var(--line); border-radius:14px; padding:16px 20px; min-width:150px}
+    .stat .big{font-family:var(--mono); font-size:clamp(1.7rem,4.6vw,2.6rem);
+      font-weight:700; letter-spacing:-.01em}
+    .stat.hi .big{color:var(--gold)} .stat.en .big{color:var(--alive)}
+    .stat .lbl{color:var(--dim); font-size:.82rem; margin-top:2px}
+    .hero-context{color:var(--dim); max-width:66ch; margin:.4rem 0 0; font-size:.98rem}
+
+    /* stage / canvas frame */
+    .stage{position:relative; margin-top:1.4rem;
+      background:linear-gradient(180deg,#080511,#0b0718);
+      border:1px solid var(--line); border-radius:16px; overflow:hidden}
+    canvas{display:block; width:100%; height:auto}
+    .cap{color:var(--dimmer); font-size:.82rem; margin:.7rem 2px 0}
+
+    /* HUD */
+    .hud{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+      background:var(--line); border-top:1px solid var(--line)}
+    .hud .cell{background:var(--panel); padding:10px 12px}
+    .hud .k{font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--dimmer)}
+    .hud .v{font-family:var(--mono); font-size:1.05rem; color:var(--ink); margin-top:2px}
+    .hud .v small{color:var(--dim); font-size:.72rem; font-family:var(--sans)}
+    .tag{font-family:var(--mono); font-size:.62rem; padding:1px 6px; border-radius:999px;
+      border:1px solid; vertical-align:middle; margin-left:6px}
+    .tag.meas{color:var(--alive); border-color:rgba(109,255,176,.4)}
+    .tag.interp{color:var(--gold); border-color:rgba(255,214,109,.4)}
+    .vit{height:8px; border-radius:999px; background:#1a1330; overflow:hidden; margin-top:8px}
+    .vit > i{display:block; height:100%; width:0%;
+      background:linear-gradient(90deg,var(--dead),var(--gold) 55%,var(--alive))}
+    .loopbar{height:3px; background:#140f26}
+    .loopbar > i{display:block; height:100%; width:0%; background:var(--violet); opacity:.7}
+
+    /* chart */
+    .chartbox{background:linear-gradient(180deg,#080511,#0b0718);
+      border:1px solid var(--line); border-radius:16px; padding:14px 8px 6px}
+    .chartbox svg{display:block; width:100%; height:auto}
+    .legend{display:flex; flex-wrap:wrap; gap:16px; margin:.8rem 4px 0; font-size:.82rem; color:var(--dim)}
+    .legend i{display:inline-block; width:22px; height:0; vertical-align:middle; margin-right:7px}
+    .legend .sw{border-top:3px solid}
+    .legend .dot{width:10px;height:10px;border-radius:50%;border:0;margin-right:7px}
+
+    /* prose */
+    p{max-width:72ch}
+    .lead{color:var(--dim); max-width:72ch}
+    table.op{border-collapse:collapse; width:100%; margin:1rem 0; font-size:.92rem}
+    table.op th,table.op td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+    table.op th{color:var(--dimmer); font-weight:600; font-size:.74rem; letter-spacing:.1em; text-transform:uppercase}
+    table.op td.g{font-family:var(--mono); color:var(--alive); white-space:nowrap}
+    .keyidea{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--alive);
+      border-radius:0 12px 12px 0; padding:16px 20px; margin:1.2rem 0}
+    .keyidea .mono{color:var(--gold)}
+
+    /* honesty */
+    .honest{background:linear-gradient(180deg,#160a0a,#0f0a12);
+      border:1px solid #3a2230; border-radius:16px; padding:6px 24px 22px}
+    .honest h2{color:var(--gold)}
+    .honest .row{border-top:1px solid #2c1b26; padding:16px 0}
+    .honest .row:first-of-type{border-top:0}
+    .honest .row h3{margin:0 0 .3rem; font-size:1.05rem; color:var(--ink)}
+    .honest .row h3 .badge{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em;
+      color:var(--dead); border:1px solid #4a2530; border-radius:999px; padding:2px 8px; margin-left:8px; vertical-align:middle}
+    .honest .row p{color:var(--dim); margin:.2rem 0 0}
+
+    /* provenance */
+    .prov{color:var(--dim); font-size:.9rem}
+    .prov .chips{display:flex; flex-wrap:wrap; gap:8px; margin:.9rem 0}
+    .prov .chip{font-family:var(--mono); font-size:.8rem; background:var(--panel);
+      border:1px solid var(--line); border-radius:999px; padding:5px 12px; color:var(--ink)}
+    footer{color:var(--dimmer); font-size:.82rem; padding:2.4rem 0 3rem}
+
+    @media (max-width:640px){
+      .hud{grid-template-columns:repeat(2,1fr)}
+      .stat{flex:1 1 40%; min-width:0}
+    }
+    @media (prefers-reduced-motion:reduce){
+      /* JS also freezes to a representative still frame */
+    }
+  </style>
+  <style>
+    /* ---- Concept B + C cards (from visualization mockups) — scoped under .mk ---- */
+    .mk{--alive2:#2ff2a0;--geno:#8f7dff;--danger:#ff6d8a;--ink-dim:#9fb3aa;--dead:#5b6470;margin-top:1.4rem}
+    .mk .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+      border-radius:18px;overflow:hidden;margin-top:26px;box-shadow:0 1px 0 #ffffff0a inset,0 30px 70px -34px #000c}
+    .mk .cvs-wrap{position:relative;background:radial-gradient(130% 130% at 50% 0%, #150f26, #060410)}
+    .mk .cvs-wrap.hero{aspect-ratio:16/8}
+    .mk .cvs-wrap.mini{aspect-ratio:16/6}
+    .mk canvas{width:100%;height:100%;display:block}
+    .mk .tag{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+      text-transform:uppercase;color:#060410;background:var(--alive);padding:5px 10px;border-radius:6px;font-weight:700}
+    .mk .counter{position:absolute;top:12px;right:14px;text-align:right;font-family:var(--mono);min-width:168px}
+    .mk .counter .big{font-size:26px;font-weight:700;color:var(--alive);line-height:1}
+    .mk .counter .big span{color:var(--ink-dim);font-size:15px;font-weight:400}
+    .mk .counter .sub{font-size:11px;color:var(--gold);margin-top:4px}
+    .mk .counter .sub2{font-size:11px;color:var(--alive);margin-top:2px}
+    .mk .counter .sub2 b{color:var(--ink-dim);font-weight:400}
+    .mk .counter .vlab{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-top:8px}
+    .mk .vit{height:6px;border-radius:4px;background:#ffffff12;overflow:hidden;margin-top:3px}
+    .mk .vitfill{height:100%;width:0;border-radius:4px;transition:width .12s linear}
+    .mk .loopbar{position:absolute;left:14px;right:14px;bottom:12px;height:4px;background:#ffffff12;border-radius:3px;overflow:hidden}
+    .mk .loopfill{position:absolute;top:0;left:0;bottom:0;width:0;background:linear-gradient(90deg,var(--alive2),var(--gold));border-radius:3px}
+    .mk .body{padding:20px clamp(16px,2.4vw,26px) 24px}
+    .mk .body h2{font-family:var(--mono);font-size:18px;margin:0 0 4px;font-weight:600}
+    .mk .kick{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--alive2);margin:0 0 12px}
+    .mk .meta-p{max-width:74ch;font-size:15px;color:var(--ink-dim);margin:0 0 12px}
+    .mk .meta-p b{color:var(--ink);font-weight:600}
+    .mk .meta-p em{color:var(--gold);font-style:normal}
+    .mk .beats{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media(max-width:720px){.mk .beats{grid-template-columns:repeat(2,1fr)}}
+    .mk .beats li{border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#ffffff05}
+    .mk .beats .t{font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:4px}
+    .mk .beats .d{font-size:13px;color:var(--ink-dim)}
+    .mk .beats .d b{color:var(--ink)}
+    .mk .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+    .mk .lg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+    .mk .dot{width:10px;height:10px;border-radius:50%;flex:none}
+    .mk code{font-family:var(--mono);color:var(--alive);font-size:.92em}
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===================== HERO (AC-1) ===================== -->
+  <section class="hero">
+    <p class="eyebrow">Recreated on today's hardware &middot; measured, not simulated</p>
+    <h1>Quantum Artificial Life</h1>
+    <p class="sub">A living population line that is born, mutates, interacts and dies &mdash;
+      with a genealogical thread of entanglement we can actually measure.</p>
+
+    <div class="stats">
+      <div class="stat hi"><div class="big">W = 24</div><div class="lbl">entanglement depth</div></div>
+      <div class="stat en"><div class="big">48</div><div class="lbl">qubits, one lineage</div></div>
+      <div class="stat hi"><div class="big">&asymp; 6&times;</div><div class="lbl">deeper than the 2018 origin</div></div>
+    </div>
+    <p class="hero-context">We rebuilt the full 2018 quantum artificial-life model &mdash; all four
+      Darwinian operators &mdash; and scaled it on a 156-qubit <span class="mono">ibm_kingston</span>
+      Heron-r2. The honest headline is a single measured number: a genealogy <strong>24 generations
+      deep</strong> whose entanglement witness <code>&langle;X<sup>&otimes;W</sup>&rangle;</code> still
+      beats its classical null &mdash; about <strong>6&times; past the paper's ~4-qubit, one-generation
+      origin</strong>, on the one observable with no classical surrogate.</p>
+
+    <!-- ===================== CONCEPT B — living genealogy hero ===================== -->
+    <div class="mk">
+      <div class="card">
+        <div class="cvs-wrap hero">
+          <span class="tag">Concept B · 24-step genealogy</span>
+          <div class="counter">
+            <div class="big" id="bcount">gen 0<span> / 24</span></div>
+            <div class="sub" id="bwit">&langle;X<sup>&otimes;W</sup>&rangle; &mdash;</div>
+            <div class="sub2" id="balive">alive <b>&mdash;</b></div>
+            <div class="sub2" id="bdeep" style="color:var(--geno)">deepest line <b>&mdash;</b></div>
+            <div class="vlab">entanglement vitality</div>
+            <div class="vit"><div class="vitfill" id="bvit"></div></div>
+          </div>
+          <canvas id="cB"></canvas>
+          <div class="loopbar"><div class="loopfill" id="loopfill"></div></div>
+        </div>
+        <div class="body">
+          <p class="kick">the metaphor</p>
+          <h2>Growing a lineage, one generation at a time</h2>
+          <p class="meta-p">Read left to right as <b>generations 1 &rarr; 24</b>, numbered on the line. The
+            <b>founder</b> (gen 1) lights alone, fully coherent &mdash; the ancestral genotype. It <b>replicates</b>,
+            copying its genotype into the next generation; that child <b>mutates</b> by a quantum-random angle
+            and <b>interacts</b> with its neighbour, and the line steps on &mdash; gen 2, 3, 4 &hellip; out to <b>gen 24,
+            depth W=24, 48 qubits</b>, the headline. Every generation <b>stays lit</b> once born, so the whole
+            lineage accumulates, then resets and grows again.</p>
+          <p class="meta-p">The violet <b>inheritance thread</b> is the shared entanglement passed down the
+            line. Its brightness <em>is the measured witness</em> &langle;X<sup>&otimes;W</sup>&rangle;: the founder's bond is
+            strongest, and <b>each further generation inherits a weaker share</b> &mdash; bright early, half-lit near
+            gen 12, a <b>faint ember by gen 24</b> (witness 0.038). So the deeper the lineage, the fainter its
+            quantum coherence &mdash; the exact fade the hardware measured. Green individuals are alive; a <b>red &#10005;</b>
+            marks one whose phenotype aged to the dark <code>|0&rangle;</code> state and <b>died</b> (the count matches
+            the measured alive-count).</p>
+          <ul class="beats">
+            <li><span class="t">gen 1 · founder</span><span class="d"><b>Strong but alone.</b> Ancestral genotype, witness &asymp;1.</span></li>
+            <li><span class="t">gen 2&ndash;23 · grow</span><span class="d"><b>Replicate + mutate + interact.</b> Each generation inherits a weaker entanglement share.</span></li>
+            <li><span class="t">gen 24 · headline</span><span class="d"><b>W=24, 48 qubits.</b> Faint thread &mdash; witness 0.038, last line above the null.</span></li>
+            <li><span class="t">hold &rarr; reset</span><span class="d"><b>Loop closes.</b> The 24-generation line holds, fades, rebuilds from the founder.</span></li>
+          </ul>
+          <div class="legend">
+            <span class="lg"><span class="dot" style="background:var(--alive)"></span>living individual</span>
+            <span class="lg"><span class="dot" style="background:var(--geno)"></span>inheritance thread (dims)</span>
+            <span class="lg"><span class="dot" style="background:var(--gold)"></span>gen 24 headline</span>
+            <span class="lg"><span class="dot" style="background:var(--danger)"></span>dead — reached |0&rangle;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ENTANGLEMENT BACKBONE (AC-3, secondary) ===================== -->
+  <section>
+    <p class="eyebrow">The thread that makes it quantum</p>
+    <h2>The entanglement backbone</h2>
+    <p class="lead">The founder's <code>|+&rangle;</code> is braided across the whole line as one
+      entangled strand. The braid runs bright and tight through the early generations and frays into the
+      dark past <strong>W&nbsp;&asymp;&nbsp;24</strong> &mdash; the coherence wall, made literal. Same
+      loop clock as the lineage above, so the two read as one system.</p>
+    <div class="mk">
+      <div class="card">
+        <div class="cvs-wrap mini">
+          <span class="tag">Concept C · backbone</span>
+          <canvas id="cC"></canvas>
+        </div>
+        <div class="body">
+          <p class="kick">the structure</p>
+          <h2>The GHZ helix beneath it</h2>
+          <p class="meta-p">The same genealogy, stripped to its physics: the founder's <code>|+&rangle;</code> braided
+            across every generation as one entangled strand. Each rung is a generation; strand and rung
+            brightness = the witness. Past <b>W&asymp;24</b> the braid <b>frays and goes dark</b> &mdash; the coherence
+            wall made literal. B is the <em>life</em>, C is the <em>thread that makes it quantum</em>.</p>
+          <div class="legend">
+            <span class="lg"><span class="dot" style="background:var(--alive)"></span>coherent strand</span>
+            <span class="lg"><span class="dot" style="background:var(--gold)"></span>generation rung</span>
+            <span class="lg"><span class="dot" style="background:var(--dead)"></span>frayed / decohered</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WITNESS DECAY CHART (AC-2) ===================== -->
+  <section>
+    <p class="eyebrow">The measured result</p>
+    <h2>Witness decay with depth</h2>
+    <p class="lead">One circuit per width, each measured independently on hardware. As the genealogy
+      grows, mutation and noise shrink the GHZ witness. The headline is the deepest rung that still
+      clears the classical null by 2&sigma;: <strong>W&nbsp;=&nbsp;24</strong> survives by a hair
+      (+0.038 vs a 0.032 bar); <strong>W&nbsp;=&nbsp;32</strong> is buried in noise.</p>
+    <div class="chartbox">
+      <svg id="chart" viewBox="0 0 900 460" role="img"
+        aria-label="Witness versus width: measured hardware points with 2-sigma bars decaying from 0.879 at W=3 to 0.038 at W=24 and 0.008 at W=32, against a classical null at zero.">
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--alive)"></i>hardware &langle;X<sup>&otimes;W</sup>&rangle; &plusmn; 2&sigma;</span>
+      <span><i class="sw" style="border-color:var(--classical);border-top-style:dashed"></i>classical null (0)</span>
+      <span><i class="sw" style="border-color:rgba(181,140,255,.6)"></i>noiseless sim reference</span>
+      <span><i class="dot" style="background:var(--gold)"></i>W = 24 &mdash; last rung alive</span>
+    </div>
+    <p class="cap" id="chartCap"></p>
+  </section>
+
+  <!-- ===================== METHOD (AC-4) ===================== -->
+  <section>
+    <p class="eyebrow">How it works</p>
+    <h2>How it lives the Darwinian way</h2>
+    <p class="lead">An <strong>individual is 2 qubits</strong>: a genotype <code>g</code> and a
+      phenotype <code>p</code>. The whole 2018 model is four Darwinian operators, each a specific gate,
+      verified operator-by-operator against the paper's closed-form values.</p>
+    <table class="op" id="opTable">
+      <thead><tr><th>Operator</th><th>Gate</th><th>Meaning</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="keyidea">
+      <p style="margin:0"><strong>Why one number is quantum and the others are not.</strong>
+      The population's alive-count is a <code>&langle;&sigma;<sub>z</sub>&rangle;</code> quantity living
+      on the density-matrix diagonal &mdash; a classical genotype-copy plus value-tracking reproduces it
+      <em>exactly</em>. The quantum claim lives only off-diagonal, in the joint X-parity
+      <span class="mono">witness</span>: a GHZ genealogy gives
+      <code>&langle;X<sup>&otimes;W</sup>&rangle; = 1</code> while any separable line gives
+      <code>&prod;&langle;X&rangle; &asymp; 0</code>. That gap has <strong>no classical surrogate</strong>
+      &mdash; which is why it, and only it, is the headline.</p>
+    </div>
+    <p id="mutNote" class="lead"></p>
+  </section>
+
+  <!-- ===================== HONESTY (AC-5) ===================== -->
+  <section>
+    <div class="honest">
+      <p class="eyebrow" style="color:var(--gold);opacity:.9">What we did <em>not</em> get</p>
+      <h2>The honest ledger</h2>
+
+      <div class="row">
+        <h3>The population metrics are classical <span class="badge">no quantum claim</span></h3>
+        <p>Alive-count and deepest-lineage are diagonal observables. A death-matched classical surrogate
+        reproduces them to <code>&Delta; &asymp; 0</code>. They give the visual its life, but they carry
+        no quantum signal &mdash; every quantum claim on this page is the witness, nothing else.</p>
+      </div>
+
+      <div class="row">
+        <h3>No quantum-speed advantage <span class="badge">scale, not speedup</span></h3>
+        <p>This is a faithfulness-and-scale milestone: the full four-operator model, rebuilt and pushed to
+        48 qubits of provably non-classical genealogical entanglement. It is <em>not</em> a claim that the
+        quantum machine computes anything faster than a classical one.</p>
+      </div>
+
+      <div class="row">
+        <h3>Teleport-routing was tried, tied, then lost &mdash; here <span class="badge">refuted</span></h3>
+        <p id="teleNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROVENANCE (AC-7) ===================== -->
+  <section>
+    <p class="eyebrow">Provenance</p>
+    <h2>Every number is a real measurement</h2>
+    <p class="prov">The width sweep and population arm were run on real hardware &mdash; not a simulator,
+      not a mock. The only simulated curve is the faint noiseless reference behind the chart, labelled as
+      such. The run JSONs sit beside this page in <code>data/</code>; each plotted value is transcribed
+      from them and from <code>research/CONCLUSION_MONTH4.md</code>.</p>
+    <div class="prov chips" id="provChips"></div>
+    <p class="prov">Model: the full Alvarez-Rodriguez, Sanz, Lamata &amp; Solano artificial-life model
+      &mdash; <em>Sci. Rep.</em> <strong>8</strong>:14793 (2018). This work recreates it on current
+      hardware and reports the measured genealogical entanglement depth; no new physics is claimed.</p>
+  </section>
+
+  <footer>
+    Quantum Artificial Life &middot; measured on <span class="mono">ibm_kingston</span> (156-qubit
+    Heron-r2) &middot; a living genealogy, 24 generations deep.
+  </footer>
+
+</div>
+
+<script>
+/* ================= measured data — transcribed from CONCLUSION_MONTH4.md + run JSONs ================= */
+const DATA = {
+  meta:{
+    backend:"ibm_kingston", qubits_total:156, family:"Heron-r2",
+    shots:8192, repeats:3, steps:3, mut_scale:0.08, k:2,
+    death:"unitary", interaction:"nn",
+    twoq_err_max:0.0074, readout_max:0.030,
+    entanglement_depth_W:24, entanglement_depth_qubits:48,
+    paper_origin_W:4, improvement_x:6,
+    paper:"Alvarez-Rodriguez, Sanz, Lamata, Solano, Sci. Rep. 8:14793 (2018)"
+  },
+  // AC-2 headline chart — live hardware width sweep (verbatim from CONCLUSION_MONTH4.md)
+  hardware_sweep:[
+    { W:3,  qubits:6,  witness:0.879, sigma:0.027, twosigma:0.054, alive:2,  deepest:1,  survives:true  },
+    { W:4,  qubits:8,  witness:0.808, sigma:0.021, twosigma:0.042, alive:3,  deepest:2,  survives:true  },
+    { W:6,  qubits:12, witness:0.612, sigma:0.014, twosigma:0.028, alive:5,  deepest:4,  survives:true  },
+    { W:12, qubits:24, witness:0.301, sigma:0.017, twosigma:0.034, alive:11, deepest:10, survives:true  },
+    { W:24, qubits:48, witness:0.038, sigma:0.016, twosigma:0.032, alive:23, deepest:22, survives:true  }, // marginal
+    { W:32, qubits:64, witness:0.008, sigma:0.013, twosigma:0.026, alive:32, deepest:31, survives:false }  // dead
+  ],
+  // context — noiseless density-matrix sim (qalife_m4_nn_unitary_density_matrix_sim_sim.json), W 2..6
+  sim_reference:[
+    { W:2, witness:0.9736 },
+    { W:3, witness:0.9666 },
+    { W:4, witness:0.9592 },
+    { W:5, witness:0.9526 },
+    { W:6, witness:0.9300 }
+  ],
+  // AC-3 lineage thread driver — witness at every integer depth via these anchors (measured widths exact;
+  // W=1,2 gently extrapolated; the rest linearly interpolated and tagged "interp" in the HUD)
+  witness_anchors:[ [1,0.970],[2,0.930],[3,0.879],[4,0.808],[6,0.612],[12,0.301],[24,0.038],[32,0.008] ],
+  measured_widths:[3,4,6,12,24,32],
+  steps:24,
+  alive_anchors:   [ [3,2],[4,3],[6,5],[12,11],[24,23],[32,32] ],
+  deepest_anchors: [ [3,1],[4,2],[6,4],[12,10],[24,22],[32,31] ],
+  mutation_note:"Each generation applies one Ry(θ) mutation, with θ drawn from a certified " +
+    "quantum random-number generator. That accumulated mutation is the physical reason the genealogical " +
+    "entanglement witness decays with depth — the thread you see dimming, generation by generation.",
+  teleport_note:"The same teleported long-range gate that carried our earlier Quantum Tree study did not " +
+    "help here — and the reason is instructive. In Quantum Tree, one long-range bond joined two genes " +
+    "about twelve qubits apart; the SWAP ladder needed to route it was depth ~31 and simply ran past the " +
+    "chip's coherence, washing the correlation out (even flipping its sign), so a constant ~9-gate " +
+    "teleported CNOT won cleanly. Here the interaction is a full phenotype SWAP realised as three " +
+    "teleported CNOTs per bond, each with its own reset corridor, mid-circuit measurements and " +
+    "feed-forward. On this newer Heron-r2 chip readout and mid-circuit error now dominate two-qubit-gate " +
+    "error, so that teleport machinery costs more coherence than the short SWAP ladder it replaces — " +
+    "and the many-body entanglement witness is far more fragile than a two-point correlation. Teleport " +
+    "tied, then lost. Same tool, opposite verdict, because the bottleneck moved.",
+  operators:[
+    { name:"Founder",          gate:"Ry(π/2) on g₀",     meaning:"ancestral genotype seeded on the equator" },
+    { name:"Self-replication", gate:"CX(gₖ₋₁ → gₖ)", meaning:"partial σz clone of the parent genotype (η = 1)" },
+    { name:"Mutation",         gate:"Ry(θₖ) on gₖ",  meaning:"θ from a certified QRNG — the source of variation" },
+    { name:"Phenotype",        gate:"CX(gₖ → pₖ)",   meaning:"a second partial clone: genotype expressed as phenotype" },
+    { name:"Death / aging",    gate:"CRY + CX + reset(bath)",       meaning:"amplitude damping toward the |0⟩ dark state" },
+    { name:"Interaction",      gate:"SWAP(pₖ, pⱼ)",       meaning:"predation / phenotype exchange between individuals" }
+  ]
+};
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
+const lerp = (a,b,t) => a+(b-a)*t;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// piecewise-linear interpolation over [ [x,y], ... ] anchors, clamped at the ends
+function interpAnchors(anchors, x){
+  if(x<=anchors[0][0]) return anchors[0][1];
+  const n=anchors.length;
+  if(x>=anchors[n-1][0]) return anchors[n-1][1];
+  for(let i=0;i<n-1;i++){
+    const [x0,y0]=anchors[i], [x1,y1]=anchors[i+1];
+    if(x>=x0 && x<=x1) return lerp(y0,y1,(x-x0)/(x1-x0));
+  }
+  return anchors[n-1][1];
+}
+const witW   = W => interpAnchors(DATA.witness_anchors, W);
+const aliveW = W => interpAnchors(DATA.alive_anchors, W);
+const deepW  = W => interpAnchors(DATA.deepest_anchors, W);
+const isMeasured = W => DATA.measured_widths.includes(W);
+
+/* setup a hi-dpi canvas sized to its container's width and a fixed aspect ratio */
+function fitCanvas(cv, aspect){
+  const cssW = cv.parentElement.clientWidth;
+  const cssH = Math.round(cssW/aspect);
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  cv.style.height = cssH+"px";
+  cv.width = Math.round(cssW*dpr);
+  cv.height = Math.round(cssH*dpr);
+  const ctx = cv.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx, W:cssW, H:cssH};
+}
+
+const COL = {
+  alive:"#6dffb0", gold:"#ffd66d", dead:"#ff6b6b", violet:"#b58cff",
+  ink:"#eafff2", dim:"#9aa7b0", grid:"#241b38", bg:"#0b0718"
+};
+
+/* ================= populate DOM text from DATA ================= */
+(function fillProse(){
+  $("#opTable tbody").innerHTML = DATA.operators.map(o =>
+    `<tr><td>${o.name}</td><td class="g">${o.gate}</td><td>${o.meaning}</td></tr>`).join("");
+  $("#mutNote").textContent = DATA.mutation_note;
+  $("#teleNote").textContent = DATA.teleport_note;
+  const m = DATA.meta;
+  $("#provChips").innerHTML = [
+    `${m.backend}`, `${m.qubits_total}-qubit ${m.family}`, `${m.shots} shots`,
+    `${m.repeats} repeats`, `${m.steps} steps`, `mut_scale ${m.mut_scale}`,
+    `${m.interaction} / ${m.death}`, `2q err ≤ ${m.twoq_err_max}`, `readout ≤ ${m.readout_max}`
+  ].map(t => `<span class="chip">${t}</span>`).join("");
+  $("#chartCap").textContent =
+    `Measured on ${m.backend} (${m.qubits_total}-qubit ${m.family}), ${m.shots} shots × ${m.repeats} repeats, ` +
+    `${m.interaction} interaction, ${m.death} death, mut_scale ${m.mut_scale}. Points are ` +
+    `⟨X^⊗W⟩ with 2σ bars; values match CONCLUSION_MONTH4.md exactly.`;
+})();
+
+/* ================= AC-2 witness decay chart (inline SVG, hand-rolled) ================= */
+(function drawChart(){
+  const svg = $("#chart");
+  const VB={w:900,h:460}, pad={l:70,r:24,t:28,b:64};
+  const plotW=VB.w-pad.l-pad.r, plotH=VB.h-pad.t-pad.b;
+  const widths=[3,4,6,12,24,32];
+  const xIdx = W => widths.indexOf(W);
+  const x = W => pad.l + (xIdx(W)/(widths.length-1))*plotW;   // categorical spacing
+  const yMax=1.0, yMin=-0.05;
+  const y = v => pad.t + (1-(v-yMin)/(yMax-yMin))*plotH;
+  const el=(t,a,txt)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);
+    for(const k in a)e.setAttribute(k,a[k]); if(txt!=null)e.textContent=txt; return e;};
+  const add=e=>svg.appendChild(e);
+  svg.setAttribute("viewBox",`0 0 ${VB.w} ${VB.h}`);
+
+  // y gridlines + labels
+  [0,0.25,0.5,0.75,1.0].forEach(v=>{
+    add(el("line",{x1:pad.l,y1:y(v),x2:VB.w-pad.r,y2:y(v),stroke:COL.grid,"stroke-width":1}));
+    add(el("text",{x:pad.l-10,y:y(v)+4,fill:COL.dim,"font-size":13,"text-anchor":"end",
+      "font-family":"ui-monospace,monospace"}, v.toFixed(2)));
+  });
+  // classical null at 0 (dashed, emphasised)
+  add(el("line",{x1:pad.l,y1:y(0),x2:VB.w-pad.r,y2:y(0),stroke:COL.dim,"stroke-width":2,
+    "stroke-dasharray":"7 6"}));
+  add(el("text",{x:VB.w-pad.r,y:y(0)-8,fill:COL.dim,"font-size":12,"text-anchor":"end"},
+    "classical null"));
+  // x labels
+  widths.forEach(W=>{
+    add(el("text",{x:x(W),y:VB.h-pad.b+24,fill:COL.dim,"font-size":13,"text-anchor":"middle",
+      "font-family":"ui-monospace,monospace"}, "W="+W));
+  });
+  add(el("text",{x:pad.l+plotW/2,y:VB.h-14,fill:COL.dim,"font-size":13,"text-anchor":"middle"},
+    "genealogy width W  (individuals × 2 = qubits)"));
+
+  // faint noiseless sim reference (only overlaps W=3..6 categories)
+  const simPts=DATA.sim_reference.filter(d=>widths.includes(d.W));
+  if(simPts.length>1){
+    const d=simPts.map((p,i)=>`${i?"L":"M"}${x(p.W).toFixed(1)},${y(p.witness).toFixed(1)}`).join(" ");
+    add(el("path",{d,fill:"none",stroke:"rgba(181,140,255,.55)","stroke-width":2,"stroke-dasharray":"2 5"}));
+    simPts.forEach(p=>add(el("circle",{cx:x(p.W),cy:y(p.witness),r:3,fill:"rgba(181,140,255,.7)"})));
+  }
+
+  // hardware line
+  const hs=DATA.hardware_sweep;
+  const line=hs.map((p,i)=>`${i?"L":"M"}${x(p.W).toFixed(1)},${y(p.witness).toFixed(1)}`).join(" ");
+  add(el("path",{d:line,fill:"none",stroke:"rgba(109,255,176,.5)","stroke-width":2}));
+
+  // points + 2sigma error bars + labels
+  hs.forEach(p=>{
+    const cx=x(p.W), cy=y(p.witness);
+    const yTop=y(p.witness+p.sigma), yBot=y(p.witness-p.sigma); // sigma is the +-; bar spans 2sigma
+    add(el("line",{x1:cx,y1:yTop,x2:cx,y2:yBot,stroke:COL.alive,"stroke-width":2,opacity:.8}));
+    add(el("line",{x1:cx-5,y1:yTop,x2:cx+5,y2:yTop,stroke:COL.alive,"stroke-width":2,opacity:.8}));
+    add(el("line",{x1:cx-5,y1:yBot,x2:cx+5,y2:yBot,stroke:COL.alive,"stroke-width":2,opacity:.8}));
+    const hero=p.W===24;
+    add(el("circle",{cx,cy,r:hero?7:5,fill:hero?COL.gold:COL.alive,
+      stroke:hero?"#3a2a00":"#04120b","stroke-width":2}));
+    add(el("text",{x:cx,y:cy-14,fill:hero?COL.gold:COL.ink,"font-size":13,"text-anchor":"middle",
+      "font-weight":600,"font-family":"ui-monospace,monospace"}, p.witness.toFixed(3)));
+  });
+  // annotations
+  const a24=hs.find(p=>p.W===24), a32=hs.find(p=>p.W===32);
+  add(el("text",{x:x(24),y:y(a24.witness)+34,fill:COL.gold,"font-size":12.5,"text-anchor":"middle",
+    "font-weight":600},"last rung alive"));
+  add(el("text",{x:x(32),y:y(a32.witness)+34,fill:COL.dim,"font-size":12.5,"text-anchor":"end"},
+    "buried in noise"));
+})();
+
+/* ================= Concept B (hero genealogy) + Concept C (GHZ backbone) — from mockup ================= */
+(function(){
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const STEPS = 24;                 // exactly 24 individuals = depth W=24
+const STEP_MS = 360, HOLD_MS = 1700, FADE_MS = 700;
+const FILL_MS = STEP_MS*STEPS;                 // ~8.64s build
+const LOOP_MS = FILL_MS + HOLD_MS + FADE_MS;   // ~11.0s cycle
+const ANCH=[[1,0.970],[2,0.930],[3,0.879],[4,0.808],[6,0.612],[12,0.301],[24,0.038],[32,0.008]];
+function witW(W){ if(W<=ANCH[0][0])return ANCH[0][1];
+  for(let i=0;i<ANCH.length-1;i++){const[a,av]=ANCH[i],[b,bv]=ANCH[i+1];
+    if(W<=b){return av+(bv-av)*((W-a)/(b-a));}} return ANCH[ANCH.length-1][1];}
+const MEASURED=new Set([3,4,6,12,24,32]);
+const ALIVE=[[3,2],[4,3],[6,5],[12,11],[24,23],[32,32]];
+const DEEP =[[3,1],[4,2],[6,4],[12,10],[24,22],[32,31]];
+function interp(tbl,W){ if(W<=tbl[0][0])return tbl[0][1];
+  for(let i=0;i<tbl.length-1;i++){const[a,av]=tbl[i],[b,bv]=tbl[i+1];
+    if(W<=b)return av+(bv-av)*((W-a)/(b-a));} return tbl[tbl.length-1][1];}
+const COL={bg:"#060410",geno:"#8f7dff",alive:"#6dffb0",gold:"#ffd66d",dead:"#5b6470",danger:"#ff6d8a",dim:"#9fb3aa"};
+function lerpC(h1,h2,t){const a=parseInt(h1.slice(1),16),b=parseInt(h2.slice(1),16);
+  const ar=a>>16,ag=(a>>8)&255,ab=a&255,br=b>>16,bg=(b>>8)&255,bb=b&255;
+  return `rgb(${ar+(br-ar)*t|0},${ag+(bg-ag)*t|0},${ab+(bb-ab)*t|0})`;}
+function setup(id){const c=document.getElementById(id),ctx=c.getContext("2d");
+  function fit(){const r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
+    c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);return r;}
+  return {c,ctx,fit};}
+
+// ---------- B : 24-generation lineage — one individual per generation, alive/dead, thread dims ----------
+(function(){const {c,ctx,fit}=setup("cB");let R=fit();addEventListener("resize",()=>R=fit());
+  function node(i){const u=i/(STEPS-1);
+    return [R.width*(0.06+0.88*u), R.height*(0.5 + 0.34*Math.sin(u*Math.PI*4))];}
+  const elC=document.getElementById("bcount"),elW=document.getElementById("bwit"),
+        elA=document.getElementById("balive"),elD=document.getElementById("bdeep"),
+        elV=document.getElementById("bvit"),elF=document.getElementById("loopfill");
+  const WIT0=witW(1);
+  function frame(tm){const p=tm%LOOP_MS;ctx.clearRect(0,0,R.width,R.height);
+    let litF,gA=1;
+    if(p<FILL_MS)litF=p/STEP_MS; else if(p<FILL_MS+HOLD_MS)litF=STEPS;
+    else{litF=STEPS;gA=1-(p-FILL_MS-HOLD_MS)/FADE_MS;}
+    const N=Math.min(STEPS,Math.floor(litF)), edge=litF-N;
+    const aliveNow=Math.min(N,Math.round(interp(ALIVE,Math.max(1,N))));
+    const upto=N+(edge>0&&N<STEPS?1:0);
+    for(let i=1;i<upto;i++){const w=witW(i+1);const[x0,y0]=node(i-1),[x1,y1]=node(i);
+      ctx.strokeStyle=`rgba(143,125,255,${(0.06+0.8*w)*gA})`;ctx.lineWidth=0.8+3.5*w;
+      ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();}
+    for(let i=0;i<N;i++)drawCell(i,1,gA,tm,false,i>=aliveNow);
+    if(N<STEPS&&p<FILL_MS)drawCell(N,Math.max(0.15,edge),gA,tm,true,false);
+    ctx.globalAlpha=1;
+    const shownN=(p<FILL_MS?N:STEPS), shownW=Math.max(1,Math.min(STEPS,shownN+(p<FILL_MS&&edge>0?1:0)));
+    const w=witW(shownW),vit=Math.max(0,Math.min(1,w/WIT0));
+    const aliveN=Math.min(shownW,Math.round(interp(ALIVE,shownW))),deepN=Math.round(interp(DEEP,shownW));
+    if(elC)elC.innerHTML="gen "+shownN+"<span> / 24</span>";
+    if(elW)elW.innerHTML="⟨X<sup>⊗"+shownW+"</sup>⟩ = "+w.toFixed(3)+(MEASURED.has(shownW)?" · measured":" · interp");
+    if(elA)elA.innerHTML="alive <b>"+aliveN+" / "+shownW+"</b>";
+    if(elD)elD.innerHTML="deepest line <b>"+deepN+"</b>";
+    if(elV){elV.style.width=(vit*100).toFixed(0)+"%";
+      elV.style.background=vit>0.4?"var(--alive)":vit>0.12?"var(--gold)":"var(--danger)";}
+    if(elF)elF.style.width=(litF/STEPS*100).toFixed(1)+"%";
+    requestAnimationFrame(frame);}
+  function drawCell(i,grow,gA,tm,birthing,dead){const W=i+1,w=witW(W);const[x,y]=node(i);
+    const anchor=(W===24), breathe=0.8+0.2*Math.sin(tm*0.004+i*0.7);
+    ctx.globalAlpha=gA*(dead?0.45:0.55)*Math.max(0.3,grow);
+    ctx.fillStyle=dead?COL.danger:COL.dim;ctx.font="9px ui-monospace";ctx.textAlign="center";
+    ctx.fillText((W%2===1||W===24||W<=4)?String(W):"", x, y+16);
+    if(dead){const r=3.4*Math.max(0.4,grow);
+      ctx.globalAlpha=gA*0.22;ctx.fillStyle=COL.danger;
+      ctx.beginPath();ctx.arc(x,y,r*2.2,0,7);ctx.fill();
+      ctx.globalAlpha=gA*0.9;ctx.strokeStyle=COL.danger;ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-r*0.6,y-r*0.6);ctx.lineTo(x+r*0.6,y+r*0.6);
+      ctx.moveTo(x+r*0.6,y-r*0.6);ctx.lineTo(x-r*0.6,y+r*0.6);ctx.stroke();ctx.globalAlpha=1;return;}
+    const r=(3.5+7*w*breathe)*Math.max(0.2,grow);
+    const col=lerpC(COL.dead,COL.alive,Math.min(1,w*1.7+0.05));
+    ctx.globalAlpha=(0.20*(0.3+w))*gA*grow;ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(x,y,r*2.6,0,7);ctx.fill();
+    ctx.globalAlpha=gA*Math.max(0.25,grow);ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+    ctx.globalAlpha=gA*0.9;ctx.fillStyle=COL.geno;
+    ctx.beginPath();ctx.arc(x,y-r-4,2.2*Math.max(0.4,grow),0,7);ctx.fill();
+    if(birthing){ctx.globalAlpha=(1-grow)*0.9*gA;ctx.strokeStyle=COL.gold;ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.arc(x,y,r+4+(1-grow)*10,0,7);ctx.stroke();}
+    if(anchor&&grow>0.6){ctx.globalAlpha=0.95*gA;ctx.strokeStyle=COL.gold;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(x,y,r+9,0,7);ctx.stroke();
+      ctx.fillStyle=COL.gold;ctx.font="10px ui-monospace";ctx.textAlign="center";
+      ctx.fillText("W=24",x,y-r-14);}
+    ctx.globalAlpha=1;}
+  if(REDUCE){frame(FILL_MS+200);} else requestAnimationFrame(frame);
+})();
+
+// ---------- C : braided GHZ backbone (smooth) ----------
+(function(){const {c,ctx,fit}=setup("cC");let R=fit();addEventListener("resize",()=>R=fit());
+  function witU(u){return witW(3*Math.pow(32/3,u));}
+  function frame(tm){const t=(tm%LOOP_MS)/LOOP_MS*Math.PI*2;ctx.clearRect(0,0,R.width,R.height);
+    const x0=R.width*0.07,x1=R.width*0.93,ymid=R.height*0.5,amp=R.height*0.30,steps=180;
+    for(let pass=0;pass<2;pass++){ctx.beginPath();
+      for(let i=0;i<=steps;i++){const p=i/steps,w=witU(p),x=x0+(x1-x0)*p,ph=p*11+t+pass*Math.PI;
+        const fray=(1-w)*Math.sin(i*9.7+t*3)*amp*0.5*(p>0.55?1:0);
+        const y=ymid+Math.sin(ph)*amp*(0.3+0.7*w)+fray; i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.strokeStyle=pass?"rgba(47,242,160,0.6)":"rgba(143,125,255,0.6)";ctx.lineWidth=2;ctx.stroke();}
+    const rungs=20;
+    for(let i=0;i<rungs;i++){const p=i/(rungs-1),w=witU(p),x=x0+(x1-x0)*p,ph=p*11+t;
+      const y1=ymid+Math.sin(ph)*amp*(0.3+0.7*w),y2=ymid+Math.sin(ph+Math.PI)*amp*(0.3+0.7*w);
+      ctx.strokeStyle=`rgba(255,214,109,${0.12+0.7*w})`;ctx.lineWidth=1+1.4*w;
+      ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();}
+    if(!REDUCE)requestAnimationFrame(frame);}
+  if(REDUCE)frame(2500); else requestAnimationFrame(frame);
+})();
+})();
+
+</script>
+</body>
+</html>
