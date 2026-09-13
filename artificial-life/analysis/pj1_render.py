@@ -51,13 +51,19 @@ def build_data(run: dict[str, Any]) -> dict[str, Any]:
     ov = occupancy overlap (contact),  w = the joint genealogy witness <X^{2W}>."""
     meta = run["meta"]
     track = int(meta["track"])
+    hw_contact = False                                # True if the contact meter falls back to overlap
     arms_out: dict[str, list[dict[str, Any]]] = {}
     for arm, frames in run["arms"].items():
         seq: list[dict[str, Any]] = []
         for f in frames:
             a, b = f["occ"][0], f["occ"][1]
-            s = f.get("contact_entropy_sim") or 0.0
             ov = sum(x * y for x, y in zip(a, b))
+            s_raw = f.get("contact_entropy_sim")
+            if s_raw is None:                         # hardware: no statevector entropy -> show the
+                s = ov                                # MEASURED overlap so the contact meter lives
+                hw_contact = True
+            else:
+                s = float(s_raw)
             seq.append({
                 "a": [round(float(x), 4) for x in a],
                 "b": [round(float(x), 4) for x in b],
@@ -69,13 +75,18 @@ def build_data(run: dict[str, Any]) -> dict[str, Any]:
     # inject ONLY the arms actually in the run (single-arm runs render single-arm; render_html
     # strips the buttons for any arm not present).
     n_frames = len(next(iter(arms_out.values())))
-    return {"L": track, "frames": n_frames, "arms": arms_out}
+    return {"L": track, "frames": n_frames, "arms": arms_out, "_hw_contact": hw_contact}
 
 
 def render_html(data: dict[str, Any], out_dir: str) -> str:
     """Inject `data` into the picked wave-bars template; write a self-contained index.html."""
     with open(_TEMPLATE) as f:
         template = f.read()
+    hw_contact = data.pop("_hw_contact", False)       # don't inject the internal flag into the page
+    if hw_contact:                                     # relabel the meter: it now shows MEASURED overlap
+        template = template.replace(
+            "Contact — soma↔soma entanglement (bits)",
+            "Contact — bodies overlapping (measured on QC)")
     present = set(data["arms"])
     literal = "const DATA = " + json.dumps(data, separators=(",", ":")) + ";"
     lines = template.splitlines()
