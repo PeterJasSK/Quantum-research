@@ -1,0 +1,224 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PJ1 — two organisms meeting (wave-bars)</title>
+<style>
+  :root{
+    --ground:#0a0d13; --panel:#111621; --panel2:#0d121b; --edge:#1e2634;
+    --ink:#e9eef7; --mut:#8b96ab; --dim:#59637a;
+    --A:#f6a623; --A2:#ffce7a; --B:#37c7d8; --B2:#8ee9f3;
+    --alive:#49dd8b; --dead:#ff5d78; --wire:#2a3446;
+    --mono:ui-monospace,"SFMono-Regular","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%,#131b28 0%,transparent 60%),var(--ground);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px;margin:0 auto;padding:36px 22px 70px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--mut);
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--A);box-shadow:0 0 8px var(--A);}
+  h1{font-family:var(--mono);font-weight:600;font-size:clamp(24px,3.6vw,34px);letter-spacing:-.01em;
+    margin:12px 0 6px;text-wrap:balance;}
+  .sub{color:var(--mut);max-width:72ch;font-size:15px;margin:0 0 6px;}
+  .sub b{color:var(--ink);}
+  .why{color:var(--mut);max-width:74ch;font-size:14px;margin:14px 0 24px;padding:14px 16px;
+    border:1px solid var(--edge);border-left:2px solid var(--A);border-radius:0 10px 10px 0;background:#0e131d;}
+  .why b{color:var(--A2);}
+
+  .bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:#0b0f17f0;backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:12px;
+    padding:11px 15px;margin-bottom:20px;}
+  .arms{display:flex;gap:5px;background:#0a0e16;border:1px solid var(--edge);border-radius:9px;padding:4px;}
+  .arm{font-family:var(--mono);font-size:12px;color:var(--mut);background:transparent;border:0;
+    padding:7px 11px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+  .arm:hover{color:var(--ink);}
+
+  .arm[data-arm="soma_soma"][aria-pressed="true"]{background:#13312a;color:var(--alive);box-shadow:inset 0 0 0 1px #1f6b4d;}
+
+  .play{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:#1a2230;border:1px solid var(--wire);
+    border-radius:8px;padding:7px 13px;cursor:pointer;min-width:74px;}
+  .play:hover{border-color:#3a475e;}
+  input[type=range]{flex:1;min-width:120px;accent-color:var(--A);}
+  .tc{font-family:var(--mono);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:52px;text-align:right;}
+
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);
+    border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -46px #000,inset 0 1px 0 #ffffff08;}
+  .cvw{padding:8px 12px 0;}
+  canvas{display:block;width:100%;height:auto;border-radius:10px;background:radial-gradient(120% 150% at 50% 100%,#0c1119,#070a0f);}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--edge);border-top:1px solid var(--edge);margin-top:8px;}
+  .ro{background:var(--panel2);padding:13px 16px;}
+  .ro .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .ro .big{font-family:var(--mono);font-size:26px;font-variant-numeric:tabular-nums;margin-top:2px;line-height:1;}
+  .ro.gen .big.ok{color:var(--alive)} .ro.gen .big.bad{color:var(--dead)} .ro.gen .big.neu{color:var(--mut)}
+  .ro .note{font-size:12px;color:var(--mut);margin-top:5px;}
+  .cap{display:flex;gap:10px;align-items:flex-start;padding:14px 18px 16px;min-height:56px;border-top:1px solid var(--edge);}
+  .cap .ic{font-size:16px;line-height:1.5;}
+  .cap .txt{font-size:14px;color:#d3dae7;line-height:1.55;}
+  .cap .txt b{color:var(--ink);}
+  .foot{margin-top:24px;color:var(--dim);font-family:var(--mono);font-size:12px;line-height:1.85;}
+  .foot b{color:var(--mut);}
+  .lg{display:flex;gap:16px;padding:0 18px 12px;font-family:var(--mono);font-size:11.5px;color:var(--mut);flex-wrap:wrap;}
+  .lg .k{display:inline-flex;align-items:center;gap:6px;}
+  .sw{width:10px;height:10px;border-radius:3px;}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow"><span class="dot"></span> Quantum Artificial Life · PJ1 · visual candidate
+    <span style="border:1px solid var(--wire);border-radius:5px;padding:2px 7px;color:var(--dim)">wave + bars, merged</span></div>
+  <h1>Two organisms meet — the wave-bars view</h1>
+  <p class="sub"><b style="color:var(--A2)">Organism A</b> comes in from the left,
+  <b style="color:var(--B2)">organism B</b> from the right. Each is drawn as a row of position bars with a
+  glowing wave envelope and a labelled head that travels. Where the two bodies overlap, the bars <b>blend and
+  flare</b> — that is contact. Toggle the arm, scrub, watch the genealogy meter.</p>
+  <div class="why"><b>Why this is new — and why it counts as alive.</b> Contact is not coded as
+  <span style="font-family:var(--mono)">if&nbsp;(touch)&nbsp;react()</span>. One physical coupling is
+  <b>always on</b>; it does nothing until the two bodies occupy the same place. Interaction <b>emerges from
+  meeting</b>, like real organisms — and it is genuinely quantum: on contact they <b>become entangled</b>,
+  yet each keeps its own <b>certified genealogy</b>.</p>
+
+  <div class="bar">
+    <div class="arms" role="group" aria-label="arm">
+
+      <button class="arm" data-arm="soma_soma" aria-pressed="true">They interact</button>
+
+    </div>
+    <button class="play" id="play">Pause</button>
+    <input type="range" id="scrub" min="0" max="450" value="0" step="1" aria-label="time">
+    <span class="tc" id="tc">0%</span>
+  </div>
+
+  <div class="panel">
+    <div class="cvw"><canvas id="cv" width="920" height="340"></canvas></div>
+    <div class="lg">
+      <span class="k"><span class="sw" style="background:var(--A)"></span>A — body / position</span>
+      <span class="k"><span class="sw" style="background:var(--B)"></span>B — body / position</span>
+      <span class="k"><span class="sw" style="background:#eaf4ff"></span>overlap = contact</span>
+    </div>
+    <div class="meters">
+      <div class="ro gen"><div class="lbl">Genealogy — certified quantum witness ⟨X<sup>⊗2W</sup>⟩</div>
+        <div class="big ok" id="wval">+1.00</div><div class="note" id="wnote">Each lineage fully quantum-alive.</div></div>
+      <div class="ro"><div class="lbl">Contact — soma↔soma entanglement (bits)</div>
+        <div class="big" id="sval" style="color:var(--B2)">0.00</div><div class="note" id="snote">Bodies apart.</div></div>
+    </div>
+    <div class="cap"><span class="ic" id="capic">⟶</span><span class="txt" id="captxt">—</span></div>
+  </div>
+
+  <div class="foot" id="foot">
+    <b>Honest note.</b> Motion is a real single-excitation lattice walk (same dynamics as the one-hot soma
+    walker), tuned + lengthened to read clearly. Witness for the two clean arms is exact (germ untouched →
+    +1.00); the “wrong wiring” collapse is schematic. Real PJ1 = W=12 per organism on Heron-r2.
+    <b>Say “locked” and I write the plan.</b>
+  </div>
+</div>
+
+<script>
+const DATA = {"L":5,"frames":24,"arms":{"soma_soma":[{"a":[1.0,0.0,0.0,0.0,0.0],"b":[0.0,0.0,0.0,0.0,1.0],"s":0.0,"ov":0.0,"w":1.0},{"a":[0.0,0.0,0.0,0.3163,0.6837],"b":[0.6718,0.2196,0.0724,0.0239,0.0123],"s":0.1844,"ov":0.016,"w":1.0},{"a":[0.1803,0.3005,0.304,0.1675,0.0477],"b":[0.0,0.0,0.1064,0.6964,0.1971],"s":1.0551,"ov":0.1584,"w":1.0},{"a":[0.0,0.0332,0.292,0.4879,0.1869],"b":[0.001,0.155,0.6058,0.1434,0.0947],"s":1.0884,"ov":0.2697,"w":1.0},{"a":[0.0442,0.3279,0.4904,0.0583,0.0792],"b":[0.0105,0.0787,0.2177,0.1458,0.5474],"s":0.9381,"ov":0.1849,"w":1.0},{"a":[0.0557,0.1067,0.0709,0.0115,0.7552],"b":[0.1981,0.4844,0.1171,0.1665,0.0339],"s":0.9474,"ov":0.0985,"w":1.0},{"a":[0.5472,0.2112,0.0055,0.1558,0.0803],"b":[0.1396,0.0752,0.0156,0.2369,0.5326],"s":0.9416,"ov":0.1721,"w":1.0},{"a":[0.1881,0.0428,0.0779,0.5286,0.1626],"b":[0.7458,0.014,0.0629,0.0461,0.1311],"s":1.0442,"ov":0.1915,"w":1.0},{"a":[0.5,0.2323,0.0946,0.0898,0.0833],"b":[0.1384,0.1045,0.3348,0.3983,0.0239],"s":1.2367,"ov":0.1629,"w":1.0},{"a":[0.0713,0.2075,0.5471,0.1021,0.072],"b":[0.1597,0.4425,0.2444,0.1243,0.0292],"s":1.3487,"ov":0.2517,"w":1.0},{"a":[0.2238,0.5073,0.1384,0.0809,0.0496],"b":[0.0533,0.1547,0.4727,0.09,0.2294],"s":0.7082,"ov":0.1745,"w":1.0},{"a":[0.0509,0.0529,0.2241,0.105,0.5671],"b":[0.6306,0.1974,0.0195,0.0743,0.0781],"s":0.7528,"ov":0.099,"w":1.0},{"a":[0.7905,0.0107,0.0186,0.0917,0.0885],"b":[0.0502,0.1155,0.0366,0.0042,0.7936],"s":0.7627,"ov":0.1122,"w":1.0},{"a":[0.0735,0.1039,0.0087,0.2137,0.6002],"b":[0.4983,0.2762,0.0134,0.1119,0.1001],"s":1.0502,"ov":0.1494,"w":1.0},{"a":[0.1178,0.3992,0.1549,0.2281,0.1],"b":[0.0897,0.0634,0.074,0.5337,0.2393],"s":1.4185,"ov":0.193,"w":1.0},{"a":[0.0668,0.0542,0.2775,0.3621,0.2395],"b":[0.0632,0.1804,0.4469,0.2043,0.1051],"s":1.3615,"ov":0.2372,"w":1.0},{"a":[0.1742,0.1564,0.5195,0.1001,0.0498],"b":[0.0521,0.1217,0.3501,0.0427,0.4333],"s":1.1415,"ov":0.2359,"w":1.0},{"a":[0.1124,0.2457,0.1599,0.0325,0.4495],"b":[0.2286,0.239,0.1959,0.3076,0.0288],"s":1.1055,"ov":0.1387,"w":1.0},{"a":[0.3207,0.1396,0.0055,0.3093,0.2249],"b":[0.2938,0.1859,0.0371,0.1974,0.2858],"s":1.3761,"ov":0.2457,"w":1.0},{"a":[0.4064,0.0797,0.0641,0.3029,0.147],"b":[0.4489,0.0192,0.058,0.1034,0.3706],"s":1.4658,"ov":0.2734,"w":1.0},{"a":[0.3424,0.1267,0.0962,0.1749,0.2598],"b":[0.3163,0.1891,0.1484,0.2168,0.1294],"s":1.594,"ov":0.2181,"w":1.0},{"a":[0.1224,0.2996,0.308,0.1128,0.1572],"b":[0.1755,0.2235,0.1924,0.3313,0.0773],"s":1.5322,"ov":0.1972,"w":1.0},{"a":[0.246,0.2109,0.1858,0.2274,0.1299],"b":[0.0605,0.1731,0.5015,0.0576,0.2073],"s":1.055,"ov":0.1846,"w":1.0},{"a":[0.0879,0.1497,0.4236,0.0399,0.299],"b":[0.4232,0.1011,0.0681,0.1433,0.2643],"s":1.4511,"ov":0.1659,"w":1.0}]}};
+const L = DATA.L, F = DATA.frames, SUB = 10;
+let arm='soma_soma', pos=0, playing=true, last=0;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function ha(hex,a){const h=hex.replace('#','');return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;}
+const cA=()=>css('--A'),cB=()=>css('--B');
+
+function frameAt(p){const lo=Math.floor(p),hi=Math.min(F-1,lo+1),f=p-lo;
+  const A=DATA.arms[arm][lo],B=DATA.arms[arm][hi];
+  return {a:A.a.map((v,i)=>v+(B.a[i]-v)*f),b:A.b.map((v,i)=>v+(B.b[i]-v)*f),
+          s:A.s+(B.s-A.s)*f,w:A.w+(B.w-A.w)*f,ov:A.ov+(B.ov-A.ov)*f};}
+function smooth(v,N){const out=new Array(N),n=v.length;
+  for(let i=0;i<N;i++){const x=i/(N-1)*(n-1),k=Math.floor(x),f=x-k;
+    const p0=v[Math.max(0,k-1)],p1=v[k],p2=v[Math.min(n-1,k+1)],p3=v[Math.min(n-1,k+2)];
+    out[i]=Math.max(0,0.5*((2*p1)+(-p0+p2)*f+(2*p0-5*p1+4*p2-p3)*f*f+(-p0+3*p1-3*p2+p3)*f*f*f));}return out;}
+function stats(v){let m=0,s=0;for(let j=0;j<v.length;j++){m+=j*v[j];s+=v[j];}m/=(s||1);
+  let sd=0;for(let j=0;j<v.length;j++)sd+=v[j]*(j-m)*(j-m);return {m,sd:Math.sqrt(sd/(s||1))};}
+function rr(x,y,w,hh,r){r=Math.min(r,w/2,Math.abs(hh)/2||r);ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+hh,r);ctx.arcTo(x+w,y+hh,x,y+hh,r);ctx.arcTo(x,y+hh,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function draw(fr,tt){
+  const w=cv.width,h=cv.height,pad=50,base=h*0.80,amp=h*0.62;
+  ctx.clearRect(0,0,w,h);
+  // phosphor grid
+  ctx.strokeStyle=ha('#1f6b4d',.12);ctx.lineWidth=1;
+  for(let gx=pad;gx<=w-pad+1;gx+=(w-2*pad)/10){ctx.beginPath();ctx.moveTo(gx,18);ctx.lineTo(gx,base);ctx.stroke();}
+  for(let gy=base;gy>=base-amp;gy-=amp/5){ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(w-pad,gy);ctx.stroke();}
+  // baseline
+  ctx.strokeStyle=ha('#49dd8b',.3);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,base);ctx.lineTo(w-pad,base);ctx.stroke();
+
+  const mx=Math.max(0.02,...fr.a,...fr.b);
+  const slot=(w-2*pad)/L, bw=slot*0.58;
+  const X=j=>pad+slot*j+slot/2;
+
+  // BARS (additive overlap flare)
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  function bars(v,c){for(let j=0;j<L;j++){const val=v[j]/mx;if(val<0.008)continue;const hh=val*amp;const x=X(j);
+    const g=ctx.createLinearGradient(0,base,0,base-hh);g.addColorStop(0,ha(c,.10));g.addColorStop(1,ha(c,.72));
+    ctx.fillStyle=g;rr(x-bw/2,base-hh,bw,hh,3);ctx.fill();}}
+  bars(fr.a,cA());bars(fr.b,cB());
+  ctx.restore();
+
+  // WAVE envelopes (glow line over the bars)
+  const N=240,A=smooth(fr.a,N),B=smooth(fr.b,N);const XN=i=>pad+i/(N-1)*(w-2*pad);
+  function env(v,c){ctx.shadowBlur=12;ctx.shadowColor=c;ctx.strokeStyle=ha(c,.95);ctx.lineWidth=2.2;ctx.beginPath();
+    for(let i=0;i<N;i++){const y=base-v[i]/mx*amp;i?ctx.lineTo(XN(i),y):ctx.moveTo(XN(i),y);}ctx.stroke();ctx.shadowBlur=0;}
+  env(A,cA());env(B,cB());
+
+  // interference flare where both high
+  for(let i=0;i<N;i+=2){const pr=(A[i]*B[i])/(mx*mx);if(pr>0.03){const y=base-Math.max(A[i],B[i])/mx*amp;
+    const r=4+pr*36;const g=ctx.createRadialGradient(XN(i),y,0,XN(i),y,r);
+    g.addColorStop(0,ha('#eaf4ff',Math.min(.95,pr*3.4)));g.addColorStop(1,ha('#eaf4ff',0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(XN(i),y,r,0,7);ctx.fill();}}
+
+  // travelling heads + labels + droplines
+  const sA=stats(fr.a),sB=stats(fr.b);
+  function head(s,v,c,label){const x=X(s.m);
+    let bi=0;for(let j=1;j<L;j++)if(v[j]>v[bi])bi=j;const y=base-v[bi]/mx*amp;
+    ctx.strokeStyle=ha(c,.3);ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x,base);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=ha(c,.22);ctx.beginPath();ctx.arc(x,y,12,0,7);ctx.fill();
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,6,0,7);ctx.fill();
+    ctx.fillStyle=ha('#fff',.6);ctx.beginPath();ctx.arc(x-1.6,y-1.6,2,0,7);ctx.fill();
+    ctx.font='600 14px '+css('--mono');ctx.textAlign='center';ctx.fillStyle=c;ctx.fillText(label,x,y-18);}
+  head(sA,fr.a,cA(),'A');head(sB,fr.b,cB(),'B');
+
+  ctx.fillStyle=css('--dim');ctx.font='11px '+css('--mono');ctx.textAlign='left';
+  ctx.fillText('position of each organism  →',pad,14);
+}
+
+function caption(fr){
+  const contact=fr.ov,s=fr.s,w=fr.w;
+  if(arm==='none') return {ic:'⟶',txt:'<b>No coupling.</b> A and B glide straight <b>through each other</b> and keep going — nothing passes between them. The control: it proves the reaction only happens when a coupling is present.'};
+  const meeting=contact>0.03, parted=contact<0.05&&s>0.4;
+  let base;
+  if(meeting) base='<b>Contact.</b> Their bodies overlap and <b>spontaneously entangle</b> — the contact meter climbs. Nothing told them to react; it happened because they are in the same place.';
+  else if(parted) base='<b>They part</b> — but stay <b>entangled</b>. The meeting left a lasting quantum trace: no longer two independent things.';
+  else base='<b>Approaching.</b> <span style="color:var(--A2)">A</span> from the left, <span style="color:var(--B2)">B</span> from the right. The coupling is on but idle — they haven’t met yet.';
+  if(arm==='germ_routed'&&w<0.5) base+=' <b style="color:var(--dead)">This wiring routed the touch through the gene line — the genealogy is collapsing.</b>';
+  else if(w>0.9&&(meeting||parted)) base+=' <b style="color:var(--alive)">Each still keeps its own certified genealogy.</b>';
+  return {ic: meeting?'✦':(parted?'⟜':'⟶'),txt:base};
+}
+
+function render(){
+  const p=pos/SUB, fr=frameAt(p), tt=p*0.35;
+  draw(fr,tt);
+  const cap=caption(fr);
+  document.getElementById('captxt').innerHTML=cap.txt;
+  document.getElementById('capic').textContent=cap.ic;
+  const wb=document.getElementById('wval');
+  wb.textContent=(fr.w>=0?'+':'')+fr.w.toFixed(2);
+  wb.className='big '+(fr.w>0.9?'ok':(fr.w<0.4?'bad':'neu'));
+  document.getElementById('wnote').textContent = fr.w>0.9?'Each lineage fully quantum-alive.':(fr.w<0.4?'Genealogy gone — contact leaked into the gene line.':'Genealogy degraded.');
+  document.getElementById('sval').textContent=fr.s.toFixed(2);
+  document.getElementById('snote').textContent = fr.s<0.05?'Bodies apart.':(fr.ov>0.03?'Overlapping — entangling now.':'Still entangled from the meeting.');
+  document.getElementById('tc').textContent=Math.round(p/(F-1)*100)+'%';
+  document.getElementById('scrub').value=pos;
+}
+function setArm(a){arm=a;document.querySelectorAll('.arm').forEach(b=>b.setAttribute('aria-pressed',b.dataset.arm===a));render();}
+document.querySelectorAll('.arm').forEach(b=>b.onclick=()=>setArm(b.dataset.arm));
+const scrub=document.getElementById('scrub');scrub.max=(F-1)*SUB;
+scrub.oninput=e=>{pos=+e.target.value;playing=false;pb.textContent='Play';render();};
+const pb=document.getElementById('play');
+pb.onclick=()=>{playing=!playing;pb.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches, MAX=(F-1)*SUB;
+function loop(ts){if(!playing)return;if(!last)last=ts;const dt=ts-last;last=ts;pos+=dt*0.020*SUB;if(pos>=MAX)pos=0;render();requestAnimationFrame(loop);}
+setArm('soma_soma');render();
+if(reduce){playing=false;pb.textContent='Play';}else requestAnimationFrame(loop);
+</script>

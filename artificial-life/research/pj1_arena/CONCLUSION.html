@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PJ1 — the arena: two organisms colliding (conclusion)</title>
+<style>
+  :root{--ground:#0a0d13;--panel:#111621;--edge:#1e2634;--ink:#e9eef7;--mut:#8b96ab;--dim:#59637a;
+    --A:#f6a623;--B:#37c7d8;--alive:#49dd8b;--dead:#ff5d78;
+    --mono:ui-monospace,"Cascadia Code",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.6;}
+  .wrap{max-width:820px;margin:0 auto;padding:40px 22px 80px;}
+  h1{font-family:var(--mono);font-weight:600;font-size:clamp(22px,3.4vw,30px);margin:6px 0 4px;}
+  h2{font-family:var(--mono);font-size:17px;margin:34px 0 8px;color:var(--A);}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);}
+  p{color:#d3dae7;max-width:74ch;} b{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;background:#0e131d;border:1px solid var(--edge);border-radius:5px;padding:1px 5px;}
+  .box{border:1px solid var(--edge);border-left:2px solid var(--A);border-radius:0 10px 10px 0;background:#0e131d;
+    padding:14px 18px;margin:18px 0;color:var(--mut);}
+  .box b{color:var(--A);}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-family:var(--mono);font-size:13px;overflow-x:auto;display:block;}
+  th,td{border:1px solid var(--edge);padding:8px 10px;text-align:left;white-space:nowrap;}
+  th{color:var(--mut);font-weight:600;} td{color:#d3dae7;}
+  .ok{color:var(--alive)} .bad{color:var(--dead)} .neu{color:var(--mut)}
+  img{max-width:100%;height:auto;border:1px solid var(--edge);border-radius:10px;margin:10px 0;}
+  .foot{margin-top:34px;color:var(--dim);font-family:var(--mono);font-size:12px;line-height:1.85;}
+  a{color:var(--B);}
+</style>
+<div class="wrap">
+  <div class="eyebrow">Quantum Artificial Life · P3 · PJ1</div>
+  <h1>The arena — two germ/soma organisms colliding</h1>
+  <p>PJ1 opens the arena: two germ/soma organisms (each the PJ0 Weismann-barrier organism — a clean
+  GHZ germ line + a mortal soma body) living in one environment, their bodies walking toward each other,
+  meeting, interacting <b>coherently</b>, then measured to see whether a joint cross-lineage entanglement
+  witness survives the collision. Ladder rungs 3–4; reproduction (rung 5) and L&gt;2 (rung 6) are out of
+  scope. This is the sim result (W=4/organism, track=5, 24 frames); the live W12/track6 Heron-r2 run is the
+  developer's (Q2).</p>
+
+  <div class="box"><b>Design principle.</b> Contact is not coded as <code>if(touch) react()</code>. One
+  coherent <code>rxx+ryy</code> exchange sits at the shared track sites and does nothing until both bodies
+  have amplitude there — interaction <b>emerges from co-location</b>. All witness loss is real hardware
+  noise (no bath, no trace-out), so selective DD on the germ lines is allowed to fight it.</p>
+
+  <h2>The three arms (sim, W=4, track=5)</h2>
+  <table>
+    <tr><th>arm</th><th>joint ⟨X<sup>⊗2W</sup>⟩</th><th>A|B cut witness</th><th>sep. null</th>
+        <th>contact S (bits)</th><th>reading</th></tr>
+    <tr><td>none (pass_through)</td><td class="ok">+1.00</td><td class="neu">+0.00</td><td>~0</td>
+        <td class="neu">0.00 (all frames)</td><td>product null — bodies glide through</td></tr>
+    <tr><td>soma_soma</td><td class="ok">+1.00</td><td class="neu">+0.00</td><td>~0</td>
+        <td class="ok">0 → ~1.59 on overlap</td><td>bodies entangle; germ survives</td></tr>
+    <tr><td>germ_routed (A/B)</td><td class="bad">−0.39</td><td class="neu">+0.00</td><td>~0</td>
+        <td>~1.6</td><td>joint witness <b>collapses</b></td></tr>
+  </table>
+
+  <h2>What it shows</h2>
+  <p><b>1. The collision is emergent (AC-PJ1.4).</b> In the <code>none</code> arm the contact entropy is
+  <b>0.0 at every frame</b> — the bodies pass through each other, no entanglement. In <code>soma_soma</code>
+  it is 0.0 at t=0 and rises to ~1.59 bits <b>only as the bodies co-locate</b>. Same build minus the
+  collision layer (verified structurally), yet a qualitatively different reaction — the "as if alive"
+  signature.</p>
+
+  <p><b>2. The germ genealogy survives the collision (AC-PJ1.2/AC-PJ1.3, I1).</b> In both clean arms the
+  joint witness ⟨X<sup>⊗2W</sup>⟩ = +1.00 and the separable null sits at ~0: each lineage stays fully
+  quantum-alive through the encounter, because <code>soma_soma</code> couples <b>bodies only</b> and never
+  touches a germ qubit.</p>
+
+  <div class="box"><b>Honest result on the flagship question (I1).</b> Does the collision <b>lift</b>
+  cross-lineage <i>germ</i> entanglement above the product null? <b>No.</b> The A|B bipartite-cut witness
+  stays at 0 across the whole encounter and across a full φ coupling-scan (φ ∈ [0,π]). A body↔body exchange
+  entangles the <b>bodies</b> (contact S peaks at ~2.3 bits near φ≈π/4) but leaves the two germ lines a
+  product state — exactly the risk flagged as I1. This is a <b>reported result</b>, not a failure: the
+  flagship witness was upside, not obligation. The spectacle (emergent contact), the two surviving
+  per-lineage genealogies, and the PJ0 witness underneath all stand.</p>
+
+  <p><b>3. The Weismann barrier is the mechanism, cross-organism (AC-PJ1.5).</b> Route the <i>same</i>
+  collision exchange through a germ qubit (<code>germ_routed</code>) and the joint witness collapses from
+  +1.00 to −0.39. Coupling the body to the gene line is what kills the joint genealogy — the PJ0 diagnosis,
+  now proven across two organisms.</p>
+
+  <h2>The 3-arm witness figure</h2>
+  <img src="pj1_witness_3arm.png" alt="joint genealogy witness vs frame for the three arms">
+
+  <h2>The live spectacle</h2>
+  <p>The headline output is the wave-bars demo (<a href="index.html">index.html</a>), rendered from this
+  banked run: two organisms' bodies as travelling position bars, additive-overlap flare on contact, the live
+  genealogy witness meter (green survives / red collapses) and the contact meter, scrubbable through the real
+  measured frames, with an arm toggle.</p>
+
+  <div class="foot">
+    <b>Scope.</b> Certified quantum claim = the joint genotype-only witness ⟨X<sup>⊗2W</sup>⟩ + the A|B cut.
+    Body occupancy and ⟨σz⟩ are diagonal plumbing (exact classical surrogate). No speedup is claimed —
+    the contribution is scale · faithfulness · certification + the emergent-collision spectacle.<br>
+    <b>Reproduce.</b> <code>python code/pj_qalife.py --arena --selftest</code> ·
+    <code>python code/pj1_run_arena.py --width 4 --track 5 --frames 24</code> ·
+    <code>python analysis/pj1_render.py</code>. Live: developer runs
+    <code>python code/pj1_run_arena.py --backend &lt;heron&gt; --width 12 --track 6 --frames 6</code>.
+  </div>
+</div>

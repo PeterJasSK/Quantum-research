@@ -1,0 +1,24 @@
+=== PJ1 arena --selftest (STATIC circuit-structure checks; no sim) ===
+
+-- arena W=2, track=5, organisms=2, frame=3 --
+  [OK ] Static Test 1 per organism (soma_soma/none disjoint; germ_routed MIXED)  (soma_soma=True none=True germ_routed_disjoint=False)
+  [OK ] ordering: germ lines built before any body gate (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on both germ lines only (bodies stay Z)  (H(germ)=4 H(body)=0)
+  [OK ] no classical branch on contact (fully unitary collision)  (soma_soma_branch=False none_branch=False)
+  [OK ] pass_through == soma_soma minus collision layer (structural diff)  (extra_xxyy=30 expected=30 non_collision_gates_equal=True)
+
+-- arena W=4, track=5, organisms=2, frame=3 --
+  [OK ] Static Test 1 per organism (soma_soma/none disjoint; germ_routed MIXED)  (soma_soma=True none=True germ_routed_disjoint=False)
+  [OK ] ordering: germ lines built before any body gate (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on both germ lines only (bodies stay Z)  (H(germ)=8 H(body)=0)
+  [OK ] no classical branch on contact (fully unitary collision)  (soma_soma_branch=False none_branch=False)
+  [OK ] pass_through == soma_soma minus collision layer (structural diff)  (extra_xxyy=30 expected=30 non_collision_gates_equal=True)
+
+-- arena W=12, track=7, organisms=2, frame=3 --
+  [OK ] Static Test 1 per organism (soma_soma/none disjoint; germ_routed MIXED)  (soma_soma=True none=True germ_routed_disjoint=False)
+  [OK ] ordering: germ lines built before any body gate (rung 0)  (gene_first=True)
+  [OK ] witness readout: H on both germ lines only (bodies stay Z)  (H(germ)=24 H(body)=0)
+  [OK ] no classical branch on contact (fully unitary collision)  (soma_soma_branch=False none_branch=False)
+  [OK ] pass_through == soma_soma minus collision layer (structural diff)  (extra_xxyy=42 expected=42 non_collision_gates_equal=True)
+
+SELFTEST PASS
