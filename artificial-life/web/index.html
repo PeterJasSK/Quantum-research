@@ -36,22 +36,21 @@
   .eyebrow{display:flex;gap:11px;align-items:center;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--witness)}
   .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--witness);box-shadow:0 0 14px var(--witness),0 0 3px #fff;animation:beat 2.2s ease-in-out infinite}
   @keyframes beat{50%{opacity:.32;transform:scale(.7)}}
-  h1{font-weight:800;letter-spacing:-.03em;line-height:1.0;font-size:clamp(28px,5.6vw,62px);margin:.32em 0 .18em;text-wrap:balance;text-shadow:0 2px 40px rgba(0,0,0,.6)}
+  h1{font-weight:800;letter-spacing:-.02em;line-height:1.06;font-size:clamp(20px,3.4vw,34px);margin:.5em 0 .1em;text-wrap:balance;text-shadow:0 2px 40px rgba(0,0,0,.6)}
   h1 .q{color:var(--witness);text-shadow:0 0 34px rgba(55,230,212,.5)}
-  .lede{color:var(--mut);font-size:clamp(12.5px,1.5vw,15px);max-width:56ch;line-height:1.56}
-  .lede b{color:var(--ink);font-weight:600} .lede .tkA{color:var(--A2)} .lede .tkB{color:var(--B2)} .lede .tk{color:var(--witness)}
+  .tkA{color:var(--A2)} .tkB{color:var(--B2)} .tk{color:var(--witness)}
   .clock{display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline;margin-top:16px;font-size:12px;color:var(--mut)}
   .clock b{color:var(--ink);font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
   .clock .live{color:var(--A2)} .clock .live::before{content:"● ";font-size:9px;vertical-align:2px}
 
   .hud-tr{top:clamp(18px,3vw,42px);right:clamp(18px,3vw,44px);display:flex;flex-direction:column;gap:9px;align-items:flex-end}
-  .gate{display:grid;grid-template-columns:auto auto;gap:2px 14px;align-items:center;
-    border:1px solid var(--line2);border-radius:12px;padding:9px 13px;min-width:230px;
+  .gate{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto 1fr;gap:2px 14px;align-content:start;
+    border:1px solid var(--line2);border-radius:12px;padding:11px 14px;width:272px;min-height:88px;
     background:var(--panel);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
-  .gate .lab{grid-column:1;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
-  .gate .st{grid-column:2;grid-row:1/3;font-size:10px;letter-spacing:.13em;text-transform:uppercase;justify-self:end;font-weight:700}
-  .gate .val{grid-column:1;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
-  .gate small{grid-column:1/3;font-size:10px;color:var(--mut);opacity:.85;margin-top:2px;line-height:1.35}
+  .gate .lab{grid-column:1;grid-row:1;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
+  .gate .st{grid-column:2;grid-row:1;font-size:10px;letter-spacing:.13em;text-transform:uppercase;justify-self:end;font-weight:700}
+  .gate .val{grid-column:1/3;grid-row:2;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+  .gate small{grid-column:1/3;grid-row:3;font-size:10px;color:var(--mut);opacity:.85;margin-top:2px;line-height:1.35}
   .gate.pass{border-color:rgba(110,231,135,.42)} .gate.pass .val,.gate.pass .st{color:var(--good)}
   .gate.weak{border-color:rgba(255,180,84,.42)} .gate.weak .val,.gate.weak .st{color:var(--warn)}
   .gate.fail{border-color:rgba(255,92,107,.42)} .gate.fail .val,.gate.fail .st{color:var(--bad)}
@@ -75,15 +74,46 @@
   .cue{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;
     font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--mut);opacity:.7;animation:bob 2.6s ease-in-out infinite}
   @keyframes bob{50%{transform:translate(-50%,5px);opacity:.4}}
+  /* desktop: side gutters so nothing hugs the window edge */
+  @media(min-width:821px){ body{padding:0 clamp(18px,3.2vw,48px)} }
+
   @media(max-width:820px){
-    .hud-tl{position:static;padding:18px 18px 0}
-    .hud-tr{position:static;flex-direction:row;flex-wrap:wrap;align-items:flex-start;padding:10px 18px 0;margin-top:6px}
-    .gate{min-width:0;flex:1 1 44%}
-    .hud-bottom{position:static;background:none;padding:14px 18px 20px}
-    .stage{height:auto;min-height:100svh;display:flex;flex-direction:column}
-    #life{position:absolute}
+    /* stacked, no overlap: hero text on top → spectacle → gates → heartbeat */
+    .stage{height:auto;min-height:0;display:flex;flex-direction:column;gap:14px;padding:18px 16px 22px;background:var(--bg)}
+    .veil,.grain{display:none}
+    .hud-tl{position:static;order:0;max-width:none;padding:0}
+    h1{font-size:clamp(20px,6.2vw,30px)}
+    .eyebrow{font-size:10px;letter-spacing:.18em}
+    .clock{margin-top:10px}
+    #life{position:relative;order:1;height:50svh;min-height:320px;border:1px solid var(--line2);border-radius:14px;
+      background:radial-gradient(120% 150% at 50% 100%,#0c1119,#070a0f)}
+    .hud-tr{position:static;order:2;flex-direction:column;align-items:stretch;padding:0;gap:8px}
+    .gate{min-width:0;width:100%}
+    .hud-bottom{position:static;order:3;background:none;padding:0}
+    #heart{height:84px}
     .cue{display:none}
   }
+
+  /* ---------- READING THE HERO (under the spectacle) ---------- */
+  .reading{max-width:var(--maxw);margin:0 auto;padding:clamp(30px,5vw,56px) clamp(20px,4vw,44px) 4px}
+  .reading .lede{color:var(--ink);font-size:clamp(15px,2vw,20px);line-height:1.6;max-width:70ch;font-weight:600}
+  .reading .lede .tkA{color:var(--A2)} .reading .lede .tkB{color:var(--B2)} .reading .lede .tk{color:var(--witness)}
+  .reading .sub-note{color:var(--mut);font-size:clamp(13px,1.6vw,15px);line-height:1.6;max-width:74ch;margin-top:12px}
+  .legend{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:26px}
+  @media(max-width:760px){.legend{grid-template-columns:1fr}}
+  .leg{display:flex;gap:14px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    background:linear-gradient(180deg,rgba(13,20,36,.42),rgba(8,12,22,.42));align-items:flex-start}
+  .leg .mk{flex:none;width:34px;height:38px;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:2px}
+  .leg .mk .b{width:6px;border-radius:2px} .leg .mk .b.a{background:linear-gradient(180deg,var(--A),rgba(246,166,35,.15))}
+  .leg .mk .b.bb{background:linear-gradient(180deg,var(--B),rgba(55,199,216,.15))}
+  .leg .mk .mini{width:5px;border-radius:2px;background:rgba(120,140,180,.5)}
+  .leg .mk svg{width:34px;height:24px;overflow:visible}
+  .leg .mk .flare{width:16px;height:16px;border-radius:50%;align-self:center;
+    background:radial-gradient(circle,#eaf4ff 0%,rgba(234,244,255,.15) 55%,transparent 72%)}
+  .leg .mk .head{width:14px;height:14px;border-radius:50%;align-self:center;position:relative}
+  .leg .mk .head::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid currentColor;opacity:.5}
+  .leg .tx{font-size:13px;line-height:1.55;color:var(--mut)} .leg .tx b{color:var(--ink);font-weight:700}
+  .leg .tx .tkA{color:var(--A2)} .leg .tx .tkB{color:var(--B2)} .leg .tx .tk{color:var(--witness)}
 
   /* ---------- SECTIONS ---------- */
   section{max-width:var(--maxw);margin:0 auto;padding:clamp(56px,8vw,116px) clamp(20px,4vw,44px) 20px}
@@ -184,9 +214,6 @@
   <header class="hud hud-tl">
     <div class="eyebrow"><span class="dot"></span> Quantum Artificial Life · ibm_kingston · Heron r2</div>
     <h1>Two organisms met on a real <span class="q">quantum computer</span>.</h1>
-    <p class="lede"><span class="tkA">Body A</span> comes in from the left, <span class="tkB">body B</span> from
-      the right. They walk together and <b>collide</b> — every frame a real measurement on the QPU — while each
-      keeps its <span class="tk">certified quantum genealogy</span> alive.</p>
     <div class="clock">
       <span>frame <b id="frameN">0</b><span style="color:var(--mut)"> / 12</span></span>
       <span class="live" id="liveTag">measuring · 8192 shots</span>
@@ -213,8 +240,59 @@
     </div>
   </div>
 
-  <div class="cue">scroll — the study ↓</div>
+  <div class="cue">scroll ↓</div>
 </div>
+
+<!-- ============================== READING THE HERO ============================== -->
+<section class="reading">
+  <div class="sec-eyebrow amber">Reading the hero — what you are watching</div>
+  <p class="lede"><span class="tkA">Body A</span> comes in from the left, <span class="tkB">body B</span> from the
+    right. They walk together and <b style="color:var(--ink)">collide</b> — every frame is a real measurement on
+    the QPU — while each keeps its <span class="tk">certified quantum genealogy</span> alive.</p>
+  <p class="sub-note">The picture is a <b style="color:var(--ink)">position histogram</b> of the two bodies as they
+    move along a track, rebuilt from 8,192 shots per frame. Here is every mark on it:</p>
+
+  <div class="legend">
+    <div class="leg">
+      <div class="mk"><span class="mini" style="height:14px"></span><span class="mini" style="height:26px"></span><span class="mini" style="height:19px"></span></div>
+      <div class="tx"><b>The 8 bands = the 8-site track.</b> Each vertical band is one position the bodies can
+        occupy on the shared 8-site lattice. Left band = site 0, right band = site 7.</div>
+    </div>
+    <div class="leg">
+      <div class="mk"><span class="b a" style="height:16px"></span><span class="b a" style="height:30px"></span><span class="b a" style="height:22px"></span></div>
+      <div class="tx"><b><span class="tkA">Amber bars = body A's occupancy.</span></b> Each bar's height is the
+        measured probability of finding organism A at that site this frame. A starts pinned at the far left.</div>
+    </div>
+    <div class="leg">
+      <div class="mk"><span class="b bb" style="height:22px"></span><span class="b bb" style="height:30px"></span><span class="b bb" style="height:16px"></span></div>
+      <div class="tx"><b><span class="tkB">Cyan bars = body B's occupancy.</span></b> Same reading for the second
+        organism, which starts pinned at the far right. Two colours = two separate germ/soma individuals.</div>
+    </div>
+    <div class="leg">
+      <div class="mk"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M0 20 C 8 20, 10 4, 17 4 S 26 20, 34 20" fill="none" stroke="#37c7d8" stroke-width="2.2" style="filter:drop-shadow(0 0 4px #37c7d8)"/></svg></div>
+      <div class="tx"><b>The glowing continuous lines = the same bars, smoothed.</b> Each body's per-site
+        probabilities drawn as one envelope, so the organism reads as a single moving wave-packet rather than
+        eight separate bars. One line per body, in its own colour.</div>
+    </div>
+    <div class="leg">
+      <div class="mk"><span class="flare"></span></div>
+      <div class="tx"><b>The white flares = contact.</b> Where <span class="tkA">A</span> and <span class="tkB">B</span>
+        both have amplitude at the same site, they <b style="color:var(--ink)">overlap</b>. The glow is white
+        because it belongs to neither colour — it is the two of them meeting. This is the collision, measured:
+        overlap climbs <b style="color:var(--ink)">0.00 → 0.72</b> across the run.</div>
+    </div>
+    <div class="leg">
+      <div class="mk"><span class="head" style="color:var(--A2);background:var(--A)"></span></div>
+      <div class="tx"><b>The labelled <span class="tkA">A</span> / <span class="tkB">B</span> heads = each body's
+        centre.</b> The ringed dot with a dropline marks where each organism currently peaks on the track — its
+        position — so you can watch the two centres walk toward each other and meet.</div>
+    </div>
+  </div>
+
+  <p class="sub-note">Meanwhile the top-right cards and the bottom heartbeat show the one thing a classical
+    computer <b style="color:var(--ink)">cannot fake</b>: the <span class="tk">genealogy witness</span>
+    ⟨X<sup>⊗2W</sup>⟩ over both germ lines, staying alive above the null (≈0) through the whole collision.</p>
+</section>
 
 <!-- ============================== BLOCK B — THE WIN (P2 + PJ0) ============================== -->
 <section>
@@ -654,7 +732,7 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
 
   // ping-pong 0..NF-1..0 so the collision sweeps in and back (no reset jump)
   function phase(t){const span=NF-1, cyc=(t/SEC_PER_FRAME)%(2*span); return cyc<=span ? cyc : 2*span-cyc;}
-  function frameAt(p){const lo=Math.floor(p),hi=Math.min(NF-1,lo+1),f=sstep(p-lo);
+  function frameAt(p){p=clamp(p,0,NF-1);const lo=Math.floor(p),hi=Math.min(NF-1,lo+1),f=sstep(p-lo);
     const A=ARM[lo],Bf=ARM[hi];
     return {a:A.a.map((v,i)=>lerp(v,Bf.a[i],f)),b:A.b.map((v,i)=>lerp(v,Bf.b[i],f)),
             s:lerp(A.s,Bf.s,f),w:lerp(A.w,Bf.w,f),ov:lerp(A.ov,Bf.ov,f)};}

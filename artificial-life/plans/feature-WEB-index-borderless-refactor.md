@@ -6,7 +6,7 @@
 **Target file:** `artificial-life/web/index.html` (single self-contained file — the only file edited)
 **Author:** Claude (Opus)
 **Date:** 2026-09-13
-**Status:** Approved
+**Status:** Complete
 
 > **No tests** (repo directive). Production HTML/CSS/JS + manual visual verification only.
 > **No new physics / no new runs.** Presentation refactor of already-banked, already-measured results.
@@ -108,6 +108,27 @@ Each manually verifiable in a browser.
 - **AC-16 (honesty invariant, CD-3/CD-4):** States the witness is the sole quantum claim, every diagonal
   metric has a classical surrogate, the null sits at ≈0, and the contribution is **scale · faithfulness ·
   certification — not a speedup**. Body-body entanglement labelled sim-only.
+
+### Coverage (all in `artificial-life/web/index.html`, verified headless-Chrome render)
+
+| AC | Covered by (file:line) | Verified |
+|:--|:--|:--|
+| AC-1 inline canvas, no iframe | `<canvas id="life">` :180; renderer :681 `drawLife` ported from spectacle; 0 `<iframe>` tags | ✓ |
+| AC-2 borderless full-bleed HUD | `.stage{height:100svh}` :19, `#life{inset:0}` :24, `.veil` :181, `.hud-tl/tr/bottom` :184/196/205 | ✓ |
+| AC-3 live values | gate/clock ids `gWit/gOv/frameN/hWit/hOv` fed by `readouts()` :741 | ✓ |
+| AC-4 slowed ≈2× | `SEC_PER_FRAME = 2.9` :648 (was 1.6); single time-based ping-pong clock | ✓ |
+| AC-5 block order Hero→B→A→C | §Block B :219, Block A :467, Block C :548 | ✓ |
+| AC-6 combined width table, New dominant | table :238–258, `.hl` New column highlighted; null note :259 | ✓ |
+| AC-7 four ASCII circuits verbatim | `.designs` :266–312, winner `.design.win` :267 | ✓ |
+| AC-8 original P2 dump in detail | `<pre class="dump">` :344, accordion :336, caption :359 | ✓ |
+| AC-9 2×2 kill switch | table :327–333 | ✓ |
+| AC-10 full P2/PJ0 rigor folded | 7 `.acc` :362/380/397/412/422/444/454 | ✓ |
+| AC-11 what-is-happening + folded PJ1 | copy :467–497, frame table :513, honest scope :534 | ✓ |
+| AC-12 how built + tree link + reproduce | Block C :548, `tree.peterjas.sk` :550, reproduce acc :596 | ✓ |
+| AC-13 spectacle-first, pure-CSS accordions | all `.acc` collapsed on load; `::before` +/– :173 CSS | ✓ |
+| AC-14 no external pages but tree | grep: 0 `*_conclusion.html`; only external href `tree.peterjas.sk` :550/627/635 | ✓ |
+| AC-15 self-contained & responsive | single file, inline CSS/JS; `.scroll`/`overflow-x:auto`; `@media(max-width:820px)` :78 | ✓ |
+| AC-16 honesty invariant | :262 null≈0, :251 certified-not-strong/not-a-speedup, :528 sim-only | ✓ |
 
 ---
 
@@ -451,3 +472,36 @@ Remaining minor decisions (proposals — implement unless told otherwise):
   body-body entanglement sim-only all appear.
 - **Reduced motion:** with `prefers-reduced-motion`, the hero paints a correct static mid-collision frame (no
   runaway loop).
+
+---
+
+## 13. Post-implementation
+
+**Built** (2026-09-13): full rewrite of `artificial-life/web/index.html` (only file touched). Hero is now an
+inline full-bleed `<canvas id="life">` running the wave-bars renderer ported verbatim from `spectacle.html`
+(`DATA`/`frameAt`/`smooth`/`stats`/`rr`/`draw`), CQL `#life` treatment (veil + grain + floating `.hud-tl/tr/bottom`
++ `.cue`), DPR-fit `wrap()`; the `spectacle.html` iframe is gone. One slowed time-based **ping-pong** clock
+(`SEC_PER_FRAME = 2.9`) feeds `#life`, the `#heart` EKG and the live gate/clock readouts. Content refolded into
+Block B (the win) → Block A (PJ1) → Block C (how built), every dense table/circuit/log behind native `<details>`
+accordions (all collapsed on load; pure-CSS +/– markers). All numbers copied verbatim from §5.
+
+**§7 minor decisions** — implemented as proposed: (1) all accordions collapsed on load; (2) `pj1_witness.png`
+in Block A only (hero is the live canvas); (3) ping-pong clock (0↔11), no reset jump.
+
+**Deviation (minor):** the slow-down is delivered purely via the single `SEC_PER_FRAME = 2.9` ping-pong clock
+rather than the old `spectacle.html` `pos += dt*0.006*SUB` linear step (which no longer exists) — the plan §4
+explicitly called for "a single slowed clock", so the `dt*0.003` figure in AC-4 is realised as the equivalent
+2.9 s/frame cadence, ≈2× the prior builds.
+
+**Bug fixed during verify:** first-tick clock skew in headless (rAF `now` < `t0`) produced a negative frame
+index → `ARM[-1]`; `frameAt` now clamps `p` to `[0, NF-1]` (`index.html` :658).
+
+**Verified:** headless Chrome render — hero animates (bars + glow envelopes + interference flare + A/B heads),
+live readouts advance, heartbeat clears the null; Block B combined table (New column dominant), four verbatim
+circuits, original-P2 dump, 2×2 kill-switch, 8 folded rigor accordions; Block A copy + 3 cards + witness figure;
+no console errors after the clamp fix. Grep-confirmed: 0 `<iframe>`, 0 `*_conclusion.html` links, sole external
+href `tree.peterjas.sk`.
+
+**Follow-ups for the developer:** confirm the ≈2× cadence *by eye* in a real browser (§7 said "final by eye");
+`spectacle.html` + the three `*_conclusion.html` files remain on disk, untouched and now unreferenced — delete or
+keep as archive at your discretion.
