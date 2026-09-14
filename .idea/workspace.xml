@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,7 +49,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/THESIS&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/artificial-life/web&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
@@ -56,18 +58,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/artificial-life/web" />
       <recent name="$PROJECT_DIR$/THESIS" />
       <recent name="$PROJECT_DIR$/number-partitioning/plans" />
       <recent name="$PROJECT_DIR$/number-partitioning" />
       <recent name="$PROJECT_DIR$/artificial-life/research" />
-      <recent name="$PROJECT_DIR$/artificial-life" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/artificial-life/research/backlogWEB" />
+      <recent name="$PROJECT_DIR$/artificial-life/plans" />
+      <recent name="$PROJECT_DIR$/artificial-life/research_runs/originalP2" />
       <recent name="$PROJECT_DIR$/artificial-life/research_runs/BACKLOG" />
       <recent name="$PROJECT_DIR$/THESIS/NPQuantumAdvantage" />
-      <recent name="$PROJECT_DIR$/THESIS/CriticalQuantumLife" />
-      <recent name="$PROJECT_DIR$/THESIS/CertifiedEntropyProvenance" />
-      <recent name="$PROJECT_DIR$/THESIS" />
     </key>
   </component>
   <component name="RunManager" selected="JavaScript Debug.concept_mockups.html">
@@ -183,6 +185,9 @@
       <workItem from="1788930346078" duration="15798000" />
       <workItem from="1789030248099" duration="33124000" />
       <workItem from="1789220252949" duration="2183000" />
+      <workItem from="1789223806174" duration="12695000" />
+      <workItem from="1789282026160" duration="30946000" />
+      <workItem from="1789360842907" duration="1610000" />
     </task>
     <servers />
   </component>
