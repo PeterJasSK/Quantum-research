@@ -145,16 +145,38 @@
   .win{color:var(--good)} .lose{color:var(--bad)}
   .note{margin-top:12px;font-size:12.5px;color:var(--mut);line-height:1.6} .note b{color:var(--ink)} .note .good{color:var(--good)} .note .bad{color:var(--bad)}
 
+  /* collapsible chapters (tree.peterjas.sk device) — default open, click header to fold */
+  .chapter{margin:0}
+  .chapter>summary{list-style:none;cursor:pointer;user-select:none;position:relative;padding-right:48px}
+  .chapter>summary::-webkit-details-marker{display:none}
+  .chapter>summary::after{content:"\2013";position:absolute;top:0;right:4px;
+    font-size:30px;line-height:1;font-weight:400;color:var(--gold);opacity:.7;transition:opacity .2s}
+  .chapter:not([open])>summary::after{content:"+"}
+  .chapter>summary:hover::after{opacity:1}
+  .chapter>summary .sec-eyebrow{margin-bottom:14px}
+  .chapter>summary h2{margin-bottom:0}
+  .chapter-body{padding-top:20px}
+
+  /* witness-vs-scale chart (replaces the big width table) */
+  .chart{margin-top:26px;border:1px solid var(--line2);border-radius:14px;
+    background:linear-gradient(180deg,rgba(8,13,24,.5),rgba(6,10,20,.72));padding:16px 16px 12px}
+  .chart .clg{display:flex;flex-wrap:wrap;gap:9px 20px;margin-bottom:8px;font-size:12px;color:var(--mut)}
+  .chart .clg span{display:inline-flex;gap:7px;align-items:center}
+  .chart .clg i{width:16px;height:3px;border-radius:2px;display:inline-block;flex:none}
+  .chart canvas{width:100%;height:360px;display:block}
+  @media(max-width:640px){.chart canvas{height:300px}}
+
   /* four candidate designs — verbatim ASCII circuits */
   .designs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
   @media(max-width:820px){.designs{grid-template-columns:1fr}}
-  .design{border:1px solid var(--line2);border-radius:14px;padding:16px 16px 14px;background:rgba(8,12,22,.55)}
+  .design{border:1px solid var(--line2);border-radius:14px;padding:16px 16px 14px;background:rgba(8,12,22,.55);min-width:0}
   .design.win{border-color:rgba(110,231,135,.5);background:linear-gradient(180deg,rgba(13,30,22,.5),rgba(8,14,12,.5))}
   .design .dt{font-size:12px;letter-spacing:.02em;margin-bottom:3px;color:var(--ink);font-weight:800}
   .design.win .dt{color:var(--good)}
   .design .dsub{font-size:11.5px;color:var(--mut);margin-bottom:10px;line-height:1.5}
-  .ckt{margin:0;overflow-x:auto;font-size:11px;line-height:1.55;color:var(--B2);background:rgba(4,6,12,.6);
-    border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre;font-family:var(--mono)}
+  .ckt{margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:11px;line-height:1.55;color:var(--B2);
+    background:rgba(4,6,12,.6);border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre;font-family:var(--mono);max-width:100%}
+  @media(max-width:820px){.ckt{font-size:10px;padding:9px 10px}}
   .design .verdict{font-size:11.5px;margin-top:10px;color:var(--mut);line-height:1.5} .design .verdict b{color:var(--ink)}
   .design.win .verdict b{color:var(--good)}
 
@@ -296,8 +318,12 @@
 
 <!-- ============================== BLOCK B — THE WIN (P2 + PJ0) ============================== -->
 <section>
-  <div class="sec-eyebrow gold">The win · P2 + PJ0 · the scale ceiling</div>
-  <h2>An old design hit a wall.<br>A new design moved it.</h2>
+  <details class="chapter">
+  <summary>
+    <div class="sec-eyebrow gold">The win · P2 + PJ0 · the scale ceiling</div>
+    <h2>An old design hit a wall.<br>A new design moved it.</h2>
+  </summary>
+  <div class="chapter-body">
   <p class="big">P2 drove the faithful 2018 death channel to its limit: with real amplitude-damping death in the
     loop, the genealogical witness collapsed at <span class="bad">W* = 9 = 19 qubits</span>. Mechanical diagnosis
     — the death operator couples the mortal soma to the immortal germ line (<code>cx(g,p)</code>) then dissipates
@@ -313,27 +339,15 @@
     one-liner: at W=4 the severed design reads <b class="tk">+0.899</b>; restoring the old <code>cx(g,p)</code>
     wound collapses it to <span class="bad">+0.120</span>. The coupling <b>is</b> the mechanism.</p>
 
-  <div class="scroll"><table>
-    <tr><th class="t">W</th><th>qubits (2W)</th><th>Old · unitary ⟨X<sup>⊗W</sup>⟩</th><th>Old · damping-death ⟨X<sup>⊗W</sup>⟩</th><th class="hl">New · germ/soma ⟨X<sup>⊗W</sup>⟩</th></tr>
-    <tr><td class="t">2</td><td>4</td><td>+0.959</td><td>+0.814</td><td class="hl">—</td></tr>
-    <tr><td class="t">3</td><td>6</td><td>+0.879</td><td>—</td><td class="hl">—</td></tr>
-    <tr><td class="t">4</td><td>8</td><td>+0.808</td><td>—</td><td class="hl">—</td></tr>
-    <tr><td class="t">6</td><td>12</td><td>+0.612</td><td>+0.542</td><td class="hl">+0.870</td></tr>
-    <tr><td class="t">8</td><td>16</td><td>—</td><td>+0.468</td><td class="hl">—</td></tr>
-    <tr><td class="t">9</td><td>18</td><td>—</td><td>+0.171 (last alive)</td><td class="hl">—</td></tr>
-    <tr><td class="t">10</td><td>20</td><td>—</td><td>+0.022 (dead)</td><td class="hl">—</td></tr>
-    <tr><td class="t">12</td><td>24</td><td>+0.301</td><td>−0.005 (dead)</td><td class="hl">+0.756</td></tr>
-    <tr><td class="t">16</td><td>32</td><td>—</td><td>—</td><td class="hl">+0.296</td></tr>
-    <tr><td class="t">24</td><td>48</td><td>+0.038 (k=2 only)</td><td>—</td><td class="hl">+0.193</td></tr>
-    <tr><td class="t">28</td><td>56</td><td>—</td><td>—</td><td class="hl">+0.355</td></tr>
-    <tr><td class="t">32</td><td>64</td><td>+0.008 (dead)</td><td>—</td><td class="hl">+0.271</td></tr>
-    <tr><td class="t">36</td><td>72</td><td>—</td><td>—</td><td class="hl">+0.220</td></tr>
-    <tr><td class="t">40</td><td>80</td><td>—</td><td>—</td><td class="hl">+0.067</td></tr>
-    <tr><td class="t">42</td><td>84</td><td>—</td><td>—</td><td class="hl">+0.068</td></tr>
-    <tr><td class="t">46</td><td>92</td><td>—</td><td>—</td><td class="hl">+0.081</td></tr>
-    <tr><td class="t">50</td><td>100</td><td>—</td><td>—</td><td class="hl">+0.058 (last certified, k=3σ)</td></tr>
-    <tr><td class="t">54</td><td>108</td><td>—</td><td>—</td><td class="hl">— abort · no clean 108-chain</td></tr>
-  </table></div>
+  <div class="chart">
+    <div class="clg">
+      <span><i style="background:var(--A)"></i>Old · unitary ⟨X<sup>⊗W</sup>⟩ (no death)</span>
+      <span><i style="background:var(--bad)"></i>Old · damping-death ⟨X<sup>⊗W</sup>⟩</span>
+      <span><i style="background:var(--good)"></i>New · germ/soma ⟨X<sup>⊗W</sup>⟩</span>
+      <span><i style="background:var(--mut)"></i>classical null ≈ 0</span>
+    </div>
+    <canvas id="wchart" aria-label="Witness vs qubit count: unitary decays, damping dies at 18 qubits, germ/soma certified to 100 qubits"></canvas>
+  </div>
   <p class="note"><b>Separable null ≈ 0 everywhere</b> (P2 ≤ 3×10<sup>-7</sup>; PJ0 ≤ 10<sup>-13</sup>) — off the
     chart. Unitary axis exhausted at W*=24 (geometric decay, "bigger GHZ, same biology"); damping wall at W*=9;
     <span class="good">germ/soma certified 5.5× further to W=50</span>, stopped by qubit count.</p>
@@ -538,12 +552,18 @@ c: 5/═════════════════════════
         certification, not a speedup. PJ1 then tiles two of these organisms into the arena.</p>
     </div>
   </details>
+  </div>
+  </details>
 </section>
 
 <!-- ============================== BLOCK A — WHAT IS HAPPENING (PJ1) ============================== -->
 <section>
-  <div class="sec-eyebrow amber">What is happening · PJ1 · the arena</div>
-  <h2>They collided on real hardware — and the genealogy survived.</h2>
+  <details class="chapter">
+  <summary>
+    <div class="sec-eyebrow amber">What is happening · PJ1 · the arena</div>
+    <h2>They collided on real hardware — and the genealogy survived.</h2>
+  </summary>
+  <div class="chapter-body">
   <p class="big">The run: IBM <b>ibm_kingston</b> (156-qubit Heron r2), <b>42 qubits</b> = 2×(W12 germ + 8 body +
     1 trait), 12 measured frames, 8,192 shots/frame, QRNG-certified (fail-closed), chain-quality gate passed
     (<code>twoq_err_max 0.0073</code>, <code>readout_max 0.026</code>), selective DD on both germ lines, ~1 min QPU.</p>
@@ -619,12 +639,18 @@ c: 5/═════════════════════════
         for a statevector); hardware proves the meeting + genealogy survival, not the entangling.</p>
     </div>
   </details>
+  </div>
+  </details>
 </section>
 
 <!-- ============================== BLOCK C — HOW THIS WAS BUILT (the beginning) ============================== -->
 <section>
-  <div class="sec-eyebrow">How this was built · the beginning · inherited method</div>
-  <h2>Where the program came from.</h2>
+  <details class="chapter">
+  <summary>
+    <div class="sec-eyebrow">How this was built · the beginning · inherited method</div>
+    <h2>Where the program came from.</h2>
+  </summary>
+  <div class="chapter-body">
   <p class="big">Origin: the program began at <a href="https://tree.peterjas.sk/">tree.peterjas.sk</a> — a genome
     of <b>102 qubits</b> on Heron r2 whose long-range genes are linked by <b>quantum teleportation</b>, not code;
     a correlation no classical surrogate can fake, proven at ~10σ past its baselines. It set the method every
@@ -704,6 +730,8 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
       the sim-only contact meter are all reported as instrument readings. Origin &amp; method:
       <a href="https://tree.peterjas.sk/">tree.peterjas.sk</a>.</div>
   </div>
+  </div>
+  </details>
 </section>
 
 <footer>
@@ -752,6 +780,50 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
     return {cv,ctx,fit,w:()=>cv.getBoundingClientRect().width,h:()=>cv.getBoundingClientRect().height};
   }
   const life=wrap("life"), heart=wrap("heart");
+
+  // ---- witness-vs-scale line chart (static; replaces the old width table) ----
+  // [qubits(2W), witness ⟨X^⊗W⟩]
+  const WCHART={
+    unitary:[[4,0.959],[6,0.879],[8,0.808],[12,0.612],[24,0.301],[48,0.038],[64,0.008]],
+    damping:[[4,0.814],[12,0.542],[16,0.468],[18,0.171],[20,0.022],[24,-0.005]],
+    germ:[[12,0.870],[24,0.756],[32,0.296],[48,0.193],[56,0.355],[64,0.271],[72,0.220],[80,0.067],[84,0.068],[92,0.081],[100,0.058]]
+  };
+  const wc=wrap("wchart");
+  function drawWChart(){
+    wc.fit(); const {ctx}=wc, W=wc.w(), H=wc.h(); if(W<2||H<2) return;
+    ctx.clearRect(0,0,W,H);
+    const padL=42,padR=14,padT=14,padB=34, QMAX=104, YMIN=-0.06, YMAX=1.0;
+    const X=q=>padL+(q/QMAX)*(W-padL-padR);
+    const Y=v=>padT+(1-(v-YMIN)/(YMAX-YMIN))*(H-padT-padB);
+    // y grid + ticks
+    ctx.font="10px "+C("--mono"); ctx.textAlign="right"; ctx.lineWidth=1;
+    for(let v=0;v<=1.0001;v+=0.25){const y=Y(v);
+      ctx.strokeStyle="rgba(90,110,150,.12)";ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.fillText(v.toFixed(2),padL-6,y+3);}
+    // classical null line at 0
+    ctx.strokeStyle=ha('#7d879e',.6);ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(W-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+    // x ticks (qubits)
+    ctx.textAlign="center";
+    [4,20,40,60,80,100].forEach(q=>{const x=X(q);
+      ctx.strokeStyle="rgba(90,110,150,.08)";ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,H-padB);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.fillText(String(q),x,H-padB+16);});
+    ctx.fillStyle=MUT;ctx.fillText("qubits (2W)",(padL+W-padR)/2,H-4);
+    // series
+    const series=(pts,col)=>{
+      ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.shadowColor=col;ctx.shadowBlur=6;ctx.beginPath();
+      pts.forEach((p,i)=>{const x=X(p[0]),y=Y(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.shadowBlur=0;
+      pts.forEach(p=>{ctx.fillStyle=col;ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),3.2,0,7);ctx.fill();});
+    };
+    series(WCHART.unitary,cA());
+    series(WCHART.damping,C("--bad"));
+    series(WCHART.germ,C("--good"));
+    // annotations
+    ctx.font="10px "+C("--mono"); ctx.textAlign="left";
+    ctx.fillStyle=C("--bad");ctx.fillText("damping wall W*=9",Math.min(X(18)+8,W-padR-96),Y(0.171)-8);
+    ctx.fillStyle=C("--good");ctx.fillText("certified W=50",Math.min(X(100)+8,W-padR-84),Y(0.058)-10);
+  }
+  new ResizeObserver(drawWChart).observe(wc.cv);
+  drawWChart();
 
   // ---- wave-bars renderer (ported from spectacle.html, adapted to CSS-px DPR-fit canvas) ----
   function rr(ctx,x,y,w,hh,r){r=Math.min(r,w/2,Math.abs(hh)/2||r);ctx.beginPath();ctx.moveTo(x+r,y);
@@ -850,6 +922,7 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
     const t=8*SEC_PER_FRAME;                            // mid-collision
     if(!hb.w.length) for(let k=0;k<40;k++) pushHeart((4+k*0.1)*SEC_PER_FRAME);
     safe(drawLife,life,t); safe(drawHeart,heart,t); readouts(t);
+    try{drawWChart();}catch(e){}
   }
   if(RM){ staticFrame(); } else { staticFrame(); requestAnimationFrame(frame); }
   setTimeout(staticFrame,250); window.addEventListener("load",staticFrame);
