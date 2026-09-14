@@ -89,6 +89,7 @@
       --accent: #00aaff; --primary: #084666; --primary-hover: #052e44;
       --border: rgba(0,170,255,0.16);
       --success: #0d9f6e;
+      --progress: #e35100;
       --glow: none;
     }
     /* ---- dark ---- */
@@ -98,6 +99,7 @@
       --accent: #00aaff; --primary: #00aaff; --primary-hover: #0077cc;
       --border: rgba(0,170,255,0.24);
       --success: #34d399;
+      --progress: #ff8038;
       --glow: 0 0 10px var(--accent);
     }
     /* ---- quantum (easter egg) ---- */
@@ -285,6 +287,7 @@
       border: 1px solid var(--border);
     }
     .status.live { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); border-color: transparent; }
+    .status.progress { background: color-mix(in srgb, var(--progress) 18%, transparent); color: var(--progress); border-color: transparent; }
     .status.research { color: var(--accent); }
     .status.done { opacity: .7; }
     .card p { font-size: 14px; opacity: .88; flex: 1; }
@@ -438,7 +441,7 @@
       },
       {
         title: "artificial-life project",
-        status: "Live", cls: "live", color: "#12ddcb",
+        status: "IN PROGRESS", cls: "progress",featured: true, color: "#12ddcb",
         desc: "Based on best definition and best source ever WIKI Quantum_artificial_life. I replicated results from 2018. I improved the archaic design and certified their result. Created enclosed one dimensional space, and put 2 living organism in the space and see what they do when they meet. :)",
         tags: ["Qiskit", "Education", "IBM Quantum"],
         links: [{ label: "Live site ↗", href: "https://quantum-artificial-life.vercel.app/" },{ label: "Repo ↗", href: REPO + "artificial-life" },{ label: "Wiki ↗", href: "https://en.wikipedia.org/wiki/Quantum_artificial_life" }]
