@@ -2,21 +2,35 @@
 """
 _common.py  —  shared helpers for the QuantumAlgorithmsExplained lessons.
 
-Every lesson runs on a LOCAL simulator (qiskit's built-in StatevectorSampler),
-so there is no cost, no queue and no IBM account needed. Results are perfectly
-reproducible because we pin a random seed.
+DEFAULT = LOCAL SIMULATOR. Every lesson calls run_and_save(...) which runs on
+qiskit's built-in StatevectorSampler: no cost, no queue, no account, and
+perfectly reproducible (we pin a random seed).
 
-Each lesson calls run_and_save(...) which:
-  1. runs the circuit on the local simulator,
-  2. writes a JSON file to  ../result/<name>.json   (numbers + metadata),
-  3. draws a bar chart to    ../graph/<name>.png    (measurement histogram),
-  4. prints a short human-readable summary.
+GO LIVE without editing any lesson file — just set an env var:
+    QAE_LIVE=1 python 01_coin_flip.py
+When QAE_LIVE is set, run_and_save automatically routes to REAL IBM Quantum
+hardware and picks the MOST FREE machine (least pending jobs) for you via
+QiskitRuntimeService.least_busy(...). Optional overrides:
+    QAE_BACKEND=ibm_torino   # force a specific backend, skip auto-pick
+    QAE_SHOTS=2048           # override shot count
+    QAE_INSTANCE=...         # IBM Quantum instance/CRN if your account needs it
+
+One-time IBM setup (saves a token to ~/.qiskit):
+    from qiskit_ibm_runtime import QiskitRuntimeService
+    QiskitRuntimeService.save_account(channel="ibm_quantum_platform",
+                                      token="YOUR_TOKEN", overwrite=True)
+
+Each run writes:
+  1. a JSON file to  ../result/<name>.json   (numbers + metadata),
+  2. a bar chart to  ../graph/<name>.png     (measurement histogram),
+  3. a short human-readable summary to stdout.
 
 The .md explanation file for each lesson links to that JSON + PNG.
 """
 
 import json
 import os
+import sys
 from datetime import datetime, timezone
 
 import matplotlib
@@ -41,6 +55,18 @@ def _counts(qc, shots):
     creg = qc.cregs[0].name
     data = getattr(result[0].data, creg)
     return data.get_counts()
+
+
+def _draw_circuit(qc, name):
+    """Print the ASCII circuit diagram and save it to ../result/<name>_circuit.txt."""
+    diagram = qc.draw(output="text", fold=-1).__str__()
+    os.makedirs(RESULT_DIR, exist_ok=True)
+    txt_path = os.path.join(RESULT_DIR, name + "_circuit.txt")
+    with open(txt_path, "w") as f:
+        f.write(diagram + "\n")
+    print("\n--- circuit ---")
+    print(diagram)
+    print(f"  circuit -> {os.path.relpath(txt_path, HERE)}")
 
 
 def _emit(name, title, counts, shots, note, backend, extra=None):
@@ -100,9 +126,20 @@ def _emit(name, title, counts, shots, note, backend, extra=None):
     return counts
 
 
+def _live_requested():
+    """True when the caller asked to go live (env var or CLI flag)."""
+    if os.environ.get("QAE_LIVE", "").strip().lower() in ("1", "true", "yes", "on"):
+        return True
+    return "--live" in sys.argv
+
+
 def run_and_save(qc, name, title, shots=4096, note=""):
-    """Run a circuit on the LOCAL ideal simulator, save result JSON + histogram
-    PNG, print a summary.
+    """Run a circuit and save result JSON + histogram PNG + summary.
+
+    DEFAULT: LOCAL ideal simulator (free, offline, reproducible).
+    If QAE_LIVE=1 (or `--live` on the command line) is set, this transparently
+    routes to REAL IBM Quantum hardware and picks the MOST FREE machine — the
+    lesson files do not change at all.
 
     qc     : a QuantumCircuit that already contains measurements
     name   : file stem, e.g. "01_coin_flip"
@@ -110,61 +147,90 @@ def run_and_save(qc, name, title, shots=4096, note=""):
     shots  : how many times to run/measure the circuit
     note   : optional one-line interpretation stored in the JSON
     """
+    if _live_requested():
+        env_shots = os.environ.get("QAE_SHOTS", "").strip()
+        if env_shots:
+            shots = int(env_shots)
+        return run_live_and_save(qc, name, title, shots=shots, note=note)
+
+    _draw_circuit(qc, name)
     counts = _counts(qc, shots)
     return _emit(name, title, counts, shots, note,
                  backend="qiskit StatevectorSampler (local, ideal, no noise)",
                  extra={"num_qubits": qc.num_qubits})
 
 
-def run_live_and_save(qc, name, title, shots=4096, note="",
-                      backend_name="QX emulator"):
-    """Run a circuit on QUANTUM INSPIRE 2 (cloud), then save result JSON +
-    histogram PNG and print a summary — same outputs as run_and_save so the
-    .md lessons render identically.
+def _pick_least_busy_backend(service, min_qubits):
+    """Return the MOST FREE operational IBM Quantum hardware backend (fewest
+    pending jobs). Honors QAE_BACKEND to force a specific machine."""
+    forced = os.environ.get("QAE_BACKEND", "").strip()
+    if forced:
+        backend = service.backend(forced)
+        print(f"IBM backend forced via QAE_BACKEND: {backend.name}")
+        return backend
 
-    Requires a one-time login (no token to paste; OAuth browser flow):
-        qi login                      # see ../../quantumCredentialsApi.py
-    and the Qiskit plugin installed:
-        pip install qiskit-quantuminspire
+    backend = service.least_busy(operational=True, simulator=False,
+                                 min_num_qubits=min_qubits)
+    try:
+        pending = backend.status().pending_jobs
+        print(f"IBM least-busy backend: {backend.name} "
+              f"({backend.num_qubits} qubits, {pending} jobs queued)")
+    except Exception:
+        print(f"IBM least-busy backend: {backend.name}")
+    return backend
 
-    qc           : a QuantumCircuit that already contains measurements
-    name         : base file stem (e.g. "01_coin_flip"). Live output is saved as
-                   "<name>_live_<backend>_<UTC timestamp>" so every run is kept
-                   and never overwrites the clean sim files the lessons link.
-    title        : human title used in the chart and JSON
-    shots        : number of shots to request
-    note         : optional one-line interpretation stored in the JSON
-    backend_name : which QI backend to target:
-                     "QX emulator" -> QI CLOUD simulator (no queue, safe default)
-                     "Starmon-7"   -> superconducting REAL hardware (has noise)
-                     "Spin-2+"     -> spin-qubit REAL hardware (has noise)
 
-    NOTE: on real hardware (Starmon-7 / Spin-2+) noise adds extra states and
-    smears the ideal 0%/100% peaks — that difference is the point of going live.
-    Max 3 queued jobs per hardware backend on the free plan.
+def run_live_and_save(qc, name, title, shots=4096, note=""):
+    """Run a circuit on REAL IBM Quantum hardware, auto-selecting the MOST FREE
+    (least-busy) machine, then save result JSON + histogram PNG + summary —
+    same outputs as run_and_save so the .md lessons render identically.
+
+    One-time account setup (token saved to ~/.qiskit, no re-paste):
+        from qiskit_ibm_runtime import QiskitRuntimeService
+        QiskitRuntimeService.save_account(channel="ibm_quantum_platform",
+                                          token="YOUR_TOKEN", overwrite=True)
+
+    Env overrides:
+        QAE_BACKEND   force a specific backend (skip least-busy auto-pick)
+        QAE_INSTANCE  IBM instance / CRN if your account needs an explicit one
+
+    Live output is saved as "<name>_live_<backend>_<UTC timestamp>" so every run
+    is kept and never overwrites the clean sim files the lessons link.
+
+    NOTE: real hardware has noise — it adds extra states and smears the ideal
+    0%/100% peaks. That difference is the whole point of going live.
     """
-    # imported lazily so the local-only lessons don't need the QI plugin
-    from qiskit import transpile
-    from qiskit_quantuminspire.qi_provider import QIProvider
+    # imported lazily so the local-only lessons don't need the IBM plugin
+    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+    from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2
 
-    provider = QIProvider()
-    backend = provider.get_backend(backend_name)
-    print(f"QI backend: {backend_name} — transpiling + submitting ...")
+    instance = os.environ.get("QAE_INSTANCE", "").strip() or None
+    service = QiskitRuntimeService(instance=instance) if instance \
+        else QiskitRuntimeService()
 
-    # transpile to the backend's native gate set / qubit layout
-    isa = transpile(qc, backend)
+    backend = _pick_least_busy_backend(service, min_qubits=qc.num_qubits)
+    print(f"Transpiling for {backend.name} + submitting {shots} shots ...")
 
-    # if your qiskit-quantuminspire version rejects the shots kwarg, drop it
-    # (the platform default is 1024 shots) and set shots below to match.
-    job = backend.run(isa, shots=shots)
+    # transpile to the backend's native gate set / qubit layout (ISA circuit)
+    pm = generate_preset_pass_manager(optimization_level=1, backend=backend)
+    isa = pm.run(qc)
+
+    sampler = SamplerV2(mode=backend)
+    job = sampler.run([isa], shots=shots)
+    print(f"  job id: {job.job_id()} — waiting for result ...")
     result = job.result()
-    counts = result.get_counts()
+
+    # classical register keeps its name through transpilation
+    creg = qc.cregs[0].name
+    counts = getattr(result[0].data, creg).get_counts()
 
     # unique, timestamped stem so every live run is kept, never overwritten
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    stem = f"{name}_live_{backend_name.replace(' ', '_')}_{stamp}"
+    stem = f"{name}_live_{backend.name}_{stamp}"
 
+    _draw_circuit(qc, stem)
     return _emit(stem, title, counts, shots, note,
-                 backend=f"Quantum Inspire 2 {backend_name} (cloud)",
+                 backend=f"IBM Quantum {backend.name} (real hardware, cloud)",
                  extra={"num_qubits": qc.num_qubits,
-                        "base_name": name})
+                        "base_name": name,
+                        "ibm_backend": backend.name})

@@ -4,9 +4,11 @@ A hands-on tour of 15 standard quantum algorithms, from the absolute basics to
 the exponential-speedup capstones. Each lesson is self-contained: read the
 explanation, run the code, look at the numbers it produced.
 
-**Everything runs on a local simulator** (Qiskit's built-in
+**By default everything runs on a local simulator** (Qiskit's built-in
 `StatevectorSampler`) — no quantum hardware, no IBM account, no cost, and fully
-reproducible (a fixed random seed pins the numbers).
+reproducible (a fixed random seed pins the numbers). When you're ready, flip one
+env var to run the same lessons on **real IBM Quantum hardware** — see
+[live mode](#optional-run-on-real-ibm-quantum-hardware-live-mode) below.
 
 ## Layout
 ```
@@ -49,29 +51,57 @@ numbers every time.
 ## Requirements
 - `qiskit` (2.x)
 - `matplotlib`, `numpy`
+- `qiskit-ibm-runtime` — **only** for live mode (real IBM hardware)
 
-No `qiskit-aer` or IBM Runtime needed — the built-in `StatevectorSampler` is an
-ideal, noise-free local simulator.
+The default needs no `qiskit-aer` and no IBM account — the built-in
+`StatevectorSampler` is an ideal, noise-free local simulator.
 
-## Optional: run on Quantum Inspire (cloud)
+## Optional: run on REAL IBM Quantum hardware (live mode)
 
-The default is the local simulator. To run the same circuits on
-[Quantum Inspire 2](https://www.quantum-inspire.com/) (free account) instead:
+The default is the local simulator. To run the **same** circuits on real IBM
+Quantum hardware, add **one flag**: `--live`. No code edits. Live mode auto-picks
+the **most free** machine (fewest pending jobs) via
+`QiskitRuntimeService.least_busy(...)`.
 
+**Step 1 — install the runtime plugin**
 ```bash
-pip install qiskit-quantuminspire   # Qiskit plugin
-qi login                            # one-time OAuth login (see ../quantumCredentialsApi.py)
+pip install qiskit-ibm-runtime
 ```
 
-Then in a lesson uncomment the `run_live_and_save(...)` block at the bottom of
-the script. Pick a backend:
-- `"QX emulator"` — QI cloud simulator (no queue; safe first step)
-- `"Starmon-7"` / `"Spin-2+"` — **real hardware** (noisy; max 3 queued jobs)
+**Step 2 — add your credentials (one time)**
 
-Lessons `08_bb84` and `11_chsh` sample circuits inline (not via
-`run_and_save`); each has a comment block showing the one-line sampler swap.
+Open `credentialsApi.py`, paste your IBM Quantum **API token** (and optional
+instance/CRN) from https://quantum.cloud.ibm.com/ , then run it once:
+```bash
+python credentialsApi.py
+```
+This saves the token to `~/.qiskit/` — you never paste it again.
+
+**Step 3 — run any lesson live**
+```bash
+python code/01_coin_flip.py --live
+```
+That's it. The lesson transpiles for the selected backend, submits the job, and
+prints the chosen machine + its queue depth + the job id.
+
+Optional overrides (env vars, combine with `--live`):
+| Flag / env var | Effect |
+|---|---|
+| `--live` | route to real IBM hardware (default: off = local sim) |
+| `QAE_BACKEND=ibm_torino` | force a specific machine, skip the least-busy auto-pick |
+| `QAE_SHOTS=2048` | override shot count |
+| `QAE_INSTANCE=...` | IBM instance / CRN if your account needs an explicit one |
+
+(`QAE_LIVE=1` also works as an equivalent to `--live` if you prefer an env var.)
+
 Live runs are saved as `<name>_live_<backend>_<timestamp>` so they never
-overwrite the clean simulator outputs the lessons link.
+overwrite the clean simulator outputs the lessons link. Real hardware has noise:
+extra states appear and the ideal 0%/100% peaks smear — that difference is the
+whole point of going live.
+
+**Note:** lessons `08_bb84` and `11_chsh` sample circuits inline (not via
+`run_and_save`), so `QAE_LIVE` does not affect them — they stay local. Every
+other lesson honors it.
 
 ## Suggested learning path
 1. **01–03** build the two pillars: superposition and entanglement.
