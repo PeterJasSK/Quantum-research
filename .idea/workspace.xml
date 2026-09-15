@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,7 +47,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/artificial-life/web",
+    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/study-ideas/QuantumAlgorithmsExplained",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
@@ -60,11 +58,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/study-ideas/QuantumAlgorithmsExplained" />
       <recent name="$PROJECT_DIR$/artificial-life/web" />
       <recent name="$PROJECT_DIR$/THESIS" />
       <recent name="$PROJECT_DIR$/number-partitioning/plans" />
       <recent name="$PROJECT_DIR$/number-partitioning" />
-      <recent name="$PROJECT_DIR$/artificial-life/research" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/artificial-life/research/backlogWEB" />
@@ -191,6 +189,7 @@
       <workItem from="1789282026160" duration="30946000" />
       <workItem from="1789360842907" duration="1610000" />
       <workItem from="1789366260195" duration="7744000" />
+      <workItem from="1789401643386" duration="8051000" />
     </task>
     <servers />
   </component>

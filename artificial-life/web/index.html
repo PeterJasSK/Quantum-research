@@ -1,8 +1,8 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quantum Artificial Life — two organisms met on a real quantum computer</title>
-<meta name="description" content="A germ/soma quantum organism whose certified genealogy survives to 100 qubits, and two of them colliding on IBM ibm_kingston — measured, not simulated.">
+<title>Quantum Artificial Life, two organisms met on a real quantum computer</title>
+<meta name="description" content="A germ/soma quantum organism whose certified genealogy survives to 100 qubits, and two of them colliding on IBM ibm_kingston, measured, not simulated.">
 <style>
   :root{
     --bg:#05070d; --bg2:#080c17; --panel:rgba(10,15,28,.62); --panel-solid:#0a0f1c;
@@ -19,7 +19,7 @@
   ::selection{background:rgba(55,230,212,.28)}
   sub,sup{font-size:.7em}
 
-  /* ---------- HERO — full-bleed living instrument (CQL #life treatment) ---------- */
+  /* ---------- HERO, full-bleed living instrument (CQL #life treatment) ---------- */
   .stage{position:relative;height:100svh;min-height:640px;width:100%;overflow:hidden;
     background:
       radial-gradient(1400px 900px at 72% -12%, #0d1730 0%, transparent 58%),
@@ -145,7 +145,7 @@
   .win{color:var(--good)} .lose{color:var(--bad)}
   .note{margin-top:12px;font-size:12.5px;color:var(--mut);line-height:1.6} .note b{color:var(--ink)} .note .good{color:var(--good)} .note .bad{color:var(--bad)}
 
-  /* collapsible chapters (tree.peterjas.sk device) — default open, click header to fold */
+  /* collapsible chapters (tree.peterjas.sk device), default open, click header to fold */
   .chapter{margin:0}
   .chapter>summary{list-style:none;cursor:pointer;user-select:none;position:relative;padding-right:48px}
   .chapter>summary::-webkit-details-marker{display:none}
@@ -166,7 +166,7 @@
   .chart canvas{width:100%;height:360px;display:block}
   @media(max-width:640px){.chart canvas{height:300px}}
 
-  /* four candidate designs — verbatim ASCII circuits */
+  /* four candidate designs, verbatim ASCII circuits */
   .designs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
   @media(max-width:820px){.designs{grid-template-columns:1fr}}
   .design{border:1px solid var(--line2);border-radius:14px;padding:16px 16px 14px;background:rgba(8,12,22,.55);min-width:0}
@@ -191,6 +191,8 @@
   .acc>summary::-webkit-details-marker{display:none}
   .acc>summary::before{content:"+";color:var(--gold);width:15px;text-align:center;flex:none;font-weight:700}
   .acc[open]>summary::before{content:"\2013"}
+  .acc-head{padding:15px 18px 4px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--witness)}
+  .acc-head b{color:var(--ink)}
   .acc-body{padding:6px 18px 18px}
   .acc-body p{color:var(--mut);font-size:13.5px;line-height:1.62;max-width:74ch} .acc-body p b{color:var(--ink)}
   .acc-body p .good{color:var(--good)} .acc-body p .bad{color:var(--bad)} .acc-body p .tk{color:var(--witness)}
@@ -227,7 +229,7 @@
   footer a{margin-left:auto}
 </style>
 
-<!-- ============================== HERO — inline canvas, full-bleed ============================== -->
+<!-- ============================== HERO, inline canvas, full-bleed ============================== -->
 <div class="stage">
   <canvas id="life"></canvas>
   <div class="veil"></div>
@@ -254,11 +256,11 @@
   <div class="hud hud-bottom">
     <div class="heartwrap">
       <div class="heartcap">
-        <div class="t">live readout — <b>genealogy witness</b> &amp; <i>body overlap</i></div>
+        <div class="t">live readout, <b>genealogy witness</b> &amp; <i>body overlap</i></div>
         <div class="r">witness <b id="hWit">+0.17</b> · overlap <i id="hOv">0.00</i></div>
       </div>
       <canvas id="heart"></canvas>
-      <div class="heartnote">the witness stays above the classical null while the bodies close in — <b>they collide, the genealogy holds</b>.</div>
+      <div class="heartnote">the witness stays above the classical null while the bodies close in, <b>they collide, the genealogy holds</b>.</div>
     </div>
   </div>
 
@@ -267,10 +269,10 @@
 
 <!-- ============================== READING THE HERO ============================== -->
 <section class="reading">
-  <div class="sec-eyebrow amber">Reading the hero — what you are watching</div>
+  <div class="sec-eyebrow amber">Reading the hero, what you are watching</div>
   <p class="lede"><span class="tkA">Body A</span> comes in from the left, <span class="tkB">body B</span> from the
-    right. They walk together and <b style="color:var(--ink)">collide</b> — every frame is a real measurement on
-    the QPU — while each keeps its <span class="tk">certified quantum genealogy</span> alive.</p>
+    right. They walk together and <b style="color:var(--ink)">collide</b>, every frame is a real measurement on
+    the QPU, while each keeps its <span class="tk">certified quantum genealogy</span> alive.</p>
   <p class="sub-note">The picture is a <b style="color:var(--ink)">position histogram</b> of the two bodies as they
     move along a track, rebuilt from 8,192 shots per frame. Here is every mark on it:</p>
 
@@ -300,14 +302,14 @@
       <div class="mk"><span class="flare"></span></div>
       <div class="tx"><b>The white flares = contact.</b> Where <span class="tkA">A</span> and <span class="tkB">B</span>
         both have amplitude at the same site, they <b style="color:var(--ink)">overlap</b>. The glow is white
-        because it belongs to neither colour — it is the two of them meeting. This is the collision, measured:
+        because it belongs to neither colour, it is the two of them meeting. This is the collision, measured:
         overlap climbs <b style="color:var(--ink)">0.00 → 0.72</b> across the run.</div>
     </div>
     <div class="leg">
       <div class="mk"><span class="head" style="color:var(--A2);background:var(--A)"></span></div>
       <div class="tx"><b>The labelled <span class="tkA">A</span> / <span class="tkB">B</span> heads = each body's
-        centre.</b> The ringed dot with a dropline marks where each organism currently peaks on the track — its
-        position — so you can watch the two centres walk toward each other and meet.</div>
+        centre.</b> The ringed dot with a dropline marks where each organism currently peaks on the track, its
+        position, so you can watch the two centres walk toward each other and meet.</div>
     </div>
   </div>
 
@@ -316,26 +318,150 @@
     ⟨X<sup>⊗2W</sup>⟩ over both germ lines, staying alive above the null (≈0) through the whole collision.</p>
 </section>
 
-<!-- ============================== BLOCK B — THE WIN (P2 + PJ0) ============================== -->
+<!-- ============================== THE MODEL · ARTIFICIAL LIFE ON QUANTUM COMPUTERS ============================== -->
 <section>
   <details class="chapter">
   <summary>
-    <div class="sec-eyebrow gold">The win · P2 + PJ0 · the scale ceiling</div>
-    <h2>An old design hit a wall.<br>A new design moved it.</h2>
+    <div class="sec-eyebrow amber">The model · Alvarez-Rodriguez, Sanz, Lamata and Solano · IBM machine</div>
+    <h2>Artificial life on quantum computers</h2>
   </summary>
   <div class="chapter-body">
-  <p class="big">P2 drove the faithful 2018 death channel to its limit: with real amplitude-damping death in the
-    loop, the genealogical witness collapsed at <span class="bad">W* = 9 = 19 qubits</span>. Mechanical diagnosis
-    — the death operator couples the mortal soma to the immortal germ line (<code>cx(g,p)</code>) then dissipates
-    it, so body-death irreversibly decoheres the gene-witness. A <b>biology wall</b>, not a hardware one.</p>
-  <p class="big">PJ0 builds the <b>Weismann barrier</b>: the germ line carries the GHZ witness and stays coherent;
-    the soma is a separable diagonal trait dying in isolation (natural T1, no bath, no <code>cx(g,p)</code>).
-    Severing that one coupling moved the certified ceiling to <b class="good">W = 50 = 100 qubits (k=3σ)</b> — the
-    run stopped only because the chip ran out of clean qubits (needs a 108-chain; longest clean is 107).
-    <b>The machine ran out before the witness did</b> — the limiting resource flipped from entanglement to
-    machine size.</p>
+  <p class="big">One group has run a full life-cycle on a real quantum computer: <b>Alvarez-Rodriguez, Sanz,
+    Lamata and Solano, on an IBM machine</b>. Their model is below in plain terms, with the two places this study
+    changes it.</p>
+
+  <p class="big"><b>Darwinian life needs three things: heredity, variation, and selection.</b> The model builds all
+    three from just two qubits per individual. One qubit is the <span class="tk">gene</span> it inherits, the other
+    is the <span style="color:var(--A2)">body</span> it grows and shows to the world.</p>
+
+  <figure>
+    <svg viewBox="0 0 760 300" role="img" style="width:100%;height:auto;display:block;border:1px solid var(--line2);border-radius:12px;background:#0a0d13"
+      aria-label="The Darwinian life cycle built from two qubits: a gene is replicated for heredity, mutated for variation, lives and meets others, then dies as selection, and the dead body seeds the next gene. Below, one individual split into a coherent gene line that stays alive and a mortal body that ages and dies, separated by a barrier so they never share a gate.">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0 0 L6 3 L0 6 Z" fill="#7d879e"></path>
+        </marker>
+      </defs>
+      <!-- the loop -->
+      <text x="380" y="15" text-anchor="middle" fill="#7d879e" font-size="11" font-family="ui-monospace,monospace">the dead body seeds the next blank gene</text>
+      <path d="M660 44 L660 20 L100 20 L100 42" fill="none" stroke="#7d879e" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#ah)"></path>
+      <!-- five stages -->
+      <g font-family="ui-monospace,monospace" text-anchor="middle">
+        <rect x="40"  y="44" width="120" height="46" rx="8" fill="#0e1526" stroke="#37e6d4" stroke-width="1.4"></rect>
+        <text x="100" y="65" fill="#37e6d4" font-size="14" font-weight="700">Gene</text>
+        <text x="100" y="80" fill="#7d879e" font-size="10">inherited</text>
+        <rect x="180" y="44" width="120" height="46" rx="8" fill="#0e1526" stroke="#5a6e96" stroke-width="1.2"></rect>
+        <text x="240" y="65" fill="#eaf0fb" font-size="13" font-weight="700">Replicate</text>
+        <text x="240" y="80" fill="#7d879e" font-size="10">heredity</text>
+        <rect x="320" y="44" width="120" height="46" rx="8" fill="#0e1526" stroke="#5a6e96" stroke-width="1.2"></rect>
+        <text x="380" y="65" fill="#eaf0fb" font-size="14" font-weight="700">Mutate</text>
+        <text x="380" y="80" fill="#7d879e" font-size="10">variation</text>
+        <rect x="460" y="44" width="120" height="46" rx="8" fill="#0e1526" stroke="#5a6e96" stroke-width="1.2"></rect>
+        <text x="520" y="65" fill="#eaf0fb" font-size="14" font-weight="700">Live · meet</text>
+        <text x="520" y="80" fill="#7d879e" font-size="10">interact</text>
+        <rect x="600" y="44" width="120" height="46" rx="8" fill="#0e1526" stroke="#ff5c6b" stroke-width="1.4"></rect>
+        <text x="660" y="65" fill="#ff5c6b" font-size="14" font-weight="700">Die</text>
+        <text x="660" y="80" fill="#7d879e" font-size="10">selection</text>
+      </g>
+      <path d="M161 67 L177 67" stroke="#7d879e" stroke-width="1.4" marker-end="url(#ah)"></path>
+      <path d="M301 67 L317 67" stroke="#7d879e" stroke-width="1.4" marker-end="url(#ah)"></path>
+      <path d="M441 67 L457 67" stroke="#7d879e" stroke-width="1.4" marker-end="url(#ah)"></path>
+      <path d="M581 67 L597 67" stroke="#7d879e" stroke-width="1.4" marker-end="url(#ah)"></path>
+      <!-- one individual -->
+      <text x="40" y="150" fill="#eaf0fb" font-size="12" font-family="ui-monospace,monospace">One individual, after the split:</text>
+      <!-- gene line -->
+      <line x1="140" y1="188" x2="600" y2="188" stroke="#37e6d4" stroke-width="2.5"></line>
+      <text x="40" y="184" fill="#37e6d4" font-size="11" font-weight="700" font-family="ui-monospace,monospace">GENE</text>
+      <text x="40" y="198" fill="#7d879e" font-size="10" font-family="ui-monospace,monospace">stays alive</text>
+      <g font-family="ui-monospace,monospace" text-anchor="middle">
+        <circle cx="180" cy="188" r="5" fill="#37e6d4"></circle><text x="180" y="173" fill="#7d879e" font-size="10">founder</text>
+        <circle cx="300" cy="188" r="5" fill="#37e6d4"></circle><text x="300" y="173" fill="#7d879e" font-size="10">replicate</text>
+        <circle cx="420" cy="188" r="5" fill="#37e6d4"></circle><text x="420" y="173" fill="#7d879e" font-size="10">mutate</text>
+        <text x="560" y="180" fill="#37e6d4" font-size="11" font-weight="700">⟨X⟩ survives</text>
+      </g>
+      <!-- barrier -->
+      <line x1="140" y1="216" x2="600" y2="216" stroke="#ffd66d" stroke-width="1.2" stroke-dasharray="5 4" opacity=".8"></line>
+      <text x="370" y="231" text-anchor="middle" fill="#ffd66d" font-size="10.5" font-family="ui-monospace,monospace">barrier · gene and body never share a gate</text>
+      <!-- body line -->
+      <line x1="140" y1="258" x2="470" y2="258" stroke="#f6a623" stroke-width="2.5"></line>
+      <line x1="470" y1="258" x2="540" y2="258" stroke="#f6a623" stroke-width="2.5" stroke-dasharray="3 4" opacity=".5"></line>
+      <text x="40" y="254" fill="#f6a623" font-size="11" font-weight="700" font-family="ui-monospace,monospace">BODY</text>
+      <text x="40" y="268" fill="#7d879e" font-size="10" font-family="ui-monospace,monospace">ages, dies</text>
+      <g font-family="ui-monospace,monospace" text-anchor="middle">
+        <circle cx="300" cy="258" r="5" fill="#f6a623"></circle><text x="300" y="278" fill="#7d879e" font-size="10">ages</text>
+        <circle cx="500" cy="258" r="7" fill="none" stroke="#ff5c6b" stroke-width="1.4"></circle>
+        <text x="500" y="262" fill="#ff5c6b" font-size="9">|0⟩</text><text x="500" y="278" fill="#ff5c6b" font-size="10">dead</text>
+      </g>
+    </svg>
+    <figcaption>The cycle (top): a gene is replicated to a child, mutated a little, lives and meets others, then dies,
+      and the spent body becomes the next blank gene. One individual (bottom): the gene line is kept coherent while
+      the body ages and dies on its own, with a barrier so the two never touch.</figcaption>
+  </figure>
+
+  <p class="big"><b>Heredity.</b> A parent passes its gene to a child through a single <code>CNOT</code>. The
+    no-cloning theorem forbids duplicating an unknown quantum state exactly, so the model never tries: it transmits
+    the gene's <b>expectation value</b> instead, which is all inheritance needs. A cloning machine
+    <code>(U, ρ<sub>e</sub>, X)</code> is any unitary that leaves every observable's mean unchanged across the
+    transfer, <code>X̄ = X̄<sub>1</sub> = X̄<sub>2</sub></code>, with no dependence on the input <code>ρ</code> so it
+    works for any founder. The simplest one carries ⟨σ<sub>z</sub>⟩ from an arbitrary <code>ρ = |ψ⟩⟨ψ|</code> into a
+    blank <code>ρ<sub>e</sub> = |0⟩⟨0|</code> using <code>U = CNOT</code>, and that single gate is the whole of
+    heredity.</p>
+  <p class="big"><b>Variation.</b> Two mutation channels feed diversity. A spontaneous single-qubit rotation by a
+    random angle θ perturbs the gene and leaves the body alone; and replication is itself imperfect, adding its own
+    error to gene and lifetime. Random θ per event is what keeps the population varied.</p>
+  <pre class="dump">M = ⎡ cos θ   sin θ ⎤        U_M(θ) = I₄ + ½ |1⟩⟨1| ⊗ ⎡ −1  1 ⎤ (cos θ + i sin θ + 1)
+    ⎣ sin θ  −cos θ ⎦                                 ⎣  1 −1 ⎦</pre>
+  <p class="big"><b>Selection.</b> Individuals move on a grid and interact when they share a cell: the gene is the
+    control, the body the target, so when two genes differ the bodies are swapped, a shifting predator-prey exchange
+    that favours short-lived, varied lineages. Meanwhile every body ages. Aging is a Lindbladian relaxation of the
+    body while the gene is untouched, and death is called when the body reaches <code>|0⟩⟨0|</code>, i.e.
+    <code>⟨σ<sub>z</sub>⟩<sub>p</sub> = 1 − ε</code>. The spent body then becomes the next blank gene, so the loop is
+    self-sustaining. A single parameter <code>a</code> sets lifetime: the nearer the gene starts to
+    <code>|1⟩⟨1|</code>, the longer it lives.</p>
+  <pre class="dump">ρ̇ = γ( σρσ† − ½σ†σρ − ½ρσ†σ ),  σ = I⊗|0⟩⟨1|
+⟨σz⟩_g = 2a − 1        ⟨σz⟩_p = 1 − 2 e^{γt} (1 − a)</pre>
+  <p class="big">That closed loop of heredity, variation and selection, running as one quantum circuit, is Darwinian
+    evolution on real hardware. This study changes it in exactly two places.</p>
+
+  <p class="big"><b>The first change is death.</b> Reproduced faithfully, the death operator couples the mortal body
+    to its gene with a <code>cx(g,p)</code> and then dissipates it, so on hardware the body's death drags the gene
+    down with it and the inherited quantum correlation was gone after only nine generations. So here the body dies
+    <b>in isolation</b>: a separable diagonal trait relaxing by the chip's own <code>T1</code> toward
+    <code>|0⟩</code>, with no <code>cx(g,p)</code> and no engineered bath. Real physics does the dying, and it never
+    reaches the gene.</p>
+  <p class="big"><b>The second change follows from it.</b> The two qubits are split into a <span class="tk">gene
+    line</span> that stays coherent and carries the one thing no classical machine can fake, the entanglement
+    witness <code>⟨X<sup>⊗W</sup>⟩</code> read in the X basis against a separable null of ≈ 0, and a
+    <span style="color:var(--A2)">body</span> that is classical and mortal, with a barrier so the two never share a
+    gate. Severing that coupling carried the certified witness out to <b class="good">W = 50 = 100 qubits</b>, where
+    the limit became the number of clean qubits on the chip rather than the biology. Restoring the coupling on
+    hardware collapses the same witness from <b class="tk">+0.90</b> to <span class="bad">+0.12</span>: connecting
+    the body, which feels more quantum, is exactly what destroys it.</p>
+  </div>
+  </details>
+</section>
+
+<!-- ============================== THE WIN · faithful model + germ/soma fix ============================== -->
+<section>
+  <details class="chapter">
+  <summary>
+    <div class="sec-eyebrow gold">The win · the faithful model, then the germ/soma fix · the scale ceiling</div>
+    <h2>An old vs new design</h2>
+  </summary>
+  <div class="chapter-body">
+  <p class="big">The faithful reproduction drove the 2018 death channel to its limit: with real amplitude-damping
+    death in the loop, the genealogical witness collapsed at <span class="bad">W* = 9 = 19 qubits</span>. The
+    diagnosis was mechanical: the death operator couples the mortal soma to the immortal germ line
+    (<code>cx(g,p)</code>) then dissipates it, so body-death irreversibly decoheres the gene-witness. A
+    <b>biology wall</b>, not a hardware one.</p>
+  <p class="big">The germ/soma fix builds the <b>Weismann barrier</b>: the germ line carries the GHZ witness and
+    stays coherent; the soma is a separable diagonal trait dying in isolation (natural T1, no bath, no
+    <code>cx(g,p)</code>). Severing that one coupling moved the certified ceiling to
+    <b class="good">W = 50 = 100 qubits (k=3σ)</b>, and the run stopped only because the chip ran out of clean
+    qubits (needs a 108-chain; longest clean is 107). <b>The machine ran out before the witness did</b>, the
+    limiting resource flipped from entanglement to machine size.</p>
   <p class="big">Honest: the witness is <b>certified, not strong</b>, at the top (+0.058 at W=50, ~5σ over null,
-    far below a fresh GHZ's ~0.9). Scale · faithfulness · certification — not a speedup. N=1 per width. The A/B
+    far below a fresh GHZ's ~0.9). Scale · faithfulness · certification, not a speedup. N=1 per width. The A/B
     one-liner: at W=4 the severed design reads <b class="tk">+0.899</b>; restoring the old <code>cx(g,p)</code>
     wound collapses it to <span class="bad">+0.120</span>. The coupling <b>is</b> the mechanism.</p>
 
@@ -348,18 +474,19 @@
     </div>
     <canvas id="wchart" aria-label="Witness vs qubit count: unitary decays, damping dies at 18 qubits, germ/soma certified to 100 qubits"></canvas>
   </div>
-  <p class="note"><b>Separable null ≈ 0 everywhere</b> (P2 ≤ 3×10<sup>-7</sup>; PJ0 ≤ 10<sup>-13</sup>) — off the
-    chart. Unitary axis exhausted at W*=24 (geometric decay, "bigger GHZ, same biology"); damping wall at W*=9;
-    <span class="good">germ/soma certified 5.5× further to W=50</span>, stopped by qubit count.</p>
+  <p class="note"><b>Separable null ≈ 0 everywhere</b> (faithful reproduction ≤ 3×10<sup>-7</sup>; germ/soma
+    fix ≤ 10<sup>-13</sup>), off the chart. Unitary axis exhausted at W*=24 (geometric decay, "bigger GHZ, same
+    biology"); damping wall at W*=9; <span class="good">germ/soma certified 5.5× further to W=50</span>, stopped by
+    qubit count.</p>
 
-  <h3 class="sub">Four designs considered — at W=4</h3>
+  <h3 class="sub">Four designs considered, at W=4</h3>
   <p class="big">Per individual, all four build the same genealogy: a founder <code>Ry</code>, a self-replication
     clone chain, a mutation <code>Ry(θ)</code>. They differ in whether the soma couples to the germ, and in how
-    death is modelled. The verbatim circuits from the PJ0 study:</p>
+    death is modelled. The verbatim circuits from the germ/soma study:</p>
 
   <div class="designs">
     <div class="design win">
-      <div class="dt">1 · natural + separable — WINNER</div>
+      <div class="dt">1 · natural + separable, WINNER</div>
       <div class="dsub">2 qubits/individual · no bath · witness +0.899</div>
 <pre class="ckt">g_k: ─[clone]─Ry(θ)──────────────●─H─M
 p_k: ─Ry(aged)── idle ⇒ real T1 ────M</pre>
@@ -380,21 +507,21 @@ b_k: ─────────X───────●───────�
       <div class="dt">3 · natural + entangled</div>
       <div class="dsub">2 qubits/individual · witness +0.120</div>
 <pre class="ckt">g_k: ─[clone]─Ry(θ)─●──────────H─M
-                   │cx(g,p) ← P2 wound
+                   │cx(g,p) ← the wound
 p_k: ─Ry(aged)─────X─ idle⇒T1 ─H─M</pre>
       <div class="verdict">The <code>cx(g,p)</code> couples the mortal soma to the immortal germ; soma decay
         back-acts and decoheres the gene-witness. <b>▼ 0.90 → 0.12 collapse</b></div>
     </div>
     <div class="design">
-      <div class="dt">4 · local_damping + entangled — WORST</div>
+      <div class="dt">4 · local_damping + entangled, WORST</div>
       <div class="dsub">3 qubits/individual · witness +0.079</div>
 <pre class="ckt">g_k: ─[clone]─Ry(θ)─●──────────H─M
                    │cx(g,p)
 p_k: ─Ry(aged)─────X─●────X────H─M
                      │cry │cx
 b_k: ────────────────X────●───</pre>
-      <div class="verdict">Both wounds at once — soma coupled to germ <b>and</b> dissipated through a bath — the
-        P2 death channel doubled. <b>▼ floor</b></div>
+      <div class="verdict">Both wounds at once, soma coupled to germ <b>and</b> dissipated through a bath, the
+        original death channel doubled. <b>▼ floor</b></div>
     </div>
   </div>
 
@@ -422,11 +549,11 @@ b_k: ────────────────X────●───</
     <tr class="old"><td class="t">natural</td><td class="t">entangled</td><td>+0.120</td><td class="t">collapsed</td></tr>
     <tr class="old"><td class="t">local_damping</td><td class="t">entangled</td><td>+0.079</td><td class="t">collapsed</td></tr>
   </table></div>
-  <p class="note">The <b>phenotype axis decides everything</b> — separable keeps the witness alive (0.77–0.90);
-    entangled (restores the <code>cx(g,p)</code> wound) collapses it (0.08, 0.12). The P2 diagnosis, confirmed live.</p>
+  <p class="note">The <b>phenotype axis decides everything</b>: separable keeps the witness alive (0.77–0.90);
+    entangled (restores the <code>cx(g,p)</code> wound) collapses it (0.08, 0.12). The baseline diagnosis, confirmed live.</p>
 
-  <details class="acc">
-    <summary>Original P2 damping design — the version that was improved (qiskit circuit dump)</summary>
+  <div class="acc">
+    <div class="acc-head">Original damping design, the version that was improved (qiskit circuit dump)</div>
     <div class="acc-body">
       <p>The amplitude-damping W=2, steps=1 circuit: two individuals (<code>ind0</code>/<code>ind1</code>),
         <code>Ry(π/2)</code> founder, <code>Ry(0)</code> mutation, clone <code>cx</code>, the bath ancilla
@@ -446,132 +573,59 @@ q_4: ─────────────────────────
                               └────────────┘            ░                        ░            ░               ░           ║   ║ └╥┘ ║  ║
 c: 5/═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╩═══╩══╩══╩══╩═
                                                                                                                           3   1  4  0  2 </pre>
-      <p class="cap">The original amplitude-damping channel (W=2, γ per generation) — unstable at W=2 (runs
+      <p class="cap">The original amplitude-damping channel (W=2, γ per generation), unstable at W=2 (runs
         −0.04…+0.35); the final rebuilt channel lifted W=2 to +0.814 and pushed the width ceiling to W*=9.</p>
     </div>
-  </details>
+  </div>
 
-  <details class="acc">
-    <summary>P2 · unitary genealogy — witness vs width</summary>
+  <div class="acc">
+    <div class="acc-head">My design · the same model with the body split off the gene (qiskit circuit dump)</div>
     <div class="acc-body">
-      <div class="scroll"><table>
-        <tr><th class="t">W</th><th>qubits</th><th>⟨X<sup>⊗W</sup>⟩</th></tr>
-        <tr><td class="t">2</td><td>4</td><td>+0.959</td></tr>
-        <tr><td class="t">3</td><td>6</td><td>+0.879</td></tr>
-        <tr><td class="t">4</td><td>8</td><td>+0.808</td></tr>
-        <tr><td class="t">6</td><td>12</td><td>+0.612</td></tr>
-        <tr><td class="t">12</td><td>24</td><td>+0.301</td></tr>
-        <tr><td class="t">24</td><td>48</td><td>+0.038 (k=2σ)</td></tr>
-        <tr><td class="t">32</td><td>64</td><td>+0.008 (dead)</td></tr>
-      </table></div>
-      <p class="cap">Geometric decay — a bigger GHZ under the same biology. Last certified <b>W*=24 = 48 qubits</b>
-        (k=2σ), ~6× the 2018 origin. No death channel in this arm.</p>
+      <p>The template above, with one change: the <b>body is split off the gene</b>. Each body is now prepared by
+        its own <code>Ry(aged)</code> separable trait, so <b>no <code>cx</code> ever runs from a gene qubit to a
+        body qubit</b>. The single entangling gate on a gene is the self-replication clone <code>cx(q_0, q_2)</code>
+        that grows the gene ladder; the damping bath <code>q_4</code> touches bodies only, never a gene. Gene qubits
+        <code>q_0, q_2</code> take an <code>H</code> before measure (the X-basis witness), bodies stay in Z.</p>
+<pre class="dump">     ┌─────────┐ ┌───────┐               birth                                                  interaction     X-basis (witness) ┌───┐      ┌─┐
+q_0: ┤ Ry(π/2) ├─┤ Ry(0) ├──■──────────────░─────────────────────────────────────────────────────────░──────────────────░─────────┤ H ├──────┤M├───
+     ├─────────┴┐└───────┘  │              ░                 ┌───┐                                   ░                  ░         └───┘┌─┐   └╥┘
+q_1: ┤ Ry(aged) ├───────────┼──────────────░─────────■───────┤ X ├───────────────────────────────────░───────X──────────░──────────────┤M├────╫────
+     └──────────┘         ┌─┴─┐┌───────┐   ░         │       └─┬─┘                                   ░       │          ░         ┌───┐└╥┘    ║ ┌─┐
+q_2: ─────────────────────┤ X ├┤ Ry(0) ├───░─────────┼─────────┼─────────────────────────────────────░───────┼──────────░─────────┤ H ├─╫─────╫─┤M├
+     ┌──────────┐         └───┘└───────┘   ░         │         │                     ┌───┐           ░       │          ░         └┬─┬┘ ║     ║ └╥┘
+q_3: ┤ Ry(aged) ├──────────────────────────░─────────┼─────────┼─────────────■───────┤ X ├───────────░───────X──────────░──────────┤M├──╫─────╫──╫─
+     └──────────┘                          ░   ┌─────┴──────┐  │       ┌─────┴──────┐└─┬─┘           ░                  ░          └╥┘  ║ ┌─┐ ║  ║
+q_4: ──────────────────────────────────────░───┤ Ry(0.8763) ├──■───|0>─┤ Ry(0.8763) ├──■───|0>───────░──────────────────░───────────╫───╫─┤M├─╫──╫─
+                                           ░   └────────────┘          └────────────┘                ░                  ░           ║   ║ └╥┘ ║  ║
+c: 5/═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╩═══╩══╩══╩══╩═
+                                                                                                                                    3   1  4  0  2</pre>
+      <p class="cap">The barrier drawn as a circuit: no wire ever crosses from a gene row to a body row, so
+        body-death can no longer reach the gene. This is the split that keeps the witness alive where the original
+        coupled channel collapsed it at nine generations. The leaner headline arm drops the bath entirely (natural
+        T1 death, two qubits per individual) and carries the certified witness out to W=50 = 100 qubits.</p>
     </div>
-  </details>
+  </div>
 
-  <details class="acc">
-    <summary>P2 · damping-death width sweep (final channel)</summary>
-    <div class="acc-body">
-      <div class="scroll"><table>
-        <tr><th class="t">W</th><th>qubits</th><th>⟨X<sup>⊗W</sup>⟩</th><th class="t">state</th></tr>
-        <tr><td class="t">2</td><td>4</td><td>+0.814</td><td class="t">alive</td></tr>
-        <tr><td class="t">6</td><td>12</td><td>+0.542</td><td class="t">alive</td></tr>
-        <tr><td class="t">8</td><td>16</td><td>+0.468</td><td class="t">alive</td></tr>
-        <tr><td class="t">9</td><td>18</td><td>+0.171</td><td class="t">last alive</td></tr>
-        <tr class="old"><td class="t">10</td><td>20</td><td>+0.022</td><td class="t">dead</td></tr>
-        <tr class="old"><td class="t">12</td><td>24</td><td>−0.005</td><td class="t">dead</td></tr>
-      </table></div>
-      <p class="cap">Real amplitude-damping death in the loop. Wall at <b class="bad">W*=9 = 19 qubits</b> — the
-        biology wall the germ/soma cut later removed.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>P2 · damping-death depth sweep</summary>
-    <div class="acc-body">
-      <div class="scroll"><table>
-        <tr><th class="t">W · steps</th><th>⟨X<sup>⊗W</sup>⟩</th></tr>
-        <tr><td class="t">W4 · s4</td><td>+0.131</td></tr>
-        <tr><td class="t">W5 · s4</td><td>+0.111</td></tr>
-        <tr><td class="t">W5 · s5</td><td>+0.049</td></tr>
-        <tr><td class="t">W6 · s5</td><td>+0.138</td></tr>
-        <tr><td class="t">W6 · s6</td><td>+0.013</td></tr>
-      </table></div>
-      <p class="cap">Real death survives 5 generations, dies at the 6th.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>P2 · confound &amp; significance + decision gate</summary>
-    <div class="acc-body">
-      <p>Fail-closed chain-quality gate on every hardware run. Separable classical null
-        <b>≤ 3×10<sup>-7</sup></b> — the witness margin is real, not surrogate. The sharp single-unit cliffs
-        (W9→W10, W6s5→W6s6) are death-channel entropy, <b>not</b> gradual calibration drift. All three P2 axes —
-        unitary width, damping width, damping depth — were driven to exhaustion, which is what opened the P3 gate.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>PJ0 · width sweep detail (germ/soma, k=2σ / k=3σ)</summary>
-    <div class="acc-body">
-      <div class="scroll"><table>
-        <tr><th class="t">W</th><th>qubits (2W)</th><th class="hl">⟨X<sup>⊗W</sup>⟩</th><th class="t">certification</th></tr>
-        <tr><td class="t">6</td><td>12</td><td class="hl">+0.870</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">12</td><td>24</td><td class="hl">+0.756</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">16</td><td>32</td><td class="hl">+0.296</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">24</td><td>48</td><td class="hl">+0.193</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">28</td><td>56</td><td class="hl">+0.355</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">32</td><td>64</td><td class="hl">+0.271</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">36</td><td>72</td><td class="hl">+0.220</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">40</td><td>80</td><td class="hl">+0.067</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">42</td><td>84</td><td class="hl">+0.068</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">46</td><td>92</td><td class="hl">+0.081</td><td class="t">k=3σ</td></tr>
-        <tr><td class="t">50</td><td>100</td><td class="hl">+0.058</td><td class="t">last certified · k=3σ</td></tr>
-      </table></div>
-      <p class="cap">Figure 1: the certified witness margin, always above the separable null (≤10<sup>-13</sup>),
-        carried to <b class="good">W=50 = 100 qubits</b> — certified, not strong, at the top.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>PJ0 · the wall, verbatim (W=54 run log)</summary>
-    <div class="acc-body">
-      <p>W=54 needs a <b>108</b>-qubit clean chain. Dead qubits 112 / 113 / 120 / 121 / 146 were dropped; the
-        longest clean chain available was <b>107</b>. The certification gate holds; the chip does not. <b>The
-        machine ran out before the witness did</b> — the limiting resource flipped from entanglement to machine
-        size.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>PJ0 · confound &amp; honesty + decision gate</summary>
-    <div class="acc-body">
-      <p>Separable null <b>≤ 10<sup>-13</sup></b>. The witness at the ceiling is <b>certified, not strong</b>
-        (+0.058, ~5σ over null, far below a fresh GHZ's ~0.9). <b>N=1 per width</b> — each point is a single
-        snapshot, not an average. Calibration / T1-band nulls checked. This is scale · faithfulness ·
-        certification, not a speedup. PJ1 then tiles two of these organisms into the arena.</p>
-    </div>
-  </details>
   </div>
   </details>
 </section>
 
-<!-- ============================== BLOCK A — WHAT IS HAPPENING (PJ1) ============================== -->
+<!-- ============================== WHAT IS HAPPENING · the arena ============================== -->
 <section>
   <details class="chapter">
   <summary>
-    <div class="sec-eyebrow amber">What is happening · PJ1 · the arena</div>
-    <h2>They collided on real hardware — and the genealogy survived.</h2>
+    <div class="sec-eyebrow amber">What is happening · the arena</div>
+    <h2>They collided on real hardware, and the genealogy survived.</h2>
   </summary>
   <div class="chapter-body">
   <p class="big">The run: IBM <b>ibm_kingston</b> (156-qubit Heron r2), <b>42 qubits</b> = 2×(W12 germ + 8 body +
     1 trait), 12 measured frames, 8,192 shots/frame, QRNG-certified (fail-closed), chain-quality gate passed
     (<code>twoq_err_max 0.0073</code>, <code>readout_max 0.026</code>), selective DD on both germ lines, ~1 min QPU.</p>
-  <p class="big"><b>Why they are organisms:</b> each is a <b>germ/soma individual</b> — a clean 12-qubit quantum
+  <p class="big"><b>Why they are organisms:</b> each is a <b>germ/soma individual</b>, a clean 12-qubit quantum
     genealogy (the germ line, carrying certified entanglement inheritance) plus a moving body (the soma) on the
     track. Two of them.</p>
   <p class="big"><b>How they collided:</b> the bodies start at opposite ends of an 8-site track and walk toward
-    each other; the measured <b>occupancy overlap climbs monotonically 0.00 → 0.72</b> (Z-basis, off the chip) —
+    each other; the measured <b>occupancy overlap climbs monotonically 0.00 → 0.72</b> (Z-basis, off the chip),
     a real collision, not an <code>if&nbsp;(contact)</code> branch; one physical coupling is always on and only
     acts where both bodies have amplitude.</p>
   <p class="big"><b>What held:</b> the joint witness ⟨X<sup>⊗2W</sup>⟩ over both 24 germ qubits stayed alive
@@ -582,7 +636,7 @@ c: 5/═════════════════════════
     <div class="act">
       <div class="tag">what happened</div><h3>The bodies met</h3>
       <p>Body A walked from site 0, body B from site 7; their centroids converged and the measured
-        <b>occupancy overlap rose to 0.72</b>. A real collision on the QPU — the coupling is always on and only
+        <b>occupancy overlap rose to 0.72</b>. A real collision on the QPU, the coupling is always on and only
         acts where both bodies have amplitude.</p>
       <div class="num">overlap <b>0.004 → 0.721</b> · 8,192 shots/frame</div>
     </div>
@@ -590,12 +644,12 @@ c: 5/═════════════════════════
       <div class="tag">what held</div><h3>The genealogy lived through it</h3>
       <p>The joint witness over both 12-qubit germ lines stayed <b>alive across all 12 frames</b> (mean +0.35),
         always above the separable null (≈0). Through a body collision, <b>each organism kept its certified
-        quantum genealogy</b> — the Weismann barrier holding on a chip.</p>
+        quantum genealogy</b>, the Weismann barrier holding on a chip.</p>
       <div class="num">witness <b>+0.16…+0.50</b> · cut ≈ 0</div>
     </div>
     <div class="act warn">
       <div class="tag">honest scope</div><h3>What it does not claim</h3>
-      <p>The witness does <b>not respond</b> to contact — by design the body coupling never touches a germ qubit,
+      <p>The witness does <b>not respond</b> to contact, by design the body coupling never touches a germ qubit,
         so the genealogy is insulated; that is the point. Body-body entanglement on contact is <b>sim-only</b>.
         The chip proves the meeting and the survival, not the entangling.</p>
       <div class="num">no speedup · scale · faithfulness · certification</div>
@@ -603,8 +657,8 @@ c: 5/═════════════════════════
   </div>
 
   <figure>
-    <img src="pj1_witness.png" alt="PJ1 joint genealogy witness across the 12 measured collision frames" loading="lazy">
-    <figcaption>Joint genealogy witness ⟨X<sup>⊗2W</sup>⟩ across the 12 measured frames — always above the
+    <img src="pj1_witness.png" alt="joint genealogy witness across the 12 measured collision frames" loading="lazy">
+    <figcaption>Joint genealogy witness ⟨X<sup>⊗2W</sup>⟩ across the 12 measured frames, always above the
       classical null while the bodies close in.</figcaption>
   </figure>
 
@@ -630,9 +684,9 @@ c: 5/═════════════════════════
   </details>
 
   <details class="acc">
-    <summary>Honest scope — what this does not claim</summary>
+    <summary>Honest scope, what this does not claim</summary>
     <div class="acc-body">
-      <p>(1) The witness does <b>not respond</b> to contact — by construction <code>soma_soma</code> never touches
+      <p>(1) The witness does <b>not respond</b> to contact, by construction <code>soma_soma</code> never touches
         a germ qubit, so the genealogy is insulated (that is the point); frame-to-frame wiggle is
         transpilation/readout noise.</p>
       <p>(2) Body-body entanglement on contact is <b class="bad">sim-only</b> (the 42-qubit register is too large
@@ -643,7 +697,7 @@ c: 5/═════════════════════════
   </details>
 </section>
 
-<!-- ============================== BLOCK C — HOW THIS WAS BUILT (the beginning) ============================== -->
+<!-- ============================== HOW THIS WAS BUILT · the beginning ============================== -->
 <section>
   <details class="chapter">
   <summary>
@@ -651,7 +705,7 @@ c: 5/═════════════════════════
     <h2>Where the program came from.</h2>
   </summary>
   <div class="chapter-body">
-  <p class="big">Origin: the program began at <a href="https://tree.peterjas.sk/">tree.peterjas.sk</a> — a genome
+  <p class="big">Origin: the program began at <a href="https://tree.peterjas.sk/">tree.peterjas.sk</a>, a genome
     of <b>102 qubits</b> on Heron r2 whose long-range genes are linked by <b>quantum teleportation</b>, not code;
     a correlation no classical surrogate can fake, proven at ~10σ past its baselines. It set the method every
     study here inherits.</p>
@@ -660,23 +714,23 @@ c: 5/═════════════════════════
     <div class="node origin">
       <div class="k">origin<b>Quantum Tree</b></div>
       <div class="d">A genome of 102 qubits whose long-range genes are linked by <b>quantum teleportation</b>, not
-        code — a correlation <b>no classical surrogate can fake</b>, proven at ~10σ. It set the discipline every
+        code, a correlation <b>no classical surrogate can fake</b>, proven at ~10σ. It set the discipline every
         study here inherits.</div>
     </div>
     <div class="node p2">
-      <div class="k">reproduce + certify<b>P2</b></div>
+      <div class="k">reproduce + certify<b>The faithful model</b></div>
       <div class="d">The faithful 2018 four-operator model, certified against a separable null. Unitary genealogy
         reached <b>W*=24 = 48 qubits</b>; the faithful death channel collapsed it at <b>W*=9 = 19 qubits</b>.</div>
     </div>
     <div class="node pj0">
-      <div class="k">the fix<b>PJ0</b></div>
-      <div class="d">The <b>germ/soma split</b> (Weismann barrier) severed the one coupling that killed the witness
-        — carrying the certified ceiling to <b class="win">W=50 = 100 qubits</b>, stopped only by qubit count.</div>
+      <div class="k">the fix<b>The germ/soma fix</b></div>
+      <div class="d">The <b>germ/soma split</b> (Weismann barrier) severed the one coupling that killed the witness,
+        carrying the certified ceiling to <b class="win">W=50 = 100 qubits</b>, stopped only by qubit count.</div>
     </div>
     <div class="node pj1">
-      <div class="k">this work<b>PJ1</b></div>
+      <div class="k">this work<b>The arena</b></div>
       <div class="d">Two germ/soma organisms in one arena, colliding on hardware while each keeps its certified
-        genealogy — the structure that saved the witness at scale is exactly what lets two organisms interact
+        genealogy: the structure that saved the witness at scale is exactly what lets two organisms interact
         without the collision touching either gene line.</div>
     </div>
   </div>
@@ -686,36 +740,36 @@ c: 5/═════════════════════════
     <div class="act"><div class="tag">the claim</div><h3>One certified witness</h3>
       <p>The sole quantum claim is an entanglement witness (⟨X<sup>⊗W</sup>⟩) with <b>no classical surrogate</b>,
         checked against a separable null and a significance gate (k=2σ headline / k=3σ reported). Alive-counts,
-        ⟨σ<sub>z</sub>⟩, occupancy — all have exact classical surrogates, so carry no quantum claim.</p></div>
+        ⟨σ<sub>z</sub>⟩, occupancy, all have exact classical surrogates, so carry no quantum claim.</p></div>
     <div class="act"><div class="tag">the discipline</div><h3>Sim-first, hardware-confirm</h3>
       <p>Fix in statevector sim, then confirm live. Every hardware run is gated: <b>certified QRNG</b> entropy
         (fail-closed), and a <b>chain-quality gate</b> that aborts if two-qubit error &gt; 0.05 or readout &gt;
         0.15. Selective dynamical decoupling protects the gene line only.</p></div>
     <div class="act warn"><div class="tag">the honesty</div><h3>No speedup claimed</h3>
-      <p>The contribution is <b>scale · faithfulness · certification</b> — not a quantum advantage. Negatives are
+      <p>The contribution is <b>scale · faithfulness · certification</b>, not a quantum advantage. Negatives are
         reported as readings: the σ frontier, the qubit wall, a witness <b>certified, not strong</b> at the top of
         a sweep. Body-body entanglement is labelled sim-only. Each width is a single N=1 snapshot.</p></div>
   </div>
 
   <details class="acc">
-    <summary>Reproduce — the run recipe</summary>
+    <summary>Reproduce, the run recipe</summary>
     <div class="acc-body">
       <div class="steps">
-        <div class="step"><div class="sh"><span class="n">1</span> <b>Verify the structure</b> — static, no quantum cost</div>
+        <div class="step"><div class="sh"><span class="n">1</span> <b>Verify the structure</b>, static, no quantum cost</div>
 <pre><span class="c"># genealogy + germ/soma disjointness checks, and the arena</span>
 python code/pj_qalife.py --selftest
 python code/pj_qalife.py --arena --selftest</pre></div>
-        <div class="step"><div class="sh"><span class="n">2</span> <b>The arena on hardware</b> — the collision, 12 jobs</div>
+        <div class="step"><div class="sh"><span class="n">2</span> <b>The arena on hardware</b>, the collision, 12 jobs</div>
 <pre><span class="c"># two organisms collide on ibm_kingston (QRNG env set, fail-closed)</span>
 python code/pj1_run_arena.py --backend ibm_kingston \
   --interaction soma_soma --width 12 --track 8 --frames 12 --shots 8192</pre></div>
-        <div class="step"><div class="sh"><span class="n">3</span> <b>Render</b> — this page's data + the figure</div>
+        <div class="step"><div class="sh"><span class="n">3</span> <b>Render</b>, this page's data + the figure</div>
 <pre><span class="c"># banked run JSON -> the frames this hero animates + the witness figure</span>
 python analysis/pj1_render.py --run-glob 'research_runs/pj1/*.json'</pre></div>
-        <div class="step"><div class="sh"><span class="n">·</span> <b>The prior studies</b> — reproduce the ceiling &amp; the fix</div>
-<pre><span class="c"># P2: faithful 2018 model &amp; its death-channel wall</span>
+        <div class="step"><div class="sh"><span class="n">·</span> <b>The prior studies</b>, reproduce the ceiling &amp; the fix</div>
+<pre><span class="c"># the baseline model: faithful 2018 model &amp; its death-channel wall</span>
 python code/run_qalife.py --backend ibm_kingston --widths 9
-<span class="c"># PJ0: germ/soma to 100 qubits</span>
+<span class="c"># the germ/soma fix: to 100 qubits</span>
 python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
       </div>
     </div>
@@ -724,9 +778,9 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
   <div class="thesis">
     <div class="q">The 2018 model showed the full life-cycle at minimal scale. This program reproduced and
       <span class="tk">certified</span> it, found the <span class="bad">structural wall</span> its death channel
-      imposes, and cut it — carrying a certified genealogy to <span class="tk">100 qubits</span> and then to a
+      imposes, and cut it, carrying a certified genealogy to <span class="tk">100 qubits</span> and then to a
       two-organism collision on real hardware.</div>
-    <div class="by">Scale · faithfulness · certification — not a speedup. The certified witness, the qubit wall, and
+    <div class="by">Scale · faithfulness · certification, not a speedup. The certified witness, the qubit wall, and
       the sim-only contact meter are all reported as instrument readings. Origin &amp; method:
       <a href="https://tree.peterjas.sk/">tree.peterjas.sk</a>.</div>
   </div>
@@ -736,8 +790,8 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
 
 <footer>
   <span>measured on <span class="hw">ibm_kingston</span> · 156-qubit Heron r2</span><span class="sep">·</span>
-  <span>PJ1 arena: W12/organism · track 8 · <b>12</b> frames · <b>8192</b> shots · overlap <b>0.72</b></span><span class="sep">·</span>
-  <span>PJ0 genealogy certified to <b>W=50 = 100</b> qubits · P2 death-wall <b>W*=9</b></span>
+  <span>arena: W12/organism · track 8 · <b>12</b> frames · <b>8192</b> shots · overlap <b>0.72</b></span><span class="sep">·</span>
+  <span>germ/soma genealogy certified to <b>W=50 = 100</b> qubits · baseline death-wall <b>W*=9</b></span>
   <a href="https://tree.peterjas.sk/">tree.peterjas.sk ↗</a>
 </footer>
 
@@ -746,7 +800,7 @@ python code/pj_run_qalife.py --backend ibm_kingston --widths 50</pre></div>
   "use strict";
   const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // real measured PJ1 frames (ibm_kingston, soma_soma, track=8) — ported verbatim from spectacle.html
+  // real measured collision frames (ibm_kingston, soma_soma, track=8), ported verbatim from spectacle.html
   const DATA = {"L":8,"frames":12,"arms":{"soma_soma":[{"a":[0.9939,0.0005,0.002,0.0013,0.0021,0.0038,0.0023,0.0035],"b":[0.0005,0.0006,0.0028,0.0071,0.0012,0.002,0.0032,0.9891],"s":0.004,"ov":0.004,"w":0.1694},{"a":[0.6544,0.0336,0.1215,0.0619,0.0482,0.0345,0.0605,0.0492],"b":[0.066,0.2458,0.0524,0.0548,0.0649,0.0482,0.3323,0.6843],"s":0.1198,"ov":0.1198,"w":0.427},{"a":[0.489,0.1438,0.1272,0.1418,0.0962,0.0731,0.1349,0.0714],"b":[0.0824,0.1063,0.0774,0.0662,0.0514,0.1407,0.6968,0.2205],"s":0.1998,"ov":0.1998,"w":0.2527},{"a":[0.5497,0.083,0.0808,0.104,0.1149,0.1263,0.1255,0.1244],"b":[0.1602,0.1166,0.1075,0.0778,0.0939,0.4966,0.4889,0.0729],"s":0.2584,"ov":0.2584,"w":0.2935},{"a":[0.351,0.1427,0.0851,0.634,0.0983,0.1069,0.0907,0.201],"b":[0.1333,0.1632,0.1046,0.0739,0.3083,0.6257,0.135,0.1333],"s":0.2621,"ov":0.2621,"w":0.5032},{"a":[0.1949,0.1376,0.1204,0.0868,0.0917,0.0981,0.0739,0.3182],"b":[0.2133,0.183,0.0826,0.1982,0.5505,0.3262,0.1265,0.1476],"s":0.2327,"ov":0.2327,"w":0.4617},{"a":[0.2052,0.147,0.0796,0.0737,0.0709,0.1105,0.0918,0.3627],"b":[0.358,0.1006,0.1556,0.4484,0.4758,0.1028,0.1274,0.1257],"s":0.2361,"ov":0.2361,"w":0.1633},{"a":[0.2151,0.2096,0.0995,0.1075,0.1027,0.1765,0.1726,0.3761],"b":[0.207,0.1262,0.3621,0.5468,0.2032,0.179,0.1731,0.1819],"s":0.3165,"ov":0.3165,"w":0.311},{"a":[0.2083,0.2144,0.1466,0.1356,0.1036,0.2439,0.224,0.287],"b":[0.2096,0.2281,0.5895,0.2939,0.1326,0.1685,0.188,0.1605],"s":0.3618,"ov":0.3618,"w":0.4023},{"a":[0.3098,0.3861,0.1445,0.1365,0.1707,0.3158,0.2106,0.2423],"b":[0.355,0.2667,0.6053,0.1936,0.2286,0.2157,0.2719,0.3452],"s":0.5749,"ov":0.5749,"w":0.4805},{"a":[0.2776,0.3248,0.1866,0.2202,0.2227,0.3237,0.2203,0.2419],"b":[0.249,0.2041,0.3552,0.3074,0.2241,0.1886,0.1809,0.2456],"s":0.4797,"ov":0.4797,"w":0.2117},{"a":[0.3479,0.322,0.2681,0.2777,0.2861,0.2778,0.3135,0.281],"b":[0.2484,0.3069,0.2468,0.3596,0.3074,0.2982,0.3589,0.3091],"s":0.7214,"ov":0.7214,"w":0.4995}]}};
   const ARM = DATA.arms.soma_soma, L = DATA.L, NF = DATA.frames;
 
