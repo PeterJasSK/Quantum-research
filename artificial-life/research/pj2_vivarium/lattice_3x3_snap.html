@@ -1,0 +1,280 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Vivarium — 3×3 · Move · Replicate · Interact</title>
+<style>
+  :root{
+    --field:#04080b;--ink:#dfece8;--ink-soft:#8ba4a0;--ink-faint:#566b68;
+    --line:#16262c;--panel:#0a151b;--grid:#12242b;
+    --cell:#8fb6c6;--rim:#e0bd82;
+    --lum:#5cf0cf;--lum-deep:#1f8f78;--lum2:#b98cff;--collapse:#ff5d6c;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--field);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+  header{padding:30px 0 10px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--lum-deep);margin:0 0 12px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(27px,4.4vw,46px);line-height:1.04;margin:0 0 12px;letter-spacing:-.01em;text-wrap:balance}
+  h1 em{font-style:italic;color:var(--lum)}
+  .lede{font-size:15.5px;max-width:64ch;color:var(--ink-soft);margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .modes{display:flex;gap:6px;margin:18px 0 0;flex-wrap:wrap}
+  .modes button{font-family:var(--serif);font-size:15px;border:1px solid var(--line);cursor:pointer;padding:9px 18px;border-radius:2px;
+    background:var(--panel);color:var(--ink-soft);transition:.16s;font-style:italic}
+  .modes button[aria-pressed=true]{border-color:var(--lum-deep);color:var(--ink);background:#0c1c22}
+  .modes button b{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.1em;display:block;color:var(--ink-faint);text-transform:uppercase;margin-top:2px}
+  .modes button[aria-pressed=true] b{color:var(--lum-deep)}
+
+  .scope{position:relative;margin:12px 0 0;border:1px solid var(--line);border-radius:3px;overflow:hidden;
+    background:radial-gradient(120% 120% at 50% 45%,#0a181e 0%,var(--field) 62%,#02060a 100%)}
+  .scope canvas{display:block;width:100%;height:52vh;min-height:400px}
+  .hud{position:absolute;inset:0;pointer-events:none;font-family:var(--mono)}
+  .hud .tl{position:absolute;left:16px;top:14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+  .witchip{position:absolute;right:16px;top:14px;font-size:12px;padding:7px 12px;border:1px solid var(--line);border-radius:2px;
+    background:color-mix(in srgb,var(--field) 70%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .stage-lbl{position:absolute;left:16px;bottom:16px;display:flex;align-items:baseline;gap:12px}
+  .stage-lbl .big{font-family:var(--serif);font-style:italic;font-size:23px}
+  .stage-lbl .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .qbtn{position:absolute;right:16px;bottom:16px;pointer-events:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    padding:7px 11px;border:1px solid var(--line);border-radius:2px;background:var(--panel);color:var(--ink-soft);cursor:pointer}
+  .qbtn[aria-pressed=true]{border-color:var(--lum-deep);color:var(--lum)}
+
+  .console{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:14px 0 0}
+  .arms{display:flex;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:4px}
+  .arms button{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;border:0;cursor:pointer;padding:7px 13px;border-radius:1px;background:transparent;color:var(--ink-soft);transition:.16s}
+  .arms button[aria-pressed=true]{background:var(--lum-deep);color:#04120e}
+  .arms button[data-arm=coupled][aria-pressed=true]{background:var(--collapse);color:#210408}
+  .scrub{display:flex;align-items:center;gap:12px;flex:1;min-width:240px}
+  .play{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-size:13px;display:grid;place-items:center}
+  .play:hover{border-color:var(--lum-deep)}
+  input[type=range]{flex:1;accent-color:var(--lum-deep);height:3px}
+  .genread{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .genread b{color:var(--ink);font-size:18px}
+
+  .plot{margin:14px 0 0;border:1px solid var(--line);border-radius:2px;background:var(--panel);padding:14px 16px 10px}
+  .plot-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+  .plot-h h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+  .plot-h .leg{font-family:var(--mono);font-size:11px;display:flex;gap:14px}
+  .plot-h .leg span{display:inline-flex;align-items:center;gap:5px;color:var(--ink-soft)}
+  .plot-h .sw{width:14px;height:2px;flex:none}
+  .plot canvas{display:block;width:100%;height:142px}
+
+  .foot{background:var(--panel);border:1px solid var(--line);border-radius:2px;margin:18px 0 60px;padding:16px 20px}
+  .foot h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lum-deep);margin:0 0 8px}
+  .foot p{font-size:13.5px;color:var(--ink-soft);margin:0 0 8px}.foot b{color:var(--ink)}
+  .honest{font-size:12.5px;color:var(--ink-faint);border-left:2px solid var(--rim);padding-left:12px;margin:10px 0 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">PJ2 · 3×3 statevector simulation · W = 3 · 6 generations</p>
+    <h1>In many cells at once — <em>snaps</em> to one.</h1>
+    <p class="lede">The organism is a quantum field spread across a 3×3 lattice: the faint cloud is its
+      <b>superposition</b>, present in several cells at once. The bright body is where most of it is —
+      the <b>dominant cell</b>. When the dominant cell flips between generations, the body <b>snaps</b>
+      to it. It can <b>self-replicate</b> or share the space with a <b>second organism</b>. The quantum
+      claim is the germ witness ⟨X<sup>⊗3</sup>⟩; ~5–6 generations is the hardware ceiling.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="Scenario">
+    <button data-mode="solo" aria-pressed="true">Solo<b>one · moves</b></button>
+    <button data-mode="replicate" aria-pressed="false">Replicate<b>one → two</b></button>
+    <button data-mode="duo" aria-pressed="false">Two organisms<b>interact</b></button>
+  </div>
+
+  <div class="scope">
+    <canvas id="scope"></canvas>
+    <div class="hud">
+      <div class="tl" id="modetag">statevector field · solo</div>
+      <div class="witchip" id="witchip">witness +0.00</div>
+      <div class="stage-lbl"><span class="big" id="stage">Witness certified</span>
+        <span class="sub" id="steplab">gen 0 / 5</span></div>
+      <button class="qbtn" id="qbtn" aria-pressed="false">Ψ  show probabilities</button>
+    </div>
+  </div>
+
+  <div class="console">
+    <div class="arms" role="group" aria-label="Arm">
+      <button data-arm="isolated" aria-pressed="true">ISOLATED GERM LINE</button>
+      <button data-arm="coupled" aria-pressed="false">COUPLED · BARRIER BROKEN</button>
+    </div>
+    <div class="scrub">
+      <button class="play" id="play" aria-label="Play or pause">▮▮</button>
+      <input type="range" id="gen" min="0" max="5" step="0.01" value="0" aria-label="Generation">
+      <span class="genread">gen <b id="genN">0</b>/5</span>
+    </div>
+  </div>
+
+  <div class="plot">
+    <div class="plot-h">
+      <h3>Witness ⟨X⊗W⟩ vs generation</h3>
+      <div class="leg">
+        <span><i class="sw" style="background:var(--lum)"></i>isolated</span>
+        <span><i class="sw" style="background:var(--collapse)"></i>coupled</span>
+        <span><i class="sw" style="background:var(--ink-faint)"></i>certified line</span>
+      </div>
+    </div>
+    <canvas id="plot"></canvas>
+  </div>
+
+  <div class="foot">
+    <h3>What's real here</h3>
+    <p>The cloud is the true per-cell probability ⟨n⟩ from a <b>3×3 statevector run</b> — genuinely
+      "in multiple places." The snapping body is a reading aid: it marks the <b>most-likely cell</b> and
+      jumps when that changes, the way a measurement would localize it. <b>Replicate</b> clones the germ
+      line at gen 2 (parent + daughter, one shared witness). <b>Two organisms</b> drift together and their
+      overlap builds a joint witness. Movement only — mass conserved per organism, nothing eaten.</p>
+    <p class="honest">Honesty line: a <b>simulation</b>. Hardware returns only the terminal witness at one
+      depth, no frames. 3×3 keeps the qubit count small enough to actually run — the reason to prefer it
+      over 4×4.</p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const GRID=3,G=GRID,N=G*G,GENS=6;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const rc=i=>[Math.floor(i/G),i%G];
+const Z=()=>Array(N).fill(0);
+const DATA={"replicate":{"isolated":[{"fields":[[0.0051,0.0016,0.0067,0.0056,0.0007,0.005,0.9933,0.0007,0.0009],[0.0026,0.002,0.0004,0.0,0.0006,0.0016,0.0015,0.0007,0.002]],"w":0.9519,"overlap":0.0,"n":1},{"fields":[[0.0447,0.1393,0.0503,0.2594,0.1487,0.1031,0.3772,0.8527,0.1378],[0.0009,0.0035,0.0,0.0005,0.0006,0.0016,0.0012,0.0042,0.0042]],"w":0.9412,"overlap":0.0,"n":1},{"fields":[[0.0846,0.0701,0.1302,0.1454,0.1622,0.4155,0.1144,0.0953,0.3678],[0.0024,0.0017,0.0026,0.001,0.0004,0.0002,0.0027,0.9938,0.0017]],"w":0.7703,"overlap":0.0,"n":2},{"fields":[[0.2728,0.1857,0.5352,0.1833,0.1401,0.36,0.1982,0.147,0.8341],[0.0325,0.0452,0.0487,0.1654,0.1763,0.1425,0.2477,0.2411,0.1855]],"w":0.8643,"overlap":0.0,"n":2},{"fields":[[0.1287,0.4418,0.4325,0.1508,0.153,0.1439,0.1207,0.1439,0.1433],[0.1825,0.1021,0.153,0.453,0.8162,0.2456,0.2743,0.1071,0.0964]],"w":0.8689,"overlap":0.0,"n":2},{"fields":[[0.2593,0.3773,0.27,0.3024,0.3177,0.2637,0.3043,0.3179,0.2975],[0.2462,0.397,0.1912,0.1661,0.2421,0.1636,0.825,0.1429,0.1541]],"w":0.8533,"overlap":0.0,"n":2}]}};
+// dominant cell + mass per field per gen
+function fmass(occ){return occ.reduce((a,b)=>a+b,0);}
+function argmaxCell(occ){if(fmass(occ)<.05)return null;let bi=0;for(let i=1;i<N;i++)if(occ[i]>occ[bi])bi=i;return occ[bi]>.05?bi:null;}
+const DOM={},MASS={};
+for(const m in DATA){DOM[m]={};MASS[m]={};for(const a in DATA[m]){
+  DOM[m][a]=DATA[m][a].map(f=>f.fields.map(argmaxCell));
+  MASS[m][a]=DATA[m][a].map(f=>f.fields.map(fmass));}}
+
+/* ===== state ===== */
+let mode="solo",arm="isolated",tc=0,playing=true,last=0,qview=false;
+if(!DATA[mode])mode=Object.keys(DATA)[0];if(!DATA[mode][arm])arm=Object.keys(DATA[mode])[0];
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;if(reduce)playing=false;
+const genEl=document.getElementById("gen"),genN=document.getElementById("genN"),witchip=document.getElementById("witchip"),
+      stageEl=document.getElementById("stage"),steplab=document.getElementById("steplab"),playBtn=document.getElementById("play"),
+      qbtn=document.getElementById("qbtn"),modetag=document.getElementById("modetag");
+const gv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const hx=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgba=(c,a)=>{const[r,g,b]=hx(c);return`rgba(${r},${g},${b},${a})`;};
+const easeBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+function lerpArr(x,y,u){return x.map((v,i)=>v+(y[i]-v)*u);}
+function frameAt(m,a,t){const A=DATA[m][a],g0=Math.floor(t),g1=Math.min(GENS-1,g0+1),u=t-g0,x=A[g0],y=A[g1],L=(p,q)=>p+(q-p)*u,o={};
+  o.fields=x.fields.map((fx,i)=>lerpArr(fx,y.fields[i],u));
+  for(const k in x){if(k==="fields")continue;if(typeof x[k]==="number")o[k]=L(x[k],y[k]);else o[k]=(u<.5?x[k]:y[k]);}return o;}
+function setMode(m){if(!DATA[m])return;mode=m;if(!DATA[m][arm])arm=Object.keys(DATA[m])[0];document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===arm));document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
+  modetag.textContent="statevector field · "+({solo:"solo",replicate:"replication",duo:"two organisms"}[m]);}
+function setArm(a){if(!DATA[mode][a])return;arm=a;document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===a));}
+document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.querySelectorAll(".arms button").forEach(b=>b.onclick=()=>setArm(b.dataset.arm));
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?"▮▮":"▶";};
+genEl.oninput=()=>{tc=+genEl.value;playing=false;playBtn.textContent="▶";};
+qbtn.onclick=()=>{qview=!qview;qbtn.setAttribute("aria-pressed",qview);qbtn.textContent=qview?"Ψ  hide probabilities":"Ψ  show probabilities";};
+
+/* ===== canvas ===== */
+const cv=document.getElementById("scope"),ctx=cv.getContext("2d");let Wf,Hf;
+const pcv=document.getElementById("plot"),pctx=pcv.getContext("2d");let Wp,Hp;
+function fit(){const dpr=Math.min(2,devicePixelRatio||1);
+  let r=cv.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);Wf=r.width;Hf=r.height;
+  r=pcv.getBoundingClientRect();pcv.width=r.width*dpr;pcv.height=r.height*dpr;pctx.setTransform(dpr,0,0,dpr,0,0);Wp=r.width;Hp=r.height;}
+addEventListener("resize",fit);
+function layout(){const S=Math.min(Wf,Hf)*0.74,ox=(Wf-S)/2,oy=(Hf-S)/2,cs=S/G;return{S,ox,oy,cs};}
+function cc(i,lo){const[r,c]=rc(i);return[lo.ox+(c+0.5)*lo.cs,lo.oy+(r+0.5)*lo.cs];}
+
+function cloud(occ,col,lo){ // faint superposition presence
+  ctx.save();ctx.globalCompositeOperation="lighter";
+  for(let i=0;i<N;i++){const o=occ[i];if(o<.02)continue;const[x,y]=cc(i,lo),rr=lo.cs*.52*(0.5+o);
+    const g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,rgba(col,.22*o));g.addColorStop(1,rgba(col,0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}
+  ctx.restore();}
+
+function bodyState(fi,t,lo){const gL=Math.floor(t),gH=Math.min(GENS-1,gL+1),u=t-gL,dom=DOM[mode][arm],ms=MASS[mode][arm];
+  const dL=dom[gL][fi],dH=dom[gH][fi],mass=ms[gL][fi]+(ms[gH][fi]-ms[gL][fi])*u,mf=clamp(mass,0,1);
+  if(dL==null&&dH==null)return null;
+  let from,to,e=0,snap=false,ap=1;
+  if(dL==null){from=dH;to=dH;ap=clamp(u*2.2,0,1);}
+  else if(dH==null){from=dL;to=dL;ap=clamp((1-u)*2.2,0,1);}
+  else if(dL===dH){from=dL;to=dL;}
+  else{from=dL;to=dH;const ss=.45;if(u>ss){snap=true;e=clamp(easeBack((u-ss)/(1-ss)),0,1.25);}else e=0;}
+  const[fx,fy]=cc(from,lo),[tx,ty]=cc(to,lo);
+  return{pos:[fx+(tx-fx)*e,fy+(ty-fy)*e],from:[fx,fy],to:[tx,ty],e,snap,mf,ap};}
+
+function drawBody(bs,col,vit,lo){if(!bs)return;const[x,y]=bs.pos,R=lo.cs*.3*(0.55+0.6*bs.mf)*bs.ap;
+  // snap trail
+  if(bs.snap){for(let k=1;k<=4;k++){const tx=bs.from[0]+(x-bs.from[0])*(k/5),ty=bs.from[1]+(y-bs.from[1])*(k/5);
+    ctx.fillStyle=rgba(col,.10*(k/5));ctx.beginPath();ctx.arc(tx,ty,R*.7*(k/5),0,6.2832);ctx.fill();}}
+  // membrane body
+  const g=ctx.createRadialGradient(x-R*.2,y-R*.2,R*.1,x,y,R);
+  g.addColorStop(0,rgba(gv('--cell'),.4));g.addColorStop(.7,rgba(col,.28));g.addColorStop(1,rgba(col,.05));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R,0,6.2832);ctx.fill();
+  ctx.strokeStyle=rgba(col,.7);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,R,0,6.2832);ctx.stroke();
+  ctx.strokeStyle=rgba(gv('--rim'),.3+.3*vit);ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,R*1.06,0,6.2832);ctx.stroke();
+  // nucleoid core (witness)
+  const ng=ctx.createRadialGradient(x,y,0,x,y,R*.7);ng.addColorStop(0,rgba(col,.95*vit+.05));ng.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=ng;ctx.beginPath();ctx.arc(x,y,R*.7,0,6.2832);ctx.fill();}
+
+function renderField(t){
+  ctx.clearRect(0,0,Wf,Hf);
+  const F=frameAt(mode,arm,t),lo=layout(),collapse=arm==="coupled"&&F.w<.42,
+        wCol=collapse?gv('--collapse'):gv('--lum'),vit=clamp(F.w,0,1),
+        cols=mode==="duo"?[gv('--lum'),gv('--lum2')]:[gv('--lum'),gv('--lum')];
+  // grid
+  ctx.strokeStyle=rgba(gv('--grid'),.9);ctx.lineWidth=1;
+  for(let k=0;k<=G;k++){ctx.beginPath();ctx.moveTo(lo.ox+k*lo.cs,lo.oy);ctx.lineTo(lo.ox+k*lo.cs,lo.oy+lo.S);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(lo.ox,lo.oy+k*lo.cs);ctx.lineTo(lo.ox+lo.S,lo.oy+k*lo.cs);ctx.stroke();}
+  for(let i=0;i<N;i++){const[x,y]=cc(i,lo);ctx.fillStyle=rgba(gv('--ink-faint'),.22);ctx.beginPath();ctx.arc(x,y,1.4,0,6.2832);ctx.fill();}
+  // clouds
+  F.fields.forEach((occ,fi)=>cloud(occ,collapse?gv('--collapse'):cols[fi],lo));
+  // interaction bond (duo)
+  if(mode==="duo"&&F.overlap>0.004){const bA=bodyState(0,t,lo),bB=bodyState(1,t,lo);
+    if(bA&&bB){const bw=Math.min(9,2+F.overlap*36),mx=(bA.pos[0]+bB.pos[0])/2,my=(bA.pos[1]+bB.pos[1])/2;
+      const bg=ctx.createRadialGradient(mx,my,0,mx,my,lo.cs*.55);bg.addColorStop(0,rgba(wCol,.5));bg.addColorStop(1,rgba(wCol,0));
+      ctx.fillStyle=bg;ctx.beginPath();ctx.arc(mx,my,lo.cs*.55,0,6.2832);ctx.fill();
+      ctx.strokeStyle=rgba(wCol,.6);ctx.lineWidth=bw;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(bA.pos[0],bA.pos[1]);ctx.lineTo(bB.pos[0],bB.pos[1]);ctx.stroke();}}
+  // bodies
+  F.fields.forEach((occ,fi)=>drawBody(bodyState(fi,t,lo),collapse?gv('--collapse'):cols[fi],vit,lo));
+  // replication flash
+  if(mode==="replicate"&&Math.abs(t-2)<0.45){const p=1-Math.abs(t-2)/0.45,bs=bodyState(1,t,lo);
+    if(bs){ctx.strokeStyle=rgba(gv('--lum'),.6*p);ctx.lineWidth=2;ctx.beginPath();ctx.arc(bs.pos[0],bs.pos[1],lo.cs*(0.3+0.9*(1-p)),0,6.2832);ctx.stroke();}}
+  // Psi
+  if(qview){const occ=F.fields.reduce((a,f)=>a.map((v,i)=>v+f[i]),Z());ctx.font="12px "+gv('--mono');ctx.textAlign="center";ctx.textBaseline="middle";
+    for(let i=0;i<N;i++){const[x,y]=cc(i,lo),o=occ[i];ctx.fillStyle=rgba(gv('--ink'),o>.02?.85:.28);
+      if(o>.005){ctx.strokeStyle=rgba(wCol,.35);ctx.lineWidth=1;ctx.strokeRect(x-lo.cs*.44,y-lo.cs*.44,lo.cs*.88,lo.cs*.88);}
+      ctx.fillText(o.toFixed(2),x,y+lo.cs*.33);}
+    ctx.textAlign="left";ctx.fillStyle=rgba(gv('--ink-faint'),.7);ctx.font="10px "+gv('--mono');ctx.fillText("⟨n⟩ per cell",lo.ox,lo.oy-8);}
+  // HUD
+  const g=Math.round(t);
+  witchip.textContent=`witness ${F.w>=0?"+":""}${F.w.toFixed(2)}`+(mode==="duo"?` · overlap ${F.overlap.toFixed(2)}`:mode==="replicate"?` · ×${F.n||1}`:"");
+  witchip.style.color=F.w<.15?gv('--collapse'):gv('--ink');witchip.style.borderColor=F.w<.15?gv('--collapse'):gv('--line');
+  genN.textContent=g;steplab.textContent=`gen ${g} / 5`;genEl.value=t;
+  stageEl.textContent=label(t,F);stageEl.style.color=F.w<.15?gv('--collapse'):gv('--ink');
+}
+function label(t,F){
+  if(mode==="replicate"){if(t<1.55)return "Single organism";if(Math.abs(t-2)<0.6)return "Replicating";return "Two copies · shared germ line";}
+  if(mode==="duo"){if(F.overlap<0.01)return "Approaching";return F.w<.15?"Interacting · witness lost":"Interacting · entangling";}
+  return F.w>.5?"Witness certified":F.w>.15?"Witness fading":"Witness collapsed";}
+
+/* ===== witness plot ===== */
+function renderPlot(t){
+  pctx.clearRect(0,0,Wp,Hp);
+  const padL=34,padR=12,padT=10,padB=22,x0=padL,x1=Wp-padR,y0=padT,y1=Hp-padB;
+  const X=g=>x0+(g/(GENS-1))*(x1-x0),Y=w=>y1-((w+0.05)/1.05)*(y1-y0);
+  pctx.strokeStyle=rgba(gv('--grid'),1);pctx.lineWidth=1;pctx.font="10px "+gv('--mono');pctx.fillStyle=gv('--ink-faint');
+  [0,0.5,1].forEach(w=>{const y=Y(w);pctx.beginPath();pctx.moveTo(x0,y);pctx.lineTo(x1,y);pctx.stroke();pctx.textAlign="right";pctx.textBaseline="middle";pctx.fillText(w.toFixed(1),x0-6,y);});
+  for(let g=0;g<GENS;g++){pctx.textAlign="center";pctx.textBaseline="top";pctx.fillText(g,X(g),y1+5);}
+  pctx.setLineDash([4,4]);pctx.strokeStyle=rgba(gv('--ink-faint'),.7);pctx.beginPath();pctx.moveTo(x0,Y(0.15));pctx.lineTo(x1,Y(0.15));pctx.stroke();pctx.setLineDash([]);
+  pctx.textAlign="left";pctx.fillStyle=rgba(gv('--ink-faint'),.9);pctx.fillText("certified >0.15",x0+4,Y(0.15)-9);
+  for(const a of ["isolated","coupled"]){if(!DATA[mode][a])continue;const col=a==="isolated"?gv('--lum'):gv('--collapse'),act=a===arm;
+    pctx.strokeStyle=rgba(col,act?1:.35);pctx.lineWidth=act?2.2:1.4;pctx.beginPath();
+    DATA[mode][a].forEach((f,g)=>{const x=X(g),y=Y(f.w);g?pctx.lineTo(x,y):pctx.moveTo(x,y);});pctx.stroke();
+    DATA[mode][a].forEach((f,g)=>{pctx.fillStyle=rgba(col,act?.9:.3);pctx.beginPath();pctx.arc(X(g),Y(f.w),act?2.6:1.8,0,6.2832);pctx.fill();});}
+  const F=frameAt(mode,arm,t),col=(arm==="coupled"&&F.w<.42)?gv('--collapse'):gv('--lum'),mx=X(t),my=Y(F.w);
+  pctx.strokeStyle=rgba(gv('--ink'),.3);pctx.setLineDash([2,3]);pctx.beginPath();pctx.moveTo(mx,y0);pctx.lineTo(mx,y1);pctx.stroke();pctx.setLineDash([]);
+  pctx.fillStyle=col;pctx.beginPath();pctx.arc(mx,my,4,0,6.2832);pctx.fill();pctx.strokeStyle=gv('--field');pctx.lineWidth=1.5;pctx.stroke();
+}
+function loop(ts){if(playing){tc+=(ts-last)/1050;if(tc>=GENS-.01)tc=0;}last=ts;renderField(tc);renderPlot(tc);requestAnimationFrame(loop);}
+setMode(mode);setArm(arm);fit();renderField(0);renderPlot(0);requestAnimationFrame(t=>{last=t;requestAnimationFrame(loop);});
+</script>

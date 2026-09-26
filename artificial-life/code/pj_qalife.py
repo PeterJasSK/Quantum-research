@@ -834,9 +834,823 @@ def print_arena_report(width: int, steps: int, thetas: list[float], *, organisms
     print(f"  gate counts:                                     {rep['gate_counts']}")
 
 
+# ===========================================================================
+# PJ2 -- THE SOLO VIVARIUM: one enriched proto-viral organism living in a habitat.
+#
+# Built ALONGSIDE PJ0/PJ1 (build_germsoma / build_arena untouched, byte-stable). A SINGLE
+# organism whose genome has two co-inherited parts -- the WITNESS LOCI (the W-generation GHZ
+# germ line carrying <X^W>, the quantum certified heredity) and a small register of CLASSICAL
+# GENES (diagonal trait bits: role/repl/life). The soma BODY is a unary walker on a habitat
+# lattice seeded with food; it FORAGES, EATS on co-location, STARVES if unfed, and BUDS when fed
+# -- survival of the fittest EMERGES from one fixed local "vivarium Hamiltonian" H_viv, never a
+# scripted cull. All in ONE circuit (time = depth; measured once). Grounded in the 2018 paper's
+# Discussion "Scope of Quantum Artificial Life" (more DoF in genotype/phenotype; spatial
+# variables; trace-out of dead units; error correction only in the genotype qubits).
+#
+# The Weismann barrier here is ASYMMETRIC (faithfulness -- not two disjoint things):
+#   * germ->soma EXPRESSION is present  -- the body is built from the classical genes (a
+#     diagonal gene->body gate); the paper's gene->body info is classical (encoded in <sigma_z>).
+#   * soma->germ BACK-ACTION is forbidden -- no coherent gate couples a WITNESS LOCUS to the
+#     mortal body (that would decohere the certified heredity). --gate-repl breaks it to MEASURE
+#     the cost; germ_coupled is the A/B kill-switch.
+# Only the witness loci carry the quantum claim; body/food/energy/genes are diagonal narrative.
+# ===========================================================================
+
+# Fixed vivarium laws (build-time defaults for --dump-circuit / --selftest structural checks).
+VIV_FOOD_SITES = (2, 4)              # lattice feeding stations (always WIRED; seeded unless barren)
+VIV_HOP = 0.6                        # H_forage: NN quantum-walk hop angle
+VIV_STARVE = 0.6                     # H_starve: per-step decay of the body toward |0> (unfed death)
+VIV_TRAITS = 3                       # classical genes: role(motility), repl, life
+GENE_ROLE, GENE_REPL, GENE_LIFE = 0, 1, 2
+
+
+# ---------------------------------------------------------------------------
+# Vivarium layout: one organism, contiguous. witness germ (W) | genes | body track | food
+# lattice | energy accumulator [| fitness ancilla only under hard_select].
+# ---------------------------------------------------------------------------
+def viv_food_sites(track: int, food_sites: tuple[int, ...] = VIV_FOOD_SITES) -> tuple[int, ...]:
+    """Feeding-station sites clamped to the track (always wired; seeded unless barren)."""
+    return tuple(s for s in food_sites if 0 <= s < track)
+
+
+def viv_segment_len(width: int, track: int, traits: int, n_food: int, *,
+                    hard_select: bool = False) -> int:
+    """Qubit span: witness germ + genes + body + food lattice + energy + death bath + (fitness)."""
+    return width + traits + 3 * track + n_food + (1 if hard_select else 0)
+
+
+def viv_witness_q(k: int, width: int, track: int, traits: int) -> int:
+    """Witness locus k -- the GHZ germ line (the quantum certified heredity)."""
+    return k
+
+
+def viv_gene_q(t: int, width: int, track: int, traits: int) -> int:
+    """Classical gene t (role/repl/life) -- read to express the body (germ->soma)."""
+    return width + t
+
+
+def viv_body_q(j: int, width: int, track: int, traits: int) -> int:
+    """Body unary track site j -- one excitation = the body's location."""
+    return width + traits + j
+
+
+def viv_food_q(j: int, width: int, track: int, traits: int) -> int:
+    """Habitat food lattice site j (seeded |1> at the feeding stations unless barren)."""
+    return width + traits + track + j
+
+
+def viv_energy_q(i: int, width: int, track: int, traits: int) -> int:
+    """Energy accumulator slot i (one per feeding station) -- 'ate at station i'."""
+    return width + traits + 2 * track + i
+
+
+def viv_bath_q(j: int, width: int, track: int, traits: int, n_food: int) -> int:
+    """Death bath ancilla for body site j (amplitude-damps the unfed body toward |0>; traced out)."""
+    return width + traits + 2 * track + n_food + j
+
+
+def viv_fit_q(width: int, track: int, traits: int, n_food: int) -> int:
+    """Static fitness ancilla (only under --hard-select)."""
+    return width + traits + 3 * track + n_food
+
+
+# ---------------------------------------------------------------------------
+# The vivarium model -- one circuit: germ + genome/expression + Trotterized H_viv.
+# ---------------------------------------------------------------------------
+def build_vivarium(width: int, steps: int, thetas: list[float], *, track: int = 6,
+                   traits: int = VIV_TRAITS, interaction: str = "vivarium",
+                   food_sites: tuple[int, ...] = VIV_FOOD_SITES, hop: float = VIV_HOP,
+                   starve: float = VIV_STARVE, founder_equator: bool = True,
+                   role_on: bool = True, hard_select: bool = False, gate_repl: bool = False,
+                   annotate: bool = False) -> QuantumCircuit:
+    """One enriched proto-viral organism after `steps` life-cycle steps, in ONE circuit.
+
+    interaction : 'vivarium'     -- habitat seeded with food; the emergent life cycle (result).
+                  'barren'       -- SAME circuit law, NO food seeded (control; nothing to eat).
+                  'germ_coupled' -- vivarium + a coherent body<->witness-locus gate (A/B: breaks
+                                    the soma->germ ban -> the witness collapses).
+    Phases: (1) germ line first (witness GHZ); (2) genome + germ->soma expression; (3) Trotterized
+    H_viv = forage + eat + starve + bud, `steps` times (barrier per step = the sim snapshot);
+    (4) germ_coupled back-action, if the arm; (5) static fitness comparator, if --hard-select.
+    """
+    if interaction not in ("vivarium", "barren", "germ_coupled"):
+        raise ValueError(f"unknown interaction {interaction!r}")
+    from qiskit.circuit.library import RXXGate, RYYGate
+
+    sites = viv_food_sites(track, food_sites)
+    n_food = len(sites)
+    seed_food = interaction != "barren"
+    kw = dict(width=width, track=track, traits=traits)
+    n_data = viv_segment_len(width, track, traits, n_food, hard_select=hard_select)
+    qc = QuantumCircuit(n_data)
+    z_geno = q4._z_geno_chain(width, thetas, founder_equator)   # parity with PJ0 (unused metric)
+    _ = z_geno
+
+    # --- Phase 1: germ line first (witness GHZ genealogy) ---
+    for k in range(width):
+        g = viv_witness_q(k, **kw)
+        if k == 0:
+            if founder_equator:
+                qc.ry(math.pi / 2, g)                              # FOUNDER
+        else:
+            qc.cx(viv_witness_q(k - 1, **kw), g)                   # SELF-REPLICATION (NN clone)
+        qc.ry(thetas[k], g)                                        # MUTATION
+    _bar(qc, annotate, "germline")
+
+    # --- Phase 2: genome + germ->soma EXPRESSION (the body is built from the genes) ---
+    for t, on in ((GENE_ROLE, role_on), (GENE_REPL, True), (GENE_LIFE, True)):
+        if on and t < traits:
+            qc.x(viv_gene_q(t, **kw))                              # set the classical genome
+    # EXPRESSION: the body exists because the role gene says so (gene->soma, diagonal control).
+    qc.cx(viv_gene_q(GENE_ROLE, **kw), viv_body_q(0, **kw))
+    if seed_food:
+        for s in sites:
+            qc.x(viv_food_q(s, **kw))                              # habitat resources
+    _bar(qc, annotate, "genome+habitat")
+
+    hop_eff = hop if role_on else 0.0                             # genotype-encoded motility
+
+    # --- Phase 3: Trotterized H_viv (emergent behavior; barrier per step = sim snapshot) ---
+    for f in range(int(steps)):
+        # H_forage: NN quantum-walk hop (conserving), + one energy-controlled hop (state-dependent).
+        for j in range(track - 1):
+            a, b = viv_body_q(j, **kw), viv_body_q(j + 1, **kw)
+            qc.rxx(hop_eff, a, b)
+            qc.ryy(hop_eff, a, b)
+        if n_food:                                                 # fed body forages a little extra
+            a, b = viv_body_q(0, **kw), viv_body_q(1, **kw)
+            qc.append(RXXGate(hop_eff).control(1),
+                      [viv_energy_q(0, **kw), a, b])
+            qc.append(RYYGate(hop_eff).control(1),
+                      [viv_energy_q(0, **kw), a, b])
+        # H_eat: emergent consumption -- fires only where body AND food coincide (co-location).
+        for i, s in enumerate(sites):
+            qc.ccx(viv_body_q(s, **kw), viv_food_q(s, **kw), viv_energy_q(i, **kw))
+            qc.cx(viv_energy_q(i, **kw), viv_food_q(s, **kw))      # consume the food
+        # H_bud: a fed body seeds a neighbor (reproduction powered by having eaten).
+        for i, s in enumerate(sites):
+            if s + 1 < track:
+                qc.ccx(viv_energy_q(i, **kw), viv_body_q(s, **kw), viv_body_q(s + 1, **kw))
+        _bar(qc, annotate, f"step{f + 1}")
+
+    # --- H_starve / trace-out death: every body ages toward |0> via a bath (aging), then the FED
+    #     are revived -- survival of the fittest EMERGES (unfed stay dead). Soma-side only; witness
+    #     untouched. Amplitude damping = the paper's dissipation, sim-visible + EM-fightable on HW.
+    g_eff = min(1.0, max(0.0, starve))
+    for j in range(track):
+        bath = viv_bath_q(j, width=width, track=track, traits=traits, n_food=n_food)
+        qc.cry(2.0 * math.asin(math.sqrt(g_eff)), viv_body_q(j, **kw), bath)
+        qc.cx(bath, viv_body_q(j, **kw))                          # amplitude damp body -> |0> (death)
+    for i, s in enumerate(sites):
+        qc.cx(viv_energy_q(i, **kw), viv_body_q(s, **kw))         # REVIVE the fed (fittest survive)
+    _bar(qc, annotate, "death+revive")
+
+    # --- Phase 4: germ_coupled A/B -- a coherent body<->witness-locus gate (breaks the ban) ---
+    if interaction == "germ_coupled" or gate_repl:
+        j = track // 2
+        qc.rxx(math.pi / 2, viv_body_q(j, **kw), viv_witness_q(0, **kw))
+        qc.ryy(math.pi / 2, viv_body_q(j, **kw), viv_witness_q(0, **kw))
+        _bar(qc, annotate, "germ_coupled" if interaction == "germ_coupled" else "gate_repl")
+
+    # --- Phase 5: optional static fitness comparator (--hard-select; diagonal, no measurement) ---
+    if hard_select and n_food:
+        fit = viv_fit_q(width, track, traits, n_food)
+        qc.mcx([viv_energy_q(i, **kw) for i in range(n_food)], fit)   # fit iff ate at all stations
+        _bar(qc, annotate, "hard_select")
+
+    return qc
+
+
+def viv_to_witness_basis(qc: QuantumCircuit, width: int, *, track: int = 6,
+                         traits: int = VIV_TRAITS) -> QuantumCircuit:
+    """Rotate the witness loci into the X basis (H then Z-read). Body/food/energy/genes stay in Z
+    (diagonal -- excluded from the witness, CD-3). Returns a NEW circuit."""
+    out = qc.copy()
+    for q in viv_witness_qubits(width, track=track, traits=traits):
+        out.h(q)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Vivarium observables + static analysis (build-time only -- NO execution).
+# ---------------------------------------------------------------------------
+def viv_witness_qubits(width: int, track: int = 6, traits: int = VIV_TRAITS) -> list[int]:
+    """The witness loci -- the germ line, the <X^W> set (CD-3)."""
+    return [viv_witness_q(k, width, track, traits) for k in range(width)]
+
+
+def viv_gene_qubits(width: int, track: int = 6, traits: int = VIV_TRAITS) -> list[int]:
+    return [viv_gene_q(t, width, track, traits) for t in range(traits)]
+
+
+def viv_body_site_qubits(width: int, track: int = 6, traits: int = VIV_TRAITS) -> list[int]:
+    return [viv_body_q(j, width, track, traits) for j in range(track)]
+
+
+def viv_food_qubits(width: int, track: int = 6, traits: int = VIV_TRAITS) -> list[int]:
+    return [viv_food_q(j, width, track, traits) for j in range(track)]
+
+
+def viv_energy_qubits(width: int, track: int, traits: int, n_food: int) -> list[int]:
+    return [viv_energy_q(i, width, track, traits) for i in range(n_food)]
+
+
+def vivarium_coupling_report(qc: QuantumCircuit, width: int, *, track: int = 6,
+                             traits: int = VIV_TRAITS,
+                             food_sites: tuple[int, ...] = VIV_FOOD_SITES) -> dict[str, Any]:
+    """STATIC analyzer of the ASYMMETRIC Weismann barrier (walks qc.data; no statevector):
+      * expression        : True iff a gate reads a GENE qubit to set a soma qubit (germ->soma).
+      * back_action       : True iff a coherent gate couples a WITNESS LOCUS to a soma qubit
+                            (soma->germ; forbidden in vivarium/barren, True in germ_coupled).
+      * witness_isolated  : True iff no gate pairs a witness locus with any non-witness qubit.
+      * gene_first        : germ (witness) gates precede the life cycle.
+      * selection_diagonal: the starve/bud/comparator gates touch no witness locus.
+      * has_classical_branch : measure/reset/condition present (must be False -- AC-PJ2.4).
+      * gate_counts       : per-operator tally."""
+    n_food = len(viv_food_sites(track, food_sites))
+    witness = set(viv_witness_qubits(width, track, traits))
+    genes = set(viv_gene_qubits(width, track, traits))
+    baths = {viv_bath_q(j, width, track, traits, n_food) for j in range(track)}
+    soma = set(viv_body_site_qubits(width, track, traits)) | set(viv_food_qubits(width, track, traits)) \
+        | set(viv_energy_qubits(width, track, traits, n_food)) | baths
+
+    expression = back_action = has_branch = False
+    witness_isolated = True
+    gate_counts: dict[str, int] = {}
+    for inst in qc.data:
+        name = inst.operation.name
+        gate_counts[name] = gate_counts.get(name, 0) + 1
+        cond = getattr(inst.operation, "condition", None) or getattr(inst, "condition", None)
+        if cond is not None or name in ("measure", "reset"):
+            has_branch = True
+        if name in ("barrier", "delay"):
+            continue
+        qs = [_qubit_index(qc, b) for b in inst.qubits]
+        tw = any(q in witness for q in qs)
+        tg = any(q in genes for q in qs)
+        ts = any(q in soma for q in qs)
+        if tg and ts:
+            expression = True
+        if tw and ts:
+            back_action = True
+        if tw and any(q not in witness for q in qs):
+            witness_isolated = False
+
+    return {
+        "expression": expression,
+        "back_action": back_action,
+        "witness_isolated": witness_isolated,
+        "gene_first": _viv_gene_first(qc, witness, soma | genes),
+        "selection_diagonal": not back_action,
+        "has_classical_branch": has_branch,
+        "witness_set": sorted(witness),
+        "gate_counts": gate_counts,
+    }
+
+
+def _viv_gene_first(qc: QuantumCircuit, witness: set[int], rest: set[int]) -> bool:
+    """True iff every witness-only gate precedes the first gate touching the soma/genes."""
+    last_w = -1
+    first_rest = None
+    for pos, inst in enumerate(qc.data):
+        if inst.operation.name in ("barrier", "delay"):
+            continue
+        qs = [_qubit_index(qc, b) for b in inst.qubits]
+        if any(q in witness for q in qs) and not any(q in rest for q in qs):
+            last_w = pos
+        if any(q in rest for q in qs) and first_rest is None:
+            first_rest = pos
+    return (first_rest is None) or (last_w < first_rest)
+
+
+# ---------------------------------------------------------------------------
+# Vivarium --selftest -- STATIC circuit-structure checks (CD-7, no sim).
+# ---------------------------------------------------------------------------
+def _viv_selftest_case(width: int, track: int, *, steps: int = 3, traits: int = VIV_TRAITS,
+                       seed: int = 100) -> list[tuple[str, bool, str]]:
+    thetas = q4._sim_thetas(width, seed, mut_scale=0.0)           # faithful clean GHZ
+    kw = dict(track=track, traits=traits)
+    results: list[tuple[str, bool, str]] = []
+
+    def _build(interaction: str, **extra: Any) -> QuantumCircuit:
+        return build_vivarium(width, steps, thetas, interaction=interaction, **kw, **extra)
+
+    rep_v = vivarium_coupling_report(_build("vivarium"), width, **kw)
+    rep_b = vivarium_coupling_report(_build("barren"), width, **kw)
+    rep_g = vivarium_coupling_report(_build("germ_coupled"), width, **kw)
+
+    # (i) asymmetric barrier: expression True + back_action False for barren/vivarium; germ_coupled breaks it.
+    ok_i = (rep_v["expression"] and rep_b["expression"]
+            and not rep_v["back_action"] and not rep_b["back_action"]
+            and rep_g["back_action"])
+    results.append(("asymmetric barrier (expression yes; back-action no; germ_coupled breaks it)",
+                    ok_i, f"viv(expr={rep_v['expression']},back={rep_v['back_action']}) "
+                    f"germ_coupled_back={rep_g['back_action']}"))
+
+    # (ii) witness isolated in barren/vivarium.
+    ok_ii = rep_v["witness_isolated"] and rep_b["witness_isolated"] and not rep_g["witness_isolated"]
+    results.append(("witness loci isolated (vivarium/barren) but not germ_coupled",
+                    ok_ii, f"viv={rep_v['witness_isolated']} germ_coupled={rep_g['witness_isolated']}"))
+
+    # (iii) germ-first ordering.
+    results.append(("ordering: germ line built before the life cycle (rung 0)",
+                    rep_v["gene_first"], f"gene_first={rep_v['gene_first']}"))
+
+    # (iv) witness readout isolation: H on witness loci only.
+    meas = viv_to_witness_basis(_build("vivarium"), width, **kw)
+    witness = set(viv_witness_qubits(width, track, traits))
+    h_w = h_o = 0
+    for inst in meas.data:
+        if inst.operation.name != "h":
+            continue
+        for b in inst.qubits:
+            (h_w := h_w + 1) if _qubit_index(meas, b) in witness else (h_o := h_o + 1)  # type: ignore
+    ok_iv = (h_w == width) and (h_o == 0)
+    results.append(("witness readout: H on witness loci only", ok_iv, f"H(witness)={h_w} H(other)={h_o}"))
+
+    # (v) no classical branch on the body/selection path (emergent, not if(ate)).
+    ok_v = not rep_v["has_classical_branch"] and not rep_b["has_classical_branch"]
+    results.append(("no classical branch (fully unitary life cycle)",
+                    ok_v, f"viv_branch={rep_v['has_classical_branch']}"))
+
+    # (vi) selection laws diagonal / touch no witness locus.
+    results.append(("selection laws touch no witness locus (diagonal)",
+                    rep_v["selection_diagonal"], f"selection_diagonal={rep_v['selection_diagonal']}"))
+
+    # (vii) barren == vivarium minus the food seed (SAME law, different seed = emergence).
+    n_food = len(viv_food_sites(track))
+    x_v = rep_v["gate_counts"].get("x", 0)
+    x_b = rep_b["gate_counts"].get("x", 0)
+    other_v = {k: v for k, v in rep_v["gate_counts"].items() if k != "x"}
+    other_b = {k: v for k, v in rep_b["gate_counts"].items() if k != "x"}
+    ok_vii = (x_v - x_b == n_food) and (other_v == other_b)
+    results.append(("barren == vivarium minus food seed (identical law, different seed)",
+                    ok_vii, f"extra_x_seed={x_v - x_b} expected={n_food} "
+                    f"non_seed_gates_equal={other_v == other_b}"))
+    return results
+
+
+def run_vivarium_selftest(cases: tuple[tuple[int, int], ...] = ((2, 5), (4, 6), (12, 6)),
+                          steps: int = 3) -> int:
+    """Run the seven vivarium static checks at representative (W, track). Return 0/1."""
+    print("=== PJ2 solo-vivarium --selftest (STATIC circuit-structure checks; no sim) ===")
+    all_ok = True
+    for w, track in cases:
+        print(f"\n-- vivarium W={w}, track={track}, steps={steps} --")
+        for name, ok, detail in _viv_selftest_case(w, track, steps=steps):
+            all_ok = all_ok and ok
+            print(f"  [{'OK ' if ok else 'FAIL'}] {name}  ({detail})")
+    print("\nSELFTEST PASS" if all_ok else "\nSELFTEST FAIL")
+    return 0 if all_ok else 1
+
+
+def print_vivarium_report(width: int, steps: int, thetas: list[float], *, track: int,
+                          traits: int, interaction: str, hard_select: bool, gate_repl: bool) -> None:
+    """Build the vivarium circuit, print it + a legend + the STATIC correctness report."""
+    qc = build_vivarium(width, steps, thetas, track=track, traits=traits, interaction=interaction,
+                        hard_select=hard_select, gate_repl=gate_repl, annotate=True)
+    rep = vivarium_coupling_report(qc, width, track=track, traits=traits)
+    sites = viv_food_sites(track)
+
+    print(f"\n--- PJ2 SOLO-VIVARIUM CIRCUIT (W={width}, track={track}, steps={steps}, "
+          f"interaction={interaction}, hard_select={hard_select}, gate_repl={gate_repl}) ---")
+    w0 = viv_witness_q(0, width, track, traits)
+    g0 = viv_gene_q(0, width, track, traits)
+    b0 = viv_body_q(0, width, track, traits)
+    f0 = viv_food_q(0, width, track, traits)
+    e0 = viv_energy_q(0, width, track, traits)
+    print(f"  layout: witness g_k = {w0}..{w0 + width - 1}  |  genes = {g0}..{g0 + traits - 1}  |  "
+          f"body = {b0}..{b0 + track - 1}  |  food = {f0}..{f0 + track - 1}  |  "
+          f"energy = {e0}..{e0 + len(sites) - 1}")
+    print(f"  feeding stations (seeded unless barren): {list(sites)}")
+    print("  gate -> meaning:")
+    print("    Ry(pi/2)/CX/Ry(theta) on witness = FOUNDER / SELF-REPLICATION / MUTATION (clean GHZ)")
+    print("    X on gene ; CX(gene_role -> body) = set genome ; EXPRESS the body (germ->soma)")
+    print("    X on food site                   = habitat resource (seeded)")
+    print("    RXX+RYY on NN body sites         = H_forage (quantum-walk hop; role-scaled)")
+    print("    CCX(body,food -> energy)+CX      = H_eat (emergent consumption on co-location)")
+    print("    CCX(energy,body -> body+1)       = H_bud (fed body reproduces)")
+    print("    CRY+CX(body,bath) ; CX(energy->body) = death (age all) + REVIVE fed (fittest survive)")
+    if interaction == "germ_coupled" or gate_repl:
+        print("    RXX+RYY body<->witness_q(0)      = A/B back-action (breaks the barrier)")
+    print("    H on witness then measure         = witness readout; soma stays diagonal (Z)")
+
+    print("\n" + str(qc.draw(output="text", fold=-1)))
+
+    print("\n--- STATIC VIVARIUM CORRECTNESS REPORT (asymmetric Weismann barrier) ---")
+    print(f"  germ->soma expression present:            {'YES' if rep['expression'] else 'NO'}")
+    print(f"  soma->germ back-action (must be NO here):  {'YES' if rep['back_action'] else 'NO'}")
+    print(f"  witness loci isolated:                    {'YES' if rep['witness_isolated'] else 'NO'}")
+    print(f"  germ passed before the life cycle:        {'YES' if rep['gene_first'] else 'NO'}")
+    print(f"  selection laws touch no witness locus:    {'YES' if rep['selection_diagonal'] else 'NO'}")
+    print(f"  classical branch on body path (must NO):  {'YES' if rep['has_classical_branch'] else 'NO'}")
+    print(f"  witness qubit set (germ line):            {rep['witness_set']}")
+    print(f"  gate counts:                              {rep['gate_counts']}")
+
+
+# ===========================================================================
+# PJ2.2: THE 2D-LATTICE VIVARIUM -- a walking occupancy field + germ witness.
+# ---------------------------------------------------------------------------
+# Built ALONGSIDE PJ0/PJ1/PJ2 (build_germsoma / build_arena / build_vivarium untouched,
+# byte-stable). A DIFFERENT substrate from the 1D vivarium: the organism is a pure
+# UNARY OCCUPANCY FIELD on a grid x grid square lattice (one qubit per cell, index
+# i = r*grid + c) that WALKS -- each generation is one Trotter layer of an excitation-
+# conserving rxx+ryy quantum walk between von-Neumann neighbours (mass conserved, nothing
+# scripted). Eating/energy/budding are deliberately CUT as overclaiming (mockup README §1:
+# "the honest scope is movement + witness only"). The single quantum claim is the germ-line
+# genealogical witness <X^W>, reusing PJ0's GHZ machinery. Three modes (solo / replicate /
+# duo) x two arms (isolated germ line / coupled = the soma->germ wound). Certified frames are
+# a DEPTH SCAN: each generation is its own measured circuit (README §5), not a sim-movie.
+# ===========================================================================
+
+# Fixed lattice laws (build-time defaults for --dump-circuit / --selftest structural checks).
+LAT_HOP = 0.6                        # isotropic quantum-walk hop angle (OQ-4; uniform theta)
+LAT_MODES = ("solo", "replicate", "duo")
+LAT_ARMS = ("isolated", "coupled")
+LAT_REP_GEN = 2                      # generation the germ line CNOT-clones (README §1/§7)
+
+
+# ---------------------------------------------------------------------------
+# Lattice layout: per organism [germ witness (W) | unary body field (grid*grid)],
+# organisms in contiguous adjacent blocks (clean per-organism GHZ genealogy).
+# ---------------------------------------------------------------------------
+def lat_n_organisms(mode: str) -> int:
+    """Fields present: 1 (solo) / 2 (replicate: parent+daughter) / 2 (duo)."""
+    if mode == "solo":
+        return 1
+    if mode in ("replicate", "duo"):
+        return 2
+    raise ValueError(f"unknown lattice mode {mode!r}")
+
+
+def lat_segment_len(width: int, grid: int, mode: str) -> int:
+    """Qubit span: n_organisms * (germ width W + grid*grid body cells).
+    3x3 solo = 12, 3x3 replicate/duo = 24, 4x4 solo = 19 (all fit sim _SV_MAX_QUBITS/Heron)."""
+    return lat_n_organisms(mode) * (width + grid * grid)
+
+
+def lat_base(org: int, width: int, grid: int) -> int:
+    """First physical qubit of organism `org` (adjacent segments)."""
+    return org * (width + grid * grid)
+
+
+def lat_witness_q(org: int, k: int, width: int, grid: int) -> int:
+    """Germ-line witness locus k of organism `org` (front of its block; the GHZ genealogy)."""
+    return lat_base(org, width, grid) + k
+
+
+def lat_body_q(org: int, i: int, width: int, grid: int) -> int:
+    """Body cell i = r*grid + c of organism `org` -- one excitation = where the body is."""
+    return lat_base(org, width, grid) + width + i
+
+
+def lat_neighbors(i: int, grid: int) -> list[int]:
+    """Von-Neumann neighbours of cell i = r*grid + c on a grid x grid lattice."""
+    r, c = divmod(i, grid)
+    nb: list[int] = []
+    if r > 0:
+        nb.append((r - 1) * grid + c)
+    if r < grid - 1:
+        nb.append((r + 1) * grid + c)
+    if c > 0:
+        nb.append(r * grid + (c - 1))
+    if c < grid - 1:
+        nb.append(r * grid + (c + 1))
+    return nb
+
+
+def lat_edges(grid: int) -> list[list[tuple[int, int]]]:
+    """Von-Neumann edges grouped into 4 disjoint colors (H-even / H-odd / V-even / V-odd) so
+    each color is a depth-1 layer of non-overlapping 2-qubit gates (keeps the walk shallow)."""
+    h_even: list[tuple[int, int]] = []
+    h_odd: list[tuple[int, int]] = []
+    v_even: list[tuple[int, int]] = []
+    v_odd: list[tuple[int, int]] = []
+    for r in range(grid):
+        for c in range(grid):
+            i = r * grid + c
+            if c < grid - 1:
+                (h_even if c % 2 == 0 else h_odd).append((i, i + 1))
+            if r < grid - 1:
+                (v_even if r % 2 == 0 else v_odd).append((i, i + grid))
+    return [h_even, h_odd, v_even, v_odd]
+
+
+# ---------------------------------------------------------------------------
+# The 2D-lattice model -- germ line(s) first, seed, `gens` von-Neumann walk layers.
+# ---------------------------------------------------------------------------
+def _lattice_germ(qc: QuantumCircuit, org: int, width: int, grid: int, thetas: list[float],
+                  founder_equator: bool) -> None:
+    """One organism's germ line (rung 0): founder ry(pi/2) + NN cx clone chain + ry(theta)
+    mutation -- the clean GHZ genealogy carrying <X^W> (reuse of the PJ0 germ pattern)."""
+    for k in range(width):
+        g = lat_witness_q(org, k, width, grid)
+        if k == 0:
+            if founder_equator:
+                qc.ry(math.pi / 2, g)                              # FOUNDER
+        else:
+            qc.cx(lat_witness_q(org, k - 1, width, grid), g)       # SELF-REPLICATION (NN clone)
+        qc.ry(thetas[k], g)                                        # MUTATION
+
+
+def _lattice_walk_layer(qc: QuantumCircuit, grid: int, org: int, width: int, theta: float) -> None:
+    """One Trotter walk layer: excitation-conserving rxx(theta)+ryy(theta) on every von-Neumann
+    neighbour pair of organism `org`'s body block, in edge-colored order. Applied UNCONDITIONALLY
+    (no if/c_if on position); germ untouched -- the bodies move, mass conserved."""
+    for color in lat_edges(grid):
+        for a_cell, b_cell in color:
+            a = lat_body_q(org, a_cell, width, grid)
+            b = lat_body_q(org, b_cell, width, grid)
+            qc.rxx(theta, a, b)
+            qc.ryy(theta, a, b)
+
+
+def _lattice_clone(qc: QuantumCircuit, width: int, grid: int, start: int, hop: float) -> None:
+    """Replicate: CNOT-clone the parent germ line into the daughter germ block (germ->germ only,
+    the shared GHZ) and seed a daughter body one cell over (down-neighbour of the seed)."""
+    for k in range(width):
+        qc.cx(lat_witness_q(0, k, width, grid), lat_witness_q(1, k, width, grid))
+    n_cells = grid * grid
+    dstart = start + grid if start + grid < n_cells else (start + 1) % n_cells
+    qc.x(lat_body_q(1, dstart, width, grid))
+
+
+def _lattice_interaction(qc: QuantumCircuit, width: int, grid: int, phi: float) -> None:
+    """Duo: co-located rxx+ryy between organism A and B body cells (emergent from co-location,
+    no if(contact)); it only acts where both bodies have amplitude -- builds the joint witness."""
+    for i in range(grid * grid):
+        a = lat_body_q(0, i, width, grid)
+        b = lat_body_q(1, i, width, grid)
+        qc.rxx(phi, a, b)
+        qc.ryy(phi, a, b)
+
+
+def build_lattice_vivarium(width: int, grid: int, gens: int, thetas: list[float], *,
+                           mode: str = "solo", arm: str = "isolated", start: int = 0,
+                           hop: float = LAT_HOP, founder_equator: bool = True,
+                           annotate: bool = False) -> QuantumCircuit:
+    """One walking occupancy field after `gens` walk layers, in ONE circuit (built once per depth
+    for the driver's depth scan).
+
+    mode : 'solo'      -- one field walks; mass conserved, nothing eaten or born.
+           'replicate' -- at gen LAT_REP_GEN the germ line is CNOT-cloned into a daughter (one
+                          shared GHZ) + a daughter body seeded one cell over.
+           'duo'       -- two fields at opposite corners drift together; co-located rxx+ryy body
+                          interaction builds a joint two-body witness.
+    arm  : 'isolated'  -- never couples a body cell to a germ qubit (Weismann barrier intact).
+           'coupled'   -- one coherent rxx+ryy body<->witness-locus gate (the soma->germ wound;
+                          the A/B kill-switch -> the witness collapses).
+    Phases: (1) germ line(s) first; (2) seed the body/bodies; (3) `gens` von-Neumann walk layers
+    (replicate germ-clone at gen 2; duo co-located interaction per layer); (4) coupled-arm wound.
+    """
+    if mode not in LAT_MODES:
+        raise ValueError(f"unknown lattice mode {mode!r}")
+    if arm not in LAT_ARMS:
+        raise ValueError(f"unknown lattice arm {arm!r}")
+    n_cells = grid * grid
+    n_data = lat_segment_len(width, grid, mode)
+    qc = QuantumCircuit(n_data)
+
+    # --- Phase 1: germ line(s) first. solo/replicate build ONLY the parent (the daughter germ is
+    #     cloned from it at gen 2); duo builds two INDEPENDENT founders (joined via interaction). ---
+    _lattice_germ(qc, 0, width, grid, thetas, founder_equator)
+    if mode == "duo":
+        _lattice_germ(qc, 1, width, grid, thetas, founder_equator)
+    _bar(qc, annotate, "germline")
+
+    # --- Phase 2: seed the body (one excitation = the start cell). duo seeds opposite corners. ---
+    start = start % n_cells
+    if mode == "duo":
+        qc.x(lat_body_q(0, 0, width, grid))                       # corner 0
+        qc.x(lat_body_q(1, n_cells - 1, width, grid))             # opposite corner
+    else:
+        qc.x(lat_body_q(0, start, width, grid))
+    _bar(qc, annotate, "seed")
+
+    # --- Phase 3: `gens` walk layers (barrier per layer). ---
+    daughter = False
+    for gen in range(int(gens)):
+        if mode == "replicate" and gen == LAT_REP_GEN:
+            _lattice_clone(qc, width, grid, start, hop)
+            daughter = True
+            _bar(qc, annotate, "replicate")
+        _lattice_walk_layer(qc, grid, 0, width, hop)
+        if daughter:
+            _lattice_walk_layer(qc, grid, 1, width, hop)
+        if mode == "duo":
+            _lattice_walk_layer(qc, grid, 1, width, hop)
+            _lattice_interaction(qc, width, grid, hop)
+        _bar(qc, annotate, f"walk{gen}")
+    if mode == "replicate" and not daughter and int(gens) >= LAT_REP_GEN:
+        _lattice_clone(qc, width, grid, start, hop)                # spawn at exactly gen == 2
+        daughter = True
+        _bar(qc, annotate, "replicate")
+
+    # --- Phase 4: coupled arm -- the soma->germ back-action (breaks the Weismann barrier). ---
+    if arm == "coupled":
+        centre = (grid // 2) * grid + (grid // 2)
+        b = lat_body_q(0, centre, width, grid)
+        g = lat_witness_q(0, 0, width, grid)
+        qc.rxx(math.pi / 2, b, g)
+        qc.ryy(math.pi / 2, b, g)
+        _bar(qc, annotate, "arm")
+
+    return qc
+
+
+def lattice_to_witness_basis(qc: QuantumCircuit, width: int, grid: int, mode: str) -> QuantumCircuit:
+    """Rotate the germ loci into the X basis (H then Z-read). Body cells stay in Z (diagonal --
+    excluded from the witness, CD-3). Returns a NEW circuit."""
+    out = qc.copy()
+    for q in lattice_witness_qubits(width, grid, mode):
+        out.h(q)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Lattice observables + static analysis (build-time only -- NO execution).
+# ---------------------------------------------------------------------------
+def lattice_witness_qubits(width: int, grid: int, mode: str) -> list[int]:
+    """The witness loci -- every organism's germ line (the joint <X^W> set; CD-3)."""
+    return [lat_witness_q(o, k, width, grid)
+            for o in range(lat_n_organisms(mode)) for k in range(width)]
+
+
+def lattice_body_qubits(org: int, width: int, grid: int) -> list[int]:
+    """The body cells of organism `org` (the unary occupancy field)."""
+    return [lat_body_q(org, i, width, grid) for i in range(grid * grid)]
+
+
+def lattice_coupling_report(qc: QuantumCircuit, width: int, grid: int, *, mode: str,
+                            arm: str) -> dict[str, Any]:
+    """STATIC analyzer of the Weismann barrier under 2D movement (walks qc.data; no statevector):
+      * back_action     : True iff a gate couples a WITNESS locus to a BODY cell (soma->germ;
+                          forbidden in isolated, present in coupled).
+      * witness_isolated: True iff no gate pairs a witness locus with a non-witness qubit (the
+                          germ->germ replicate clone keeps this True -- both ends are witness).
+      * mass_conserved  : True iff every body-touching multi-qubit gate is rxx/ryy (excitation-
+                          conserving; the seed x is the only 1-qubit body gate).
+      * germ_first      : germ line built before the body starts (founder precedes the seed).
+      * has_classical_branch : measure/reset/condition present (must be False -- AC-PJ2.2.3).
+      * gate_counts     : per-operator tally."""
+    witness = set(lattice_witness_qubits(width, grid, mode))
+    body: set[int] = set()
+    for o in range(lat_n_organisms(mode)):
+        body |= set(lattice_body_qubits(o, width, grid))
+
+    back_action = has_branch = False
+    witness_isolated = mass_conserved = True
+    first_germ_pos: int | None = None
+    first_body_pos: int | None = None
+    gate_counts: dict[str, int] = {}
+    for pos, inst in enumerate(qc.data):
+        name = inst.operation.name
+        gate_counts[name] = gate_counts.get(name, 0) + 1
+        cond = getattr(inst.operation, "condition", None) or getattr(inst, "condition", None)
+        if cond is not None or name in ("measure", "reset"):
+            has_branch = True
+        if name in ("barrier", "delay"):
+            continue
+        qs = [_qubit_index(qc, b) for b in inst.qubits]
+        tw = any(q in witness for q in qs)
+        tb = any(q in body for q in qs)
+        if tw and first_germ_pos is None:
+            first_germ_pos = pos
+        if tb and first_body_pos is None:
+            first_body_pos = pos
+        if tw and tb:
+            back_action = True
+        if tw and any(q not in witness for q in qs):
+            witness_isolated = False
+        if tb and name not in ("rxx", "ryy", "x"):
+            mass_conserved = False
+
+    germ_first = first_germ_pos is not None and (first_body_pos is None
+                                                 or first_germ_pos < first_body_pos)
+    return {
+        "back_action": back_action,
+        "witness_isolated": witness_isolated,
+        "mass_conserved": mass_conserved,
+        "germ_first": germ_first,
+        "has_classical_branch": has_branch,
+        "witness_set": sorted(witness),
+        "gate_counts": gate_counts,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Lattice --selftest -- STATIC circuit-structure checks (CD-7, no sim).
+# ---------------------------------------------------------------------------
+def _lattice_selftest_case(grid: int, mode: str, *, width: int = 3, gens: int = 4,
+                           seed: int = 100) -> list[tuple[str, bool, str]]:
+    thetas = q4._sim_thetas(width, seed, mut_scale=0.0)           # faithful clean GHZ
+    results: list[tuple[str, bool, str]] = []
+
+    def _build(arm: str) -> QuantumCircuit:
+        return build_lattice_vivarium(width, grid, gens, thetas, mode=mode, arm=arm)
+
+    rep_i = lattice_coupling_report(_build("isolated"), width, grid, mode=mode, arm="isolated")
+    rep_c = lattice_coupling_report(_build("coupled"), width, grid, mode=mode, arm="coupled")
+
+    # (i) A/B kill-switch: isolated has no back-action; coupled breaks the barrier.
+    ok_i = (not rep_i["back_action"]) and rep_c["back_action"]
+    results.append(("A/B kill-switch (isolated no back-action; coupled breaks it)",
+                    ok_i, f"isolated_back={rep_i['back_action']} coupled_back={rep_c['back_action']}"))
+
+    # (ii) witness isolated in the isolated arm (germ->germ clone stays witness-internal).
+    results.append(("witness loci isolated (isolated arm) but not coupled",
+                    rep_i["witness_isolated"] and not rep_c["witness_isolated"],
+                    f"isolated={rep_i['witness_isolated']} coupled={rep_c['witness_isolated']}"))
+
+    # (iii) mass conserved: the walk is rxx+ryy neighbour pairs only.
+    results.append(("mass conserved (walk = rxx+ryy neighbour pairs)",
+                    rep_i["mass_conserved"], f"mass_conserved={rep_i['mass_conserved']}"))
+
+    # (iv) germ-first ordering (germ line before the body moves).
+    results.append(("ordering: germ line built before the body (rung 0)",
+                    rep_i["germ_first"], f"germ_first={rep_i['germ_first']}"))
+
+    # (v) witness readout isolation: H on the germ loci only.
+    meas = lattice_to_witness_basis(_build("isolated"), width, grid, mode)
+    witness = set(lattice_witness_qubits(width, grid, mode))
+    h_w = h_o = 0
+    for inst in meas.data:
+        if inst.operation.name != "h":
+            continue
+        for b in inst.qubits:
+            (h_w := h_w + 1) if _qubit_index(meas, b) in witness else (h_o := h_o + 1)  # type: ignore
+    ok_v = (h_w == len(witness)) and (h_o == 0)
+    results.append(("witness readout: H on germ loci only", ok_v, f"H(witness)={h_w} H(other)={h_o}"))
+
+    # (vi) no classical branch (fully unitary walk -- no if/measure/reset).
+    results.append(("no classical branch (fully unitary walk)",
+                    not rep_i["has_classical_branch"], f"branch={rep_i['has_classical_branch']}"))
+
+    # (vii) qubit count matches lat_segment_len.
+    nq = _build("isolated").num_qubits
+    expect = lat_segment_len(width, grid, mode)
+    results.append(("qubit count == lat_segment_len(width, grid, mode)",
+                    nq == expect, f"nq={nq} expected={expect}"))
+    return results
+
+
+def run_lattice_selftest(cases: tuple[tuple[int, str], ...] = ((3, "solo"), (3, "replicate"),
+                                                               (3, "duo"), (4, "solo")),
+                         width: int = 3, gens: int = 4) -> int:
+    """Run the seven lattice static checks at representative (grid, mode). Return 0/1."""
+    print("=== PJ2.2 2D-lattice vivarium --selftest (STATIC circuit-structure checks; no sim) ===")
+    all_ok = True
+    for grid, mode in cases:
+        nq = lat_segment_len(width, grid, mode)
+        print(f"\n-- lattice grid={grid}x{grid}, mode={mode}, W={width}, gens={gens} ({nq} qubits) --")
+        for name, ok, detail in _lattice_selftest_case(grid, mode, width=width, gens=gens):
+            all_ok = all_ok and ok
+            print(f"  [{'OK ' if ok else 'FAIL'}] {name}  ({detail})")
+    print("\nSELFTEST PASS" if all_ok else "\nSELFTEST FAIL")
+    return 0 if all_ok else 1
+
+
+def print_lattice_report(width: int, grid: int, gens: int, thetas: list[float], *, mode: str,
+                         arm: str) -> None:
+    """Build the lattice circuit, print it + a legend + the STATIC correctness report."""
+    qc = build_lattice_vivarium(width, grid, gens, thetas, mode=mode, arm=arm, annotate=True)
+    rep = lattice_coupling_report(qc, width, grid, mode=mode, arm=arm)
+
+    print(f"\n--- PJ2.2 2D-LATTICE VIVARIUM CIRCUIT (W={width}, grid={grid}x{grid}, gens={gens}, "
+          f"mode={mode}, arm={arm}) ---")
+    n_org = lat_n_organisms(mode)
+    for o in range(n_org):
+        w0 = lat_witness_q(o, 0, width, grid)
+        b0 = lat_body_q(o, 0, width, grid)
+        print(f"  organism {o}: germ g_k = {w0}..{w0 + width - 1}  |  "
+              f"body cells = {b0}..{b0 + grid * grid - 1} (i = r*{grid} + c)")
+    print("  gate -> meaning:")
+    print("    Ry(pi/2)/CX/Ry(theta) on germ = FOUNDER / SELF-REPLICATION / MUTATION (clean GHZ)")
+    print("    X on a body cell               = seed the occupancy field at the start cell")
+    print("    RXX+RYY on von-Neumann pairs   = the walk (excitation-conserving; mass conserved)")
+    if mode == "replicate":
+        print(f"    CX germ(0,k)->germ(1,k) @ gen {LAT_REP_GEN} = the daughter germ clone (germ->germ)")
+    if mode == "duo":
+        print("    RXX+RYY co-located A/B body    = the emergent two-body interaction")
+    if arm == "coupled":
+        print("    RXX+RYY body<->germ(0,0)       = the A/B back-action (breaks the barrier)")
+    print("    H on germ then measure          = witness readout; body stays diagonal (Z)")
+
+    print("\n" + str(qc.draw(output="text", fold=-1)))
+
+    print("\n--- STATIC LATTICE CORRECTNESS REPORT (Weismann barrier under 2D movement) ---")
+    print(f"  soma->germ back-action (NO in isolated):  {'YES' if rep['back_action'] else 'NO'}")
+    print(f"  witness loci isolated:                    {'YES' if rep['witness_isolated'] else 'NO'}")
+    print(f"  mass conserved (rxx+ryy walk):            {'YES' if rep['mass_conserved'] else 'NO'}")
+    print(f"  germ line before the body (rung 0):       {'YES' if rep['germ_first'] else 'NO'}")
+    print(f"  classical branch (must be NO):            {'YES' if rep['has_classical_branch'] else 'NO'}")
+    print(f"  witness qubit set (germ lines):           {rep['witness_set']}")
+    print(f"  gate counts:                              {rep['gate_counts']}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="PJ0 germ/soma model + PJ1 arena (static evaluation; no sim, no hardware).")
+        description="PJ0 germ/soma model + PJ1 arena + PJ2 vivarium (static eval; no sim/hardware).")
     ap.add_argument("--width", type=int, default=12, help="population width W (any W; 12 anchor)")
     ap.add_argument("--steps", type=int, default=6, help="life-cycle steps")
     ap.add_argument("--soma-death", dest="soma_death",
@@ -857,7 +1671,42 @@ def main() -> None:
     ap.add_argument("--interaction", choices=["none", "soma_soma", "germ_routed"],
                     default="soma_soma", help="arena collision arm")
     ap.add_argument("--frame", type=int, default=4, help="arena time-step to build (the clock)")
+    # --- PJ2.2 lattice flags (default: PJ0 static CLI, unchanged) ---
+    ap.add_argument("--lattice", action="store_true",
+                    help="PJ2.2: switch to the 2D-lattice vivarium build")
+    ap.add_argument("--grid", type=int, default=3, help="lattice side (3 or 4)")
+    ap.add_argument("--mode", choices=list(LAT_MODES), default="solo", help="lattice scenario")
+    ap.add_argument("--arm", choices=list(LAT_ARMS), default="isolated", help="lattice arm")
+    ap.add_argument("--gens", type=int, default=5, help="lattice walk generations (depth)")
+    # --- PJ2 vivarium flags (default: PJ0 static CLI, unchanged) ---
+    ap.add_argument("--vivarium", action="store_true",
+                    help="PJ2: switch to the solo-vivarium build")
+    ap.add_argument("--viv-interaction", dest="viv_interaction",
+                    choices=["vivarium", "barren", "germ_coupled"], default="vivarium",
+                    help="vivarium arm")
+    ap.add_argument("--hard-select", dest="hard_select", action="store_true",
+                    help="append the optional static fitness comparator (contrast)")
+    ap.add_argument("--gate-repl", dest="gate_repl", action="store_true",
+                    help="route budding through the witness clone (measured-cost variant)")
     args = ap.parse_args()
+
+    if args.lattice:
+        if args.selftest:
+            raise SystemExit(run_lattice_selftest())
+        thetas = q4._sim_thetas(args.width, 0, mut_scale=0.0)   # faithful clean GHZ (CD-6)
+        print_lattice_report(args.width, args.grid, args.gens, thetas,
+                             mode=args.mode, arm=args.arm)
+        return
+
+    if args.vivarium:
+        if args.selftest:
+            raise SystemExit(run_vivarium_selftest(steps=args.steps))
+        thetas = q4._sim_thetas(args.width, 0, mut_scale=0.0)   # faithful clean GHZ (Q5)
+        viv_traits = args.traits if args.traits >= VIV_TRAITS else VIV_TRAITS  # arena default is 1
+        print_vivarium_report(args.width, args.steps, thetas, track=args.track,
+                              traits=viv_traits, interaction=args.viv_interaction,
+                              hard_select=args.hard_select, gate_repl=args.gate_repl)
+        return
 
     if args.arena:
         if args.selftest:

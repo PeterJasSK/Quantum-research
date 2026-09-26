@@ -1,0 +1,227 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Vivarium — 3×3 · Smooth Glide</title>
+<style>
+  :root{
+    --field:#04080b;--ink:#dfece8;--ink-soft:#8ba4a0;--ink-faint:#566b68;
+    --line:#16262c;--panel:#0a151b;--grid:#12242b;
+    --cell:#8fb6c6;--rim:#e0bd82;
+    --lum:#5cf0cf;--lum-deep:#1f8f78;--lum2:#b98cff;--collapse:#ff5d6c;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--field);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+  header{padding:30px 0 10px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--lum-deep);margin:0 0 12px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(27px,4.4vw,46px);line-height:1.04;margin:0 0 12px;letter-spacing:-.01em;text-wrap:balance}
+  h1 em{font-style:italic;color:var(--lum)}
+  .lede{font-size:15.5px;max-width:64ch;color:var(--ink-soft);margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .modes{display:flex;gap:6px;margin:18px 0 0;flex-wrap:wrap}
+  .modes button{font-family:var(--serif);font-size:15px;border:1px solid var(--line);cursor:pointer;padding:9px 18px;border-radius:2px;background:var(--panel);color:var(--ink-soft);transition:.16s;font-style:italic}
+  .modes button[aria-pressed=true]{border-color:var(--lum-deep);color:var(--ink);background:#0c1c22}
+  .modes button b{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.1em;display:block;color:var(--ink-faint);text-transform:uppercase;margin-top:2px}
+  .modes button[aria-pressed=true] b{color:var(--lum-deep)}
+  .scope{position:relative;margin:12px 0 0;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:radial-gradient(120% 120% at 50% 45%,#0a181e 0%,var(--field) 62%,#02060a 100%)}
+  .scope canvas{display:block;width:100%;height:52vh;min-height:400px}
+  .hud{position:absolute;inset:0;pointer-events:none;font-family:var(--mono)}
+  .hud .tl{position:absolute;left:16px;top:14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+  .witchip{position:absolute;right:16px;top:14px;font-size:12px;padding:7px 12px;border:1px solid var(--line);border-radius:2px;background:color-mix(in srgb,var(--field) 70%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .stage-lbl{position:absolute;left:16px;bottom:16px;display:flex;align-items:baseline;gap:12px}
+  .stage-lbl .big{font-family:var(--serif);font-style:italic;font-size:23px}
+  .stage-lbl .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .qbtn{position:absolute;right:16px;bottom:16px;pointer-events:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:7px 11px;border:1px solid var(--line);border-radius:2px;background:var(--panel);color:var(--ink-soft);cursor:pointer}
+  .qbtn[aria-pressed=true]{border-color:var(--lum-deep);color:var(--lum)}
+  .console{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:14px 0 0}
+  .arms{display:flex;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:4px}
+  .arms button{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;border:0;cursor:pointer;padding:7px 13px;border-radius:1px;background:transparent;color:var(--ink-soft);transition:.16s}
+  .arms button[aria-pressed=true]{background:var(--lum-deep);color:#04120e}
+  .arms button[data-arm=coupled][aria-pressed=true]{background:var(--collapse);color:#210408}
+  .scrub{display:flex;align-items:center;gap:12px;flex:1;min-width:240px}
+  .play{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-size:13px;display:grid;place-items:center}
+  .play:hover{border-color:var(--lum-deep)}
+  input[type=range]{flex:1;accent-color:var(--lum-deep);height:3px}
+  .genread{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .genread b{color:var(--ink);font-size:18px}
+  .plot{margin:14px 0 0;border:1px solid var(--line);border-radius:2px;background:var(--panel);padding:14px 16px 10px}
+  .plot-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+  .plot-h h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+  .plot-h .leg{font-family:var(--mono);font-size:11px;display:flex;gap:14px}
+  .plot-h .leg span{display:inline-flex;align-items:center;gap:5px;color:var(--ink-soft)}
+  .plot-h .sw{width:14px;height:2px;flex:none}
+  .plot canvas{display:block;width:100%;height:142px}
+  .foot{background:var(--panel);border:1px solid var(--line);border-radius:2px;margin:18px 0 60px;padding:16px 20px}
+  .foot h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lum-deep);margin:0 0 8px}
+  .foot p{font-size:13.5px;color:var(--ink-soft);margin:0 0 8px}.foot b{color:var(--ink)}
+  .honest{font-size:12.5px;color:var(--ink-faint);border-left:2px solid var(--rim);padding-left:12px;margin:10px 0 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">PJ2 · 3×3 statevector simulation · W = 3 · 6 generations · smooth</p>
+    <h1>It <em>glides</em> where the probability flows.</h1>
+    <p class="lede">Same 3×3 quantum field — faint cloud is the <b>superposition</b> across cells — but
+      here the body follows the <b>probability centroid</b> continuously, gliding rather than snapping.
+      It can <b>self-replicate</b> or share the space with a <b>second organism</b>. The quantum claim is
+      the germ witness ⟨X<sup>⊗3</sup>⟩; ~5–6 generations is the hardware ceiling.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="Scenario">
+    <button data-mode="solo" aria-pressed="true">Solo<b>one · moves</b></button>
+    <button data-mode="replicate" aria-pressed="false">Replicate<b>one → two</b></button>
+    <button data-mode="duo" aria-pressed="false">Two organisms<b>interact</b></button>
+  </div>
+
+  <div class="scope">
+    <canvas id="scope"></canvas>
+    <div class="hud">
+      <div class="tl" id="modetag">statevector field · solo</div>
+      <div class="witchip" id="witchip">witness +0.00</div>
+      <div class="stage-lbl"><span class="big" id="stage">Witness certified</span>
+        <span class="sub" id="steplab">gen 0 / 5</span></div>
+      <button class="qbtn" id="qbtn" aria-pressed="false">Ψ  show probabilities</button>
+    </div>
+  </div>
+
+  <div class="console">
+    <div class="arms" role="group" aria-label="Arm">
+      <button data-arm="isolated" aria-pressed="true">ISOLATED GERM LINE</button>
+      <button data-arm="coupled" aria-pressed="false">COUPLED · BARRIER BROKEN</button>
+    </div>
+    <div class="scrub">
+      <button class="play" id="play" aria-label="Play or pause">▮▮</button>
+      <input type="range" id="gen" min="0" max="5" step="0.01" value="0" aria-label="Generation">
+      <span class="genread">gen <b id="genN">0</b>/5</span>
+    </div>
+  </div>
+
+  <div class="plot">
+    <div class="plot-h">
+      <h3>Witness ⟨X⊗W⟩ vs generation</h3>
+      <div class="leg">
+        <span><i class="sw" style="background:var(--lum)"></i>isolated</span>
+        <span><i class="sw" style="background:var(--collapse)"></i>coupled</span>
+        <span><i class="sw" style="background:var(--ink-faint)"></i>certified line</span>
+      </div>
+    </div>
+    <canvas id="plot"></canvas>
+  </div>
+
+  <div class="foot">
+    <h3>What's real here</h3>
+    <p>The cloud is the true per-cell probability ⟨n⟩ from a <b>3×3 statevector run</b>. The body is a
+      reading aid placed at the field's <b>centre of mass</b>, gliding smoothly as probability flows —
+      the continuous complement to the snapping version. <b>Replicate</b> clones the germ line at gen 2;
+      <b>two organisms</b> drift together and their overlap builds a joint witness. Movement only.</p>
+    <p class="honest">Honesty line: a <b>simulation</b>. Hardware returns only the terminal witness at one
+      depth, no frames.</p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const GRID=3,G=GRID,N=G*G,GENS=10;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const rc=i=>[Math.floor(i/G),i%G];
+const Z=()=>Array(N).fill(0);
+const DATA={"solo":{"isolated":[{"fields":[[0.0012,0.0009,0.0005,0.0004,0.0023,0.988,0.0017,0.0007,0.0018]],"w":0.9219,"overlap":0.0,"n":1},{"fields":[[0.0319,0.1998,0.2684,0.0441,0.1677,0.2041,0.0519,0.1349,0.1621]],"w":0.8396,"overlap":0.0,"n":1},{"fields":[[0.1674,0.9183,0.1049,0.0614,0.1152,0.0602,0.0735,0.1592,0.0646]],"w":0.835,"overlap":0.0,"n":1},{"fields":[[0.2177,0.1179,0.0995,0.4742,0.2046,0.0914,0.1321,0.1239,0.1294]],"w":0.9082,"overlap":0.0,"n":1},{"fields":[[0.1615,0.1479,0.1251,0.3594,0.1428,0.1251,0.467,0.1675,0.1562]],"w":0.8394,"overlap":0.0,"n":1},{"fields":[[0.246,0.2185,0.2463,0.2145,0.2141,0.2567,0.3021,0.2611,0.2739]],"w":0.8237,"overlap":0.0,"n":1},{"fields":[[0.1849,0.1777,0.2299,0.1798,0.2085,0.5209,0.1576,0.1799,0.2316]],"w":0.8215,"overlap":0.0,"n":1},{"fields":[[0.1898,0.2527,0.3185,0.1847,0.243,0.3752,0.2094,0.2589,0.2621]],"w":0.8335,"overlap":0.0,"n":1},{"fields":[[0.2324,0.3829,0.2802,0.2191,0.252,0.2295,0.2319,0.2686,0.2428]],"w":0.8369,"overlap":0.0,"n":1},{"fields":[[0.2919,0.2792,0.2024,0.3193,0.314,0.215,0.2625,0.2257,0.208]],"w":0.8301,"overlap":0.0,"n":1}]},"replicate":{"isolated":[{"fields":[[0.004,0.0017,0.0049,0.0054,0.001,0.9866,0.0072,0.0009,0.0007],[0.0013,0.0021,0.0011,0.0006,0.0012,0.0028,0.001,0.0016,0.0024]],"w":0.9331,"overlap":0.0,"n":1},{"fields":[[0.048,0.2283,0.2743,0.0403,0.1792,0.2261,0.0364,0.1411,0.1656],[0.0013,0.0022,0.0004,0.0013,0.0015,0.002,0.002,0.0029,0.0045]],"w":0.9297,"overlap":0.0,"n":1},{"fields":[[0.1804,0.5233,0.1042,0.0642,0.1436,0.104,0.0833,0.1643,0.0831],[0.0021,0.0013,0.0012,0.0007,0.0018,0.0013,0.0006,0.0013,0.9871]],"w":0.8103,"overlap":0.0,"n":2},{"fields":[[0.2219,0.1251,0.0874,0.4817,0.2295,0.1198,0.1362,0.1185,0.0891],[0.0372,0.0479,0.0522,0.0499,0.2335,0.2662,0.0447,0.2709,0.35]],"w":0.8101,"overlap":0.0,"n":2},{"fields":[[0.162,0.1296,0.124,0.3099,0.1412,0.1836,0.4769,0.1808,0.1361],[0.0875,0.1831,0.095,0.171,0.4945,0.1443,0.0759,0.14,0.0947]],"w":0.8701,"overlap":0.0,"n":2},{"fields":[[0.196,0.218,0.1946,0.1504,0.153,0.179,0.2709,0.2561,0.2675],[0.5153,0.2258,0.1504,0.2297,0.1946,0.1042,0.0861,0.1245,0.115]],"w":0.7556,"overlap":0.0,"n":2},{"fields":[[0.186,0.2064,0.2478,0.2173,0.2284,0.5237,0.1843,0.214,0.2368],[0.595,0.176,0.8191,0.1732,0.1292,0.1326,0.1582,0.1328,0.1444]],"w":0.8647,"overlap":0.0,"n":2},{"fields":[[0.1984,0.2552,0.3163,0.2183,0.2565,0.353,0.217,0.2435,0.275],[0.2102,0.2034,0.2175,0.2089,0.2019,0.2072,0.2019,0.2472,0.2274]],"w":0.8147,"overlap":0.0,"n":2},{"fields":[[0.2512,0.3606,0.3231,0.2096,0.2302,0.2434,0.2225,0.2817,0.2596],[0.1458,0.1456,0.1823,0.1577,0.2024,0.2118,0.1749,0.2113,0.5754]],"w":0.8245,"overlap":0.0,"n":2},{"fields":[[0.3246,0.2896,0.2684,0.3518,0.2872,0.2631,0.3,0.277,0.2675],[0.1819,0.1897,0.1908,0.1909,0.2297,0.2791,0.219,0.2703,0.4011]],"w":0.8406,"overlap":0.0,"n":2}]},"duo":{"isolated":[{"fields":[[0.994,0.0046,0.0045,0.0011,0.0066,0.0015,0.0013,0.0034,0.0035],[0.0022,0.0028,0.0013,0.0016,0.0005,0.001,0.0024,0.0009,0.9878]],"w":0.8813,"overlap":0.0146,"n":2},{"fields":[[0.8599,0.1332,0.1174,0.1527,0.1733,0.205,0.1115,0.1937,0.2128],[0.1934,0.1144,0.1086,0.1151,0.1792,0.2219,0.111,0.2266,0.25]],"w":0.7542,"overlap":1.4273,"n":2},{"fields":[[0.1477,0.223,0.1685,0.1851,0.3522,0.2271,0.1783,0.2229,0.2151],[0.1868,0.1984,0.2156,0.173,0.2307,0.8655,0.2079,0.1931,0.269]],"w":0.7556,"overlap":1.7319,"n":2},{"fields":[[0.3223,0.271,0.2513,0.2427,0.2489,0.238,0.2189,0.2383,0.2567],[0.2494,0.2438,0.2535,0.2148,0.2471,0.2563,0.2371,0.2548,0.3406]],"w":0.7742,"overlap":2.1583,"n":2},{"fields":[[0.2776,0.2397,0.2401,0.2687,0.8676,0.2494,0.2418,0.2803,0.2776],[0.3264,0.2479,0.2587,0.2697,0.2638,0.2476,0.2554,0.2682,0.2394]],"w":0.7551,"overlap":2.2869,"n":2},{"fields":[[0.3557,0.3369,0.3021,0.3353,0.3251,0.3024,0.3121,0.3263,0.2998],[0.3584,0.3281,0.3021,0.3224,0.3268,0.2937,0.3258,0.3043,0.3071]],"w":0.7515,"overlap":2.8433,"n":2},{"fields":[[0.3319,0.3506,0.3268,0.3429,0.3434,0.8793,0.3267,0.3375,0.3439],[0.3434,0.3638,0.3306,0.3333,0.3369,0.3344,0.3339,0.3324,0.3363]],"w":0.7559,"overlap":3.0093,"n":2},{"fields":[[0.3588,0.3458,0.3584,0.3479,0.337,0.3527,0.3607,0.3531,0.3586],[0.3568,0.3521,0.3497,0.3333,0.3624,0.3534,0.3375,0.3533,0.3516]],"w":0.2566,"overlap":3.1175,"n":2},{"fields":[[0.3864,0.3961,0.3846,0.3866,0.3925,0.8862,0.3892,0.3804,0.3828],[0.3785,0.3884,0.38,0.3826,0.3765,0.3809,0.3832,0.3843,0.3754]],"w":0.7507,"overlap":3.4259,"n":2},{"fields":[[0.4003,0.4158,0.3855,0.396,0.3962,0.3998,0.3972,0.4048,0.3989],[0.3834,0.4169,0.4075,0.3954,0.4191,0.4131,0.4028,0.4095,0.4041]],"w":0.75,"overlap":3.577,"n":2}]}};
+
+let mode="solo",arm="isolated",tc=0,playing=true,last=0,qview=false;
+if(!DATA[mode])mode=Object.keys(DATA)[0];if(!DATA[mode][arm])arm=Object.keys(DATA[mode])[0];
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;if(reduce)playing=false;
+const genEl=document.getElementById("gen"),genN=document.getElementById("genN"),witchip=document.getElementById("witchip"),stageEl=document.getElementById("stage"),steplab=document.getElementById("steplab"),playBtn=document.getElementById("play"),qbtn=document.getElementById("qbtn"),modetag=document.getElementById("modetag");
+const gv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const hx=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgba=(c,a)=>{const[r,g,b]=hx(c);return`rgba(${r},${g},${b},${a})`;};
+function lerpArr(x,y,u){return x.map((v,i)=>v+(y[i]-v)*u);}
+function frameAt(m,a,t){const A=DATA[m][a],g0=Math.floor(t),g1=Math.min(GENS-1,g0+1),u=t-g0,x=A[g0],y=A[g1],L=(p,q)=>p+(q-p)*u,o={};
+  o.fields=x.fields.map((fx,i)=>lerpArr(fx,y.fields[i],u));
+  for(const k in x){if(k==="fields")continue;if(typeof x[k]==="number")o[k]=L(x[k],y[k]);else o[k]=(u<.5?x[k]:y[k]);}return o;}
+function setMode(m){if(!DATA[m])return;mode=m;if(!DATA[m][arm])arm=Object.keys(DATA[m])[0];document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===arm));document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));modetag.textContent="statevector field · "+({solo:"solo",replicate:"replication",duo:"two organisms"}[m]);}
+function setArm(a){if(!DATA[mode][a])return;arm=a;document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===a));}
+document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.querySelectorAll(".arms button").forEach(b=>b.onclick=()=>setArm(b.dataset.arm));
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?"▮▮":"▶";};
+genEl.oninput=()=>{tc=+genEl.value;playing=false;playBtn.textContent="▶";};
+qbtn.onclick=()=>{qview=!qview;qbtn.setAttribute("aria-pressed",qview);qbtn.textContent=qview?"Ψ  hide probabilities":"Ψ  show probabilities";};
+
+const cv=document.getElementById("scope"),ctx=cv.getContext("2d");let Wf,Hf;
+const pcv=document.getElementById("plot"),pctx=pcv.getContext("2d");let Wp,Hp;
+function fit(){const dpr=Math.min(2,devicePixelRatio||1);
+  let r=cv.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);Wf=r.width;Hf=r.height;
+  r=pcv.getBoundingClientRect();pcv.width=r.width*dpr;pcv.height=r.height*dpr;pctx.setTransform(dpr,0,0,dpr,0,0);Wp=r.width;Hp=r.height;}
+addEventListener("resize",fit);
+function layout(){const S=Math.min(Wf,Hf)*0.74,ox=(Wf-S)/2,oy=(Hf-S)/2,cs=S/G;return{S,ox,oy,cs};}
+function cc(i,lo){const[r,c]=rc(i);return[lo.ox+(c+0.5)*lo.cs,lo.oy+(r+0.5)*lo.cs];}
+function cloud(occ,col,lo){ctx.save();ctx.globalCompositeOperation="lighter";
+  for(let i=0;i<N;i++){const o=occ[i];if(o<.02)continue;const[x,y]=cc(i,lo),rr=lo.cs*.52*(0.5+o);
+    const g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,rgba(col,.22*o));g.addColorStop(1,rgba(col,0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}ctx.restore();}
+/* SMOOTH: body glides at the probability centroid (continuous), no snap */
+function bodySmooth(occ,lo){let sx=0,sy=0,sw=0;for(let i=0;i<N;i++){const[x,y]=cc(i,lo);sx+=x*occ[i];sy+=y*occ[i];sw+=occ[i];}
+  if(sw<.05)return null;return{pos:[sx/sw,sy/sw],mf:clamp(sw,0,1),ap:clamp(sw*3,0,1)};}
+function drawBody(bs,col,vit,lo){if(!bs)return;const[x,y]=bs.pos,R=lo.cs*.3*(0.55+0.6*bs.mf)*bs.ap;
+  const g=ctx.createRadialGradient(x-R*.2,y-R*.2,R*.1,x,y,R);
+  g.addColorStop(0,rgba(gv('--cell'),.4));g.addColorStop(.7,rgba(col,.28));g.addColorStop(1,rgba(col,.05));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R,0,6.2832);ctx.fill();
+  ctx.strokeStyle=rgba(col,.7);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,R,0,6.2832);ctx.stroke();
+  ctx.strokeStyle=rgba(gv('--rim'),.3+.3*vit);ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,R*1.06,0,6.2832);ctx.stroke();
+  const ng=ctx.createRadialGradient(x,y,0,x,y,R*.7);ng.addColorStop(0,rgba(col,.95*vit+.05));ng.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=ng;ctx.beginPath();ctx.arc(x,y,R*.7,0,6.2832);ctx.fill();}
+
+function renderField(t){
+  ctx.clearRect(0,0,Wf,Hf);
+  const F=frameAt(mode,arm,t),lo=layout(),collapse=arm==="coupled"&&F.w<.42,wCol=collapse?gv('--collapse'):gv('--lum'),vit=clamp(F.w,0,1),
+        cols=mode==="duo"?[gv('--lum'),gv('--lum2')]:[gv('--lum'),gv('--lum')];
+  ctx.strokeStyle=rgba(gv('--grid'),.9);ctx.lineWidth=1;
+  for(let k=0;k<=G;k++){ctx.beginPath();ctx.moveTo(lo.ox+k*lo.cs,lo.oy);ctx.lineTo(lo.ox+k*lo.cs,lo.oy+lo.S);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(lo.ox,lo.oy+k*lo.cs);ctx.lineTo(lo.ox+lo.S,lo.oy+k*lo.cs);ctx.stroke();}
+  for(let i=0;i<N;i++){const[x,y]=cc(i,lo);ctx.fillStyle=rgba(gv('--ink-faint'),.22);ctx.beginPath();ctx.arc(x,y,1.4,0,6.2832);ctx.fill();}
+  F.fields.forEach((occ,fi)=>cloud(occ,collapse?gv('--collapse'):cols[fi],lo));
+  if(mode==="duo"&&F.overlap>0.004){const bA=bodySmooth(F.fields[0],lo),bB=bodySmooth(F.fields[1],lo);
+    if(bA&&bB){const bw=Math.min(9,2+F.overlap*36),mx=(bA.pos[0]+bB.pos[0])/2,my=(bA.pos[1]+bB.pos[1])/2;
+      const bg=ctx.createRadialGradient(mx,my,0,mx,my,lo.cs*.55);bg.addColorStop(0,rgba(wCol,.5));bg.addColorStop(1,rgba(wCol,0));
+      ctx.fillStyle=bg;ctx.beginPath();ctx.arc(mx,my,lo.cs*.55,0,6.2832);ctx.fill();
+      ctx.strokeStyle=rgba(wCol,.6);ctx.lineWidth=bw;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(bA.pos[0],bA.pos[1]);ctx.lineTo(bB.pos[0],bB.pos[1]);ctx.stroke();}}
+  F.fields.forEach((occ,fi)=>drawBody(bodySmooth(occ,lo),collapse?gv('--collapse'):cols[fi],vit,lo));
+  if(mode==="replicate"&&Math.abs(t-2)<0.45){const p=1-Math.abs(t-2)/0.45,bs=bodySmooth(F.fields[1],lo);
+    if(bs){ctx.strokeStyle=rgba(gv('--lum'),.6*p);ctx.lineWidth=2;ctx.beginPath();ctx.arc(bs.pos[0],bs.pos[1],lo.cs*(0.3+0.9*(1-p)),0,6.2832);ctx.stroke();}}
+  if(qview){const occ=F.fields.reduce((a,f)=>a.map((v,i)=>v+f[i]),Z());ctx.font="12px "+gv('--mono');ctx.textAlign="center";ctx.textBaseline="middle";
+    for(let i=0;i<N;i++){const[x,y]=cc(i,lo),o=occ[i];ctx.fillStyle=rgba(gv('--ink'),o>.02?.85:.28);
+      if(o>.005){ctx.strokeStyle=rgba(wCol,.35);ctx.lineWidth=1;ctx.strokeRect(x-lo.cs*.44,y-lo.cs*.44,lo.cs*.88,lo.cs*.88);}
+      ctx.fillText(o.toFixed(2),x,y+lo.cs*.33);}
+    ctx.textAlign="left";ctx.fillStyle=rgba(gv('--ink-faint'),.7);ctx.font="10px "+gv('--mono');ctx.fillText("⟨n⟩ per cell",lo.ox,lo.oy-8);}
+  const g=Math.round(t);
+  witchip.textContent=`witness ${F.w>=0?"+":""}${F.w.toFixed(2)}`+(mode==="duo"?` · overlap ${F.overlap.toFixed(2)}`:mode==="replicate"?` · ×${F.n||1}`:"");
+  witchip.style.color=F.w<.15?gv('--collapse'):gv('--ink');witchip.style.borderColor=F.w<.15?gv('--collapse'):gv('--line');
+  genN.textContent=g;steplab.textContent=`gen ${g} / 5`;genEl.value=t;
+  stageEl.textContent=label(t,F);stageEl.style.color=F.w<.15?gv('--collapse'):gv('--ink');
+}
+function label(t,F){if(mode==="replicate"){if(t<1.55)return "Single organism";if(Math.abs(t-2)<0.6)return "Replicating";return "Two copies · shared germ line";}
+  if(mode==="duo"){if(F.overlap<0.01)return "Approaching";return F.w<.15?"Interacting · witness lost":"Interacting · entangling";}
+  return F.w>.5?"Witness certified":F.w>.15?"Witness fading":"Witness collapsed";}
+function renderPlot(t){
+  pctx.clearRect(0,0,Wp,Hp);
+  const padL=34,padR=12,padT=10,padB=22,x0=padL,x1=Wp-padR,y0=padT,y1=Hp-padB;
+  const X=g=>x0+(g/(GENS-1))*(x1-x0),Y=w=>y1-((w+0.05)/1.05)*(y1-y0);
+  pctx.strokeStyle=rgba(gv('--grid'),1);pctx.lineWidth=1;pctx.font="10px "+gv('--mono');pctx.fillStyle=gv('--ink-faint');
+  [0,0.5,1].forEach(w=>{const y=Y(w);pctx.beginPath();pctx.moveTo(x0,y);pctx.lineTo(x1,y);pctx.stroke();pctx.textAlign="right";pctx.textBaseline="middle";pctx.fillText(w.toFixed(1),x0-6,y);});
+  for(let g=0;g<GENS;g++){pctx.textAlign="center";pctx.textBaseline="top";pctx.fillText(g,X(g),y1+5);}
+  pctx.setLineDash([4,4]);pctx.strokeStyle=rgba(gv('--ink-faint'),.7);pctx.beginPath();pctx.moveTo(x0,Y(0.15));pctx.lineTo(x1,Y(0.15));pctx.stroke();pctx.setLineDash([]);
+  pctx.textAlign="left";pctx.fillStyle=rgba(gv('--ink-faint'),.9);pctx.fillText("certified >0.15",x0+4,Y(0.15)-9);
+  for(const a of ["isolated","coupled"]){if(!DATA[mode][a])continue;const col=a==="isolated"?gv('--lum'):gv('--collapse'),act=a===arm;
+    pctx.strokeStyle=rgba(col,act?1:.35);pctx.lineWidth=act?2.2:1.4;pctx.beginPath();
+    DATA[mode][a].forEach((f,g)=>{const x=X(g),y=Y(f.w);g?pctx.lineTo(x,y):pctx.moveTo(x,y);});pctx.stroke();
+    DATA[mode][a].forEach((f,g)=>{pctx.fillStyle=rgba(col,act?.9:.3);pctx.beginPath();pctx.arc(X(g),Y(f.w),act?2.6:1.8,0,6.2832);pctx.fill();});}
+  const F=frameAt(mode,arm,t),col=(arm==="coupled"&&F.w<.42)?gv('--collapse'):gv('--lum'),mx=X(t),my=Y(F.w);
+  pctx.strokeStyle=rgba(gv('--ink'),.3);pctx.setLineDash([2,3]);pctx.beginPath();pctx.moveTo(mx,y0);pctx.lineTo(mx,y1);pctx.stroke();pctx.setLineDash([]);
+  pctx.fillStyle=col;pctx.beginPath();pctx.arc(mx,my,4,0,6.2832);pctx.fill();pctx.strokeStyle=gv('--field');pctx.lineWidth=1.5;pctx.stroke();
+}
+function loop(ts){if(playing){tc+=(ts-last)/1200;if(tc>=GENS-.01)tc=0;}last=ts;renderField(tc);renderPlot(tc);requestAnimationFrame(loop);}
+setMode(mode);setArm(arm);fit();renderField(0);renderPlot(0);requestAnimationFrame(t=>{last=t;requestAnimationFrame(loop);});
+</script>

@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "stage": "PJ2.2",
+    "model": "lattice_vivarium",
+    "backend": "ibm_kingston",
+    "grid": 3,
+    "width": 3,
+    "gens": 6,
+    "modes": [
+      "solo"
+    ],
+    "arms": [
+      "coupled"
+    ],
+    "shots": 8192,
+    "sim": false,
+    "k": 2.0,
+    "hop": 0.51,
+    "start": 3,
+    "mut_scale": 0.0,
+    "selective_dd": true,
+    "repeats": 1,
+    "certified_frames": true,
+    "calibration": null
+  },
+  "scenarios": {
+    "solo": {
+      "coupled": [
+        {
+          "gen": 0,
+          "fields": [
+            [
+              0.0001,
+              0.0002,
+              0.0007,
+              0.9946,
+              0.475,
+              0.0015,
+              0.0006,
+              0.0012,
+              0.0017
+            ]
+          ],
+          "w": -0.0093,
+          "w_sigma": 0.011,
+          "sep": -0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 1,
+          "fields": [
+            [
+              0.2795,
+              0.1003,
+              0.0447,
+              0.4594,
+              0.4868,
+              0.0762,
+              0.1639,
+              0.0652,
+              0.0414
+            ]
+          ],
+          "w": -0.0088,
+          "w_sigma": 0.011,
+          "sep": 0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 2,
+          "fields": [
+            [
+              0.2189,
+              0.2306,
+              0.2408,
+              0.0635,
+              0.4812,
+              0.069,
+              0.1438,
+              0.1433,
+              0.8516
+            ]
+          ],
+          "w": 0.0066,
+          "w_sigma": 0.011,
+          "sep": 0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 3,
+          "fields": [
+            [
+              0.1462,
+              0.1678,
+              0.4146,
+              0.1293,
+              0.4954,
+              0.241,
+              0.1681,
+              0.1306,
+              0.2032
+            ]
+          ],
+          "w": 0.0054,
+          "w_sigma": 0.011,
+          "sep": 0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 4,
+          "fields": [
+            [
+              0.1493,
+              0.1228,
+              0.2643,
+              0.8435,
+              0.4818,
+              0.549,
+              0.1176,
+              0.126,
+              0.1738
+            ]
+          ],
+          "w": 0.0063,
+          "w_sigma": 0.011,
+          "sep": -0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 5,
+          "fields": [
+            [
+              0.1102,
+              0.1322,
+              0.1449,
+              0.1149,
+              0.4855,
+              0.4044,
+              0.8425,
+              0.1798,
+              0.2648
+            ]
+          ],
+          "w": 0.0081,
+          "w_sigma": 0.011,
+          "sep": 0.0,
+          "overlap": 0.0,
+          "n": 1,
+          "survives": false
+        }
+      ]
+    }
+  },
+  "endpoint": {
+    "solo": {
+      "coupled": {
+        "w": 0.0081,
+        "survives": false
+      }
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "stage": "PJ2",
+    "model": "germsoma_vivarium",
+    "backend": "ibm_kingston",
+    "width": 12,
+    "track": 6,
+    "traits": 3,
+    "food_sites": [
+      2,
+      4
+    ],
+    "steps": 4,
+    "hop": 0.6,
+    "starve": 0.6,
+    "arms": [
+      "barren",
+      "vivarium",
+      "germ_coupled"
+    ],
+    "shots": 8192,
+    "sim": false,
+    "mut_scale": 0.0,
+    "k": 2.0,
+    "selective_dd": true,
+    "hard_select": false,
+    "gate_repl": false,
+    "one_run_no_frames": true,
+    "calibration": null,
+    "t1_band": null
+  },
+  "arms": {
+    "barren": {
+      "witness_joint": 0.732421875,
+      "separable_null": -2.5147405875239772e-24,
+      "entanglement_signal": 0.732421875,
+      "occupancy": [
+        0.13671875,
+        0.146240234375,
+        0.304931640625,
+        0.4649658203125,
+        0.23388671875,
+        0.1624755859375
+      ],
+      "food_remaining": [
+        0.002685546875,
+        0.00146484375,
+        0.29345703125,
+        0.00146484375,
+        0.362060546875,
+        0.0006103515625
+      ],
+      "energy": [
+        0.2501220703125,
+        0.1837158203125
+      ],
+      "alive": 1.44921875,
+      "steps": 4,
+      "sim_frames": null,
+      "survives": true
+    },
+    "vivarium": {
+      "witness_joint": -0.05810546875,
+      "separable_null": -4.2084383912135895e-26,
+      "entanglement_signal": -0.05810546875,
+      "occupancy": [
+        0.1890869140625,
+        0.180908203125,
+        0.369384765625,
+        0.177734375,
+        0.2376708984375,
+        0.3026123046875
+      ],
+      "food_remaining": [
+        0.0013427734375,
+        0.018310546875,
+        0.5518798828125,
+        0.0045166015625,
+        0.688232421875,
+        0.0008544921875
+      ],
+      "energy": [
+        0.3712158203125,
+        0.2440185546875
+      ],
+      "alive": 1.4573974609375,
+      "steps": 4,
+      "sim_frames": null,
+      "survives": false
+    },
+    "germ_coupled": {
+      "witness_joint": -0.006103515625,
+      "separable_null": 0.0,
+      "entanglement_signal": -0.006103515625,
+      "occupancy": [
+        0.17822265625,
+        0.1539306640625,
+        0.3824462890625,
+        0.476806640625,
+        0.2255859375,
+        0.1322021484375
+      ],
+      "food_remaining": [
+        0.0009765625,
+        0.0003662109375,
+        0.594970703125,
+        0.003173828125,
+        0.691650390625,
+        0.0003662109375
+      ],
+      "energy": [
+        0.3905029296875,
+        0.20703125
+      ],
+      "alive": 1.5491943359375,
+      "steps": 4,
+      "sim_frames": null,
+      "survives": false
+    }
+  }
+}

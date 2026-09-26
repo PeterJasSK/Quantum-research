@@ -1,0 +1,310 @@
+#!/usr/bin/env python3
+"""PJ2 renderer -- banked solo-vivarium run JSON -> a self-contained spectacle + 3-arm witness PNG.
+
+Reads a banked ``research_runs/pj2/*.json`` (the arm schema from ``pj_vivarium.py``), extracts each
+arm's ``sim_frames`` (the sim-reconstructed movie) and the measured endpoint, and writes a
+SELF-CONTAINED ``research/pj2_vivarium/index.html`` (CSP-safe: all CSS/JS inline, no external fetch).
+The single organism forages a habitat with food stations, EATS (food winks out), an energy/fitness
+bar fills, dead-vs-alive population is drawn, and the genealogy witness meter stays green (survives) or
+turns red (germ_coupled collapse). The frames are the sim movie; the measured endpoint numbers are
+overlaid as the certified "final state".
+
+Mirrors ``analysis/pj1_render.py``: path shim, ``main() -> int``, degrade-gracefully if matplotlib
+is absent. The visual extends the picked wave-bars look to one organism + habitat/energy/fitness/
+witness widgets (OQ-6).
+
+Usage:
+    cd artificial-life
+    python analysis/pj_vivarium_render.py --run-glob 'research_runs/pj2/*sim*.json'
+"""
+
+from __future__ import annotations
+
+import argparse
+import glob
+import json
+import os
+from typing import Any
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.normpath(os.path.join(_HERE, ".."))
+_DEFAULT_OUT = os.path.join(_ROOT, "research", "pj2_vivarium")
+
+_ARMS = ("barren", "vivarium", "germ_coupled")
+
+
+def _latest(run_glob: str) -> str | None:
+    matches = glob.glob(run_glob if os.path.isabs(run_glob) else os.path.join(_ROOT, run_glob))
+    return max(matches, key=os.path.getmtime) if matches else None
+
+
+def build_data(run: dict[str, Any]) -> dict[str, Any]:
+    """Map the banked vivarium run to the render contract:
+        DATA = {L, food_sites, frames, arms:{arm:[{b,f,e,w,al}]}, endpoint:{arm:{...}}}."""
+    meta = run["meta"]
+    track = int(meta["track"])
+    arms_out: dict[str, list[dict[str, Any]]] = {}
+    endpoint: dict[str, Any] = {}
+    n_frames = 0
+    for arm, res in run["arms"].items():
+        seq: list[dict[str, Any]] = []
+        for f in (res.get("sim_frames") or []):
+            seq.append({
+                "b": [round(float(x), 4) for x in f["body"]],
+                "f": [round(float(x), 4) for x in f["food"]],
+                "e": round(float(sum(f["energy"])), 4),
+                "w": round(float(f["witness_sim"]), 4),
+                "al": round(float(f["alive"]), 4),
+            })
+        arms_out[arm] = seq
+        n_frames = max(n_frames, len(seq))
+        endpoint[arm] = {
+            "w": round(float(res["witness_joint"]), 4),
+            "sig": round(float(res["entanglement_signal"]), 4),
+            "al": round(float(res["alive"]), 4),
+            "food_left": round(float(sum(res["food_remaining"])), 4),
+            "survives": bool(res.get("survives", False)),
+        }
+    return {"L": track, "food_sites": list(meta.get("food_sites", [])), "frames": n_frames,
+            "arms": arms_out, "endpoint": endpoint, "width": meta.get("width"),
+            "steps": meta.get("steps"), "backend": meta.get("backend")}
+
+
+_TEMPLATE = """<title>PJ2 — one organism living in a quantum habitat (solo vivarium)</title>
+<style>
+  :root{--ground:#0a0d13;--panel:#111621;--panel2:#0d121b;--edge:#1e2634;--ink:#e9eef7;
+    --mut:#8b96ab;--dim:#59637a;--body:#49dd8b;--body2:#8ef3bd;--food:#f6a623;--food2:#ffce7a;
+    --alive:#49dd8b;--dead:#ff5d78;--wire:#2a3446;
+    --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%,#131b28 0%,transparent 60%),var(--ground);
+    color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px;margin:0 auto;padding:34px 20px 64px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--mut);
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--body);box-shadow:0 0 8px var(--body);}
+  h1{font-family:var(--mono);font-weight:600;font-size:clamp(23px,3.4vw,32px);letter-spacing:-.01em;margin:12px 0 6px;}
+  .sub{color:var(--mut);max-width:74ch;font-size:15px;margin:0 0 6px;}
+  .sub b{color:var(--ink);}
+  .why{color:var(--mut);max-width:74ch;font-size:14px;margin:14px 0 22px;padding:13px 16px;
+    border:1px solid var(--edge);border-left:2px solid var(--body);border-radius:0 10px 10px 0;background:#0e131d;}
+  .why b{color:var(--body2);}
+  .bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:#0b0f17f0;backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:12px;padding:10px 14px;margin-bottom:18px;}
+  .arms{display:flex;gap:5px;background:#0a0e16;border:1px solid var(--edge);border-radius:9px;padding:4px;}
+  .arm{font-family:var(--mono);font-size:12px;color:var(--mut);background:transparent;border:0;padding:7px 11px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+  .arm:hover{color:var(--ink);}
+  .arm[data-arm="barren"][aria-pressed="true"]{background:#1a2230;color:var(--ink);box-shadow:inset 0 0 0 1px var(--wire);}
+  .arm[data-arm="vivarium"][aria-pressed="true"]{background:#13312a;color:var(--alive);box-shadow:inset 0 0 0 1px #1f6b4d;}
+  .arm[data-arm="germ_coupled"][aria-pressed="true"]{background:#3a1620;color:var(--dead);box-shadow:inset 0 0 0 1px #7a2a3a;}
+  .play{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:#1a2230;border:1px solid var(--wire);border-radius:8px;padding:7px 13px;cursor:pointer;min-width:74px;}
+  input[type=range]{flex:1;min-width:120px;accent-color:var(--body);}
+  .tc{font-family:var(--mono);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:48px;text-align:right;}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -46px #000,inset 0 1px 0 #ffffff08;}
+  .cvw{padding:10px 12px 0;}
+  canvas{display:block;width:100%;height:auto;border-radius:10px;background:radial-gradient(120% 150% at 50% 100%,#0c1119,#070a0f);}
+  .chips{display:flex;gap:8px;padding:10px 16px 2px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;}
+  .chip{border:1px solid var(--wire);border-radius:20px;padding:3px 10px;color:var(--mut);}
+  .chip b{color:var(--food2);}
+  .meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--edge);border-top:1px solid var(--edge);margin-top:10px;}
+  .ro{background:var(--panel2);padding:12px 15px;}
+  .ro .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+  .ro .big{font-family:var(--mono);font-size:23px;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1;}
+  .ro .big.ok{color:var(--alive)} .ro .big.bad{color:var(--dead)} .ro .big.neu{color:var(--mut)}
+  .ro .note{font-size:11.5px;color:var(--mut);margin-top:5px;}
+  .cap{display:flex;gap:10px;align-items:flex-start;padding:13px 17px 15px;min-height:52px;border-top:1px solid var(--edge);}
+  .cap .txt{font-size:14px;color:#d3dae7;line-height:1.55;} .cap .txt b{color:var(--ink);}
+  .foot{margin-top:22px;color:var(--dim);font-family:var(--mono);font-size:12px;line-height:1.8;}
+  .foot b{color:var(--mut);}
+</style>
+<div class="wrap">
+  <div class="eyebrow"><span class="dot"></span> Quantum Artificial Life · PJ2 · solo vivarium</div>
+  <h1>One organism, living in a quantum habitat</h1>
+  <p class="sub">A single proto-viral organism — an immortal <b>germ line</b> (its certified quantum
+  heredity) that builds a mortal <b>body</b>. The body <b>forages</b> a habitat, <b>eats</b> the food it
+  meets, and only the fed <b>survive and bud</b>. Toggle the arm, scrub time, watch the witness.</p>
+  <div class="why"><b>Alive, not on rails.</b> Nothing scripts where the body goes or whether it lives.
+  One fixed set of physical laws is evolved; foraging, eating and survival-of-the-fittest all
+  <b>emerge</b>. The whole life is <b>one quantum run</b> — no frames. The gene line stays quantum-certified
+  the whole time (the Weismann barrier); wire the body back into the genes and it collapses.</p>
+  <div class="bar">
+    <div class="arms" role="group" aria-label="arm">
+      <button class="arm" data-arm="barren" aria-pressed="false">Empty habitat</button>
+      <button class="arm" data-arm="vivarium" aria-pressed="true">With food</button>
+      <button class="arm" data-arm="germ_coupled" aria-pressed="false">Wrong wiring (A/B)</button>
+    </div>
+    <button class="play" id="play">Pause</button>
+    <input type="range" id="scrub" min="0" max="100" value="0" step="1" aria-label="time">
+    <span class="tc" id="tc">0</span>
+  </div>
+  <div class="panel">
+    <div class="cvw"><canvas id="cv" width="880" height="300"></canvas></div>
+    <div class="chips" id="chips"></div>
+    <div class="meters">
+      <div class="ro"><div class="lbl">Genealogy witness ⟨X<sup>⊗W</sup>⟩</div>
+        <div class="big ok" id="wval">+1.00</div><div class="note" id="wnote">Gene line quantum-alive.</div></div>
+      <div class="ro"><div class="lbl">Energy / fitness</div>
+        <div class="big" id="eval" style="color:var(--food2)">0.00</div><div class="note" id="enote">Not fed.</div></div>
+      <div class="ro"><div class="lbl">Population (alive body)</div>
+        <div class="big neu" id="aval">0.00</div><div class="note" id="anote">—</div></div>
+    </div>
+    <div class="cap"><span class="txt" id="captxt">—</span></div>
+  </div>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const DATA = {};
+(function(){
+  const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  let arm='vivarium',t=0,playing=true,last=0;
+  const present=Object.keys(DATA.arms||{}).filter(a=>(DATA.arms[a]||[]).length);
+  if(present.length&&!present.includes(arm))arm=present[0];
+  document.querySelectorAll('.arm').forEach(b=>{
+    if(!present.includes(b.dataset.arm)){b.style.display='none';}
+    b.onclick=()=>setArm(b.dataset.arm);
+  });
+  function setArm(a){arm=a;document.querySelectorAll('.arm').forEach(b=>b.setAttribute('aria-pressed',b.dataset.arm===a));draw();}
+  const scrub=document.getElementById('scrub'),play=document.getElementById('play');
+  const nF=()=>(DATA.arms[arm]||[]).length;
+  scrub.oninput=()=>{t=Math.min(nF()-1,Math.max(0,Math.round(scrub.value/100*(nF()-1))));playing=false;play.textContent='Play';draw();};
+  play.onclick=()=>{playing=!playing;play.textContent=playing?'Pause':'Play';if(playing)last=0;};
+  function lerp(a,b,u){return a+(b-a)*u;}
+  function frameAt(u){const s=DATA.arms[arm]||[];if(!s.length)return null;
+    const x=u*(s.length-1),i=Math.floor(x),j=Math.min(s.length-1,i+1),f=x-i;const A=s[i],B=s[j];
+    const mix=(p,q)=>p.map((v,k)=>lerp(v,q[k],f));
+    return {b:mix(A.b,B.b),f:mix(A.f,B.f),e:lerp(A.e,B.e,f),w:lerp(A.w,B.w,f),al:lerp(A.al,B.al,f),ti:x};}
+  function draw(){
+    const s=DATA.arms[arm]||[];if(!s.length)return;
+    const u=(nF()>1)?t/(nF()-1):0;const fr=frameAt(u);
+    ctx.clearRect(0,0,W,H);
+    const L=DATA.L,pad=54,cw=(W-2*pad)/L,base=H-70,maxH=150;
+    // habitat lane
+    ctx.strokeStyle='#1c2534';ctx.lineWidth=1;
+    for(let j=0;j<=L;j++){const x=pad+j*cw;ctx.beginPath();ctx.moveTo(x,base+14);ctx.lineTo(x,base-maxH-10);ctx.stroke();}
+    ctx.strokeStyle='#2a3446';ctx.beginPath();ctx.moveTo(pad,base+14);ctx.lineTo(W-pad,base+14);ctx.stroke();
+    // food stations (deplete)
+    for(let j=0;j<L;j++){const fv=fr.f[j]||0;if(fv<0.02)continue;const x=pad+j*cw+cw/2;
+      ctx.globalAlpha=Math.min(1,fv);ctx.fillStyle='#f6a623';
+      ctx.beginPath();ctx.arc(x,base-maxH-24,6+6*fv,0,7);ctx.fill();
+      ctx.globalAlpha=0.25;ctx.fillStyle='#f6a623';ctx.fillRect(x-cw*0.32,base-maxH*fv-8,cw*0.64,maxH*fv+8);
+      ctx.globalAlpha=1;}
+    // body bars
+    for(let j=0;j<L;j++){const bv=fr.b[j]||0;const x=pad+j*cw+cw/2,h=maxH*bv;
+      const g=ctx.createLinearGradient(0,base,0,base-h);g.addColorStop(0,'#1f6b4d');g.addColorStop(1,'#8ef3bd');
+      ctx.fillStyle=g;ctx.fillRect(x-cw*0.30,base-h,cw*0.60,h);
+      if(bv>0.03){ctx.fillStyle='#8ef3bd';ctx.globalAlpha=0.6+0.4*bv;ctx.beginPath();ctx.arc(x,base-h-4,2.5,0,7);ctx.fill();ctx.globalAlpha=1;}}
+    // labels
+    ctx.fillStyle='#59637a';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';
+    for(let j=0;j<L;j++){ctx.fillText('site '+j,pad+j*cw+cw/2,base+30);}
+    ctx.textAlign='left';ctx.fillStyle='#8b96ab';ctx.fillText('food',pad-4,base-maxH-40);
+    ctx.fillText('body',pad-4,base-6);
+    // meters
+    const wv=fr.w;const wok=wv>0.3;
+    const we=document.getElementById('wval');we.textContent=(wv>=0?'+':'')+wv.toFixed(2);
+    we.className='big '+(wok?'ok':(wv>-0.2?'bad':'bad'));
+    document.getElementById('wnote').textContent=wok?'Gene line quantum-alive.':'Collapsed — body wired into the genes.';
+    document.getElementById('eval').textContent=fr.e.toFixed(2);
+    document.getElementById('enote').textContent=fr.e>0.15?'Feeding.':'Not fed.';
+    const av=document.getElementById('aval');av.textContent=fr.al.toFixed(2);
+    av.className='big '+(fr.al>0.5?'ok':(fr.al>0.2?'neu':'bad'));
+    document.getElementById('anote').textContent=fr.al>0.5?'Thriving.':(fr.al>0.2?'Holding on.':'Starving out.');
+    const caps={barren:'Empty habitat: the body forages but finds nothing, is not fed, and ages out. The gene line stays certified.',
+      vivarium:'The body forages, meets food, eats (stations deplete), and the fed survive & bud. Survival of the fittest — emergent. Witness holds.',
+      germ_coupled:'Wrong wiring: the body is coupled into a gene qubit. The mortal body decoheres the genealogy — the witness collapses.'};
+    document.getElementById('captxt').textContent=caps[arm]||'';
+    scrub.value=Math.round(u*100);document.getElementById('tc').textContent='t='+Math.round(fr.ti);
+  }
+  function loop(ts){if(playing){if(!last)last=ts;if(ts-last>90){t=(t+1)%Math.max(1,nF());last=ts;draw();}}requestAnimationFrame(loop);}
+  // chips + foot
+  const ep=(DATA.endpoint||{});
+  const chips=document.getElementById('chips');
+  chips.innerHTML='<span class="chip">genome: <b>role</b> · <b>repl</b> · <b>life</b></span>'+
+    '<span class="chip">habitat: <b>'+DATA.L+'</b> sites</span>'+
+    '<span class="chip">food @ <b>'+(DATA.food_sites||[]).join(', ')+'</b></span>'+
+    '<span class="chip">W=<b>'+DATA.width+'</b> · one run, '+DATA.steps+' steps</span>';
+  const f=document.getElementById('foot');
+  let rows='<b>Measured endpoint (certified, '+DATA.backend+'):</b><br>';
+  for(const a of present){const e=ep[a]||{};rows+='&nbsp;'+a+': witness '+(e.w>=0?'+':'')+ (e.w!=null?e.w.toFixed(3):'—')+
+    ' · population '+(e.al!=null?e.al.toFixed(2):'—')+' · food left '+(e.food_left!=null?e.food_left.toFixed(2):'—')+
+    ' · '+(e.survives?'SURVIVES':'at-null')+'<br>';}
+  rows+='<br><b>Honest note.</b> Only ⟨X<sup>⊗W</sup>⟩ over the germ line is the quantum claim; body / food / '+
+    'energy / population are diagonal (classically reproducible) narrative. The movie is a statevector '+
+    'reconstruction of the one measured circuit; no speedup is claimed.';
+  f.innerHTML=rows;
+  setArm(arm);requestAnimationFrame(loop);
+})();
+</script>
+"""
+
+
+def render_html(data: dict[str, Any], out_dir: str) -> str:
+    literal = "const DATA = " + json.dumps(data, separators=(",", ":")) + ";"
+    html = _TEMPLATE.replace("const DATA = {};", literal, 1)
+    head = ('<!doctype html>\n<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">\n')
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, "index.html")
+    with open(out, "w") as f:
+        f.write(head + html)
+    return out
+
+
+def render_witness_png(run: dict[str, Any], out_dir: str) -> bool:
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except Exception as exc:                                   # noqa: BLE001
+        print(f"[WARN] matplotlib unavailable, skipping PNG: {exc}")
+        return False
+    colors = {"barren": "#8b96ab", "vivarium": "#49dd8b", "germ_coupled": "#ff5d78"}
+    fig, ax = plt.subplots(figsize=(8.5, 4.2), dpi=150)
+    for arm, res in run["arms"].items():
+        frames = res.get("sim_frames") or []
+        if frames:
+            ax.plot([f["t"] for f in frames], [f["witness_sim"] for f in frames], "-o", ms=3,
+                    color=colors.get(arm, "#888"), label=f"{arm} · witness (sim)")
+    for arm, res in run["arms"].items():
+        ax.plot([res["steps"]], [res["witness_joint"]], "s", ms=8, mfc="none",
+                color=colors.get(arm, "#888"), label=f"{arm} · measured endpoint")
+    ax.axhline(0.0, color="#2a3446", lw=0.8)
+    ax.set_xlabel("life-cycle step (one circuit; time = depth)")
+    ax.set_ylabel(r"genealogy witness  $\langle X^{\otimes W}\rangle$")
+    W = run["meta"].get("width")
+    ax.set_title(f"PJ2 solo vivarium -- 3-arm witness (W={W}); endpoint measured, trajectory sim")
+    ax.legend(fontsize=7.5, framealpha=0.3, ncol=2)
+    ax.grid(alpha=0.15)
+    fig.tight_layout()
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, "pj2_witness_3arm.png")
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"[OK] wrote {out}")
+    return True
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Render the PJ2 solo-vivarium spectacle + 3-arm PNG.")
+    ap.add_argument("--run-glob", dest="run_glob", default="research_runs/pj2/*sim*.json",
+                    help="glob for the banked run JSON (latest by mtime)")
+    ap.add_argument("--out-dir", dest="out_dir", default=_DEFAULT_OUT)
+    args = ap.parse_args()
+
+    run_path = _latest(args.run_glob)
+    if run_path is None:
+        print(f"[FAIL] no run matched {args.run_glob!r} (run pj_vivarium.py first)")
+        return 1
+    print(f"[..] rendering from {run_path}")
+    with open(run_path) as f:
+        run = json.load(f)
+    data = build_data(run)
+    html = render_html(data, args.out_dir)
+    print(f"[OK] wrote {html}  (L={data['L']} frames={data['frames']} arms={list(data['arms'])})")
+    render_witness_png(run, args.out_dir)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PJ2 — Solo vivarium: one organism living in a quantum habitat</title>
+<style>
+  :root{--bg:#0a0d13;--panel:#111621;--edge:#1e2634;--ink:#e9eef7;--mut:#8b96ab;--dim:#59637a;
+    --alive:#49dd8b;--dead:#ff5d78;--food:#f6a623;
+    --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  @media (prefers-color-scheme:light){:root{--bg:#f7f9fc;--panel:#fff;--edge:#dce3ec;--ink:#12161d;--mut:#4a5568;--dim:#7a8699;}}
+  :root[data-theme="dark"]{--bg:#0a0d13;--panel:#111621;--edge:#1e2634;--ink:#e9eef7;--mut:#8b96ab;--dim:#59637a;}
+  :root[data-theme="light"]{--bg:#f7f9fc;--panel:#fff;--edge:#dce3ec;--ink:#12161d;--mut:#4a5568;--dim:#7a8699;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:800px;margin:0 auto;padding:40px 22px 72px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);}
+  h1{font-family:var(--mono);font-weight:600;font-size:clamp(23px,3.4vw,31px);margin:10px 0 4px;}
+  h2{font-family:var(--mono);font-size:17px;margin:30px 0 8px;}
+  p{color:var(--ink);max-width:72ch;} .mut{color:var(--mut);}
+  code{font-family:var(--mono);font-size:.92em;background:#8882;padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;overflow-x:auto;display:block;}
+  .tbl table{width:100%;border-collapse:collapse;}
+  th,td{border:1px solid var(--edge);padding:8px 11px;text-align:left;font-variant-numeric:tabular-nums;}
+  th{font-family:var(--mono);font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;}
+  .ok{color:var(--alive);font-weight:600;} .bad{color:var(--dead);font-weight:600;}
+  .box{border:1px solid var(--edge);border-left:2px solid var(--alive);border-radius:0 10px 10px 0;
+    background:#8881;padding:13px 16px;margin:16px 0;color:var(--mut);font-size:14px;}
+  .box b{color:var(--ink);}
+  a{color:var(--food);}
+  .foot{margin-top:34px;color:var(--dim);font-family:var(--mono);font-size:12px;}
+</style>
+<div class="wrap">
+  <div class="eyebrow">Quantum Artificial Life · PJ2 · P3 richness</div>
+  <h1>Solo vivarium — one organism living in a quantum habitat</h1>
+  <p class="mut">A single proto-viral organism, enriched off the 2018 paper's own roadmap
+  (more degrees of freedom in the genotype/phenotype; spatial variables; trace-out of dead units;
+  error correction only in the genotype qubits), running its whole life in <b>one quantum circuit</b> —
+  no frames. <a href="index.html">▶ open the live spectacle</a></p>
+
+  <h2>What it is</h2>
+  <p>The organism has an immortal <b>germ line</b> (a W-generation GHZ genealogy carrying the certified
+  witness <code>⟨X^⊗W⟩</code>) plus a small register of <b>classical genes</b> (role / repl / life). The
+  genes <b>express</b> a mortal <b>body</b> — a walker on a habitat lattice seeded with food. Under one
+  fixed local vivarium Hamiltonian the body <b>forages</b>, <b>eats</b> on co-location, <b>buds</b> when
+  fed, and <b>ages toward |0⟩</b> via a bath; the fed are then revived. Survival of the fittest is an
+  <b>emergent</b> outcome of those laws — never a scripted cull, never an <code>if(ate)</code> branch.</p>
+
+  <div class="box"><b>Alive, not on rails.</b> The <code>barren</code> and <code>vivarium</code> arms run
+  the <i>identical</i> circuit law; they differ only in whether food is seeded. Foraging, eating, budding
+  and starvation appear only where food exists — behaviour emerges from the habitat, not from code
+  (verified statically: <code>barren == vivarium − food seed</code>).</div>
+
+  <h2>The Weismann barrier is asymmetric (faithful — one organism, not two)</h2>
+  <p><b>germ→soma expression is present</b> (the body is built from the genes; the paper's gene→body
+  information is itself classical), while <b>soma→germ back-action is forbidden</b> (no coherent gate
+  couples a witness locus to the mortal body). The quantum claim lives in the cross-generation
+  genealogical entanglement, never the within-individual gene→body link.</p>
+
+  <h2>Result (statevector sim, W=3, track=5, 5 steps; one measured circuit per arm)</h2>
+  <div class="tbl"><table>
+    <tr><th>arm</th><th>witness ⟨X<sup>⊗3</sup>⟩</th><th>population (alive body)</th><th>food left</th><th>verdict</th></tr>
+    <tr><td>barren (empty habitat)</td><td class="ok">+1.000</td><td>0.41</td><td>0.00</td><td class="mut">witness survives; body starves</td></tr>
+    <tr><td>vivarium (with food)</td><td class="ok">+1.000</td><td><b>0.87</b></td><td>1.64</td><td class="ok">witness survives; fed body thrives</td></tr>
+    <tr><td>germ_coupled (wrong wiring, A/B)</td><td class="bad">+0.006</td><td>1.23</td><td>1.63</td><td class="bad">witness collapses</td></tr>
+  </table></div>
+  <p>Two things at once: the fed organism's population (<b>0.87</b>) is ~2× the starved one's (0.41) —
+  survival of the fittest, emergent — <i>and</i> the germ witness stays certified (+1.000) through the
+  whole enriched life cycle. Only the deliberately mis-wired <code>germ_coupled</code> arm — the body
+  soldered into a gene qubit — collapses the genealogy (+0.006), proving the barrier is the mechanism.
+  <img src="pj2_witness_3arm.png" alt="3-arm witness across the life cycle" style="max-width:100%;margin-top:14px;border:1px solid var(--edge);border-radius:8px"></p>
+
+  <h2>Honest framing</h2>
+  <p class="mut">Only <code>⟨X^⊗W⟩</code> over the germ line is the quantum claim; body occupancy, energy,
+  population, food-remaining and the genes are diagonal (classically reproducible) narrative (CD-3/CD-4).
+  The animation is a statevector reconstruction of the one measured circuit; the certified numbers are the
+  single measured endpoint. No quantum speedup is claimed — this is scale · faithfulness · certification.
+  The live W=12 / track=6 Heron-r2 run (≈30 qubits) is the developer's; sim is small so the whole life
+  fits a statevector.</p>
+
+  <div class="foot">
+    <script>(function(){var r=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');
+      document.addEventListener('click',function(){r.setAttribute('data-theme',
+        getComputedStyle(r).getPropertyValue('--bg').trim().startsWith('#0')?'light':'dark');});})();</script>
+    PJ2 · plans/feature-PJ2-solo-vivarium.md · code/pj_qalife.py + code/pj_vivarium.py + analysis/pj_vivarium_render.py
+  </div>
+</div>

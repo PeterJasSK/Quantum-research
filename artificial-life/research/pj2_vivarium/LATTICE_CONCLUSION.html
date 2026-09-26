@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PJ2.2 — the 2D-lattice vivarium: conclusion</title>
+<style>
+  :root{--bg:#04080b;--panel:#0a151b;--line:#16262c;--ink:#dfece8;--soft:#8ba4a0;--faint:#566b68;
+    --lum:#5cf0cf;--collapse:#ff5d6c;--rim:#e0bd82;
+    --serif:"Iowan Old Style",Palatino,Georgia,serif;--mono:ui-monospace,Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:34px 22px 70px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--lum);margin:0 0 12px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(26px,4vw,40px);line-height:1.05;margin:0 0 14px}
+  h2{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--lum);margin:30px 0 8px}
+  p{font-size:15px;line-height:1.62;color:var(--soft);max-width:70ch}p b{color:var(--ink)}
+  ul{color:var(--soft);font-size:15px;line-height:1.6;max-width:70ch}li{margin:5px 0}
+  code{font-family:var(--mono);font-size:13px;color:var(--rim)}
+  table{border-collapse:collapse;margin:12px 0;font-family:var(--mono);font-size:13px;width:100%;overflow-x:auto;display:block}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;color:var(--ink)}
+  th{color:var(--faint);font-weight:400;text-transform:uppercase;font-size:11px;letter-spacing:.08em}
+  .honest{font-size:13.5px;color:var(--faint);border-left:2px solid var(--rim);padding:4px 0 4px 14px;margin:16px 0;max-width:70ch}
+  a{color:var(--lum)}
+</style>
+<div class="wrap">
+  <p class="eyebrow">Quantum Artificial Life · PJ2.2 · 2D-lattice vivarium</p>
+  <h1>A quantum field that moves in space — and the germ line that survives it.</h1>
+
+  <p>PJ2.2 turns the three 2D-lattice mockups into real runs. The organism is a <b>unary occupancy
+  field</b> on a small square lattice (3×3 = 9 cells, or 4×4 = 16) that <b>walks</b> — each generation
+  is one Trotter layer of an excitation-conserving <code>rxx+ryy</code> quantum walk between
+  von-Neumann neighbours, mass conserved, nothing scripted (position is just where amplitude flows).
+  The single quantum claim is the germ-line genealogical witness <code>⟨X^⊗W⟩</code> (W=3). Movement
+  and interaction only — eating / energy / budding were deliberately <b>cut as overclaiming</b>.</p>
+
+  <h2>Three modes × two arms</h2>
+  <ul>
+    <li><b>Solo</b> — one field walks; mass conserved, nothing eaten or born.</li>
+    <li><b>Replicate</b> — at generation 2 the germ line is <b>CNOT-cloned</b> into a daughter
+      (parent + daughter share one GHZ genealogical witness) and a daughter body is seeded one cell over.</li>
+    <li><b>Two organisms (duo)</b> — two fields at opposite corners drift together; the co-located
+      <code>rxx+ryy</code> interaction builds a joint two-body witness; <code>overlap = Σ min(occ_A, occ_B)</code>.</li>
+  </ul>
+  <p>Each mode runs in two arms: <b>isolated</b> germ line vs <b>coupled</b> (the soma→germ wound).
+  The coupled arm is the A/B kill-switch PJ0/PJ1/PJ2 use — here proving the Weismann barrier
+  <b>under 2D movement</b>.</p>
+
+  <h2>The certified-frame protocol (the defining lock)</h2>
+  <p>PJ2 baked a whole life cycle into <b>one</b> measured circuit and reconstructed the movie from
+  statevector snapshots. PJ2.2 follows the mockup README's honest recipe instead: on hardware each
+  generation is its <b>own</b> measured circuit — a <b>depth scan</b> (0 walk layers, 1, …, GENS−1),
+  each measured for occupancy (Z) + germ witness (X) with a separable-null control. The integer
+  generations are <b>certified</b>; only the smooth in-between playback the mockup interpolates is a
+  labelled sim artifact.</p>
+
+  <h2>Simulation result (statevector, noiseless)</h2>
+  <table>
+    <tr><th>mode</th><th>arm</th><th>witness ⟨X^⊗W⟩ · gen 0→5</th><th>verdict</th></tr>
+    <tr><td>solo</td><td>isolated</td><td>1.0 · 1.0 · 1.0 · 1.0 · 1.0 · 1.0</td><td>survives</td></tr>
+    <tr><td>solo</td><td>coupled</td><td>≈0 throughout</td><td>collapsed</td></tr>
+    <tr><td>replicate</td><td>isolated</td><td>1.0 (parent) → 1.0 (shared GHZ from gen 2)</td><td>survives</td></tr>
+    <tr><td>replicate</td><td>coupled</td><td>≈0 throughout</td><td>collapsed</td></tr>
+    <tr><td>duo</td><td>isolated</td><td>1.0 · 1.0 · 1.0 · 1.0 · 1.0 · 1.0</td><td>survives</td></tr>
+    <tr><td>duo</td><td>coupled</td><td>≈0 throughout</td><td>collapsed</td></tr>
+  </table>
+  <p>The occupancy field walks with <b>mass conserved</b> per organism (dominant cell moves across the
+  grid); the replicate field doubles at generation 2; the duo overlap rises from 0 as the fields meet
+  (≈0.7 by gen 1). Noiseless sim <b>pins</b> the isolated witness at the ceiling (+1.0) for every mode
+  — this is the logical-correctness check (isolation, mass conservation, the germ→germ clone, the A/B
+  contrast), <b>not</b> the frontier. The isolated arm always survives in sim; the coupled arm always
+  collapses. Figure: <a href="pj2_lattice_witness.png">pj2_lattice_witness.png</a>.</p>
+
+  <h2>Depth is the scarce axis — the hardware datapoint</h2>
+  <p>The <i>shape</i> of the isolated-arm decay with depth, and the generation at which it crosses into
+  classical, are <b>hardware</b> effects a noiseless sim cannot find (as PJ2 found). The mockups'
+  ~5–6-generation ceiling is the prediction; the live depth-scan measures it. On modern Heron-r2,
+  <b>readout error now dominates two-qubit error</b>, and the witness (an X-basis rotation + parity
+  read) is more fragile than the diagonal occupancy — expect the witness to be the first to go. If it
+  dies at small <code>gens</code>, that boundary <b>is</b> the result — the richness-vs-collapse
+  datapoint this ticket contributes to the epic's phase diagram (AC-P3.2). Selective DD on the germ
+  line only is allowed to push the ceiling out; error is real hardware noise, never dressed as biology.</p>
+
+  <h2>Deliverables</h2>
+  <ul>
+    <li><a href="lattice_3x3_snap.html">lattice_3x3_snap.html</a> — the filled 3×3 mockup (all three
+      modes × both arms, real fields/witness/overlap per generation).</li>
+    <li><a href="lattice_4x4_movement.html">lattice_4x4_movement.html</a> — the filled 4×4 solo
+      movement mockup (Phase B, 19 qubits).</li>
+    <li><a href="pj2_lattice_witness.png">pj2_lattice_witness.png</a> — isolated vs coupled witness
+      vs generation, per mode.</li>
+    <li><a href="LATTICE_CORRECTNESS.md">LATTICE_CORRECTNESS.md</a> — the static-correctness argument
+      + <code>--selftest</code> output. Circuits in <code>circuits/lattice_*.txt</code>.</li>
+  </ul>
+
+  <p class="honest">Honest framing: this is <b>scale · faithfulness · certification</b>, not a
+  speedup. Only <code>⟨X^⊗W⟩</code> over the germ line is quantum; occupancy, mass, and overlap are
+  diagonal (classically reproducible) narrative. The certified frames are the depth-scan integer
+  generations; the interpolated playback is a labelled sim artifact. Live Heron-r2 depth-scans
+  (3×3 solo isolated+coupled first, then 4×4 solo movement) are code-complete and QRNG-certified,
+  fail-closed; the developer executes the hardware run.</p>
+</div>
