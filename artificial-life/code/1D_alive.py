@@ -249,7 +249,13 @@ def main() -> None:
                     help="run one mode; default = run all three (solo when --movement-only)")
     ap.add_argument("--arm", choices=list(ARMS), default='isolated',
                     help="run one arm; default = both")
-    ap.add_argument("--gens", type=int, default=GENS, help="generations (depth scan 0..gens-1)")
+    ap.add_argument("--gens", type=int, default=GENS, help="generations (depth scan 0..gens-1); "
+                    "more = more movement + deeper (push until the witness finally falls)")
+    ap.add_argument("--hop", type=float, default=None,
+                    help="walk hop angle = movement per generation; overrides the QRNG value. "
+                         "bigger = the field travels farther each step (default ~0.45-0.75 QRNG / 0.6)")
+    ap.add_argument("--start", type=int, default=None,
+                    help="force the seed cell (default: QRNG-drawn) -- e.g. 0 to start at one end")
     ap.add_argument("--repeats", type=int, default=REPEATS, help="repeats for sigma")
     ap.add_argument("--shots", type=int, default=8192)
     ap.add_argument("--movement-only", dest="movement_only", action="store_true",
@@ -307,6 +313,10 @@ def main() -> None:
     thetas = (qrng_thetas(client, args.width, MUT_SCALE, 0) if client is not None
               else q4._sim_thetas(args.width, args.width, mut_scale=MUT_SCALE))
     start, hop = qrng_environment(client, args.length, sim)
+    if args.hop is not None:                                       # force the movement rate
+        hop = args.hop
+    if args.start is not None:                                     # force the seed cell
+        start = args.start % args.length
 
     if args.dump_circuit:
         dump_circuits(args.width, args.length, args.gens, thetas, modes=modes, arms=arms)
