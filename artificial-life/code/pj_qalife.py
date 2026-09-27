@@ -1648,6 +1648,355 @@ def print_lattice_report(width: int, grid: int, gens: int, thetas: list[float], 
     print(f"  gate counts:                              {rep['gate_counts']}")
 
 
+# ===========================================================================
+# PJ2.2b -- 1D-LINE VIVARIUM (the 1D sibling of the 2D lattice above).
+# Identical honest model -- a unary occupancy field that WALKS on a length-L chain
+# (excitation-conserving rxx+ryy quantum walk between linear neighbours i-1 / i+1),
+# with the same germ-line genealogical witness <X^W>, the same solo/replicate/duo
+# modes x isolated/coupled arms, and the same per-depth certified-frame contract.
+# ONLY the substrate topology differs (a line instead of a square lattice). The 2D
+# functions above are left byte-stable; this is a purely additive parallel section.
+# ===========================================================================
+LINE_LEN = 9                         # default chain length (matches the 3x3=9 cell budget)
+LINE_HOP = LAT_HOP                   # same isotropic quantum-walk hop angle as the lattice
+LINE_MODES = LAT_MODES
+LINE_ARMS = LAT_ARMS
+LINE_REP_GEN = LAT_REP_GEN
+
+
+def line_n_organisms(mode: str) -> int:
+    """1 (solo) / 2 (replicate / duo) -- same population rule as the lattice."""
+    return lat_n_organisms(mode)
+
+
+def line_segment_len(width: int, length: int, mode: str) -> int:
+    """Qubit span: n_organisms * (germ width W + length body cells).
+    L=9 solo = 12 (== 3x3 solo), L=9 replicate/duo = 24 -- fits the sim cap / Heron."""
+    return line_n_organisms(mode) * (width + length)
+
+
+def line_base(org: int, width: int, length: int) -> int:
+    """First physical qubit of organism `org` (adjacent segments)."""
+    return org * (width + length)
+
+
+def line_witness_q(org: int, k: int, width: int, length: int) -> int:
+    """Germ-line witness locus k of organism `org` (front of its block; the GHZ genealogy)."""
+    return line_base(org, width, length) + k
+
+
+def line_body_q(org: int, i: int, width: int, length: int) -> int:
+    """Body cell i (0..length-1) of organism `org` -- one excitation = where the body is."""
+    return line_base(org, width, length) + width + i
+
+
+def line_neighbors(i: int, length: int) -> list[int]:
+    """Linear neighbours of cell i on a length-L chain (i-1, i+1 where they exist)."""
+    nb: list[int] = []
+    if i > 0:
+        nb.append(i - 1)
+    if i < length - 1:
+        nb.append(i + 1)
+    return nb
+
+
+def line_edges(length: int) -> list[list[tuple[int, int]]]:
+    """Chain bonds grouped into 2 disjoint colors (even / odd) so each color is a depth-1
+    layer of non-overlapping 2-qubit gates (keeps the walk shallow) -- the 1D of lat_edges."""
+    even: list[tuple[int, int]] = []
+    odd: list[tuple[int, int]] = []
+    for i in range(length - 1):
+        (even if i % 2 == 0 else odd).append((i, i + 1))
+    return [even, odd]
+
+
+def _line_germ(qc: QuantumCircuit, org: int, width: int, length: int, thetas: list[float],
+               founder_equator: bool) -> None:
+    """One organism's germ line (rung 0): founder ry(pi/2) + NN cx clone chain + ry(theta)
+    mutation -- the clean GHZ genealogy carrying <X^W> (identical to _lattice_germ)."""
+    for k in range(width):
+        g = line_witness_q(org, k, width, length)
+        if k == 0:
+            if founder_equator:
+                qc.ry(math.pi / 2, g)                              # FOUNDER
+        else:
+            qc.cx(line_witness_q(org, k - 1, width, length), g)    # SELF-REPLICATION (NN clone)
+        qc.ry(thetas[k], g)                                        # MUTATION
+
+
+def _line_walk_layer(qc: QuantumCircuit, length: int, org: int, width: int, theta: float) -> None:
+    """One Trotter walk layer: excitation-conserving rxx(theta)+ryy(theta) on every linear-neighbour
+    pair of organism `org`'s body chain, in edge-colored order. Applied UNCONDITIONALLY; germ
+    untouched -- the body moves, mass conserved."""
+    for color in line_edges(length):
+        for a_cell, b_cell in color:
+            a = line_body_q(org, a_cell, width, length)
+            b = line_body_q(org, b_cell, width, length)
+            qc.rxx(theta, a, b)
+            qc.ryy(theta, a, b)
+
+
+def _line_clone(qc: QuantumCircuit, width: int, length: int, start: int, hop: float) -> None:
+    """Replicate: CNOT-clone the parent germ line into the daughter germ block (germ->germ only)
+    and seed a daughter body one cell over (right neighbour of the seed, else the left)."""
+    for k in range(width):
+        qc.cx(line_witness_q(0, k, width, length), line_witness_q(1, k, width, length))
+    dstart = start + 1 if start + 1 < length else (start - 1) % length
+    qc.x(line_body_q(1, dstart, width, length))
+
+
+def _line_interaction(qc: QuantumCircuit, width: int, length: int, phi: float) -> None:
+    """Duo: co-located rxx+ryy between organism A and B body cells (emergent from co-location,
+    no if(contact)); it only acts where both bodies have amplitude -- builds the joint witness."""
+    for i in range(length):
+        a = line_body_q(0, i, width, length)
+        b = line_body_q(1, i, width, length)
+        qc.rxx(phi, a, b)
+        qc.ryy(phi, a, b)
+
+
+def _line_poke(qc: QuantumCircuit, width: int, length: int, pos: int, amp: float) -> None:
+    """A sudden EXTERNAL perturbation ('poke') that SETS body cell `pos` of organism 0 to occupancy
+    `amp` (0..1), OVERRIDING whatever the walk put there: reset the cell to |0>, then ry(2*asin(sqrt
+    (amp))) so P(1)=amp exactly. e.g. amp=0.01 -> the cell becomes 1%, amp=1.0 -> 100%, amp=0 -> emptied.
+    The reset is a mid-circuit op on the BODY cell only (the germ witness line is never touched, so the
+    <X^W> claim is unaffected); the walk then reacts to the forced change."""
+    p = max(0, min(length - 1, int(pos)))
+    a = max(0.0, min(1.0, float(amp)))
+    q = line_body_q(0, p, width, length)
+    qc.reset(q)                                                   # clear the cell (override the walk)
+    if a > 0.0:
+        qc.ry(2.0 * math.asin(math.sqrt(a)), q)                  # set P(1)=amp
+
+
+def build_line_vivarium(width: int, length: int, gens: int, thetas: list[float], *,
+                        mode: str = "solo", arm: str = "isolated", start: int = 0,
+                        hop: float = LINE_HOP, founder_equator: bool = True,
+                        pokes: list[tuple[int, int, float]] | None = None,
+                        annotate: bool = False) -> QuantumCircuit:
+    """The 1D sibling of build_lattice_vivarium -- one walking occupancy field on a length-L chain
+    after `gens` walk layers, in ONE circuit (built once per depth for the driver's depth scan).
+    mode / arm semantics are identical to the 2D lattice (solo/replicate/duo x isolated/coupled).
+
+    pokes : optional list of (gen, pos, amp) perturbations. Each SETS cell `pos` to occupancy `amp`
+            (overriding the walk) right after `gen` walk layers are complete (gen=0 = at the seed).
+            MANY are allowed: different gens = repeated pokes over time; the SAME gen twice = several
+            spots set at once. Every frame at depth >= gen carries its poke, so the scan shows the
+            response. (Each poke is a reset+ry on that BODY cell; the germ witness is never touched.)"""
+    if mode not in LINE_MODES:
+        raise ValueError(f"unknown line mode {mode!r}")
+    if arm not in LINE_ARMS:
+        raise ValueError(f"unknown line arm {arm!r}")
+    n_cells = length
+    n_data = line_segment_len(width, length, mode)
+    qc = QuantumCircuit(n_data)
+
+    # --- Phase 1: germ line(s) first (duo builds two independent founders). ---
+    _line_germ(qc, 0, width, length, thetas, founder_equator)
+    if mode == "duo":
+        _line_germ(qc, 1, width, length, thetas, founder_equator)
+    _bar(qc, annotate, "germline")
+
+    # --- Phase 2: seed the body (one excitation). duo seeds opposite ends. ---
+    start = start % n_cells
+    if mode == "duo":
+        qc.x(line_body_q(0, 0, width, length))                    # left end
+        qc.x(line_body_q(1, n_cells - 1, width, length))          # right end
+    else:
+        qc.x(line_body_q(0, start, width, length))
+    _bar(qc, annotate, "seed")
+    pokes = pokes or []
+    for pg, pp, pa in pokes:                                       # poke(s) at the seed (before any walk)
+        if pg == 0:
+            _line_poke(qc, width, length, pp, pa)
+            _bar(qc, annotate, "poke")
+
+    # --- Phase 3: `gens` walk layers (barrier per layer). ---
+    daughter = False
+    for gen in range(int(gens)):
+        if mode == "replicate" and gen == LINE_REP_GEN:
+            _line_clone(qc, width, length, start, hop)
+            daughter = True
+            _bar(qc, annotate, "replicate")
+        _line_walk_layer(qc, length, 0, width, hop)
+        if daughter:
+            _line_walk_layer(qc, length, 1, width, hop)
+        if mode == "duo":
+            _line_walk_layer(qc, length, 1, width, hop)
+            _line_interaction(qc, width, length, hop)
+        _bar(qc, annotate, f"walk{gen}")
+        for pg, pp, pa in pokes:                                  # poke(s) after `gen+1` walk layers
+            if pg == gen + 1:
+                _line_poke(qc, width, length, pp, pa)
+                _bar(qc, annotate, "poke")
+    if mode == "replicate" and not daughter and int(gens) >= LINE_REP_GEN:
+        _line_clone(qc, width, length, start, hop)
+        daughter = True
+        _bar(qc, annotate, "replicate")
+
+    # --- Phase 4: coupled arm -- the soma->germ back-action (breaks the Weismann barrier). ---
+    if arm == "coupled":
+        centre = length // 2
+        b = line_body_q(0, centre, width, length)
+        g = line_witness_q(0, 0, width, length)
+        qc.rxx(math.pi / 2, b, g)
+        qc.ryy(math.pi / 2, b, g)
+        _bar(qc, annotate, "arm")
+
+    return qc
+
+
+def line_to_witness_basis(qc: QuantumCircuit, width: int, length: int, mode: str) -> QuantumCircuit:
+    """Rotate the germ loci into the X basis (H then Z-read). Body cells stay in Z. NEW circuit."""
+    out = qc.copy()
+    for q in line_witness_qubits(width, length, mode):
+        out.h(q)
+    return out
+
+
+def line_witness_qubits(width: int, length: int, mode: str) -> list[int]:
+    """The witness loci -- every organism's germ line (the joint <X^W> set)."""
+    return [line_witness_q(o, k, width, length)
+            for o in range(line_n_organisms(mode)) for k in range(width)]
+
+
+def line_body_qubits(org: int, width: int, length: int) -> list[int]:
+    """The body cells of organism `org` (the unary occupancy field)."""
+    return [line_body_q(org, i, width, length) for i in range(length)]
+
+
+def _barrier_scan(qc: QuantumCircuit, witness: set[int], body: set[int]) -> dict[str, Any]:
+    """Shared STATIC Weismann-barrier analyzer (walks qc.data; no statevector). Same checks the
+    lattice report makes, factored so the 1D line reuses them without duplicating the 2D code."""
+    back_action = has_branch = False
+    witness_isolated = mass_conserved = True
+    first_germ_pos: int | None = None
+    first_body_pos: int | None = None
+    gate_counts: dict[str, int] = {}
+    for pos, inst in enumerate(qc.data):
+        name = inst.operation.name
+        gate_counts[name] = gate_counts.get(name, 0) + 1
+        cond = getattr(inst.operation, "condition", None) or getattr(inst, "condition", None)
+        if cond is not None or name in ("measure", "reset"):
+            has_branch = True
+        if name in ("barrier", "delay"):
+            continue
+        qs = [_qubit_index(qc, b) for b in inst.qubits]
+        tw = any(q in witness for q in qs)
+        tb = any(q in body for q in qs)
+        if tw and first_germ_pos is None:
+            first_germ_pos = pos
+        if tb and first_body_pos is None:
+            first_body_pos = pos
+        if tw and tb:
+            back_action = True
+        if tw and any(q not in witness for q in qs):
+            witness_isolated = False
+        if tb and name not in ("rxx", "ryy", "x"):
+            mass_conserved = False
+    germ_first = first_germ_pos is not None and (first_body_pos is None
+                                                 or first_germ_pos < first_body_pos)
+    return {
+        "back_action": back_action,
+        "witness_isolated": witness_isolated,
+        "mass_conserved": mass_conserved,
+        "germ_first": germ_first,
+        "has_classical_branch": has_branch,
+        "witness_set": sorted(witness),
+        "gate_counts": gate_counts,
+    }
+
+
+def line_coupling_report(qc: QuantumCircuit, width: int, length: int, *, mode: str,
+                         arm: str) -> dict[str, Any]:
+    """STATIC analyzer of the Weismann barrier under 1D movement (same fields as the lattice)."""
+    witness = set(line_witness_qubits(width, length, mode))
+    body: set[int] = set()
+    for o in range(line_n_organisms(mode)):
+        body |= set(line_body_qubits(o, width, length))
+    return _barrier_scan(qc, witness, body)
+
+
+def _line_selftest_case(length: int, mode: str, *, width: int = 3, gens: int = 4,
+                        seed: int = 100) -> list[tuple[str, bool, str]]:
+    thetas = q4._sim_thetas(width, seed, mut_scale=0.0)           # faithful clean GHZ
+    results: list[tuple[str, bool, str]] = []
+
+    def _build(arm: str) -> QuantumCircuit:
+        return build_line_vivarium(width, length, gens, thetas, mode=mode, arm=arm)
+
+    rep_i = line_coupling_report(_build("isolated"), width, length, mode=mode, arm="isolated")
+    rep_c = line_coupling_report(_build("coupled"), width, length, mode=mode, arm="coupled")
+    results.append(("A/B kill-switch (isolated no back-action; coupled breaks it)",
+                    (not rep_i["back_action"]) and rep_c["back_action"],
+                    f"isolated_back={rep_i['back_action']} coupled_back={rep_c['back_action']}"))
+    results.append(("witness loci isolated (isolated arm) but not coupled",
+                    rep_i["witness_isolated"] and not rep_c["witness_isolated"],
+                    f"isolated={rep_i['witness_isolated']} coupled={rep_c['witness_isolated']}"))
+    results.append(("mass conserved (walk = rxx+ryy neighbour pairs)",
+                    rep_i["mass_conserved"], f"mass_conserved={rep_i['mass_conserved']}"))
+    results.append(("ordering: germ line built before the body (rung 0)",
+                    rep_i["germ_first"], f"germ_first={rep_i['germ_first']}"))
+    nq = _build("isolated").num_qubits
+    expect = line_segment_len(width, length, mode)
+    results.append(("qubit count == line_segment_len(width, length, mode)",
+                    nq == expect, f"nq={nq} expected={expect}"))
+    return results
+
+
+def run_line_selftest(cases: tuple[tuple[int, str], ...] = ((9, "solo"), (9, "replicate"),
+                                                            (9, "duo"), (16, "solo")),
+                      width: int = 3, gens: int = 4) -> int:
+    """Run the 1D-line static checks at representative (length, mode). Return 0/1."""
+    print("=== PJ2.2b 1D-line vivarium --selftest (STATIC circuit-structure checks; no sim) ===")
+    all_ok = True
+    for length, mode in cases:
+        nq = line_segment_len(width, length, mode)
+        print(f"\n-- line L={length}, mode={mode}, W={width}, gens={gens} ({nq} qubits) --")
+        for name, ok, detail in _line_selftest_case(length, mode, width=width, gens=gens):
+            all_ok = all_ok and ok
+            print(f"  [{'OK ' if ok else 'FAIL'}] {name}  ({detail})")
+    print("\nSELFTEST PASS" if all_ok else "\nSELFTEST FAIL")
+    return 0 if all_ok else 1
+
+
+def print_line_report(width: int, length: int, gens: int, thetas: list[float], *, mode: str,
+                      arm: str) -> None:
+    """Build the 1D-line circuit, print it + a legend + the STATIC correctness report."""
+    qc = build_line_vivarium(width, length, gens, thetas, mode=mode, arm=arm, annotate=True)
+    rep = line_coupling_report(qc, width, length, mode=mode, arm=arm)
+
+    print(f"\n--- PJ2.2b 1D-LINE VIVARIUM CIRCUIT (W={width}, L={length}, gens={gens}, "
+          f"mode={mode}, arm={arm}) ---")
+    for o in range(line_n_organisms(mode)):
+        w0 = line_witness_q(o, 0, width, length)
+        b0 = line_body_q(o, 0, width, length)
+        print(f"  organism {o}: germ g_k = {w0}..{w0 + width - 1}  |  "
+              f"body cells = {b0}..{b0 + length - 1} (chain 0..{length - 1})")
+    print("  gate -> meaning:")
+    print("    Ry(pi/2)/CX/Ry(theta) on germ = FOUNDER / SELF-REPLICATION / MUTATION (clean GHZ)")
+    print("    X on a body cell               = seed the occupancy field at the start cell")
+    print("    RXX+RYY on linear pairs        = the walk (excitation-conserving; mass conserved)")
+    if mode == "replicate":
+        print(f"    CX germ(0,k)->germ(1,k) @ gen {LINE_REP_GEN} = the daughter germ clone (germ->germ)")
+    if mode == "duo":
+        print("    RXX+RYY co-located A/B body    = the emergent two-body interaction")
+    if arm == "coupled":
+        print("    RXX+RYY body<->germ(0,0)       = the A/B back-action (breaks the barrier)")
+    print("    H on germ then measure          = witness readout; body stays diagonal (Z)")
+
+    print("\n" + str(qc.draw(output="text", fold=-1)))
+
+    print("\n--- STATIC LINE CORRECTNESS REPORT (Weismann barrier under 1D movement) ---")
+    print(f"  soma->germ back-action (NO in isolated):  {'YES' if rep['back_action'] else 'NO'}")
+    print(f"  witness loci isolated:                    {'YES' if rep['witness_isolated'] else 'NO'}")
+    print(f"  mass conserved (rxx+ryy walk):            {'YES' if rep['mass_conserved'] else 'NO'}")
+    print(f"  germ line before the body (rung 0):       {'YES' if rep['germ_first'] else 'NO'}")
+    print(f"  classical branch (must be NO):            {'YES' if rep['has_classical_branch'] else 'NO'}")
+    print(f"  witness qubit set (germ lines):           {rep['witness_set']}")
+    print(f"  gate counts:                              {rep['gate_counts']}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description="PJ0 germ/soma model + PJ1 arena + PJ2 vivarium (static eval; no sim/hardware).")
@@ -1677,7 +2026,11 @@ def main() -> None:
     ap.add_argument("--grid", type=int, default=3, help="lattice side (3 or 4)")
     ap.add_argument("--mode", choices=list(LAT_MODES), default="solo", help="lattice scenario")
     ap.add_argument("--arm", choices=list(LAT_ARMS), default="isolated", help="lattice arm")
-    ap.add_argument("--gens", type=int, default=5, help="lattice walk generations (depth)")
+    ap.add_argument("--gens", type=int, default=5, help="lattice/line walk generations (depth)")
+    # --- PJ2.2b line flags (1D sibling of the lattice) ---
+    ap.add_argument("--line", action="store_true",
+                    help="PJ2.2b: switch to the 1D-line vivarium build")
+    ap.add_argument("--length", type=int, default=LINE_LEN, help="1D chain length L (line cells)")
     # --- PJ2 vivarium flags (default: PJ0 static CLI, unchanged) ---
     ap.add_argument("--vivarium", action="store_true",
                     help="PJ2: switch to the solo-vivarium build")
@@ -1689,6 +2042,14 @@ def main() -> None:
     ap.add_argument("--gate-repl", dest="gate_repl", action="store_true",
                     help="route budding through the witness clone (measured-cost variant)")
     args = ap.parse_args()
+
+    if args.line:
+        if args.selftest:
+            raise SystemExit(run_line_selftest())
+        thetas = q4._sim_thetas(args.width, 0, mut_scale=0.0)   # faithful clean GHZ (CD-6)
+        print_line_report(args.width, args.length, args.gens, thetas,
+                          mode=args.mode, arm=args.arm)
+        return
 
     if args.lattice:
         if args.selftest:
