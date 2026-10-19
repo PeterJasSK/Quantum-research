@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "stage": "PJ2.4",
+    "model": "motile_vivarium",
+    "backend": "ibm_marrakesh",
+    "organisms": 2,
+    "length": 4,
+    "gens": 6,
+    "food": [
+      1,
+      3
+    ],
+    "rep_gen": 2,
+    "arms": [
+      "isolated"
+    ],
+    "shots": 8192,
+    "sim": false,
+    "k": 2.0,
+    "hop": 0.6212,
+    "start": 0,
+    "age_step": 1.0,
+    "certify": "ghz2",
+    "certified_entangled": true,
+    "repeats": 1,
+    "certified_frames": true,
+    "calibration": null
+  },
+  "scenarios": {
+    "motile": {
+      "isolated": [
+        {
+          "gen": 0,
+          "fields": [
+            [
+              0.9939,
+              0.0178,
+              0.0024,
+              0.0002
+            ],
+            [
+              0.0026,
+              0.0026,
+              0.0044,
+              0.0011
+            ]
+          ],
+          "alive": [
+            0.9911,
+            0.0012
+          ],
+          "energy": [
+            0.0027,
+            0.8766
+          ],
+          "born": 1,
+          "w": 0.9966,
+          "w_sigma": 0.011,
+          "sep": 0.9966,
+          "overlap": 0.0078,
+          "zz": 0.0,
+          "certified": null,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 1,
+          "fields": [
+            [
+              0.6501,
+              0.3131,
+              0.1927,
+              0.0581
+            ],
+            [
+              0.0037,
+              0.8888,
+              0.0012,
+              0.0061
+            ]
+          ],
+          "alive": [
+            0.8063,
+            0.0009
+          ],
+          "energy": [
+            0.3206,
+            0.0021
+          ],
+          "born": 1,
+          "w": 0.9973,
+          "w_sigma": 0.011,
+          "sep": 0.9973,
+          "overlap": 0.3241,
+          "zz": 0.0,
+          "certified": null,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 2,
+          "fields": [
+            [
+              0.528,
+              0.1788,
+              0.323,
+              0.1061
+            ],
+            [
+              0.0042,
+              0.8701,
+              0.0006,
+              0.0035
+            ]
+          ],
+          "alive": [
+            0.5469,
+            0.0011
+          ],
+          "energy": [
+            0.3551,
+            0.0022
+          ],
+          "born": 1,
+          "w": 0.9961,
+          "w_sigma": 0.011,
+          "sep": 0.9961,
+          "overlap": 0.1871,
+          "zz": 0.0,
+          "certified": null,
+          "n": 1,
+          "survives": false
+        },
+        {
+          "gen": 3,
+          "fields": [
+            [
+              0.5,
+              0.2195,
+              0.3134,
+              0.2114
+            ],
+            [
+              0.0018,
+              0.2443,
+              0.2644,
+              0.1569
+            ]
+          ],
+          "alive": [
+            0.3997,
+            0.9954
+          ],
+          "energy": [
+            0.3987,
+            0.0022
+          ],
+          "born": 2,
+          "w": 0.9788,
+          "w_sigma": 0.011,
+          "sep": 0.0004,
+          "overlap": 0.6426,
+          "zz": 0.9814,
+          "certified": true,
+          "n": 1,
+          "survives": true
+        },
+        {
+          "gen": 4,
+          "fields": [
+            [
+              0.4183,
+              0.3505,
+              0.4066,
+              0.369
+            ],
+            [
+              0.1276,
+              0.2148,
+              0.2527,
+              0.3245
+            ]
+          ],
+          "alive": [
+            0.4749,
+            0.8182
+          ],
+          "energy": [
+            0.4833,
+            0.2865
+          ],
+          "born": 2,
+          "w": 0.9836,
+          "w_sigma": 0.011,
+          "sep": 0.0004,
+          "overlap": 0.9196,
+          "zz": 0.9751,
+          "certified": true,
+          "n": 1,
+          "survives": true
+        },
+        {
+          "gen": 5,
+          "fields": [
+            [
+              0.5062,
+              0.328,
+              0.3472,
+              0.3247
+            ],
+            [
+              0.228,
+              0.2223,
+              0.2266,
+              0.3389
+            ]
+          ],
+          "alive": [
+            0.4569,
+            0.5092
+          ],
+          "energy": [
+            0.4846,
+            0.3011
+          ],
+          "born": 2,
+          "w": 0.9822,
+          "w_sigma": 0.011,
+          "sep": 0.0011,
+          "overlap": 1.0016,
+          "zz": 0.9827,
+          "certified": true,
+          "n": 1,
+          "survives": true
+        }
+      ]
+    }
+  },
+  "endpoint": {
+    "isolated": {
+      "w": 0.9822,
+      "n_alive": 1,
+      "certified": true,
+      "survives": true
+    }
+  }
+}

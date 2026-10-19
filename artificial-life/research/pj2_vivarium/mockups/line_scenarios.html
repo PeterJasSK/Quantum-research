@@ -132,6 +132,8 @@
 "use strict";
 const L=9,GENS=6,Wd=3;
 const POKES=[];                  // [{gen,pos,amp},..] when a run injected pokes; the renderer swaps this
+const FOOD=[];                   // [cell,..] habitat food sites (motile); the renderer swaps this
+const MODEL="line";              // "line" or "motile"; the renderer swaps this
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const Z=()=>Array(L).fill(0);
 // --- synthetic data (STANDALONE view only; the renderer swaps this whole block for real DATA) ---
@@ -187,7 +189,7 @@ function frameAt(m,a,t){const A=DATA[m][a]||DATA[m][armsOf(m)[0]],g0=Math.floor(
   return{fields,w:lerp1(x.w,y.w,u),overlap:lerp1(x.overlap||0,y.overlap||0,u),n:(u<.5?x.n:y.n)||1};}
 function setMode(m){mode=m;if(!armsOf(m).includes(arm))setArm(armsOf(m)[0]);refreshArms();
   document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
-  modetag.textContent="statevector field · "+({solo:"solo",replicate:"replication",duo:"two organisms"}[m]);}
+  modetag.textContent="statevector field · "+(({solo:"solo",replicate:"replication",duo:"two organisms",motile:"motile life"}[m])||m);}
 function setArm(a){if(!armsOf(mode).includes(a))return;arm=a;document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===a));}
 document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 document.querySelectorAll(".arms button").forEach(b=>b.onclick=()=>setArm(b.dataset.arm));
@@ -204,10 +206,10 @@ function fit(){const dpr=Math.min(2,devicePixelRatio||1);
 addEventListener("resize",fit);
 function layout(){const padX=Math.max(28,Wf*0.06),cw=(Wf-2*padX)/L,yc=Hf*0.34;return{padX,cw,yc};}
 function cellCenter(i,lo){return[lo.padX+(i+0.5)*lo.cw,lo.yc];}
-function drawField(occ,col,lo){ctx.save();ctx.globalCompositeOperation="lighter";
-  const R=Math.min(lo.cw*0.55,lo.yc*0.7);
+function drawField(occ,col,lo,vit=1){ctx.save();ctx.globalCompositeOperation="lighter";
+  const R=Math.min(lo.cw*0.55,lo.yc*0.7),V=clamp(vit,0.12,1);
   for(let i=0;i<L;i++){const o=occ[i];if(o<.02)continue;const[x,y]=cellCenter(i,lo),rr=R*(.5+.7*o);
-    const g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,rgba(col,.6*o+.05));g.addColorStop(.5,rgba(col,.22*o));g.addColorStop(1,rgba(col,0));
+    const g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,rgba(col,(.6*o+.05)*V));g.addColorStop(.5,rgba(col,.22*o*V));g.addColorStop(1,rgba(col,0));
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}
   ctx.restore();}
 function centroid(occ,lo){let sx=0,sw=0;for(let i=0;i<L;i++){const[x]=cellCenter(i,lo);sx+=x*occ[i];sw+=occ[i];}return sw>.05?[sx/sw,lo.yc,sw]:null;}
@@ -225,22 +227,30 @@ function renderField(t){
   ctx.beginPath();ctx.moveTo(lo.padX,lo.yc);ctx.lineTo(lo.padX+L*lo.cw,lo.yc);ctx.stroke();
   for(let i=0;i<L;i++){const[x,y]=cellCenter(i,lo);ctx.fillStyle=rgba(gv('--dim'),.5);ctx.beginPath();ctx.arc(x,y,1.6,0,6.2832);ctx.fill();
     ctx.strokeStyle=rgba(gv('--line'),1);ctx.strokeRect(x-lo.cw*.46,y-lo.cw*.46,lo.cw*.92,lo.cw*.92);}
+  // food sites (motile): a green diamond on the baseline where the habitat feeds
+  for(const c of (FOOD||[])){if(c<0||c>=L)continue;const[fx]=cellCenter(c,lo);
+    ctx.fillStyle=rgba(gv('--good'),.85);ctx.save();ctx.translate(fx,lo.yc);ctx.rotate(Math.PI/4);
+    ctx.fillRect(-3.2,-3.2,6.4,6.4);ctx.restore();}
 
+  // per-individual vitality (aliveness): motile frames carry F.alive[o]; line frames -> fully alive.
+  const av=o=>(F.alive&&F.alive[o]!=null)?clamp(F.alive[o],0,1):1;
   const two=F.fields.length>1&&(F.fields[1].some(v=>v>.02));
   let occForPsi;
   if(two){
-    const colA=collapse?gv('--bad'):gv('--A'),colB=collapse?gv('--bad'):gv('--B');
-    drawField(F.fields[0],colA,lo);drawField(F.fields[1],colB,lo);
+    const dead0=av(0)<0.5,dead1=av(1)<0.5;
+    const colA=(collapse||dead0)?gv('--bad'):gv('--A'),colB=(collapse||dead1)?gv('--bad'):gv('--B');
+    drawField(F.fields[0],colA,lo,av(0));drawField(F.fields[1],colB,lo,av(1));
     const cA=centroid(F.fields[0],lo),cB=centroid(F.fields[1],lo);
-    nucleoid(cA,colA,vit,lo);nucleoid(cB,colB,vit,lo);
+    nucleoid(cA,colA,vit*av(0),lo);nucleoid(cB,colB,vit*av(1),lo);
     if(cA&&cB&&F.overlap>0.004){const bw=Math.min(9,2+F.overlap*40),mx=(cA[0]+cB[0])/2,my=lo.yc;
       const bg=ctx.createRadialGradient(mx,my,0,mx,my,lo.cw*.8);bg.addColorStop(0,rgba(wCol,.5));bg.addColorStop(1,rgba(wCol,0));
       ctx.fillStyle=bg;ctx.beginPath();ctx.arc(mx,my,lo.cw*.8,0,6.2832);ctx.fill();
       ctx.strokeStyle=rgba(wCol,.6);ctx.lineWidth=bw;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(cA[0],cA[1]);ctx.lineTo(cB[0],cB[1]);ctx.stroke();}
     occForPsi=F.fields[0].map((v,i)=>v+F.fields[1][i]);
   } else {
-    drawField(F.fields[0],wCol,lo);nucleoid(centroid(F.fields[0],lo),wCol,vit,lo);
-    if(mode==="replicate"&&Math.abs(t-2)<0.5){const p=1-Math.abs(t-2)/0.5,cen=centroid(F.fields[0],lo);
+    const dead0=av(0)<0.5,col0=(collapse||dead0)?gv('--bad'):wCol;
+    drawField(F.fields[0],col0,lo,av(0));nucleoid(centroid(F.fields[0],lo),col0,vit*av(0),lo);
+    if((mode==="replicate"||MODEL==="motile")&&Math.abs(t-2)<0.5){const p=1-Math.abs(t-2)/0.5,cen=centroid(F.fields[0],lo);
       if(cen){ctx.strokeStyle=rgba(gv('--witness'),.5*p);ctx.lineWidth=2;ctx.beginPath();ctx.arc(cen[0],cen[1],lo.cw*(0.5+1.4*(1-p)),0,6.2832);ctx.stroke();}}
     occForPsi=F.fields[0];
   }
@@ -249,9 +259,9 @@ function renderField(t){
     ctx.textBaseline="alphabetic";
     for(let i=0;i<L;i++){const[x]=cellCenter(i,lo);
       ctx.strokeStyle=rgba(gv('--line2'),.5);ctx.lineWidth=1;ctx.strokeRect(x-bw/2,baseY-maxH,bw,maxH);
-      let yb=baseY;const parts=two?[[F.fields[0][i],collapse?gv('--bad'):gv('--A')],[F.fields[1][i],collapse?gv('--bad'):gv('--B')]]
-                                  :[[F.fields[0][i],wCol]];
-      parts.forEach(([v,col])=>{const hh=clamp(v,0,1)*maxH;if(hh<=0.4)return;ctx.fillStyle=rgba(col,.85);ctx.fillRect(x-bw/2,yb-hh,bw,hh);yb-=hh;});
+      let yb=baseY;const parts=two?[[F.fields[0][i],(collapse||av(0)<0.5)?gv('--bad'):gv('--A'),av(0)],[F.fields[1][i],(collapse||av(1)<0.5)?gv('--bad'):gv('--B'),av(1)]]
+                                  :[[F.fields[0][i],(collapse||av(0)<0.5)?gv('--bad'):wCol,av(0)]];
+      parts.forEach(([v,col,vv])=>{const hh=clamp(v,0,1)*maxH;if(hh<=0.4)return;ctx.fillStyle=rgba(col,.3+.55*clamp(vv,0,1));ctx.fillRect(x-bw/2,yb-hh,bw,hh);yb-=hh;});
       const tot=clamp(occForPsi[i],0,1),lit=tot>.005;
       ctx.fillStyle=rgba(lit?gv('--ink'):gv('--dim'),lit?.95:.5);ctx.font=(lit?"600 ":"")+"11px "+gv('--mono');ctx.textAlign="center";
       ctx.fillText(Math.round(tot*100)+"%",x,baseY+15);}
@@ -269,7 +279,8 @@ function renderField(t){
   const g=Math.round(t);
   witchip.textContent=`witness ${F.w>=0?"+":""}${F.w.toFixed(2)}`+(mode==="duo"?` · overlap ${F.overlap.toFixed(2)}`:mode==="replicate"?` · ×${F.n||1}`:"");
   witchip.style.color=F.w<.15?gv('--bad'):gv('--ink');witchip.style.borderColor=F.w<.15?gv('--bad'):gv('--line');
-  genN.textContent=g;steplab.textContent=`gen ${g} / ${GENS-1}`;genEl.value=t;
+  const aliveTxt=F.alive?` · alive ${F.alive.filter(a=>a>0.5).length}/${F.alive.length}`:"";
+  genN.textContent=g;steplab.textContent=`gen ${g} / ${GENS-1}${aliveTxt}`;genEl.value=t;
   stageEl.textContent=label(t,F);stageEl.style.color=F.w<.15?gv('--bad'):gv('--ink');
 }
 function label(t,F){

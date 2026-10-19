@@ -76,6 +76,81 @@ def _line_scenarios(run: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _motile_scenarios(run: dict[str, Any]) -> dict[str, Any]:
+    """DATA[mode][arm] = [{fields, w, overlap, n, alive, energy} per gen] -- the motile contract."""
+    sc = run["scenarios"]
+    out: dict[str, Any] = {}
+    for mode, arms in sc.items():
+        out[mode] = {}
+        for arm, frames in arms.items():
+            out[mode][arm] = [{"fields": f["fields"], "w": f["w"], "overlap": f.get("overlap", 0.0),
+                               "n": f.get("n", 1), "alive": f.get("alive"),
+                               "energy": f.get("energy")} for f in frames]
+    return out
+
+
+_MOTILE_HEADER = (
+    '<header>\n'
+    '    <p class="eyebrow">PJ2.4 · motile vivarium · 2018-faithful life that moves</p>\n'
+    '    <h1>It <em>lives</em>, and it <em>moves</em>.</h1>\n'
+    '    <p class="lede">One quantum organism on a length-L chain, faithful to Alvarez-Rodriguez 2018:'
+    ' a <b>genotype</b> (the germ line — heredity + the entanglement witness), a <b>body</b> that'
+    ' <b>walks</b>, and a <b>vitality</b> that <b>ages toward death</b> unless the body <b>eats</b>.'
+    ' Feed it and it survives and <b>reproduces</b> (a daughter is born); starve it and it dies.'
+    ' Reproduction, metabolism, selection, and death all genuinely act — at minimal scale.</p>\n'
+    '  </header>')
+
+_MOTILE_FOOT = (
+    '<div class="foot">\n'
+    "    <h3>What's certified — and what isn't</h3>\n"
+    '    <p><b>Certified quantum:</b> the germ-line genealogy witness across genotypes, measured on'
+    ' real hardware. With <b>certify=ghz2</b> it is a two-basis GHZ certificate that excludes'
+    ' classical mixtures; with <b>xonly</b> it is single-basis X-parity (weaker but honest).</p>\n'
+    '    <p><b>Classically visualisable:</b> the moving body occupancy (the bars) is a Z-basis'
+    ' population — a classical walk reproduces it. The quantum claim is the <b>genealogy</b>, not the'
+    ' motion.</p>\n'
+    '    <p class="honest">The life processes — reproduction, metabolism, selection, and'
+    ' <b>unitary-aging death</b> — genuinely act in the circuit (no reset/measurement; death is the'
+    ' faithful 2018 unitary aging). Green diamonds = food sites. A greyed/red body = a dead'
+    ' individual. Bars = per-cell occupancy.</p>\n'
+    '  </div>')
+
+_MODE_BTNS = (
+    '    <button data-mode="solo" aria-pressed="true">Solo<b>one · moves</b></button>\n',
+    '    <button data-mode="replicate" aria-pressed="false">Replicate<b>one → two</b></button>\n',
+    '    <button data-mode="duo" aria-pressed="false">Two organisms<b>interact</b></button>\n',
+)
+
+
+def render_motile(run: dict[str, Any], out_dir: str) -> str:
+    """Fill the mockup for a PJ2.4 motile run: inject FOOD + MODEL='motile' + per-frame alive/energy,
+    and drop the mode buttons (motile is a single mode)."""
+    meta = run["meta"]
+    length = int(meta["length"])
+    gens = int(meta["gens"])
+    food = meta.get("food", [])
+    pokes = meta.get("pokes", [])
+    data = _motile_scenarios(run)
+    preamble = (
+        f"const L={length},GENS={gens},Wd={int(meta.get('organisms', 2))};\n"
+        "const POKES=" + json.dumps(pokes, separators=(",", ":")) + ";\n"
+        f"const FOOD={json.dumps(food, separators=(',', ':'))};\n"
+        'const MODEL="motile";\n'
+        "const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));\n"
+        "const DATA=" + json.dumps(data, separators=(",", ":")) + ";")
+    html = _read_mockup("line_scenarios.html")
+    html = _swap(html, "const L=9,GENS=6,Wd=3;", 'coupled:genDuo("coupled")}};', preamble)
+    for btn in _MODE_BTNS:
+        html = html.replace(btn, "")
+    html = _swap(html, "<header>", "</header>", _MOTILE_HEADER)     # honest copy (AC7)
+    html = _swap(html, '<div class="foot">', "</div>", _MOTILE_FOOT)
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, "motile_life.html")
+    with open(out, "w") as f:
+        f.write(_HEAD + html)
+    return out
+
+
 def build_data(run: dict[str, Any]) -> dict[str, Any]:
     """Provenance + shape summary for the log line (the scenarios pass straight through)."""
     meta = run["meta"]
@@ -100,6 +175,8 @@ def render_line(run: dict[str, Any], out_dir: str) -> str:
     preamble = (
         f"const L={length},GENS={gens},Wd={width};\n"
         "const POKES=" + json.dumps(pokes, separators=(",", ":")) + ";\n"
+        "const FOOD=[];\n"
+        'const MODEL="line";\n'
         "const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));\n"
         "const DATA=" + json.dumps(data, separators=(",", ":")) + ";")
     html = _read_mockup("line_scenarios.html")
@@ -170,6 +247,14 @@ def main() -> int:
 
     with open(path) as f:
         run = json.load(f)
+
+    if run["meta"].get("model") == "motile_vivarium":              # PJ2.4 motile run
+        out = render_motile(run, args.out_dir)
+        m = run["meta"]
+        print(f"[OK] wrote {out}  (motile org={m['organisms']} L={m['length']} gens={m['gens']} "
+              f"food={m.get('food')} certify={m.get('certify')} backend={m['backend']})")
+        render_witness_png(run, args.out_dir)
+        return 0
 
     out = render_line(run, args.out_dir)
     d = build_data(run)

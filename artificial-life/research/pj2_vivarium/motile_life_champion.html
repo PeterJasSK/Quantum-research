@@ -1,0 +1,280 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Vivarium — 1D line · Move · Replicate · Interact</title>
+<style>
+  /* palette lifted from web/index.html so this page reads as part of the same site */
+  :root{
+    --bg:#05070d;--bg2:#080c17;--panel:rgba(10,15,28,.62);--panel-solid:#0a0f1c;
+    --ink:#eaf0fb;--mut:#7d879e;--dim:#59637a;--line:rgba(90,110,150,.16);--line2:rgba(120,140,180,.28);
+    --witness:#37e6d4;--A:#f6a623;--A2:#ffce7a;--B:#37c7d8;--B2:#8ee9f3;
+    --good:#6ee787;--bad:#ff5c6b;--warn:#ffb454;--gold:#ffd66d;--cell:#8fb6c6;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:
+      radial-gradient(1400px 900px at 72% -12%,#0d1730 0%,transparent 58%),
+      radial-gradient(1100px 780px at -8% 118%,#0a1226 0%,transparent 52%),
+      var(--bg);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+  header{padding:34px 0 10px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--witness);margin:0 0 12px}
+  h1{font-weight:800;font-size:clamp(24px,4.2vw,42px);line-height:1.06;margin:0 0 12px;letter-spacing:-.02em;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--witness)}
+  .lede{font-size:15px;max-width:66ch;color:var(--mut);margin:0;line-height:1.6;font-family:var(--sans)}
+  .lede b{color:var(--ink);font-weight:600}
+  .modes{display:flex;gap:6px;margin:18px 0 0;flex-wrap:wrap}
+  .modes button{font-family:var(--sans);font-size:14px;border:1px solid var(--line);cursor:pointer;padding:9px 18px;border-radius:8px;background:var(--panel-solid);color:var(--mut);transition:.16s}
+  .modes button[aria-pressed=true]{border-color:var(--witness);color:var(--ink);background:#0c1c22}
+  .modes button b{font-weight:400;font-family:var(--mono);font-size:10px;letter-spacing:.1em;display:block;color:var(--dim);text-transform:uppercase;margin-top:2px}
+  .modes button[aria-pressed=true] b{color:var(--witness)}
+  .scope{position:relative;margin:12px 0 0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:radial-gradient(120% 120% at 50% 45%,#0a141f 0%,var(--bg) 66%,#02040a 100%)}
+  .scope canvas{display:block;width:100%;height:48vh;min-height:380px}
+  .hud{position:absolute;inset:0;pointer-events:none;font-family:var(--mono)}
+  .hud .tl{position:absolute;left:16px;top:14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .witchip{position:absolute;right:16px;top:14px;font-size:12px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--bg) 70%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .stage-lbl{position:absolute;left:16px;bottom:16px;display:flex;align-items:baseline;gap:12px}
+  .stage-lbl .big{font-family:var(--sans);font-weight:600;font-size:20px}
+  .stage-lbl .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .qbtn{position:absolute;right:16px;bottom:16px;pointer-events:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel-solid);color:var(--mut);cursor:pointer}
+  .qbtn[aria-pressed=true]{border-color:var(--witness);color:var(--witness)}
+  .console{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:14px 0 0}
+  .arms{display:flex;gap:5px;background:var(--panel-solid);border:1px solid var(--line);border-radius:8px;padding:4px}
+  .arms button{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;border:0;cursor:pointer;padding:7px 13px;border-radius:6px;background:transparent;color:var(--mut);transition:.16s}
+  .arms button[aria-pressed=true]{background:var(--witness);color:#03120f}
+  .arms button[data-arm=coupled][aria-pressed=true]{background:var(--bad);color:#210408}
+  .scrub{display:flex;align-items:center;gap:12px;flex:1;min-width:240px}
+  .play{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--panel-solid);color:var(--ink);cursor:pointer;font-size:13px;display:grid;place-items:center}
+  .play:hover{border-color:var(--witness)}
+  input[type=range]{flex:1;accent-color:var(--witness);height:3px}
+  .genread{font-family:var(--mono);font-size:12.5px;color:var(--mut);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .genread b{color:var(--ink);font-size:18px}
+  .plot{margin:14px 0 0;border:1px solid var(--line);border-radius:var(--r);background:var(--panel-solid);padding:14px 16px 10px}
+  .plot-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+  .plot-h h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0}
+  .plot-h .leg{font-family:var(--mono);font-size:11px;display:flex;gap:14px}
+  .plot-h .leg span{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}
+  .plot-h .sw{width:14px;height:2px;flex:none}
+  .plot canvas{display:block;width:100%;height:146px}
+  .foot{background:var(--panel-solid);border:1px solid var(--line);border-radius:var(--r);margin:18px 0 60px;padding:16px 20px}
+  .foot h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--witness);margin:0 0 8px}
+  .foot p{font-size:13.5px;color:var(--mut);margin:0 0 8px;font-family:var(--sans);line-height:1.6}.foot b{color:var(--ink)}
+  .honest{font-size:12.5px;color:var(--dim);border-left:2px solid var(--gold);padding-left:12px;margin:10px 0 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">PJ2.4 · motile vivarium · 2018-faithful life that moves</p>
+    <h1>It <em>lives</em>, and it <em>moves</em>.</h1>
+    <p class="lede">One quantum organism on a length-L chain, faithful to Alvarez-Rodriguez 2018: a <b>genotype</b> (the germ line — heredity + the entanglement witness), a <b>body</b> that <b>walks</b>, and a <b>vitality</b> that <b>ages toward death</b> unless the body <b>eats</b>. Feed it and it survives and <b>reproduces</b> (a daughter is born); starve it and it dies. Reproduction, metabolism, selection, and death all genuinely act — at minimal scale.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="Scenario">
+  </div>
+
+  <div class="scope">
+    <canvas id="scope"></canvas>
+    <div class="hud">
+      <div class="tl" id="modetag">statevector field · solo</div>
+      <div class="witchip" id="witchip">witness +0.00</div>
+      <div class="stage-lbl"><span class="big" id="stage">Witness certified</span>
+        <span class="sub" id="steplab">gen 0 / 5</span></div>
+      <button class="qbtn" id="qbtn" aria-pressed="true">▦  hide occupancy</button>
+    </div>
+  </div>
+
+  <div class="console">
+    <div class="arms" role="group" aria-label="Arm">
+      <button data-arm="isolated" aria-pressed="true">ISOLATED GERM LINE</button>
+      <button data-arm="coupled" aria-pressed="false">COUPLED · BARRIER BROKEN</button>
+    </div>
+    <div class="scrub">
+      <button class="play" id="play" aria-label="Play or pause">▮▮</button>
+      <input type="range" id="gen" min="0" max="5" step="0.02" value="0" aria-label="Generation">
+      <span class="genread">gen <b id="genN">0</b>/5</span>
+    </div>
+  </div>
+
+  <div class="plot">
+    <div class="plot-h">
+      <h3>Witness ⟨X⊗W⟩ vs generation</h3>
+      <div class="leg">
+        <span><i class="sw" style="background:var(--witness)"></i>isolated</span>
+        <span><i class="sw" style="background:var(--bad)"></i>coupled</span>
+        <span><i class="sw" style="background:var(--dim)"></i>certified line</span>
+      </div>
+    </div>
+    <canvas id="plot"></canvas>
+  </div>
+
+  <div class="foot">
+    <h3>What's certified — and what isn't</h3>
+    <p><b>Certified quantum:</b> the germ-line genealogy witness across genotypes, measured on real hardware. With <b>certify=ghz2</b> it is a two-basis GHZ certificate that excludes classical mixtures; with <b>xonly</b> it is single-basis X-parity (weaker but honest).</p>
+    <p><b>Classically visualisable:</b> the moving body occupancy (the bars) is a Z-basis population — a classical walk reproduces it. The quantum claim is the <b>genealogy</b>, not the motion.</p>
+    <p class="honest">The life processes — reproduction, metabolism, selection, and <b>unitary-aging death</b> — genuinely act in the circuit (no reset/measurement; death is the faithful 2018 unitary aging). Green diamonds = food sites. A greyed/red body = a dead individual. Bars = per-cell occupancy.</p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const L=6,GENS=20,Wd=2;
+const POKES=[];
+const FOOD=[1,3];
+const MODEL="motile";
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const DATA={"motile":{"isolated":[{"fields":[[0.0076,0.0032,0.001,0.0007,0.0054,0.9929],[0.0,0.0,0.0,0.0,0.0,0.0]],"w":0.9963,"overlap":0.0,"n":1,"alive":[0.9911,0.0],"energy":[0.0063,0.0]},{"fields":[[0.2014,0.1143,0.108,0.1456,0.2163,0.6904],[0.0,0.0,0.0,0.0,0.0,0.0]],"w":0.9963,"overlap":0.0,"n":1,"alive":[0.7834,0.0],"energy":[0.202,0.0]},{"fields":[[0.8496,0.3011,0.5425,0.3654,0.5165,0.2981],[0.0,0.0,0.0,0.0,0.0,0.0]],"w":0.9978,"overlap":0.0,"n":1,"alive":[0.6458,0.0],"energy":[0.4999,0.0]},{"fields":[[0.2607,0.469,0.299,0.4269,0.5035,0.2059],[0.0004,0.1095,0.1711,0.1746,0.2273,0.2269]],"w":0.9797,"overlap":0.8888,"n":1,"alive":[0.4193,0.995],"energy":[0.4172,0.0006]},{"fields":[[0.1865,0.234,0.2522,0.3566,0.3984,0.4415],[0.4352,0.1656,0.1439,0.1958,0.2588,0.2117]],"w":0.9824,"overlap":1.1623,"n":1,"alive":[0.4407,0.8007],"energy":[0.4348,0.2336]},{"fields":[[0.3875,0.2784,0.3285,0.4152,0.3839,0.4653],[0.1271,0.1809,0.1779,0.2006,0.2465,0.2311]],"w":0.9788,"overlap":1.1641,"n":0,"alive":[0.4624,0.4308],"energy":[0.464,0.2494]},{"fields":[[0.2915,0.2936,0.3081,0.3973,0.5433,0.5314],[0.1729,0.1847,0.2274,0.2463,0.288,0.2982]],"w":0.9773,"overlap":1.4175,"n":0,"alive":[0.4612,0.3531],"energy":[0.4711,0.34]},{"fields":[[0.2948,0.2871,0.3212,0.3574,0.4462,0.4478],[0.2291,0.3685,0.3422,0.3816,0.4391,0.4828]],"w":0.9814,"overlap":2.0817,"n":0,"alive":[0.4629,0.4564],"energy":[0.474,0.4429]},{"fields":[[0.4165,0.3473,0.3701,0.3979,0.3888,0.4072],[0.2819,0.2839,0.2866,0.4176,0.4368,0.4209]],"w":0.8323,"overlap":2.0463,"n":0,"alive":[0.4266,0.4213],"energy":[0.4442,0.4082]},{"fields":[[0.4005,0.374,0.3843,0.4216,0.4904,0.4847],[0.4231,0.3545,0.3934,0.4481,0.4578,0.4303]],"w":0.9829,"overlap":2.449,"n":0,"alive":[0.45,0.4462],"energy":[0.4512,0.4424]},{"fields":[[0.5039,0.4003,0.4485,0.3989,0.3932,0.4049],[0.2701,0.332,0.3602,0.4039,0.4052,0.406]],"w":0.9817,"overlap":2.1593,"n":0,"alive":[0.4592,0.4189],"energy":[0.4645,0.458]},{"fields":[[0.3748,0.3455,0.3395,0.4185,0.4827,0.5011],[0.5127,0.3959,0.422,0.3694,0.4258,0.5203]],"w":0.9812,"overlap":2.3561,"n":0,"alive":[0.4541,0.4456],"energy":[0.4471,0.4404]},{"fields":[[0.515,0.4408,0.4771,0.4454,0.4728,0.4731],[0.4091,0.4022,0.4333,0.4294,0.439,0.4115]],"w":0.9856,"overlap":2.5245,"n":0,"alive":[0.4617,0.4377],"energy":[0.4561,0.433]},{"fields":[[0.4668,0.4426,0.51,0.4979,0.5038,0.514],[0.4631,0.4824,0.4633,0.4285,0.4237,0.4337]],"w":0.9824,"overlap":2.6549,"n":0,"alive":[0.4762,0.4783],"energy":[0.4688,0.4696]},{"fields":[[0.4319,0.4197,0.4579,0.4878,0.4866,0.5223],[0.4485,0.413,0.493,0.4761,0.4993,0.5055]],"w":0.9817,"overlap":2.771,"n":0,"alive":[0.4714,0.4813],"energy":[0.4758,0.4785]},{"fields":[[0.3861,0.4412,0.4122,0.4175,0.4255,0.4362],[0.4753,0.4822,0.4829,0.4783,0.4847,0.4816]],"w":0.978,"overlap":2.5187,"n":0,"alive":[0.4622,0.4747],"energy":[0.4454,0.4877]},{"fields":[[0.4991,0.4587,0.4783,0.4731,0.504,0.4847],[0.4038,0.3934,0.4116,0.4553,0.4698,0.4767]],"w":0.9829,"overlap":2.6106,"n":0,"alive":[0.4655,0.4783],"energy":[0.4535,0.4796]},{"fields":[[0.5082,0.479,0.4818,0.4451,0.4619,0.4768],[0.4996,0.4537,0.4786,0.451,0.4691,0.488]],"w":0.9797,"overlap":2.8157,"n":0,"alive":[0.4846,0.4655],"energy":[0.4817,0.4675]},{"fields":[[0.4132,0.4014,0.3611,0.4238,0.4838,0.438],[0.4786,0.4772,0.494,0.4735,0.5095,0.4901]],"w":0.9832,"overlap":2.5213,"n":0,"alive":[0.4589,0.4785],"energy":[0.4585,0.4817]},{"fields":[[0.4977,0.479,0.4426,0.4408,0.4474,0.4517],[0.4016,0.3804,0.3873,0.4266,0.4012,0.407]],"w":0.9829,"overlap":2.4041,"n":0,"alive":[0.4763,0.4622],"energy":[0.4617,0.441]}]}};
+
+// --- state + controls -------------------------------------------------------
+let mode="solo",arm="isolated",tc=0,playing=true,last=0,qview=true;
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;if(reduce)playing=false;
+const genEl=document.getElementById("gen"),genN=document.getElementById("genN"),witchip=document.getElementById("witchip"),
+      stageEl=document.getElementById("stage"),steplab=document.getElementById("steplab"),playBtn=document.getElementById("play"),
+      qbtn=document.getElementById("qbtn"),modetag=document.getElementById("modetag");
+genEl.max=String(GENS-1);genEl.step="0.02";
+const gv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// robust: accepts both #rrggbb and rgb()/rgba() CSS var values (some palette vars are rgba()).
+const rgba=(c,a)=>{c=(c||"").trim();
+  if(c.startsWith("rgb")){const n=c.replace(/rgba?\(([^)]+)\)/,"$1").split(",").map(s=>s.trim());
+    return`rgba(${n[0]||0},${n[1]||0},${n[2]||0},${a})`;}
+  const h=c.replace('#','');
+  return`rgba(${parseInt(h.slice(0,2),16)||0},${parseInt(h.slice(2,4),16)||0},${parseInt(h.slice(4,6),16)||0},${a})`;};
+// which arms / modes actually exist in DATA (a filled run may carry only a subset).
+const armsOf=m=>Object.keys(DATA[m]||{});
+const modesOf=()=>Object.keys(DATA);
+if(!DATA[mode])mode=modesOf()[0];
+if(!armsOf(mode).includes(arm))arm=armsOf(mode)[0];
+function refreshArms(){document.querySelectorAll(".arms button").forEach(b=>{
+  b.style.display=armsOf(mode).includes(b.dataset.arm)?"":"none";});}
+const lerp1=(a,b,u)=>a+(b-a)*u;
+const lerpArr=(x,y,u)=>x.map((v,i)=>v+((y[i]??v)-v)*u);
+function frameAt(m,a,t){const A=DATA[m][a]||DATA[m][armsOf(m)[0]],g0=Math.floor(t),g1=Math.min(GENS-1,g0+1),u=t-g0,x=A[g0],y=A[g1];
+  const nF=Math.max(x.fields.length,y.fields.length),fields=[];
+  for(let k=0;k<nF;k++){const fx=x.fields[k]||y.fields[k],fy=y.fields[k]||x.fields[k];fields.push(lerpArr(fx,fy,u));}
+  return{fields,w:lerp1(x.w,y.w,u),overlap:lerp1(x.overlap||0,y.overlap||0,u),n:(u<.5?x.n:y.n)||1};}
+function setMode(m){mode=m;if(!armsOf(m).includes(arm))setArm(armsOf(m)[0]);refreshArms();
+  document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
+  modetag.textContent="statevector field · "+(({solo:"solo",replicate:"replication",duo:"two organisms",motile:"motile life"}[m])||m);}
+function setArm(a){if(!armsOf(mode).includes(a))return;arm=a;document.querySelectorAll(".arms button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.arm===a));}
+document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.querySelectorAll(".arms button").forEach(b=>b.onclick=()=>setArm(b.dataset.arm));
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?"▮▮":"▶";};
+genEl.oninput=()=>{tc=+genEl.value;playing=false;playBtn.textContent="▶";};
+qbtn.onclick=()=>{qview=!qview;qbtn.setAttribute("aria-pressed",qview);qbtn.textContent=qview?"▦  hide occupancy":"▦  show occupancy";};
+
+// --- canvas -----------------------------------------------------------------
+const cv=document.getElementById("scope"),ctx=cv.getContext("2d");let Wf,Hf;
+const pcv=document.getElementById("plot"),pctx=pcv.getContext("2d");let Wp,Hp;
+function fit(){const dpr=Math.min(2,devicePixelRatio||1);
+  let r=cv.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);Wf=r.width;Hf=r.height;
+  r=pcv.getBoundingClientRect();pcv.width=r.width*dpr;pcv.height=r.height*dpr;pctx.setTransform(dpr,0,0,dpr,0,0);Wp=r.width;Hp=r.height;}
+addEventListener("resize",fit);
+function layout(){const padX=Math.max(28,Wf*0.06),cw=(Wf-2*padX)/L,yc=Hf*0.34;return{padX,cw,yc};}
+function cellCenter(i,lo){return[lo.padX+(i+0.5)*lo.cw,lo.yc];}
+function drawField(occ,col,lo,vit=1){ctx.save();ctx.globalCompositeOperation="lighter";
+  const R=Math.min(lo.cw*0.55,lo.yc*0.7),V=clamp(vit,0.12,1);
+  for(let i=0;i<L;i++){const o=occ[i];if(o<.02)continue;const[x,y]=cellCenter(i,lo),rr=R*(.5+.7*o);
+    const g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,rgba(col,(.6*o+.05)*V));g.addColorStop(.5,rgba(col,.22*o*V));g.addColorStop(1,rgba(col,0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}
+  ctx.restore();}
+function centroid(occ,lo){let sx=0,sw=0;for(let i=0;i<L;i++){const[x]=cellCenter(i,lo);sx+=x*occ[i];sw+=occ[i];}return sw>.05?[sx/sw,lo.yc,sw]:null;}
+function nucleoid(cen,col,vit,lo){if(!cen)return;const[cx,cy]=cen,core=Math.min(lo.cw,lo.yc)*.18;
+  const ng=ctx.createRadialGradient(cx,cy,0,cx,cy,core*2.2);ng.addColorStop(0,rgba(col,.9*vit+.05));ng.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=ng;ctx.beginPath();ctx.arc(cx,cy,core*2.2,0,6.2832);ctx.fill();
+  ctx.fillStyle=rgba(col,vit*.85);ctx.beginPath();ctx.arc(cx,cy,core*.55,0,6.2832);ctx.fill();}
+
+function renderField(t){
+  ctx.clearRect(0,0,Wf,Hf);
+  const F=frameAt(mode,arm,t),lo=layout(),collapse=arm==="coupled"&&F.w<.42,
+        wCol=collapse?gv('--bad'):gv('--witness'),vit=clamp(F.w,0,1);
+  // the chain: a baseline rule + a slot tick per cell
+  ctx.strokeStyle=rgba(gv('--line2'),.9);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(lo.padX,lo.yc);ctx.lineTo(lo.padX+L*lo.cw,lo.yc);ctx.stroke();
+  for(let i=0;i<L;i++){const[x,y]=cellCenter(i,lo);ctx.fillStyle=rgba(gv('--dim'),.5);ctx.beginPath();ctx.arc(x,y,1.6,0,6.2832);ctx.fill();
+    ctx.strokeStyle=rgba(gv('--line'),1);ctx.strokeRect(x-lo.cw*.46,y-lo.cw*.46,lo.cw*.92,lo.cw*.92);}
+  // food sites (motile): a green diamond on the baseline where the habitat feeds
+  for(const c of (FOOD||[])){if(c<0||c>=L)continue;const[fx]=cellCenter(c,lo);
+    ctx.fillStyle=rgba(gv('--good'),.85);ctx.save();ctx.translate(fx,lo.yc);ctx.rotate(Math.PI/4);
+    ctx.fillRect(-3.2,-3.2,6.4,6.4);ctx.restore();}
+
+  // per-individual vitality (aliveness): motile frames carry F.alive[o]; line frames -> fully alive.
+  const av=o=>(F.alive&&F.alive[o]!=null)?clamp(F.alive[o],0,1):1;
+  const two=F.fields.length>1&&(F.fields[1].some(v=>v>.02));
+  let occForPsi;
+  if(two){
+    const dead0=av(0)<0.5,dead1=av(1)<0.5;
+    const colA=(collapse||dead0)?gv('--bad'):gv('--A'),colB=(collapse||dead1)?gv('--bad'):gv('--B');
+    drawField(F.fields[0],colA,lo,av(0));drawField(F.fields[1],colB,lo,av(1));
+    const cA=centroid(F.fields[0],lo),cB=centroid(F.fields[1],lo);
+    nucleoid(cA,colA,vit*av(0),lo);nucleoid(cB,colB,vit*av(1),lo);
+    if(cA&&cB&&F.overlap>0.004){const bw=Math.min(9,2+F.overlap*40),mx=(cA[0]+cB[0])/2,my=lo.yc;
+      const bg=ctx.createRadialGradient(mx,my,0,mx,my,lo.cw*.8);bg.addColorStop(0,rgba(wCol,.5));bg.addColorStop(1,rgba(wCol,0));
+      ctx.fillStyle=bg;ctx.beginPath();ctx.arc(mx,my,lo.cw*.8,0,6.2832);ctx.fill();
+      ctx.strokeStyle=rgba(wCol,.6);ctx.lineWidth=bw;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(cA[0],cA[1]);ctx.lineTo(cB[0],cB[1]);ctx.stroke();}
+    occForPsi=F.fields[0].map((v,i)=>v+F.fields[1][i]);
+  } else {
+    const dead0=av(0)<0.5,col0=(collapse||dead0)?gv('--bad'):wCol;
+    drawField(F.fields[0],col0,lo,av(0));nucleoid(centroid(F.fields[0],lo),col0,vit*av(0),lo);
+    if((mode==="replicate"||MODEL==="motile")&&Math.abs(t-2)<0.5){const p=1-Math.abs(t-2)/0.5,cen=centroid(F.fields[0],lo);
+      if(cen){ctx.strokeStyle=rgba(gv('--witness'),.5*p);ctx.lineWidth=2;ctx.beginPath();ctx.arc(cen[0],cen[1],lo.cw*(0.5+1.4*(1-p)),0,6.2832);ctx.stroke();}}
+    occForPsi=F.fields[0];
+  }
+  // per-cell occupancy bars + % under each box (index.html style: bar height = probability in that cell)
+  if(qview){const baseY=Hf-24,maxH=Math.max(26,Math.min(Hf*0.34,baseY-(lo.yc+lo.cw*0.55)-14)),bw=Math.min(lo.cw*0.52,28);
+    ctx.textBaseline="alphabetic";
+    for(let i=0;i<L;i++){const[x]=cellCenter(i,lo);
+      ctx.strokeStyle=rgba(gv('--line2'),.5);ctx.lineWidth=1;ctx.strokeRect(x-bw/2,baseY-maxH,bw,maxH);
+      let yb=baseY;const parts=two?[[F.fields[0][i],(collapse||av(0)<0.5)?gv('--bad'):gv('--A'),av(0)],[F.fields[1][i],(collapse||av(1)<0.5)?gv('--bad'):gv('--B'),av(1)]]
+                                  :[[F.fields[0][i],(collapse||av(0)<0.5)?gv('--bad'):wCol,av(0)]];
+      parts.forEach(([v,col,vv])=>{const hh=clamp(v,0,1)*maxH;if(hh<=0.4)return;ctx.fillStyle=rgba(col,.3+.55*clamp(vv,0,1));ctx.fillRect(x-bw/2,yb-hh,bw,hh);yb-=hh;});
+      const tot=clamp(occForPsi[i],0,1),lit=tot>.005;
+      ctx.fillStyle=rgba(lit?gv('--ink'):gv('--dim'),lit?.95:.5);ctx.font=(lit?"600 ":"")+"11px "+gv('--mono');ctx.textAlign="center";
+      ctx.fillText(Math.round(tot*100)+"%",x,baseY+15);}
+    ctx.textAlign="left";ctx.fillStyle=rgba(gv('--dim'),.8);ctx.font="10px "+gv('--mono');
+    ctx.fillText("occupancy per cell",lo.padX,Hf-6);}
+
+  // poke markers: a gold caret at each poked cell, a pulsing ring when the playhead crosses its gen
+  for(const K of (POKES||[])){if(K.pos<0||K.pos>=L)continue;const[px]=cellCenter(K.pos,lo),topY=lo.yc-lo.cw*0.6;
+    ctx.strokeStyle=rgba(gv('--gold'),.55);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(px,topY-10);ctx.lineTo(px,lo.yc);ctx.stroke();
+    ctx.fillStyle=rgba(gv('--gold'),.9);ctx.font="10px "+gv('--mono');ctx.textAlign="center";
+    ctx.fillText(`poke g${K.gen}→${Math.round(K.amp*100)}%`,px,topY-14);
+    const d=Math.abs(t-K.gen);if(d<0.7){const p=1-d/0.7;ctx.strokeStyle=rgba(gv('--gold'),.85*p+.05);ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.arc(px,lo.yc,lo.cw*(0.45+1.3*(1-p)),0,6.2832);ctx.stroke();}}
+
+  const g=Math.round(t);
+  witchip.textContent=`witness ${F.w>=0?"+":""}${F.w.toFixed(2)}`+(mode==="duo"?` · overlap ${F.overlap.toFixed(2)}`:mode==="replicate"?` · ×${F.n||1}`:"");
+  witchip.style.color=F.w<.15?gv('--bad'):gv('--ink');witchip.style.borderColor=F.w<.15?gv('--bad'):gv('--line');
+  const aliveTxt=F.alive?` · alive ${F.alive.filter(a=>a>0.5).length}/${F.alive.length}`:"";
+  genN.textContent=g;steplab.textContent=`gen ${g} / ${GENS-1}${aliveTxt}`;genEl.value=t;
+  stageEl.textContent=label(t,F);stageEl.style.color=F.w<.15?gv('--bad'):gv('--ink');
+}
+function label(t,F){
+  if(mode==="replicate"){if(t<1.6)return"Single organism";if(Math.abs(t-2)<0.6)return"Replicating";return"Two copies · shared germ line";}
+  if(mode==="duo"){if(F.overlap<0.01)return"Approaching";return F.w<.15?"Interacting · witness lost":"Interacting · entangling";}
+  return F.w>.5?"Witness certified":F.w>.15?"Witness fading":"Witness collapsed";}
+
+function renderPlot(t){
+  pctx.clearRect(0,0,Wp,Hp);
+  const padL=34,padR=12,padT=10,padB=22,x0=padL,x1=Wp-padR,y0=padT,y1=Hp-padB;
+  const X=g=>x0+(g/(GENS-1))*(x1-x0),Y=w=>y1-((w+0.05)/1.05)*(y1-y0);
+  pctx.strokeStyle=rgba(gv('--line'),1);pctx.lineWidth=1;pctx.font="10px "+gv('--mono');pctx.fillStyle=gv('--dim');
+  [0,0.5,1].forEach(w=>{const y=Y(w);pctx.beginPath();pctx.moveTo(x0,y);pctx.lineTo(x1,y);pctx.stroke();
+    pctx.textAlign="right";pctx.textBaseline="middle";pctx.fillText(w.toFixed(1),x0-6,y);});
+  for(let g=0;g<GENS;g++){pctx.textAlign="center";pctx.textBaseline="top";pctx.fillText(g,X(g),y1+5);}
+  pctx.setLineDash([4,4]);pctx.strokeStyle=rgba(gv('--dim'),.7);pctx.beginPath();pctx.moveTo(x0,Y(0.15));pctx.lineTo(x1,Y(0.15));pctx.stroke();pctx.setLineDash([]);
+  pctx.textAlign="left";pctx.fillStyle=rgba(gv('--dim'),.9);pctx.fillText("certified >0.15",x0+4,Y(0.15)-9);
+  for(const a of armsOf(mode)){const col=a==="isolated"?gv('--witness'):gv('--bad'),act=a===arm;
+    pctx.strokeStyle=rgba(col,act?1:.35);pctx.lineWidth=act?2.2:1.4;pctx.beginPath();
+    DATA[mode][a].forEach((f,g)=>{const x=X(g),y=Y(f.w);g?pctx.lineTo(x,y):pctx.moveTo(x,y);});pctx.stroke();
+    DATA[mode][a].forEach((f,g)=>{pctx.fillStyle=rgba(col,act?.9:.3);pctx.beginPath();pctx.arc(X(g),Y(f.w),act?2.6:1.8,0,6.2832);pctx.fill();});}
+  const F=frameAt(mode,arm,t),col=(arm==="coupled"&&F.w<.42)?gv('--bad'):gv('--witness'),mx=X(t),my=Y(F.w);
+  pctx.strokeStyle=rgba(gv('--ink'),.3);pctx.setLineDash([2,3]);pctx.beginPath();pctx.moveTo(mx,y0);pctx.lineTo(mx,y1);pctx.stroke();pctx.setLineDash([]);
+  pctx.fillStyle=col;pctx.beginPath();pctx.arc(mx,my,4,0,6.2832);pctx.fill();pctx.strokeStyle=gv('--bg');pctx.lineWidth=1.5;pctx.stroke();
+}
+function loop(ts){if(playing){tc+=(ts-last)/900;if(tc>=GENS-.01)tc=0;}last=ts;renderField(tc);renderPlot(tc);requestAnimationFrame(loop);}
+setMode(mode);setArm(arm);
+fit();renderField(0);renderPlot(0);requestAnimationFrame(t=>{last=t;requestAnimationFrame(loop);});
+</script>

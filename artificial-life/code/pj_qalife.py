@@ -1997,6 +1997,277 @@ def print_line_report(width: int, length: int, gens: int, thetas: list[float], *
     print(f"  gate counts:                              {rep['gate_counts']}")
 
 
+# ===========================================================================
+# PJ2.4 -- MOTILE VIVARIUM: 2018-faithful life that also MOVES.
+# Each individual = genotype (germ GHZ rung -- the witness/heredity) + vitality (2018 phenotype
+# aliveness that AGES toward the dark |0> = death, unitary, no bath/reset) + a unary body field of
+# `length` cells that WALKS (rxx+ryy quantum walk) + an energy accumulator. Food is a fixed habitat
+# lattice. Reproduction, metabolism, selection, and death all ACT (see plan feature-PJ2.4). Death is
+# UNITARY aging (damping refuted). The Weismann barrier holds in the isolated arm: germ qubits only
+# ever touch other germ qubits; the coupled arm adds the soma->germ wound that collapses the witness.
+# ===========================================================================
+MOTILE_ORG = 2                       # founder + one daughter (born by reproduction)
+MOTILE_L = 4                         # body chain length per individual
+MOTILE_FOOD = (1, 3)                 # habitat food-site cells (empty tuple = barren = starvation demo)
+MOTILE_REP_GEN = 2                   # generation the fed founder buds the daughter
+MOTILE_AGE = 1.0                     # unitary aging step per generation (toward the dark |0> = death)
+MOTILE_HOP = LINE_HOP                # walk hop angle
+MOTILE_ARMS = ("isolated", "coupled")
+
+
+def motile_block_len(length: int) -> int:
+    """Qubits per individual: genotype(1) + vitality(1) + body(length) + energy(1)."""
+    return length + 3
+
+
+def motile_segment_len(organisms: int, length: int, food: tuple[int, ...]) -> int:
+    """Total qubits: organisms blocks + the shared food lattice."""
+    return organisms * motile_block_len(length) + len(food)
+
+
+def _mot_base(o: int, length: int) -> int:
+    return o * motile_block_len(length)
+
+
+def mot_geno_q(o: int, length: int) -> int:
+    """Genotype (germ GHZ rung) of individual o -- the heredity + witness locus."""
+    return _mot_base(o, length)
+
+
+def mot_vit_q(o: int, length: int) -> int:
+    """Vitality (2018 phenotype aliveness) of individual o -- ages toward |0> = death."""
+    return _mot_base(o, length) + 1
+
+
+def mot_body_q(o: int, i: int, length: int) -> int:
+    """Body cell i of individual o -- the unary occupancy field that walks."""
+    return _mot_base(o, length) + 2 + i
+
+
+def mot_energy_q(o: int, length: int) -> int:
+    """Energy accumulator of individual o -- set on eat, gates revive + budding."""
+    return _mot_base(o, length) + 2 + length
+
+
+def mot_food_q(j: int, organisms: int, length: int) -> int:
+    """Food-lattice site j (shared habitat), placed after all individual blocks."""
+    return organisms * motile_block_len(length) + j
+
+
+def motile_n_born(gens: int, rep_gen: int, organisms: int) -> int:
+    """How many individuals exist by depth `gens`: founder alone until rep_gen, then all."""
+    return 1 if int(gens) <= int(rep_gen) else organisms
+
+
+def motile_witness_qubits(organisms: int, length: int, gens: int, rep_gen: int) -> list[int]:
+    """Active germ loci carrying the joint <X^W> at THIS depth (daughter germ exists after the clone)."""
+    return [mot_geno_q(o, length) for o in range(motile_n_born(gens, rep_gen, organisms))]
+
+
+def _motile_walk_layer(qc: QuantumCircuit, o: int, length: int, theta: float) -> None:
+    """One excitation-conserving rxx+ryy walk layer on individual o's body chain (edge-colored)."""
+    for color in line_edges(length):
+        for a_cell, b_cell in color:
+            a = mot_body_q(o, a_cell, length)
+            b = mot_body_q(o, b_cell, length)
+            qc.rxx(theta, a, b)
+            qc.ryy(theta, a, b)
+
+
+def _motile_poke(qc: QuantumCircuit, length: int, pos: int, amp: float) -> None:
+    """Sudden perturbation on the founder's body cell `pos`: SET its occupancy to `amp` (reset + ry),
+    overriding the walk -- same semantics as the line poke, on organism 0's body."""
+    p = max(0, min(length - 1, int(pos)))
+    a = max(0.0, min(1.0, float(amp)))
+    q = mot_body_q(0, p, length)
+    qc.reset(q)
+    if a > 0.0:
+        qc.ry(2.0 * math.asin(math.sqrt(a)), q)
+
+
+def build_motile_vivarium(organisms: int, length: int, gens: int, thetas: list[float], *,
+                          arm: str = "isolated", start: int = 0, hop: float = MOTILE_HOP,
+                          food: tuple[int, ...] = MOTILE_FOOD, rep_gen: int = MOTILE_REP_GEN,
+                          age_step: float = MOTILE_AGE, founder_equator: bool = True,
+                          pokes: list[tuple[int, int, float]] | None = None,
+                          annotate: bool = False) -> QuantumCircuit:
+    """The honest motile organism, in ONE circuit (built once per depth for the driver's depth scan).
+
+    Life cycle per generation: WALK (rxx+ryy) -> EAT (ccx body+food -> energy) -> [REPRODUCE at rep_gen:
+    germ clone cx(g0->g1) + daughter bud ccx(energy,body->neighbour)] -> AGE (unitary ry toward |0>)
+    + REVIVE-the-fed (cry on energy). Reproduction/metabolism/selection/death all act. Death is UNITARY
+    (no reset/measure/bath). Weismann: germ touches only germ unless arm='coupled' (the wound)."""
+    if arm not in MOTILE_ARMS:
+        raise ValueError(f"unknown motile arm {arm!r}")
+    n = motile_segment_len(organisms, length, food)
+    qc = QuantumCircuit(n)
+    start %= length
+
+    # --- Phase 1: founder germline (the witness/heredity; built before any soma gate). ---
+    g0 = mot_geno_q(0, length)
+    if founder_equator:
+        qc.ry(math.pi / 2, g0)                                     # FOUNDER
+    qc.ry(thetas[0], g0)                                           # MUTATION
+    _bar(qc, annotate, "germline")
+
+    # --- Phase 2: express founder (born alive), seed its body + the habitat food. ---
+    qc.ry(math.pi, mot_vit_q(0, length))                          # BIRTH: vitality |1> = alive
+    qc.x(mot_body_q(0, start, length))                            # seed the body at the start cell
+    for j, c in enumerate(food):                                  # habitat resources present
+        if 0 <= c < length:
+            qc.x(mot_food_q(j, organisms, length))
+    _bar(qc, annotate, "birth")
+    pokes = pokes or []
+    for pg, pp, pa in pokes:                                       # poke(s) at the seed
+        if pg == 0:
+            _motile_poke(qc, length, pp, pa)
+            _bar(qc, annotate, "poke")
+
+    born = 1
+    for gen in range(int(gens)):
+        # (a) MOVEMENT: every living body walks one layer.
+        for o in range(born):
+            _motile_walk_layer(qc, o, length, hop)
+        # (b) METABOLISM: eat where body + food co-locate, then consume the food.
+        for o in range(born):
+            for j, c in enumerate(food):
+                if 0 <= c < length:
+                    qc.ccx(mot_body_q(o, c, length), mot_food_q(j, organisms, length),
+                           mot_energy_q(o, length))               # EAT
+                    qc.cx(mot_energy_q(o, length), mot_food_q(j, organisms, length))  # consume
+        # (c) REPRODUCTION (metabolism-gated): the fed founder buds a daughter at rep_gen.
+        if organisms > 1 and gen == int(rep_gen) and born < organisms:
+            g1 = mot_geno_q(1, length)
+            qc.cx(g0, g1)                                          # germ->germ clone (witness internal)
+            qc.ry(thetas[1] if len(thetas) > 1 else 0.0, g1)      # daughter mutation
+            qc.ry(math.pi, mot_vit_q(1, length))                  # daughter born alive
+            for s in range(length - 1):                           # bud body one cell over, if fed
+                qc.ccx(mot_energy_q(0, length), mot_body_q(0, s, length),
+                       mot_body_q(1, s + 1, length))
+            born = 2
+            _bar(qc, annotate, "reproduce")
+        _bar(qc, annotate, f"gen{gen}")
+        for pg, pp, pa in pokes:                                   # poke(s) after `gen+1` walk layers
+            if pg == gen + 1:
+                _motile_poke(qc, length, pp, pa)
+                _bar(qc, annotate, "poke")
+
+    # --- AGING = DEATH (unitary, CLAMPED like 2018 death="unitary": saturates at the dark |0> and
+    #     STAYS dead -- monotone, no resurrection) + REVIVE-the-fed (selection, no measurement). ---
+    for o in range(born):
+        v = mot_vit_q(o, length)
+        age = int(gens) if o == 0 else max(0, int(gens) - int(rep_gen) - 1)   # gens each individual lived
+        reduction = min(math.pi, age_step * age)                  # clamp -> death saturates, stays dead
+        if reduction > 0.0:
+            qc.ry(-reduction, v)                                  # age toward death (monotone)
+            qc.cry(reduction, mot_energy_q(o, length), v)         # fed -> exactly undo aging (survive)
+    _bar(qc, annotate, "aging")
+
+    # --- Coupled arm: the soma->germ wound (breaks the Weismann barrier -> witness collapses). ---
+    if arm == "coupled":
+        c = length // 2
+        qc.rxx(math.pi / 2, mot_body_q(0, c, length), g0)
+        qc.ryy(math.pi / 2, mot_body_q(0, c, length), g0)
+        _bar(qc, annotate, "arm")
+
+    return qc
+
+
+def motile_body_qubits(o: int, length: int) -> list[int]:
+    return [mot_body_q(o, i, length) for i in range(length)]
+
+
+def motile_coupling_report(qc: QuantumCircuit, organisms: int, length: int, food: tuple[int, ...], *,
+                           gens: int, rep_gen: int) -> dict[str, Any]:
+    """STATIC Weismann analyzer for the motile model (reuses _barrier_scan). witness = active germ;
+    soma = everything else (vitality/body/energy/food). NOTE mass is NOT conserved here (repro/aging
+    change excitation), so only back_action / classical-branch / germ-first are the load-bearing checks."""
+    witness = set(motile_witness_qubits(organisms, length, gens, rep_gen))
+    body: set[int] = set(range(motile_segment_len(organisms, length, food))) - witness
+    return _barrier_scan(qc, witness, body)
+
+
+def _motile_selftest_case(organisms: int, length: int, *, food: tuple[int, ...] = MOTILE_FOOD,
+                          gens: int = 4, rep_gen: int = MOTILE_REP_GEN,
+                          seed: int = 100) -> list[tuple[str, bool, str]]:
+    thetas = q4._sim_thetas(max(2, organisms), seed, mut_scale=0.0)
+    res: list[tuple[str, bool, str]] = []
+
+    def _build(arm: str) -> QuantumCircuit:
+        return build_motile_vivarium(organisms, length, gens, thetas, arm=arm, food=food,
+                                     rep_gen=rep_gen)
+
+    rep_i = motile_coupling_report(_build("isolated"), organisms, length, food, gens=gens,
+                                   rep_gen=rep_gen)
+    rep_c = motile_coupling_report(_build("coupled"), organisms, length, food, gens=gens,
+                                   rep_gen=rep_gen)
+    # (i) faithful UNITARY death: no reset / measure / bath -> no classical branch (AC3).
+    res.append(("death is UNITARY (no reset/measure/classical branch)",
+                not rep_i["has_classical_branch"], f"branch={rep_i['has_classical_branch']}"))
+    # (ii) Weismann barrier: isolated has NO soma->germ back-action; coupled breaks it (AC4).
+    res.append(("Weismann barrier (isolated no back-action; coupled breaks it)",
+                (not rep_i["back_action"]) and rep_c["back_action"],
+                f"isolated_back={rep_i['back_action']} coupled_back={rep_c['back_action']}"))
+    # (iii) germ built before the soma (heredity precedes the body).
+    res.append(("ordering: germ line before the body", rep_i["germ_first"],
+                f"germ_first={rep_i['germ_first']}"))
+    # (iv) qubit count matches motile_segment_len (AC6).
+    nq = _build("isolated").num_qubits
+    expect = motile_segment_len(organisms, length, food)
+    res.append(("qubit count == motile_segment_len", nq == expect, f"nq={nq} expected={expect}"))
+    # (v) gate vocabulary is unitary-only (rxx/ryy/x/ry/cry/cx/ccx + barrier).
+    allowed = {"rxx", "ryy", "x", "ry", "cry", "cx", "ccx", "barrier"}
+    used = set(rep_i["gate_counts"]) - allowed
+    res.append(("gate set is unitary-only", not used, f"unexpected={sorted(used)}"))
+    return res
+
+
+def run_motile_selftest(cases: tuple[tuple[int, int], ...] = ((2, 4), (2, 3), (1, 4)),
+                        food: tuple[int, ...] = MOTILE_FOOD, gens: int = 4) -> int:
+    """Static structural checks for the motile model (CD-7; no sim). Returns 0/1."""
+    print("=== PJ2.4 motile vivarium --selftest (STATIC circuit-structure checks; no sim) ===")
+    all_ok = True
+    for organisms, length in cases:
+        nq = motile_segment_len(organisms, length, food)
+        print(f"\n-- motile org={organisms}, L={length}, food={food}, gens={gens} ({nq} qubits) --")
+        for name, ok, detail in _motile_selftest_case(organisms, length, food=food, gens=gens):
+            all_ok = all_ok and ok
+            print(f"  [{'OK ' if ok else 'FAIL'}] {name}  ({detail})")
+    print("\nSELFTEST PASS" if all_ok else "\nSELFTEST FAIL")
+    return 0 if all_ok else 1
+
+
+def print_motile_report(organisms: int, length: int, gens: int, thetas: list[float], *, arm: str,
+                        food: tuple[int, ...] = MOTILE_FOOD, rep_gen: int = MOTILE_REP_GEN) -> None:
+    """Build the motile circuit, print it + a legend + the STATIC correctness report."""
+    qc = build_motile_vivarium(organisms, length, gens, thetas, arm=arm, food=food, rep_gen=rep_gen,
+                               annotate=True)
+    rep = motile_coupling_report(qc, organisms, length, food, gens=gens, rep_gen=rep_gen)
+    print(f"\n--- PJ2.4 MOTILE VIVARIUM (org={organisms}, L={length}, gens={gens}, arm={arm}, "
+          f"food={food}, rep_gen={rep_gen}) ---")
+    for o in range(organisms):
+        print(f"  individual {o}: geno={mot_geno_q(o, length)} vit={mot_vit_q(o, length)} "
+              f"body={mot_body_q(o, 0, length)}..{mot_body_q(o, length - 1, length)} "
+              f"energy={mot_energy_q(o, length)}")
+    print(f"  food qubits: {[mot_food_q(j, organisms, length) for j in range(len(food))]} at cells {list(food)}")
+    print("  gate -> meaning:")
+    print("    Ry(pi/2)/CX/Ry(theta) on geno   = FOUNDER / clone / MUTATION (GHZ heredity + witness)")
+    print("    Ry(pi) on vitality              = BIRTH (born alive |1>)")
+    print("    RXX+RYY on body pairs           = MOVEMENT (excitation-conserving walk)")
+    print("    CCX(body,food->energy)          = EAT ; CX(energy->food) = consume")
+    print("    CCX(energy,body->daughter body) = REPRODUCE (metabolism-gated bud)")
+    print("    Ry(-)/CRY(energy) on vitality   = AGE toward death / REVIVE the fed (selection)")
+    if arm == "coupled":
+        print("    RXX+RYY body<->geno(0)          = the soma->germ wound (breaks the barrier)")
+    print("\n" + str(qc.draw(output="text", fold=-1)))
+    print("\n--- STATIC MOTILE CORRECTNESS REPORT ---")
+    print(f"  soma->germ back-action (NO in isolated):  {'YES' if rep['back_action'] else 'NO'}")
+    print(f"  germ built before body:                   {'YES' if rep['germ_first'] else 'NO'}")
+    print(f"  classical branch (must be NO):            {'YES' if rep['has_classical_branch'] else 'NO'}")
+    print(f"  witness qubit set (germ lines):           {rep['witness_set']}")
+    print(f"  gate counts:                              {rep['gate_counts']}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description="PJ0 germ/soma model + PJ1 arena + PJ2 vivarium (static eval; no sim/hardware).")
@@ -2031,6 +2302,8 @@ def main() -> None:
     ap.add_argument("--line", action="store_true",
                     help="PJ2.2b: switch to the 1D-line vivarium build")
     ap.add_argument("--length", type=int, default=LINE_LEN, help="1D chain length L (line cells)")
+    ap.add_argument("--motile", action="store_true",
+                    help="PJ2.4: switch to the motile vivarium (moving 2018-faithful life) build")
     # --- PJ2 vivarium flags (default: PJ0 static CLI, unchanged) ---
     ap.add_argument("--vivarium", action="store_true",
                     help="PJ2: switch to the solo-vivarium build")
@@ -2042,6 +2315,14 @@ def main() -> None:
     ap.add_argument("--gate-repl", dest="gate_repl", action="store_true",
                     help="route budding through the witness clone (measured-cost variant)")
     args = ap.parse_args()
+
+    if args.motile:
+        if args.selftest:
+            raise SystemExit(run_motile_selftest())
+        thetas = q4._sim_thetas(max(2, args.organisms), 0, mut_scale=0.0)
+        length = args.length if args.length != LINE_LEN else MOTILE_L
+        print_motile_report(args.organisms, length, args.gens, thetas, arm=args.arm)
+        return
 
     if args.line:
         if args.selftest:

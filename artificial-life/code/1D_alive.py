@@ -7,7 +7,6 @@ length-L CHAIN that WALKS (an excitation-conserving rxx+ryy quantum walk between
 i-1 / i+1) instead of a 2D grid. The single quantum claim is the germ-line genealogical witness
 <X^W>. Three modes (solo / replicate / duo) x two arms (isolated germ line / coupled = the
 soma->germ wound).
-
 Same defining lock as 2D: CERTIFIED FRAMES VIA A DEPTH SCAN. On hardware each generation
 d in {0..gens-1} is its OWN measured circuit with d walk layers, measured once for occupancy (Z)
 + germ witness (X) with a separable-null control -- NO interpolation on the certified path. Sim
@@ -237,12 +236,200 @@ def dump_circuits(width: int, length: int, gens: int, thetas: list[float], *, mo
             pj.print_line_report(width, length, gens, thetas, mode=mode, arm=arm)
 
 
+# ===========================================================================
+# PJ2.4 -- MOTILE VIVARIUM driver path (2018-faithful life that moves).
+# ===========================================================================
+def _run_counts_simple(qc: QuantumCircuit, *, sim: bool, backend: Any, shots: int) -> dict[str, int]:
+    if sim:
+        return LINE_SIM.run(transpile(qc, LINE_SIM), shots=shots).result().get_counts()
+    submit = generate_preset_pass_manager(optimization_level=3, backend=backend).run(qc)
+    raw_meas, _jobs, _qs = run_sampler(backend, submit, shots)
+    counts: dict[str, int] = {}
+    for s in raw_meas:
+        counts[s] = counts.get(s, 0) + 1
+    return counts
+
+
+def build_measured_motile(organisms: int, length: int, gens: int, thetas: list[float], *, arm: str,
+                          start: int, hop: float, food: tuple[int, ...], rep_gen: int,
+                          basis: str = "x",
+                          pokes: list[tuple[int, int, float]] | None = None) -> QuantumCircuit:
+    """One measured motile circuit at depth `gens`. basis='x' rotates the ACTIVE germ into X (the
+    <X^W> witness setting); basis='z' leaves the germ in Z (for the ghz2 Z-sector). Body/vitality/
+    energy are always read in Z."""
+    qc = pj.build_motile_vivarium(organisms, length, gens, thetas, arm=arm, start=start, hop=hop,
+                                  food=food, rep_gen=rep_gen, pokes=pokes)
+    if basis == "x":
+        for q in pj.motile_witness_qubits(organisms, length, gens, rep_gen):
+            qc.h(q)
+    n = qc.num_qubits
+    creg = ClassicalRegister(n, "c")
+    qc.add_register(creg)
+    qc.measure(range(n), creg)
+    return qc
+
+
+def _zz_mean_from_counts(counts: dict[str, int], qubits: list[int]) -> float:
+    """Mean <Z_i Z_j> over ADJACENT germ pairs from Z-basis counts (the ghz2 Z-sector correlation)."""
+    if len(qubits) < 2:
+        return 0.0
+    total = sum(counts.values()) or 1
+    acc = 0.0
+    pairs = list(zip(qubits, qubits[1:]))
+    for bits, c in counts.items():
+        for a, b in pairs:
+            sa = 1 - 2 * (bits[-(a + 1)] == "1")
+            sb = 1 - 2 * (bits[-(b + 1)] == "1")
+            acc += sa * sb * c
+    return acc / (total * len(pairs))
+
+
+def reduce_motile(cx: dict[str, int], cz: dict[str, int] | None, organisms: int, length: int, *,
+                  gens: int, rep_gen: int, certify: str) -> dict[str, Any]:
+    """Observables from the measured counts: per-individual body field + alive + energy, the germ
+    witness (X-parity vs product null), and (ghz2) the Z-sector -> a real entanglement certificate."""
+    total = sum(cx.values()) or 1
+    active = pj.motile_witness_qubits(organisms, length, gens, rep_gen)
+    joint, sep = q4.xbasis_witness_from_counts(cx, active)
+    fields = [[round(_marginal_p1(cx, pj.mot_body_q(o, i, length), total), 4) for i in range(length)]
+              for o in range(organisms)]
+    alive = [round(_marginal_p1(cx, pj.mot_vit_q(o, length), total), 4) for o in range(organisms)]
+    energy = [round(_marginal_p1(cx, pj.mot_energy_q(o, length), total), 4) for o in range(organisms)]
+    born = pj.motile_n_born(gens, rep_gen, organisms)              # zero out not-yet-born individuals
+    for o in range(born, organisms):                              # (their idle qubits are just noise)
+        fields[o] = [0.0] * length
+        alive[o] = 0.0
+        energy[o] = 0.0
+    n_alive = sum(1 for a in alive if a > 0.5)
+    overlap = (sum(min(fields[0][i], fields[1][i]) for i in range(length)) if organisms > 1 else 0.0)
+    zz = _zz_mean_from_counts(cz, active) if (certify == "ghz2" and cz is not None) else None
+    return {"witness_joint": joint, "separable_null": sep, "fields": fields, "alive": alive,
+            "energy": energy, "n_alive": n_alive, "overlap": round(float(overlap), 4), "zz": zz}
+
+
+def depth_scan_motile(organisms: int, length: int, gens: int, thetas: list[float], *, arm: str,
+                      start: int, hop: float, food: tuple[int, ...], rep_gen: int, certify: str,
+                      sim: bool, backend: Any, shots: int, repeats: int,
+                      pokes: list[tuple[int, int, float]] | None = None) -> list[dict[str, Any]]:
+    """The honest frames: for d in range(gens) build+measure the motile circuit(s), reduce to one
+    certified frame carrying the moving fields AND the acting life (alive/energy/born) + witness."""
+    sigma_shot = math.sqrt(1.0 / shots)
+    frames: list[dict[str, Any]] = []
+    for d in range(gens):
+        qcx = build_measured_motile(organisms, length, d, thetas, arm=arm, start=start, hop=hop,
+                                    food=food, rep_gen=rep_gen, basis="x", pokes=pokes)
+        qcz = (build_measured_motile(organisms, length, d, thetas, arm=arm, start=start, hop=hop,
+                                     food=food, rep_gen=rep_gen, basis="z", pokes=pokes)
+               if certify == "ghz2" else None)
+        joints: list[float] = []
+        reduced: dict[str, Any] = {}
+        for _rep in range(max(1, repeats)):
+            cx = _run_counts_simple(qcx, sim=sim, backend=backend, shots=shots)
+            cz = (_run_counts_simple(qcz, sim=sim, backend=backend, shots=shots) if qcz else None)
+            reduced = reduce_motile(cx, cz, organisms, length, gens=d, rep_gen=rep_gen, certify=certify)
+            joints.append(reduced["witness_joint"])
+        w = statistics.fmean(joints)
+        spread = statistics.pstdev(joints) if len(joints) > 1 else 0.0
+        w_sigma = math.sqrt(spread ** 2 + sigma_shot ** 2)
+        active_w = len(pj.motile_witness_qubits(organisms, length, d, rep_gen))
+        zz = reduced["zz"]
+        certified = None
+        if zz is not None and active_w >= 2:
+            val = w + zz                                           # Bell/GHZ two-sector sum
+            certified = bool(val - 1.0 > K * w_sigma)             # separable bound: <XX>+<ZZ> <= 1
+        frames.append({
+            "gen": d, "fields": reduced["fields"], "alive": reduced["alive"],
+            "energy": reduced["energy"], "born": pj.motile_n_born(d, rep_gen, organisms),
+            "w": round(float(w), 4), "w_sigma": round(float(w_sigma), 4),
+            "sep": round(float(reduced["separable_null"]), 4), "overlap": reduced["overlap"],
+            "zz": (round(float(zz), 4) if zz is not None else None),
+            "certified": certified, "n": reduced["n_alive"],
+            "survives": bool(w - reduced["separable_null"] > K * w_sigma),
+        })
+    return frames
+
+
+def run_motile(args: Any, thetas: list[float], start: int, hop: float, sim: bool,
+               pokes: list[tuple[int, int, float]] | None = None) -> None:
+    """PJ2.4 flow: connect (if hardware), depth-scan each arm, bank the moving-life run JSON."""
+    food = tuple(int(x) for x in args.food.split(",") if x.strip() != "")
+    length = args.length
+    arms = (args.arm,) if args.arm else ARMS
+    pokes = pokes or []
+    nq = pj.motile_segment_len(args.organisms, length, food)
+
+    backend = None
+    backend_name = "statevector_sim"
+    if not sim:
+        backend = connect(args.backend)
+        backend_name = backend.name
+        print(f"Backend : {backend.name}  ({backend.num_qubits} qubits); motile needs {nq}")
+        gated_chain(backend, nq)
+    elif nq > _SV_MAX_QUBITS:
+        print(f"[PJ2.4 ABORT] {nq} qubits > sim cap {_SV_MAX_QUBITS} (shrink --length/--organisms).")
+        raise SystemExit(1)
+
+    poke_str = (" pokes=" + ",".join(f"g{g}@c{p}({a})" for g, p, a in pokes)) if pokes else ""
+    print(f"=== PJ2.4 motile: org={args.organisms} L={length} gens={args.gens} arms={arms} "
+          f"food={list(food)} rep_gen={args.rep_gen} certify={args.certify} start={start} hop={hop}"
+          f"{poke_str} on {backend_name} ({nq} qubits) ===")
+
+    scenarios: dict[str, Any] = {"motile": {}}
+    endpoint: dict[str, Any] = {}
+    any_certified = False
+    for arm in arms:
+        frames = depth_scan_motile(args.organisms, length, args.gens, thetas, arm=arm, start=start,
+                                   hop=hop, food=food, rep_gen=args.rep_gen, certify=args.certify,
+                                   sim=sim, backend=backend, shots=args.shots, repeats=args.repeats,
+                                   pokes=pokes)
+        scenarios["motile"][arm] = frames
+        last = frames[-1]
+        endpoint[arm] = {"w": last["w"], "n_alive": last["n"], "certified": last["certified"],
+                         "survives": last["survives"]}
+        any_certified = any_certified or any(f["certified"] for f in frames)
+        print(f"  {arm:9} witness[0..{args.gens - 1}]={[f['w'] for f in frames]}")
+        print(f"  {arm:9} alive(count)/gen={[f['n'] for f in frames]}  born/gen={[f['born'] for f in frames]}")
+        if args.certify == "ghz2":
+            print(f"  {arm:9} zz/gen={[f['zz'] for f in frames]}  certified/gen={[f['certified'] for f in frames]}")
+
+    result: dict[str, Any] = {
+        "meta": {
+            "stage": "PJ2.4", "model": "motile_vivarium", "backend": backend_name,
+            "organisms": args.organisms, "length": length, "gens": args.gens, "food": list(food),
+            "rep_gen": args.rep_gen, "arms": list(arms), "shots": args.shots, "sim": sim, "k": K,
+            "hop": hop, "start": start, "age_step": pj.MOTILE_AGE, "certify": args.certify,
+            "certified_entangled": (any_certified if args.certify == "ghz2" else None),
+            "repeats": args.repeats, "certified_frames": True, "calibration": None,
+            "pokes": [{"gen": g, "pos": p, "amp": round(a, 4)} for g, p, a in pokes],
+        },
+        "scenarios": scenarios, "endpoint": endpoint,
+    }
+    os.makedirs(os.path.join(OUTPUT_DIR, "pj2_motile"), exist_ok=True)
+    tag = timestamp() if not sim else "sim"
+    out = os.path.join(OUTPUT_DIR, "pj2_motile",
+                       f"{args.name}_org{args.organisms}L{length}_{backend_name}_{tag}.json")
+    with open(out, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  -> {out}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description="PJ2.2b 1D-line vivarium driver -- a walking occupancy field + germ witness; "
                     "banks the certified depth-scan frames (the 1D sibling of 2D_alive.py).")
     ap.add_argument("--backend", type=str, default=None,
                     help="hardware backend name; omit to run on the statevector Aer sim")
+    ap.add_argument("--model", choices=("line", "motile"), default="line",
+                    help="line = movement+witness only (PJ2.2b); motile = 2018-faithful life that moves "
+                         "(PJ2.4: reproduction/selection/metabolism/death acting)")
+    ap.add_argument("--certify", choices=("xonly", "ghz2"), default="xonly",
+                    help="motile witness: xonly = single-basis <X^W> (fast, weak); ghz2 = add the "
+                         "Z-sector for a real entanglement certificate")
+    ap.add_argument("--organisms", type=int, default=2, help="motile: individuals (founder + daughter)")
+    ap.add_argument("--food", type=str, default="1,3",
+                    help="motile: comma-separated food-site cells; empty ('') = barren (starvation demo)")
+    ap.add_argument("--rep-gen", dest="rep_gen", type=int, default=2,
+                    help="motile: generation the fed founder buds the daughter")
     ap.add_argument("--length", type=int, default=LENGTH, help="chain length L (line cells)")
     ap.add_argument("--width", type=int, default=WIDTH, help="germ width W (the witness set)")
     ap.add_argument("--mode", choices=list(MODES), default=None,
@@ -317,6 +504,10 @@ def main() -> None:
         hop = args.hop
     if args.start is not None:                                     # force the seed cell
         start = args.start % args.length
+
+    if args.model == "motile":                                     # PJ2.4 branch (2018-faithful life)
+        run_motile(args, thetas, start, hop, sim, pokes)
+        return
 
     if args.dump_circuit:
         dump_circuits(args.width, args.length, args.gens, thetas, modes=modes, arms=arms)
