@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="" />
+    <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/analysis/line_render.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/analysis/line_render.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/code/1D_alive.py" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/code/1D_alive.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/plans/feature-PJ2.5-germ-dynamical-decoupling.md" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/plans/feature-PJ2.5-germ-dynamical-decoupling.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/MOTILE_CONCLUSION.md" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/MOTILE_CONCLUSION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/motile_life.html" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/motile_life.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/pj2_line_witness.png" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/research/pj2_vivarium/pj2_line_witness.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/artificial-life/research_runs/pj2_motile/pj2_line_org2L4_statevector_sim_sim.json" beforeDir="false" afterPath="$PROJECT_DIR$/artificial-life/research_runs/pj2_motile/pj2_line_org2L4_statevector_sim_sim.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,31 +47,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JavaScript Debug.concept_mockups.html.executor": "Coverage",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/peter/PycharmProjects/Quantum-research/study-ideas/QuantumAlgorithmsExplained",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "ts.external.directory.path": "/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JavaScript Debug.concept_mockups.html.executor&quot;: &quot;Coverage&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/TargetedDosColisionsAndRNGAngle/web/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/study-ideas/QuantumAlgorithmsExplained" />
       <recent name="$PROJECT_DIR$/artificial-life/web" />
       <recent name="$PROJECT_DIR$/THESIS" />
       <recent name="$PROJECT_DIR$/number-partitioning/plans" />
-      <recent name="$PROJECT_DIR$/number-partitioning" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/artificial-life/research/backlogWEB" />
@@ -190,6 +199,17 @@
       <workItem from="1789360842907" duration="1610000" />
       <workItem from="1789366260195" duration="7744000" />
       <workItem from="1789401643386" duration="8051000" />
+      <workItem from="1789476215579" duration="3007000" />
+      <workItem from="1790141731496" duration="6613000" />
+      <workItem from="1790156767056" duration="316000" />
+      <workItem from="1790166362691" duration="123000" />
+      <workItem from="1790417297422" duration="51987000" />
+      <workItem from="1790620305462" duration="644000" />
+      <workItem from="1790703579721" duration="3000" />
+      <workItem from="1790759299278" duration="415000" />
+      <workItem from="1792350596316" duration="1134000" />
+      <workItem from="1792413152277" duration="8190000" />
+      <workItem from="1792522105680" duration="31000" />
     </task>
     <servers />
   </component>

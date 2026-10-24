@@ -1,0 +1,338 @@
+========================================================================
+IDEAS — Siemens (Healthineers) thesis koncept
+Pracovný dokument. Začíname feedbackom, formalizujeme.
+Dátum: 2026-10-24
+========================================================================
+
+
+========================================================================
+ČASŤ 1 — FEEDBACK (čo Jan / Siemens reálne chce)
+========================================================================
+
+Jan Majoros = Head of Offensive Security, Siemens. ALE:
+
+NECHCÚ bezpečnosť. Security / QRNG / CHSH framing NELANDUJE.
+
+CHCÚ:
+- Niečo, čo vedia PREDAŤ interne ako priamo APLIKOVATEĽNÉ pre Siemens.
+- Konkrétne: Siemens Healthineers / HEALTHCARE.
+- Menované smery:
+    * mapovanie ľudského genómu + predikcia budúcich chorôb
+    * procedurálna generácia syntetických CT / MR obrazov na tréning
+      ML modelov (detekcia nálezov)
+    * všeobecne "čo vie QC spraviť pre nás"
+
+KĽÚČOVÉ KRITÉRIUM FUNDOVANIA (toto je celá pointa):
+- NEPOTREBUJÚ výsledok dnes.
+- Chcú KONCEPT v malej škále, ktorý je dôveryhodne ŠKÁLOVATEĽNÝ
+  na ~10 rokov do bodu, kedy bude naozaj užitočný.
+- Malý proof-of-concept teraz + uveriteľná škálovacia cesta = TO fundujú.
+
+PREČO to hrá pre nás:
+- QC v medicíne DNES nemá dokázanú výhodu — je to budúcnosť.
+- To je PRESNE ich zadanie (10-ročný horizont).
+- Takže honesty "užitočné až o 10 rokov" = ich zadanie, nie slabina.
+
+TECHNICKÁ PRAVDA, ktorú treba poznať:
+- "Problém vstupu dát": načítať veľké klasické dáta (genóm, veľký CT)
+  do QC je tak drahé, že to ZABIJE väčšinu QML výhody.
+- Generatívne modely tento problém čiastočne OBCHÁDZAJÚ (generujú nové,
+  nenačítavajú veľké vstupy) → preto je generatívny kandidát najsilnejší.
+
+
+========================================================================
+ČASŤ 2 — O ČOM SME ROZPRÁVALI (oblúk rozhovoru)
+========================================================================
+
+1. Prešli sme všetky projekty (artificial-life/QALife, QuantumTree,
+   CriticalQuantumLife, ErrorDetectionVSRawBits, BC, qrng-eaas).
+
+2. Prvý pokus o pitch: security angle (CHSH certifikované náhodné čísla +
+   quantum life ako dôkaz "čo QC robí inak" + "povedzte mi čo treba").
+   -> pitch.txt. Ale: Jan nechce security.
+
+3. Technicky sme prebrali (toto VIEM a viem obhájiť):
+   - CHSH / Bellov test, S > 2, prečo klasika nedokáže prekročiť 2.
+   - Loophole wide open na jednom čipe (lokalita/no-signaling) ->
+     na IBM NIE device-independent, len "trusted hardware".
+   - Entanglement witness: dvojbázový ⟨XX⟩+⟨ZZ⟩ > 1, komplementarita.
+   - Prečo 2018 štúdia necertifikovala quantumness + prečo je to dôležité.
+   - Môj workflow: kalibrácia -> best_chain (DFS branch-and-bound) ->
+     Qiskit obvod + transpilácia -> SamplerV2 -> spracovanie counts.
+   - Tech stack: Qiskit, Runtime, Aer/statevector, DD, dynamické obvody,
+     ML-KEM-768, HMAC-DRBG, NIST SP 800-22/90A/90B, AES-GCM, Ed25519,
+     FastAPI, Postgres, Redis, Next.js.
+   - Shor (exponenc., láme RSA/ECC) vs Grover (kvadratic., naštrbí AES).
+
+4. PIVOT (toto je nový smer): preč od security, smerom k healthcare
+   aplikácii, ktorá sa dá predať a škálovať na 10 rokov.
+
+
+========================================================================
+ČASŤ 3 — KANDIDÁTI (healthcare QC koncepty)
+========================================================================
+
+A ⭐ KVANTOVÝ GENERATÍVNY MODEL pre syntetické medicínske dáta
+   - Presne ich potreba: generácia CT/MR na tréning ML detekcie.
+   - Quantum circuit Born machine / quantum GAN vzorkuje rozdelenie.
+   - Kvantovo INÉ: vzorkuje rozdelenia klasicky ťažko reprodukovateľné.
+   - REUSE: QuantumTree UŽ je kvantový generatívny model + certifikácia.
+   - Diferenciátor: viem DOKÁZAŤ, že syntetické dáta sú non-klasické.
+   - Malá škála: 1D profily/malé záplaty teraz -> 2D/3D obrazy o 10 r.
+   - Riziko: klasické diffusion modely sú veľmi silné.
+
+B  KVANTOVÉ MONTE CARLO (amplitude estimation) pre dávku/rekonštrukciu
+   - Najčestnejší: kvadratické zrýchlenie DOKÁZANÉ (nie hype).
+   - Radiačná dávka (rádioterapia = Siemens Healthineers/Varian), CT rekon.
+   - Riziko: len kvadratické; treba fault-tolerant QC (10+ rokov).
+
+C  QUANTUM ML (quantum kernel) pre genóm / predikciu chorôb
+   - Najviac buzzword-sellable, NAJMENEJ honest.
+   - Výhoda nedokázaná, problém vstupu dát, barren plateaus.
+   - Použiť len ako buzzword most, rýchlo priznať limity.
+
+ODPORÚČANIE: lead s A, B ako čestná záloha, C len spomenúť.
+
+
+========================================================================
+ČASŤ 4 — KONTROLNÉ OTÁZKY (zodpovedať pred formalizáciou)
+========================================================================
+
+Porozumenie (over, či som to zachytil správne):
+[ ] 1. Je cieľ naozaj HEALTHCARE a nie security? (potvrď/oprav)
+[ ] 2. Je to pre teba magisterská práca, alebo spoločný projekt
+       so Siemens, alebo oboje?
+[ ] 3. "10-ročná škálovacia cesta" — má byť súčasť písomnej práce,
+       alebo len ústny argument na stretnutie?
+
+Smer (rozhodnutie):
+[ ] 4. Ktorý kandidát? (A generatívny / B Monte Carlo / C quantum ML)
+       — alebo kombinácia?
+[ ] 5. Ak A: aká doména dát? CT? MR? genóm? (každá má iný "malý" PoC)
+[ ] 6. Máš prístup k reálnym (aj verejným) medicínskym dátam na toy
+       dataset? (napr. verejné CT/MR datasety) alebo čisto syntetické?
+
+Rozsah / zdroje:
+[ ] 7. Aký hardvér/budget? Len IBM free tier, alebo aj platený QPU čas
+       (Siemens by fundoval)?
+[ ] 8. Dokedy to potrebuješ? (dátum stretnutia / deadline práce)
+[ ] 9. Chceš z toho aj publikáciu, alebo stačí práca + koncept pre Siemens?
+
+Pozicionovanie:
+[ ] 10. Chceš do konceptu zapojiť existujúci kód (QuantumTree), alebo
+        staviame čistý nový PoC?
+[ ] 11. Má byť v koncepte aj honest "čo QC NEvie dnes" (odporúčam áno
+        — Jan to ocení), alebo len pozitívny príbeh?
+
+
+========================================================================
+POZN.: JADRO JE EŠTE NEDEFINOVANÉ
+========================================================================
+Nevieme, čo Siemens reálne potrebuje — TREBA ZISTIŤ na stretnutí.
+Kandidáti A/B/C = reaktívne menu, NIE záväzok. Najprv discovery.
+Mapa nižšie (Časť 5) = aby si vedel reagovať na čokoľvek povedia.
+
+
+========================================================================
+ČASŤ 5 — ŠIROKÁ MAPA QC V HEALTHCARE
+(reakčný nástroj: keď povedia X, kvantový uhol je Y)
+========================================================================
+
+Zrelosť:  [DNES] funguje malé | [BLÍZKO] 2-5r | [10R] fault-tolerant |
+          [ŠPEK] špekulatívne/nedokázané
+Fit:      hviezdy = ako blízko to je k Siemens Healthineers biznisu
+
+------------------------------------------------------------------------
+1. MEDICÍNSKE ZOBRAZOVANIE  ★★★★★  (Healthineers = CT/MR/PET/RTG/UZV)
+------------------------------------------------------------------------
+Najsilnejšia doména pre Siemens. Viac pod-uhlov:
+
+ 1a. Generácia syntetických dát (quantum GAN / Born machine)   [BLÍZKO]
+     - vzorkuje rozdelenie obrazov -> augmentácia tréningu ML detekcie
+     - KANDIDÁT A. Reuse QuantumTree. Certifikovateľná non-klasickosť.
+     - malý PoC: 1D profily / malé záplaty na pár qubitoch
+
+ 1b. Rekonštrukcia obrazu (CT/MRI inverzný problém)            [10R/ŠPEK]
+     - MRI compressed-sensing, CT rekon ako optimalizácia / lin. algebra
+     - kvantové: HHL (lin. rovnice), QAOA; pozor na data-loading
+     - malý PoC: rekon malého fantómu
+
+ 1c. Klasifikácia / segmentácia (detekcia nádoru)              [ŠPEK]
+     - quantum kernel / QNN; výhoda nedokázaná, barren plateaus
+
+ 1d. Registrácia / denoising obrazu                            [ŠPEK]
+     - zarovnanie skenov = optimalizácia
+
+------------------------------------------------------------------------
+2. RÁDIOTERAPIA  ★★★★★  (Healthineers/Varian = reálny produkt)
+------------------------------------------------------------------------
+ 2a. Výpočet radiačnej dávky — Monte Carlo (amplitude estimation) [10R]
+     - KANDIDÁT B. DOKÁZANÉ kvadratické zrýchlenie.
+     - malý PoC: toy integrál / malá dávková mapa
+ 2b. Plánovanie liečby (beam angle/intensity) — optimalizácia   [BLÍZKO]
+     - QAOA / annealing; konkrétny problém, výhoda na NISQ nedokázaná
+
+------------------------------------------------------------------------
+3. MOLEKULÁRNA SIMULÁCIA / LIEKY  ★★  (Siemens nie je pharma)
+------------------------------------------------------------------------
+ - Kvantová chémia: energia molekúl (VQE, phase estimation)     [10R]
+ - NAJSILNEJŠÍ teoretický prípad výhody (molekula JE kvantová)
+ - Feynmanov pôvodný dôvod pre QC. Ale potrebuje fault-tolerant.
+ - Healthineers dotyk: kontrastné látky, molekulárne zobrazovanie
+ - malý PoC: ground-state malej molekuly (H2, LiH) — klasika ešte zvládne
+
+------------------------------------------------------------------------
+4. GENOMIKA / PRECÍZNA MEDICÍNA  ★★★  (ich stated záujem)
+------------------------------------------------------------------------
+ - Zarovnanie sekvencií, variant calling, GWAS                  [ŠPEK]
+ - Quantum ML na klasifikáciu genómu / riziko choroby          [ŠPEK]
+ - PROBLÉM VSTUPU DÁT udrie najtvrdšie (genóm je obrovský)
+ - KANDIDÁT C. Buzzword-sellable, najmenej honest.
+
+------------------------------------------------------------------------
+5. OPTIMALIZÁCIA / PREVÁDZKA  ★★★
+------------------------------------------------------------------------
+ - Rozvrhovanie nemocnice, alokácia zdrojov, logistika          [BLÍZKO]
+ - MRI pulzné sekvencie, plánovanie skenov                      [BLÍZKO]
+ - QAOA / annealing; výhoda na NISQ nedokázaná, ale konkrétne
+
+------------------------------------------------------------------------
+6. STROJOVÉ UČENIE (QML) — prierezové  ★★★
+------------------------------------------------------------------------
+ - Quantum kernel / QNN / feature map; klasifikácia, generácia  [ŠPEK]
+ - Výhoda NEDOKÁZANÁ, barren plateaus, data-loading
+ - Napája sa na 1c, 4, čokoľvek "AI detekcia/predikcia"
+
+------------------------------------------------------------------------
+7. KVANTOVÉ SENZORY  ★★★  (POZOR: senzory != počítanie!)
+------------------------------------------------------------------------
+ - NV centrá, SQUID pre MRI; magnetoencefalografia (MEG)        [BLÍZKO]
+ - Vyššia citlivosť zobrazovania = HARDVÉR, nie QC algoritmus
+ - Iný odbor než kvantové počítanie — ale Healthineers hardvér!
+ - Honest: toto nie je tvoja oblasť (ty robíš QC algoritmy), ale
+   vedieť rozlíšiť senzor vs počítanie = kredibilita
+
+------------------------------------------------------------------------
+8. OCHRANA MEDICÍNSKYCH DÁT  ★★  (tvoj starý security, teraz vedľajší)
+------------------------------------------------------------------------
+ - PQC (ML-KEM) na ochranu záznamov, QRNG na kľúče             [DNES]
+ - Compliance/súkromie; NIE headline (nechcú security), ale
+   prežíva ako "ochrana pacientskych dát" ak sa spýtajú
+
+------------------------------------------------------------------------
+PRIEREZOVÉ HONEST PRAVDY (povedz ich — robia kredibilitu)
+------------------------------------------------------------------------
+ - DATA-LOADING: načítať veľké klasické dáta do QC zabíja QML výhodu.
+   Generatívne modely (1a) to čiastočne obchádzajú.
+ - NISQ vs FAULT-TOLERANT: väčšina reálnej výhody = error-corrected QC
+   = 10+ rokov. Generácia/vzorkovanie a časť optimalizácie sú NISQ-bližšie.
+ - "VÝHODA JE VÝNIMKA": väčšina problémov NEDOSTANE kvantové zrýchlenie.
+ - KLASICKÉ BASELINE SÚ SILNÉ (diffusion, deep learning) — treba prekonať.
+
+------------------------------------------------------------------------
+REBRÍČEK PRE SIEMENS (podľa fitu + honesty)
+------------------------------------------------------------------------
+ 1. Zobrazovanie — generácia dát (1a) = najlepší fit + reuse + honest-ish
+ 2. Rádioterapia — Monte Carlo (2b/2a) = silný fit + dokázaná výhoda
+ 3. Optimalizácia plánovania liečby (2b) = konkrétne, NISQ-bližšie
+ 4. Molekulárna simulácia = najčistejšia teória, slabý Siemens fit
+ 5. Genomika / quantum ML = sellable, ale najmenej honest
+
+
+========================================================================
+ĎALŠÍ KROK
+========================================================================
+1. Zober túto mapu ako reakčný nástroj na stretnutie.
+2. Zisti ich potrebu (discovery — spravíme ako ďalšie).
+3. Podľa toho, čo povedia, vyber uhol z mapy a rozpíšem plný koncept.
+========================================================================
+
+
+========================================================================
+ČASŤ 6 — SCRAPED DEEP DIVE: ČO SIEMENS HEALTHINEERS REÁLNE ROBÍ
+(scrapnuté 2026-10-24, zdroje inline; [UNVERIFIED] = nepotvrdené z primárneho zdroja)
+========================================================================
+
+------------------------------------------------------------------------
+6.1  TVAR FIRMY (FY2025, končí 30.9.2025)
+------------------------------------------------------------------------
+- Tržby ~€23,4 mld, +5,9% comparable. ~74 000 ľudí. ~75% vlastní Siemens AG.
+- Globálna #1 v diagnostickom zobrazovaní + radiačnej onkológii.
+- ŠTYRI segmenty (zdroj: SH FY2025 press release, 5.11.2025):
+
+  Imaging (CT/MR/PET/RTG/UZV)      ~56%  (~€13,2 mld)  jadro, photon-counting CT = korunný klenot
+  Diagnostics (lab, in-vitro)      ~24%  (~€5,5 mld)   lab analyzátory; ľahší compute
+  Varian (radiačná onkológia)      ~16%  (~€3,6 mld)   linaky, protóny; DÁVKA = Monte Carlo; kúpené 2021 za $16,4 mld
+  Advanced Therapies (interv.)     ~9%   (~€2,2 mld)   cath-lab, hybrid-OR, robotika
+
+------------------------------------------------------------------------
+6.2  BLEEDING EDGE (2023–2026)
+------------------------------------------------------------------------
+- Photon-counting CT (NAEOTOM Alpha -> Alpha.Peak/.Pro/.Prime). Prvý FDA-cleared,
+  trh-vedúci, CdTe detektory, "Quantum HD" branding (marketingové slovo, NIE QC).
+  Najväčší hardvérový posun v CT za 20 rokov.
+- AI diagnostika: AI-Rad Companion, AI-Pathway Companion (precision oncology), Optiq AI denoising.
+- Digital twins / "patient twinning" — Digital Twin of the Heart, Mayo Clinic kardio collab (2025).
+  STATED firemný pilier, stále research-stage.
+- 7T MR (MAGNETOM Terra.X), theranostics (MGH collab, radiofarmaká), teamplay cloud.
+- Ich vlastné 4 piliere, doslovne: patient twinning · precision therapy · digital/data/AI.
+
+------------------------------------------------------------------------
+6.3  DVE STRATEGICKÉ FAKTY, KTORÉ MENIA PITCH
+------------------------------------------------------------------------
+1. SIEMENS HEALTHINEERS = QUANTUM WHITE SPACE.
+   Materská Siemens AG robí priemyselný quantum (konzorcium QUTAC — optimalizácia/RL
+   pre logistiku/výrobu). Zdravotnícke rameno má NULA verejný QC program. Žiadne
+   partnerstvo, paper, ani quantum-sensing. Otvorená pôda — nesúťažíš s interným tímom.
+   -> PITCH ZBRAŇ: "materská robí industrial quantum, vaše healthcare rameno žiadny —
+      ponúkam first-mover pôdu."
+
+2. KLASICKÝ SYNTETICKÝ BASELINE JE SILNÝ, NIE MÄKKÝ.
+   Diffusion modely (NVIDIA MAISI generuje plný 3D CT 512³) bijú GAN-y, production-grade.
+   ALE známa chyba: diffusion MEMORIZUJE tréningové obrazy -> re-identifikácia pacienta
+   na malých datasetoch (arXiv 2305.07644). Tá chyba = reálny otvor pre quantum sampler
+   (kvantové vzorkovanie nememorizuje konkrétneho pacienta) = privacy diferenciátor.
+
+------------------------------------------------------------------------
+6.4  REBRÍČEK PODĽA QC-POTENCIÁLU (Siemens fit × honesty × feasibility)
+------------------------------------------------------------------------
+#  Doména                          Siemens hook                  QC uhol                      Honesty  Catch
+1  Radiačná dávka — Monte Carlo    Varian Eclipse/Ethos, 16%     amplitude estimation =       *****    fault-tolerant/sim-only dnes;
+                                   real shipping compute         DOKÁZANÝ kvadratický                  Sci Rep 2025 "8–15×" je sim-only
+                                                                 speedup                               projekcia = honest HW štúdia NEOBSADENÁ
+2  Syntetická CT/MR generácia      Imaging 56% + Jan menoval +   QCBM/qGAN; data-loading      ***      silný klasický diffusion;
+                                   potreba tréning. dát          OBÍDENÝ; reuse QuantumTree;           advantage nedokázaný; väčšina
+                                                                 certifik. non-klasickosť +            "quantum" prác je quantum-inspired
+                                                                 privacy uhol
+3  Optimalizácia plánu liečby      Varian beam-angle/intensity   QAOA/annealing; NISQ-bližšie ***      NISQ advantage nedokázaný
+4  Genomika / precízna medicína    Stated záujem; Moderna+IBM    quantum ML kernel/optim.     **       data-loading zabíja; advantage
+                                   156-qubit Heron precedent (HW)                                      nedokázaný; najviac buzzword
+5  Patient digital twin            Stated pilier, Mayo collab    quantum sim / HHL lin. syst. **       twin = klasická multifyzika;
+                                                                                                       data-loading stena; špekulatívne
+6  Molekulárne zobraz./theranost.  MGH radiofarmaká collab       VQE quantum chémia =         ****thr  slabý Siemens fit (nie pharma);
+                                                                 najčistejší teor. advantage  teória   fault-tolerant
+7  Rekonštrukcia obrazu            Imaging jadro                 HHL / quantum lin. systems   *        data-loading stena; špekulatívne
+8  Quantum sensing (OPM/NV/SQUID)  Healthineers hardvér, WS      vyššia citlivosť zobraz.     —        HARDVÉR, nie QC algoritmus — nie tvoja oblasť
+9  Ochrana dát (PQC/QRNG)          Compliance                    ML-KEM, QRNG kľúče           ****dnes Jan odmietol security; parkované
+
+------------------------------------------------------------------------
+6.5  VERDIKT (scrape potvrdzuje + ostrí ideas.txt)
+------------------------------------------------------------------------
+- LEAD = #2 generatívna syntetická data — presne čo Jan menoval, obchádza data-loading,
+  reuse QuantumTree, a diffusion-memorization privacy chyba = reálny diferenciátor.
+- HONESTY KOTVA = #1 Monte Carlo dávka — najsilnejší jediný obhájiteľný claim v celom
+  QC-healthcare (kvadratický speedup DOKÁZANÝ, nie hype), mapuje na reálny €3,6 mld Varian
+  produkt, a jediný publikovaný dávkový paper je sim-only -> honest HW štúdia NEOBSADENÁ.
+- #6 quantum chémia = najčistejšia teória ale najhorší Siemens fit — spomenúť, neviesť.
+
+------------------------------------------------------------------------
+6.6  FORMALIZOVANÉ IDEA FILES (study-ideas/)
+------------------------------------------------------------------------
+Top 5 rozpísané ako scored study-idea súbory:
+  siemens-1  Monte Carlo dávka (QAE)
+  siemens-2  generatívna syntetická CT/MR (QCBM)
+  siemens-3  optimalizácia plánu liečby (QAOA)
+  siemens-4  genomika quantum ML
+  siemens-5  patient digital twin (HHL)
+#6–9 nerozpísané (dôvody vyššie v 6.4: slabý fit / hardvér-nie-algoritmus / odmietnuté).
+========================================================================
