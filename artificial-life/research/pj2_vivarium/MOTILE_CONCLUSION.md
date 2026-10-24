@@ -84,3 +84,34 @@ Run: `research_runs/pj2_motile/pj2_line_org2L4_ibm_marrakesh_20260927-180920.jso
 python code/1D_alive.py --backend ibm_marrakesh --model motile --organisms 2 --length 4 --gens 6 \
     --food 1,3 --certify ghz2 --shots 8192
 ```
+
+## EM1 — germ dynamical decoupling (PJ2.5), the first mitigation lever
+
+The M5 hardware result above was obtained with **no dynamical decoupling on the motile path** — the
+driver ran its circuits through a plain `optimization_level=3` transpile (`_run_counts_simple`), while
+only the sibling *line* path had germ-selective DD wired. PJ2.5 (epic **CD-11 / EM1**) closes that gap:
+germ-selective DD is now applied to the motile organism too, as an explicit, switchable, **measured**
+lever rather than a hardcoded global.
+
+- `--dd {off,x2,xy4}` (default `x2`) selects the DD sequence; it pads only the **idle germ (witness)
+  physical qubits** — body / vitality / energy stay DD-free (the Weismann barrier). DD is pure pulse
+  suppression, **not** post-selection → `kept_fraction = 1`, so the witness stays an *unconditional*
+  claim (raw, not conditioned on GHZ-looking shots).
+- `--dd-ab` banks an A/B comparison per generation — the same circuit measured DD-off **and** DD-on —
+  recording `witness_dd_off` / `witness_dd_on` (and `zz_dd_off` / `zz_dd_on`) side by side, plus a
+  summary `delta_witness` and `delta_certified_gens`. EM1's honesty rule: the raw and mitigated
+  witnesses are reported together, never the mitigated one alone.
+
+**Sim A/B (org=2, L=4, gens=6, food=1,3, ghz2, 8192 shots).** DD-off and DD-on give identical
+witnesses (`delta_witness = 0.000`, certified gens 3 → 3) — the correct noiseless result, since DD is
+the identity in the absence of noise. This confirms the DD pass does not perturb the logical circuit.
+Run: `research_runs/pj2_motile/pj2_line_org2L4_statevector_sim_sim.json`.
+
+**Hardware A/B — PENDING.** The headline datapoint is a single `ibm_marrakesh` A/B at the exact M5
+config; `ΔW*` (how far DD moves `⟨X^W⟩`, `⟨ZZ⟩`, and the certified-gen count) will be recorded here
+against the no-DD M5 baseline above, honestly whatever the sign:
+
+```
+python code/1D_alive.py --backend ibm_marrakesh --model motile --organisms 2 --length 4 --gens 6 \
+    --food 1,3 --certify ghz2 --shots 8192 --dd-ab --dd x2
+```

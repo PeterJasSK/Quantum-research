@@ -60,7 +60,8 @@ ARMS = ("isolated", "coupled")
 HOP = pj.LINE_HOP                    # isotropic quantum-walk hop angle
 K = 2.0                             # significance multiplier (k=2 headline, k=3 reported)
 MUT_SCALE = 0.0                     # faithful clean GHZ -> isolate the walk's witness cost
-SELECTIVE_DD = True
+DD_DEFAULT = "x2"                   # PJ2.5: germ-selective DD mode default (off|x2|xy4); x2 == prior behaviour
+DD_MODES = ("off", "x2", "xy4")     # off = plain opt-3; x2 = CPMG [X,X]; xy4 = [X,Y,X,Y]
 REPEATS = 1
 QEAAS_URL = os.environ.get("QEAAS_API_URL", "https://api.qeaas.eu")
 
@@ -119,41 +120,69 @@ def reduce_counts(counts: dict[str, int], width: int, length: int, *, mode: str,
 
 
 # ---------------------------------------------------------------------------
-# Selective DD on the germ line only -- 1D analogue of the lattice pass.
+# Selective DD on the germ line only -- the EM1 witness lever (PJ2.5, CD-11).
+# DD is pure pulse suppression on the IDLE germ (witness) physical qubits; the
+# body/vitality/energy qubits stay DD-free (the Weismann barrier). It is NOT
+# post-selection -> kept_fraction = 1, the witness stays an unconditional claim.
 # ---------------------------------------------------------------------------
-def schedule_line_selective_dd(qc: QuantumCircuit, backend: Any, width: int, length: int, *,
-                               mode: str) -> QuantumCircuit:
-    """Transpile + schedule with DD padded on the germ (witness) physical qubits only; body/chain
-    DD-free (the Weismann barrier). Returns the submit-ready circuit."""
-    from qiskit.circuit.library import XGate
+def _dd_sequence(dd: str) -> list[Any] | None:
+    """Resolve a --dd mode to a PadDynamicalDecoupling pulse sequence (None == no DD)."""
+    from qiskit.circuit.library import XGate, YGate
+    if dd == "x2":
+        return [XGate(), XGate()]                                  # CPMG (prior default)
+    if dd == "xy4":
+        return [XGate(), YGate(), XGate(), YGate()]                # robust to pulse miscalibration
+    return None                                                    # "off"
+
+
+def _schedule_germ_dd(qc: QuantumCircuit, backend: Any, germ_virtual: list[int], *,
+                      dd: str) -> tuple[QuantumCircuit, list[int]]:
+    """Transpile at opt-3 then pad DD (dd_sequence) on the germ physical qubits only. Returns the
+    submit-ready circuit and the germ PHYSICAL qubit list (barrier evidence). dd='off' -> opt-3 only."""
     from qiskit.transpiler import PassManager
     from qiskit.transpiler.passes import ALAPScheduleAnalysis, PadDynamicalDecoupling
 
-    pm = generate_preset_pass_manager(optimization_level=3, backend=backend)
-    routed = pm.run(qc)
-
-    germ_virtual = pj.line_witness_qubits(width, length, mode)
+    routed = generate_preset_pass_manager(optimization_level=3, backend=backend).run(qc)
     germ_physical: list[int] = []
     if routed.layout is not None:
         v2p = routed.layout.final_index_layout()
         germ_physical = [v2p[v] for v in germ_virtual if v < len(v2p)]
 
+    seq = _dd_sequence(dd)
+    if seq is None:
+        return routed, germ_physical
     durations = getattr(backend.target, "durations", lambda: None)()
     passes = [ALAPScheduleAnalysis(durations=durations),
-              PadDynamicalDecoupling(durations=durations, dd_sequence=[XGate(), XGate()],
+              PadDynamicalDecoupling(durations=durations, dd_sequence=seq,
                                      qubits=germ_physical or None)]
-    return PassManager(passes).run(routed)
+    return PassManager(passes).run(routed), germ_physical
+
+
+def schedule_line_selective_dd(qc: QuantumCircuit, backend: Any, width: int, length: int, *,
+                               mode: str, dd: str = DD_DEFAULT) -> QuantumCircuit:
+    """Germ-only DD for the line path (PJ2.2b). Thin wrapper over _schedule_germ_dd."""
+    submit, _phys = _schedule_germ_dd(qc, backend, pj.line_witness_qubits(width, length, mode), dd=dd)
+    return submit
+
+
+def schedule_motile_selective_dd(qc: QuantumCircuit, backend: Any, organisms: int, length: int,
+                                 gens: int, rep_gen: int, *,
+                                 dd: str = DD_DEFAULT) -> tuple[QuantumCircuit, list[int]]:
+    """Germ-only DD for the PJ2.4 motile path -- the lever PJ2.4's hardware runs lacked. Targets the
+    ACTIVE germ (witness) set at this depth; body/vitality/energy stay bare (Weismann barrier)."""
+    germ_virtual = pj.motile_witness_qubits(organisms, length, gens, rep_gen)
+    return _schedule_germ_dd(qc, backend, germ_virtual, dd=dd)
 
 
 # ---------------------------------------------------------------------------
 # The certified depth scan -- one measured circuit per (mode, arm, gen, repeat).
 # ---------------------------------------------------------------------------
 def _run_counts(qc: QuantumCircuit, *, sim: bool, backend: Any, shots: int, width: int, length: int,
-                mode: str) -> dict[str, int]:
+                mode: str, dd: str = DD_DEFAULT) -> dict[str, int]:
     if sim:
         return LINE_SIM.run(transpile(qc, LINE_SIM), shots=shots).result().get_counts()
-    if SELECTIVE_DD:
-        submit_qc = schedule_line_selective_dd(qc, backend, width, length, mode=mode)
+    if dd != "off":
+        submit_qc = schedule_line_selective_dd(qc, backend, width, length, mode=mode, dd=dd)
     else:
         submit_qc = generate_preset_pass_manager(optimization_level=3, backend=backend).run(qc)
     raw_meas, _jobs, _qs = run_sampler(backend, submit_qc, shots)
@@ -165,7 +194,8 @@ def _run_counts(qc: QuantumCircuit, *, sim: bool, backend: Any, shots: int, widt
 
 def depth_scan(width: int, length: int, gens: int, thetas: list[float], *, mode: str, arm: str,
                start: int, hop: float, sim: bool, backend: Any, shots: int, repeats: int,
-               pokes: list[tuple[int, int, float]] | None = None) -> list[dict[str, Any]]:
+               pokes: list[tuple[int, int, float]] | None = None,
+               dd: str = DD_DEFAULT) -> list[dict[str, Any]]:
     """The honest frames: for d in range(gens) build a circuit with d walk layers, measure it once
     per repeat, reduce -> one certified frame {gen, fields, w, w_sigma, sep, survives, overlap, n}."""
     sigma_shot = math.sqrt(1.0 / shots)
@@ -177,7 +207,7 @@ def depth_scan(width: int, length: int, gens: int, thetas: list[float], *, mode:
         reduced: dict[str, Any] = {}
         for _rep in range(max(1, repeats)):
             counts = _run_counts(qc, sim=sim, backend=backend, shots=shots, width=width,
-                                 length=length, mode=mode)
+                                 length=length, mode=mode, dd=dd)
             reduced = reduce_counts(counts, width, length, mode=mode, gens=d)
             joints.append(reduced["witness_joint"])
         w = statistics.fmean(joints)
@@ -239,10 +269,16 @@ def dump_circuits(width: int, length: int, gens: int, thetas: list[float], *, mo
 # ===========================================================================
 # PJ2.4 -- MOTILE VIVARIUM driver path (2018-faithful life that moves).
 # ===========================================================================
-def _run_counts_simple(qc: QuantumCircuit, *, sim: bool, backend: Any, shots: int) -> dict[str, int]:
+def _run_counts_simple(qc: QuantumCircuit, *, sim: bool, backend: Any, shots: int,
+                       dd: str = "off", dd_ctx: dict[str, int] | None = None) -> dict[str, int]:
+    """Run ONE motile circuit. On hardware with dd != 'off' and a dd_ctx (organisms/length/gens/
+    rep_gen), pad germ-only DD (the PJ2.5 lever); else plain opt-3. Sim ignores DD (noiseless == id)."""
     if sim:
         return LINE_SIM.run(transpile(qc, LINE_SIM), shots=shots).result().get_counts()
-    submit = generate_preset_pass_manager(optimization_level=3, backend=backend).run(qc)
+    if dd != "off" and dd_ctx is not None:
+        submit, _phys = schedule_motile_selective_dd(qc, backend, dd=dd, **dd_ctx)
+    else:
+        submit = generate_preset_pass_manager(optimization_level=3, backend=backend).run(qc)
     raw_meas, _jobs, _qs = run_sampler(backend, submit, shots)
     counts: dict[str, int] = {}
     for s in raw_meas:
@@ -310,9 +346,12 @@ def reduce_motile(cx: dict[str, int], cz: dict[str, int] | None, organisms: int,
 def depth_scan_motile(organisms: int, length: int, gens: int, thetas: list[float], *, arm: str,
                       start: int, hop: float, food: tuple[int, ...], rep_gen: int, certify: str,
                       sim: bool, backend: Any, shots: int, repeats: int,
-                      pokes: list[tuple[int, int, float]] | None = None) -> list[dict[str, Any]]:
+                      pokes: list[tuple[int, int, float]] | None = None,
+                      dd: str = DD_DEFAULT, dd_ab: bool = False) -> list[dict[str, Any]]:
     """The honest frames: for d in range(gens) build+measure the motile circuit(s), reduce to one
-    certified frame carrying the moving fields AND the acting life (alive/energy/born) + witness."""
+    certified frame carrying the moving fields AND the acting life (alive/energy/born) + witness.
+    PJ2.5: runs through germ-only DD (mode `dd`); with `dd_ab` each frame is measured twice
+    (DD-off then DD-on) and banks `witness_dd_off/on` (+ `zz_dd_off/on`) side by side (EM1 rule)."""
     sigma_shot = math.sqrt(1.0 / shots)
     frames: list[dict[str, Any]] = []
     for d in range(gens):
@@ -321,15 +360,38 @@ def depth_scan_motile(organisms: int, length: int, gens: int, thetas: list[float
         qcz = (build_measured_motile(organisms, length, d, thetas, arm=arm, start=start, hop=hop,
                                      food=food, rep_gen=rep_gen, basis="z", pokes=pokes)
                if certify == "ghz2" else None)
-        joints: list[float] = []
-        reduced: dict[str, Any] = {}
-        for _rep in range(max(1, repeats)):
-            cx = _run_counts_simple(qcx, sim=sim, backend=backend, shots=shots)
-            cz = (_run_counts_simple(qcz, sim=sim, backend=backend, shots=shots) if qcz else None)
-            reduced = reduce_motile(cx, cz, organisms, length, gens=d, rep_gen=rep_gen, certify=certify)
-            joints.append(reduced["witness_joint"])
-        w = statistics.fmean(joints)
-        spread = statistics.pstdev(joints) if len(joints) > 1 else 0.0
+        dd_ctx = {"organisms": organisms, "length": length, "gens": d, "rep_gen": rep_gen}
+
+        def one_pass(dd_mode: str) -> tuple[float, float, dict[str, Any]]:
+            joints: list[float] = []
+            reduced: dict[str, Any] = {}
+            for _rep in range(max(1, repeats)):
+                cx = _run_counts_simple(qcx, sim=sim, backend=backend, shots=shots,
+                                        dd=dd_mode, dd_ctx=dd_ctx)
+                cz = (_run_counts_simple(qcz, sim=sim, backend=backend, shots=shots,
+                                         dd=dd_mode, dd_ctx=dd_ctx) if qcz else None)
+                reduced = reduce_motile(cx, cz, organisms, length, gens=d, rep_gen=rep_gen,
+                                        certify=certify)
+                joints.append(reduced["witness_joint"])
+            w = statistics.fmean(joints)
+            spread = statistics.pstdev(joints) if len(joints) > 1 else 0.0
+            return w, spread, reduced
+
+        ab: dict[str, Any] = {}
+        if dd_ab:
+            on_mode = dd if dd != "off" else "x2"                  # can't A/B off-vs-off
+            w_off, _s_off, red_off = one_pass("off")
+            w_on, spread, reduced = one_pass(on_mode)              # headline = the mitigated pass
+            w = w_on
+            ab = {
+                "witness_dd_off": round(float(w_off), 4),
+                "witness_dd_on": round(float(w_on), 4),
+                "zz_dd_off": (round(float(red_off["zz"]), 4) if red_off["zz"] is not None else None),
+                "zz_dd_on": (round(float(reduced["zz"]), 4) if reduced["zz"] is not None else None),
+            }
+        else:
+            w, spread, reduced = one_pass(dd)
+
         w_sigma = math.sqrt(spread ** 2 + sigma_shot ** 2)
         active_w = len(pj.motile_witness_qubits(organisms, length, d, rep_gen))
         zz = reduced["zz"]
@@ -337,7 +399,7 @@ def depth_scan_motile(organisms: int, length: int, gens: int, thetas: list[float
         if zz is not None and active_w >= 2:
             val = w + zz                                           # Bell/GHZ two-sector sum
             certified = bool(val - 1.0 > K * w_sigma)             # separable bound: <XX>+<ZZ> <= 1
-        frames.append({
+        frame = {
             "gen": d, "fields": reduced["fields"], "alive": reduced["alive"],
             "energy": reduced["energy"], "born": pj.motile_n_born(d, rep_gen, organisms),
             "w": round(float(w), 4), "w_sigma": round(float(w_sigma), 4),
@@ -345,7 +407,9 @@ def depth_scan_motile(organisms: int, length: int, gens: int, thetas: list[float
             "zz": (round(float(zz), 4) if zz is not None else None),
             "certified": certified, "n": reduced["n_alive"],
             "survives": bool(w - reduced["separable_null"] > K * w_sigma),
-        })
+        }
+        frame.update(ab)
+        frames.append(frame)
     return frames
 
 
@@ -370,9 +434,34 @@ def run_motile(args: Any, thetas: list[float], start: int, hop: float, sim: bool
         raise SystemExit(1)
 
     poke_str = (" pokes=" + ",".join(f"g{g}@c{p}({a})" for g, p, a in pokes)) if pokes else ""
+    dd_str = f"dd={args.dd}{'(A/B)' if args.dd_ab else ''}"
     print(f"=== PJ2.4 motile: org={args.organisms} L={length} gens={args.gens} arms={arms} "
-          f"food={list(food)} rep_gen={args.rep_gen} certify={args.certify} start={start} hop={hop}"
-          f"{poke_str} on {backend_name} ({nq} qubits) ===")
+          f"food={list(food)} rep_gen={args.rep_gen} certify={args.certify} start={start} hop={hop} "
+          f"{dd_str}{poke_str} on {backend_name} ({nq} qubits) ===")
+
+    # --- PJ2.5 DD targeting evidence (AC-3): germ-only, body/vitality/energy excluded ---
+    germ_v = pj.motile_witness_qubits(args.organisms, length, args.gens - 1, args.rep_gen)
+    body_v = [pj.mot_body_q(o, i, length) for o in range(args.organisms) for i in range(length)]
+    vit_v = [pj.mot_vit_q(o, length) for o in range(args.organisms)]
+    en_v = [pj.mot_energy_q(o, length) for o in range(args.organisms)]
+    dd_physical: list[int] = []
+    if args.dd != "off":
+        print(f"  DD [{args.dd}={_dd_sequence(args.dd) and [g.name for g in _dd_sequence(args.dd)]}] "
+              f"targets germ(witness) virtual={germ_v}; DD-FREE body={body_v} vit={vit_v} energy={en_v}")
+        if not sim:                                               # physical map needs the real target
+            rep_qc = build_measured_motile(args.organisms, length, args.gens - 1, thetas,
+                                           arm=arms[0], start=start, hop=hop, food=food,
+                                           rep_gen=args.rep_gen, basis="x", pokes=pokes)
+            _sched, dd_physical = schedule_motile_selective_dd(
+                rep_qc, backend, args.organisms, length, args.gens - 1, args.rep_gen, dd=args.dd)
+            print(f"  DD germ physical qubits = {dd_physical}")
+        else:
+            dd_physical = germ_v                                  # sim: no layout; virtual set as evidence
+    if args.dump_circuit:
+        pj.print_motile_report(args.organisms, length, args.gens, thetas, arm=arms[0],
+                               food=food, rep_gen=args.rep_gen)
+        if args.draw_only:
+            raise SystemExit(0)
 
     scenarios: dict[str, Any] = {"motile": {}}
     endpoint: dict[str, Any] = {}
@@ -381,7 +470,7 @@ def run_motile(args: Any, thetas: list[float], start: int, hop: float, sim: bool
         frames = depth_scan_motile(args.organisms, length, args.gens, thetas, arm=arm, start=start,
                                    hop=hop, food=food, rep_gen=args.rep_gen, certify=args.certify,
                                    sim=sim, backend=backend, shots=args.shots, repeats=args.repeats,
-                                   pokes=pokes)
+                                   pokes=pokes, dd=args.dd, dd_ab=args.dd_ab)
         scenarios["motile"][arm] = frames
         last = frames[-1]
         endpoint[arm] = {"w": last["w"], "n_alive": last["n"], "certified": last["certified"],
@@ -391,18 +480,48 @@ def run_motile(args: Any, thetas: list[float], start: int, hop: float, sim: bool
         print(f"  {arm:9} alive(count)/gen={[f['n'] for f in frames]}  born/gen={[f['born'] for f in frames]}")
         if args.certify == "ghz2":
             print(f"  {arm:9} zz/gen={[f['zz'] for f in frames]}  certified/gen={[f['certified'] for f in frames]}")
+        if args.dd_ab:
+            print(f"  {arm:9} DD-off w/gen={[f.get('witness_dd_off') for f in frames]}")
+            print(f"  {arm:9} DD-on  w/gen={[f.get('witness_dd_on') for f in frames]}")
+
+    # --- PJ2.5 A/B summary: mean witness delta + certified-gen delta (DD-on vs DD-off) ---
+    dd_ab_summary: dict[str, Any] | None = None
+    if args.dd_ab:
+        deltas: list[float] = []
+        cert_on = cert_off = 0
+        for arm in arms:
+            for f in scenarios["motile"][arm]:
+                w_on, w_off = f.get("witness_dd_on"), f.get("witness_dd_off")
+                if w_on is None or w_off is None:
+                    continue
+                deltas.append(w_on - w_off)
+                zz_on, zz_off, sig = f.get("zz_dd_on"), f.get("zz_dd_off"), f["w_sigma"]
+                if zz_on is not None and (w_on + zz_on) - 1.0 > K * sig:
+                    cert_on += 1
+                if zz_off is not None and (w_off + zz_off) - 1.0 > K * sig:
+                    cert_off += 1
+        dd_ab_summary = {
+            "delta_witness": round(statistics.fmean(deltas), 4) if deltas else 0.0,
+            "delta_certified_gens": cert_on - cert_off,
+            "certified_gens_dd_on": cert_on, "certified_gens_dd_off": cert_off,
+        }
+        print(f"  A/B: delta_witness(on-off)={dd_ab_summary['delta_witness']}  "
+              f"certified gens on={cert_on} off={cert_off} (delta={cert_on - cert_off})")
 
     result: dict[str, Any] = {
         "meta": {
-            "stage": "PJ2.4", "model": "motile_vivarium", "backend": backend_name,
+            "stage": "PJ2.5", "model": "motile_vivarium", "backend": backend_name,
             "organisms": args.organisms, "length": length, "gens": args.gens, "food": list(food),
             "rep_gen": args.rep_gen, "arms": list(arms), "shots": args.shots, "sim": sim, "k": K,
             "hop": hop, "start": start, "age_step": pj.MOTILE_AGE, "certify": args.certify,
             "certified_entangled": (any_certified if args.certify == "ghz2" else None),
             "repeats": args.repeats, "certified_frames": True, "calibration": None,
+            "dd": args.dd, "dd_ab": args.dd_ab, "dd_physical_qubits": dd_physical,
+            "kept_fraction": 1.0,                                 # DD is suppression, not post-selection
             "pokes": [{"gen": g, "pos": p, "amp": round(a, 4)} for g, p, a in pokes],
         },
         "scenarios": scenarios, "endpoint": endpoint,
+        "summary": {"dd_ab": dd_ab_summary},
     }
     os.makedirs(os.path.join(OUTPUT_DIR, "pj2_motile"), exist_ok=True)
     tag = timestamp() if not sim else "sim"
@@ -445,6 +564,13 @@ def main() -> None:
                     help="force the seed cell (default: QRNG-drawn) -- e.g. 0 to start at one end")
     ap.add_argument("--repeats", type=int, default=REPEATS, help="repeats for sigma")
     ap.add_argument("--shots", type=int, default=8192)
+    ap.add_argument("--dd", choices=list(DD_MODES), default=DD_DEFAULT,
+                    help="PJ2.5 germ-selective dynamical decoupling (EM1): off = plain opt-3; "
+                         "x2 = CPMG [X,X] (prior behaviour); xy4 = [X,Y,X,Y] (robust). DD pads the "
+                         "idle germ/witness qubits only (Weismann barrier); kept_fraction stays 1.")
+    ap.add_argument("--dd-ab", dest="dd_ab", action="store_true",
+                    help="motile only: bank an A/B comparison per gen -- measure DD-off AND DD-on "
+                         "(the --dd mode), recording witness_dd_off/on side by side (EM1 honesty rule)")
     ap.add_argument("--movement-only", dest="movement_only", action="store_true",
                     help="force mode=solo (the long-chain 'just the movement' run)")
     ap.add_argument("--dump-circuit", dest="dump_circuit", action="store_true",
@@ -541,7 +667,7 @@ def main() -> None:
         for arm in arms:
             frames = depth_scan(args.width, args.length, args.gens, thetas, mode=mode, arm=arm,
                                 start=start, hop=hop, sim=sim, backend=backend, shots=args.shots,
-                                repeats=args.repeats, pokes=pokes)
+                                repeats=args.repeats, pokes=pokes, dd=args.dd)
             scenarios[mode][arm] = frames
             last = frames[-1]
             endpoint[mode][arm] = {"w": last["w"], "survives": last["survives"]}
@@ -557,7 +683,7 @@ def main() -> None:
             "length": args.length, "width": args.width, "gens": args.gens,
             "modes": list(modes), "arms": list(arms), "shots": args.shots, "sim": sim,
             "k": K, "hop": hop, "start": start, "mut_scale": MUT_SCALE,
-            "selective_dd": SELECTIVE_DD, "repeats": args.repeats,
+            "dd": args.dd, "kept_fraction": 1.0, "repeats": args.repeats,
             "certified_frames": True, "calibration": None,
             "pokes": [{"gen": g, "pos": p, "amp": round(a, 4)} for g, p, a in pokes],
         },

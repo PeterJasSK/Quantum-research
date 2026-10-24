@@ -143,7 +143,17 @@ def render_motile(run: dict[str, Any], out_dir: str) -> str:
     for btn in _MODE_BTNS:
         html = html.replace(btn, "")
     html = _swap(html, "<header>", "</header>", _MOTILE_HEADER)     # honest copy (AC7)
-    html = _swap(html, '<div class="foot">', "</div>", _MOTILE_FOOT)
+    dd = meta.get("dd", "x2")                                       # PJ2.5 EM1 lever
+    ddab = (run.get("summary") or {}).get("dd_ab")
+    dd_note = ('    <p class="honest"><b>Error mitigation (PJ2.5):</b> germ-selective dynamical'
+               f' decoupling = <b>{dd}</b> on the witness qubits only (body/vitality/energy DD-free);'
+               ' kept_fraction = 1, so the witness stays an <b>unconditional</b> claim.')
+    if ddab:
+        dd_note += (f' A/B witness delta (DD-on − DD-off) = <b>{ddab["delta_witness"]:+.3f}</b>,'
+                    f' certified gens {ddab["certified_gens_dd_off"]} → {ddab["certified_gens_dd_on"]}.')
+    dd_note += '</p>\n'
+    foot = _MOTILE_FOOT.replace('  </div>', dd_note + '  </div>')
+    html = _swap(html, '<div class="foot">', "</div>", foot)
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, "motile_life.html")
     with open(out, "w") as f:
