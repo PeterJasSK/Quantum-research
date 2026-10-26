@@ -1,0 +1,282 @@
+{
+  "honest_label": "Tumor parameters are quantum (certified by F1's CHSH > 2); the image is a classical rendering. Provenance is about lesion/cohort selection, not the CT background. Synthetic backgrounds (background_source=synthetic_dev) are for development only.",
+  "quantum_run": {
+    "backend_name": "AerSimulator",
+    "job_id": "",
+    "chsh_value": 2.794921875,
+    "chsh_settings": {
+      "a0": 0.0,
+      "a1": 1.5707963267948966,
+      "b0": 0.7853981633974483,
+      "b1": -0.7853981633974483
+    },
+    "raw_bits": [
+      "001000100",
+      "010000000",
+      "110001000",
+      "010010001",
+      "001100100",
+      "000000100",
+      "110001100",
+      "010010010",
+      "100000100100000100",
+      "010100010010100010"
+    ],
+    "shot_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+    ]
+  },
+  "tiles": [
+    {
+      "tile_id": "tile_0_0",
+      "png_path": "tiles/tile_0_0.png",
+      "size_mm": 4.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "LLL",
+      "lineage_id": "tile0",
+      "generation": 0,
+      "shot_index": 0,
+      "insert_xy": [
+        356,
+        344
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_1_0",
+      "png_path": "tiles/tile_1_0.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "smooth",
+      "lobe": "RLL",
+      "lineage_id": "tile1",
+      "generation": 0,
+      "shot_index": 1,
+      "insert_xy": [
+        140,
+        385
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_2_0",
+      "png_path": "tiles/tile_2_0.png",
+      "size_mm": 4.0,
+      "type": "part-solid",
+      "margin": "smooth",
+      "lobe": "LUL",
+      "lineage_id": "tile2",
+      "generation": 0,
+      "shot_index": 2,
+      "insert_xy": [
+        372,
+        149
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_3_0",
+      "png_path": "tiles/tile_3_0.png",
+      "size_mm": 13.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "RLL",
+      "lineage_id": "tile3",
+      "generation": 0,
+      "shot_index": 3,
+      "insert_xy": [
+        185,
+        338
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_4_0",
+      "png_path": "tiles/tile_4_0.png",
+      "size_mm": 4.0,
+      "type": "ground-glass",
+      "margin": "lobulated",
+      "lobe": "LLL",
+      "lineage_id": "tile4",
+      "generation": 0,
+      "shot_index": 4,
+      "insert_xy": [
+        372,
+        372
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_5_0",
+      "png_path": "tiles/tile_5_0.png",
+      "size_mm": 4.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "RUL",
+      "lineage_id": "tile5",
+      "generation": 0,
+      "shot_index": 5,
+      "insert_xy": [
+        181,
+        158
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_6_0",
+      "png_path": "tiles/tile_6_0.png",
+      "size_mm": 4.0,
+      "type": "calcified",
+      "margin": "smooth",
+      "lobe": "LUL",
+      "lineage_id": "tile6",
+      "generation": 0,
+      "shot_index": 6,
+      "insert_xy": [
+        351,
+        168
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_7_0",
+      "png_path": "tiles/tile_7_0.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "RLL",
+      "lineage_id": "tile7",
+      "generation": 0,
+      "shot_index": 7,
+      "insert_xy": [
+        135,
+        386
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_8_0",
+      "png_path": "tiles/tile_8_0.png",
+      "size_mm": 4.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "RML",
+      "lineage_id": "pair8",
+      "generation": 0,
+      "shot_index": 8,
+      "insert_xy": [
+        142,
+        225
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_8_1",
+      "png_path": "tiles/tile_8_1.png",
+      "size_mm": 4.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "RML",
+      "lineage_id": "pair8",
+      "generation": 1,
+      "shot_index": 8,
+      "insert_xy": [
+        150,
+        233
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_9_0",
+      "png_path": "tiles/tile_9_0.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "lobulated",
+      "lobe": "RLL",
+      "lineage_id": "pair9",
+      "generation": 0,
+      "shot_index": 9,
+      "insert_xy": [
+        137,
+        354
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    },
+    {
+      "tile_id": "tile_9_1",
+      "png_path": "tiles/tile_9_1.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "lobulated",
+      "lobe": "RLL",
+      "lineage_id": "pair9",
+      "generation": 1,
+      "shot_index": 9,
+      "insert_xy": [
+        152,
+        369
+      ],
+      "spacing_mm": 0.7,
+      "background_source": "synthetic_dev",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.794921875
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+===============================================================================
+ QUANTUM PHANTOMS / QSC — MVP RUNLOG
+ How to produce ONE self-contained web page (web/index.html) from the pipeline.
+ Pipeline: F1 roll -> F2 render -> F3 web.  Three commands, run from code/.
+===============================================================================
+
+ONE-TIME SETUP
+-------------------------------------------------------------------------------
+  cd QuantumPhantoms
+  pip install -r requirements.txt
+  cd code
+  # all commands below are run from QuantumPhantoms/code/ , using `python -m`.
+
+  Outputs land in:
+    ../research_runs/<run>/        <- F1 writes params+provenance; F2 adds tiles/ + tiles.json
+    ../web/index.html              <- F3 writes the final page
+
+  Each run dir is timestamped, e.g.  qrng_aer_20261026-114055 .
+  Find the newest one with:         ls -dt ../research_runs/*/ | head -1
+
+
+===============================================================================
+ A) BASE CASE — ONE LIVE RUN (real quantum hardware) -> one HTML
+===============================================================================
+ Peter runs this himself (hardware is never run by automated tooling).
+ This is the real demo: the CHSH value + bits come from ibm_heron.
+
+ Prereq: a saved IBM account must already exist, e.g. once ever:
+   python -c "from qiskit_ibm_runtime import QiskitRuntimeService as S; \
+     S.save_account(channel='ibm_quantum_platform', token='<YOUR_TOKEN>', \
+     instance='<YOUR_CRN>', overwrite=True)"
+ (No token goes in the repo. Rotate the plaintext one in repo-root credentialsApi.py.)
+
+ STEP 1 — F1: roll certified params on hardware (ONE real job)
+   python -m f1_quantum.run --backend ibm_heron --tiles 12 --pairs 2
+     # or --backend auto  to pick the least-busy real backend
+     # prints the run dir; note it, e.g. ../research_runs/qrng_ibm_heron_<ts>
+     # quantum_run.json will carry backend_name=ibm_heron, a real job_id, real CHSH (~1.9-2.6)
+
+   RUN=$(ls -dt ../research_runs/qrng_ibm_heron_*/ | head -1)     # capture newest hardware run
+
+ STEP 2 — F2: render params into CT tiles
+   # Real CT background (the honest demo): point at a dir of LUNA16 .mhd/.raw (or .npy/.png).
+   python -m f2_imaging.build_tiles --run "$RUN" --ct-source /path/to/luna16
+   # If you have no CT data yet, the pipeline still runs with a labeled synthetic background:
+   #   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+
+ STEP 3 — F3: bake the self-contained page
+   python -m f3_web.build_web --run "$RUN"
+     # writes ../web/index.html  (one standalone file; open it or host it anywhere)
+
+ RESULT
+   ../web/index.html
+     - header shows CHSH = the real ibm_heron value, NO "simulator" label
+     - with real CT, tiles show NO "synthetic bg" marker
+   This is the artifact to share.
+
+
+===============================================================================
+ B) TEST RUN — SAME, but CLASSICAL PRNG (no hardware, instant)
+===============================================================================
+ Identical pipeline, swap the quantum roll for the classical baseline sampler.
+ Use this to dry-run the whole flow without a QPU. Output schema is identical;
+ only provenance differs (no CHSH).
+
+ STEP 1 — F1: classical baseline roll
+   python -m f1_quantum.run --sampler prng --tiles 12 --pairs 2 --seed 7
+     RUN=$(ls -dt ../research_runs/prng_prng_*/ | head -1)
+
+ STEP 2 — F2: render (synthetic background is fine for a test)
+   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+
+ STEP 3 — F3: bake the page (use a separate --out so you don't clobber the live page)
+   python -m f3_web.build_web --run "$RUN" --out ../web/index_prng.html
+
+ RESULT
+   ../web/index_prng.html
+     - header shows "classical baseline - no CHSH"
+     - tiles show the amber "synthetic bg" marker
+   Proves the render path works end-to-end; NOT the quantum demo.
+
+
+===============================================================================
+ QUICK LOCAL CHECK (optional) — simulate the quantum roll without hardware
+===============================================================================
+   python -m f1_quantum.run --backend aer --tiles 12 --pairs 2
+   RUN=$(ls -dt ../research_runs/qrng_aer_*/ | head -1)
+   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+   python -m f3_web.build_web --run "$RUN" --out ../web/index_sim.html
+   # CHSH ~2.83 but labeled "simulator (noiseless)" — dev only, not the public value.
+
+
+NOTES
+-------------------------------------------------------------------------------
+ * F2 and F3 both read the SAME run dir F1 created. Always pass that dir to --run.
+ * --tiles / --pairs control cohort size and how many sibling pairs (default 12 / 2).
+ * The page is self-contained: PNGs + data are embedded; no server, no internet needed.
+ * Honest label: tumor PARAMETERS are quantum; the IMAGE is a classical rendering.
+===============================================================================

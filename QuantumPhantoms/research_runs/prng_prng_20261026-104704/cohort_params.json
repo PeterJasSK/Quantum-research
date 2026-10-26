@@ -1,0 +1,110 @@
+[
+  {
+    "size_mm": 7.0,
+    "type": "ground-glass",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "tile0",
+    "generation": 0,
+    "shot_index": 0
+  },
+  {
+    "size_mm": 4.0,
+    "type": "ground-glass",
+    "margin": "smooth",
+    "lobe": "LUL",
+    "lineage_id": "tile1",
+    "generation": 0,
+    "shot_index": 1
+  },
+  {
+    "size_mm": 7.0,
+    "type": "solid",
+    "margin": "smooth",
+    "lobe": "RUL",
+    "lineage_id": "tile2",
+    "generation": 0,
+    "shot_index": 2
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RLL",
+    "lineage_id": "tile3",
+    "generation": 0,
+    "shot_index": 3
+  },
+  {
+    "size_mm": 26.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "LLL",
+    "lineage_id": "tile4",
+    "generation": 0,
+    "shot_index": 4
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "tile5",
+    "generation": 0,
+    "shot_index": 5
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "LLL",
+    "lineage_id": "tile6",
+    "generation": 0,
+    "shot_index": 6
+  },
+  {
+    "size_mm": 7.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "tile7",
+    "generation": 0,
+    "shot_index": 7
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "pair8",
+    "generation": 0,
+    "shot_index": 8
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "pair8",
+    "generation": 1,
+    "shot_index": 8
+  },
+  {
+    "size_mm": 4.0,
+    "type": "ground-glass",
+    "margin": "smooth",
+    "lobe": "RUL",
+    "lineage_id": "pair9",
+    "generation": 0,
+    "shot_index": 9
+  },
+  {
+    "size_mm": 4.0,
+    "type": "ground-glass",
+    "margin": "smooth",
+    "lobe": "RUL",
+    "lineage_id": "pair9",
+    "generation": 1,
+    "shot_index": 9
+  }
+]

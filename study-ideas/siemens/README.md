@@ -16,6 +16,13 @@ Full scraped company deep-dive + ranking lives in repo-root `ideas.txt` **Part 6
   - **P3** structured 2-D scatter field + the classical-hardness *potential map* + scaling path (capstone, mo 11–18)
   - One shared physics-encoded sampler reused 3×; **program likelihood 76/100**.
 
+## ⭐ Co-lead main thesis — certified-unchosen virtual cohorts (user-authored, the "floor" play)
+- `siemens-8-certified-quantum-virtual-cohorts.md` — **the bridge made whole.** A training-free quantum circuit rolls clinically-parameterised virtual tumors/patients from published statistics (gate angles hand-computed, no data training, no QML); a CHSH test in the *same job* certifies the draw came from genuine quantum measurement; every virtual patient gets an Ed25519-signed receipt (reuses `qrng-eaas`). Classical tools then insert the lesion into a phantom (XCAT) and simulate a CT (DukeSim, validated against Siemens NAEOTOM Alpha). **One-line pitch:** *classical computers can make fake tumors; only quantum can prove nobody — including us — picked which ones.*
+  - **Why it's not a long shot:** the certified-unchosen core is the one thing classical provably cannot do (PRNG seeds are knowable → "seed shopping"); the pipeline + noise-bias-vs-complexity scaling curve is a near-guaranteed publishable result (~70%) even if "why quantum essential" lands only modestly.
+  - **Honest limits (stated in-file):** single-chip CHSH isn't loophole-free (trusted hardware); commit-then-reveal does much of the work classically; `§5` upgrades (hidden test rounds, CURBy seed, contextuality, self-testing, Perun XEB hardness, QAE cohort audit) raise "quantum essential" from ~25% → ~50–60%. Merges the useful cores of `siemens-1/2/6` + `qrng-eaas`.
+  - **Venue:** IEEE QCE short + SPIE Medical Imaging. **~77/100 · want-to-do 4/5 · effort medium-high · QC yes (sim+hw) · NO QML**
+  - **vs `siemens-6`:** siemens-6 = quantum *samples the physics* (advantage = open, likely null); siemens-8 = quantum *certifies the selection* (advantage = proven floor, classically impossible). siemens-8 has the higher honest floor; siemens-6 has the cleaner physics story. Both run on IBM Heron, both no-QML, both reuse the stack — candidates for the same thesis slot.
+
 ## Non-obvious runner-up (different flavour)
 - `siemens-7-quantum-reservoir-cardiac-twin.md` — first rigorous, fairly-benchmarked quantum-reservoir baseline for cardiac/ECG; barren-plateau-free; Siemens' patient-twinning pillar. Near-empty niche, honest "parity-not-advantage." **70/100 · want-to-do 4/5 · effort medium · QC yes (NISQ-small)** *(note: reservoir computing sits near the QML line — keep only as fallback given constraint #1.)*
 

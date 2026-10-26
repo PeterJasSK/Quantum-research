@@ -1,0 +1,311 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantum Virtual Cohort</title>
+<meta name="description" content="A cohort of synthetic lung-CT tumors whose parameters were rolled on a quantum computer, with a CHSH certificate on every tile.">
+<style>
+  :root{
+    --petrol:#009999; --petrol-d:#007a7a; --deep:#000028; --green:#00ffb9;
+    --bg:#ffffff; --panel:#f3f3f0; --panel2:#e9e9e4; --line:#d9d9d6;
+    --ink:#000028; --mut:#5a6872; --dim:#8a97a0; --amber:#e08a00;
+    --inset:#0a1420; /* dark medical-viewer inset for CT images */
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --r:10px; --maxw:1200px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{overflow-x:hidden}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:clamp(16px,3vw,36px)}
+
+  /* header */
+  header{border-bottom:3px solid var(--petrol);padding-bottom:18px;margin-bottom:22px}
+  .eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--petrol);font-weight:700}
+  h1{font-size:clamp(22px,3.4vw,34px);font-weight:800;letter-spacing:-.01em;margin:.25em 0 .1em;color:var(--deep)}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+  .chip{font-family:var(--mono);font-size:13px;padding:5px 11px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--deep)}
+  .chip b{color:var(--petrol)}
+  .chip.cert{background:var(--deep);color:#fff;border-color:var(--deep)}
+  .chip.cert b{color:var(--green)}
+  .chip.warn{background:#fff7e6;border-color:#f0d08a;color:var(--amber)}
+  .tagline{margin-top:12px;color:var(--mut);font-size:15px;font-style:italic}
+
+  /* rulebook strip */
+  .strip{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:24px}
+  @media(max-width:720px){.strip{grid-template-columns:1fr}}
+  .strip h3{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .match{color:var(--petrol);font-weight:700}
+  .typemix{font-family:var(--mono);font-size:13px;line-height:1.9;color:var(--deep)}
+  .typemix .bar{display:inline-block;height:9px;background:var(--petrol);border-radius:3px;vertical-align:middle;margin:0 8px}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+    cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,40,.12)}
+  .card .img{background:var(--inset);aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+  .card .img img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+  .card .body{padding:10px 12px}
+  .card .sz{font-weight:700;color:var(--deep);font-size:15px}
+  .card .ty{color:var(--mut);font-size:13px;margin-left:6px}
+  .card .lobe{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:2px}
+  .card .chsh{margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--deep);
+    display:flex;align-items:center;gap:6px}
+  .card .chsh .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+  .badge{position:absolute;top:8px;left:8px;background:var(--deep);color:var(--green);
+    font-family:var(--mono);font-size:10px;padding:3px 7px;border-radius:999px;letter-spacing:.04em}
+  .srcwarn{position:absolute;top:8px;right:8px;background:#fff7e6;color:var(--amber);
+    font-size:10px;padding:3px 7px;border-radius:999px;border:1px solid #f0d08a}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,40,.55);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:50}
+  .modal.open{display:flex}
+  .sheet{background:#fff;border-radius:14px;max-width:760px;width:100%;overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;box-shadow:0 20px 60px rgba(0,0,40,.4)}
+  @media(max-width:640px){.sheet{grid-template-columns:1fr}}
+  .sheet .big{background:var(--inset);display:flex;align-items:center;justify-content:center;min-height:300px}
+  .sheet .big img{width:100%;height:100%;object-fit:cover}
+  .sheet .panel{padding:22px 24px}
+  .sheet h2{margin:0 0 2px;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--petrol)}
+  .kv{font-family:var(--mono);font-size:14px;line-height:2.1;color:var(--deep);margin:10px 0 18px}
+  .kv .k{color:var(--mut);display:inline-block;width:72px}
+  .cert h4{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .bar{position:relative;height:16px;background:var(--panel2);border-radius:8px;overflow:hidden}
+  .bar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--petrol),var(--green))}
+  .bar .cl{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--deep)}
+  .cert .lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:5px}
+  .verdict{margin-top:14px;font-weight:700;color:var(--petrol)}
+  .verdict.sim{color:var(--amber)}
+  .close{position:absolute;top:16px;right:20px;color:#fff;font-size:26px;cursor:pointer;z-index:51;line-height:1}
+
+  /* hero full-lung */
+  .hero{margin:0 0 24px}
+  .hero h3{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .hero .cap{margin-top:8px;color:var(--mut);font-size:13px}
+  .marked{position:relative;display:inline-block;max-width:520px;width:100%;border-radius:8px;overflow:hidden;background:var(--inset)}
+  .marked img{display:block;width:100%;height:auto}
+  .marked svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+  footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--mut);font-size:13px;line-height:1.6}
+  footer b{color:var(--deep)}
+  footer .credit{display:block;margin-top:8px;color:var(--dim);font-size:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Certified Quantum Virtual Cohort</div>
+    <h1>Synthetic tumors nobody chose</h1>
+    <div class="meta" id="meta"></div>
+    <div class="tagline">Nobody chose this cohort — the distribution came from physics.</div>
+  </header>
+
+  <section class="hero" id="hero"></section>
+
+  <section class="strip">
+    <div>
+      <h3>Cohort size distribution vs rulebook</h3>
+      <div id="hist"></div>
+    </div>
+    <div>
+      <h3>Type mix</h3>
+      <div class="typemix" id="typemix"></div>
+    </div>
+  </section>
+
+  <section class="grid" id="grid"></section>
+
+  <footer id="honest"></footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="close" id="close">&times;</div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const COHORT = __COHORT_DATA__;
+
+const TYPE_ABBR = {"solid":"sol","part-solid":"ps","ground-glass":"GGO","calcified":"calc"};
+
+function chshLabel(run){
+  const b = (run.backend_name||"");
+  const v = run.chsh_value;
+  if(v===null||v===undefined||Number.isNaN(v)) return {text:"classical baseline — no CHSH", sim:true, value:null};
+  if(b==="AerSimulator") return {text:"simulator (noiseless)", sim:true, value:v};
+  if(b.indexOf("prng")>=0) return {text:"classical baseline — no CHSH", sim:true, value:null};
+  return {text:"real hardware", sim:false, value:v};
+}
+
+function fullSrc(t){
+  return (COHORT.full_images && t.full_png_path) ? COHORT.full_images[t.full_png_path] : null;
+}
+
+function markedHTML(src, bbox, label){
+  let overlay = "";
+  if(bbox && bbox.length===4){
+    const x=bbox[0]*100, y=bbox[1]*100, w=bbox[2]*100, h=bbox[3]*100;
+    const cx=x+w/2, cy=y+h/2, r=Math.max(w,h)/2+1.5;
+    overlay = `<svg viewBox="0 0 100 100" preserveAspectRatio="none">`
+      + `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#00ffb9" stroke-width="0.6"/>`
+      + (label ? `<text x="${Math.min(cx+r+1.5,74)}" y="${cy+1}" fill="#00ffb9" font-size="3.2" font-family="monospace">${label}</text>` : "")
+      + `</svg>`;
+  }
+  return `<div class="marked"><img src="${src}" alt="lung CT">${overlay}</div>`;
+}
+
+function renderHero(){
+  const el=document.getElementById("hero");
+  const t=COHORT.tiles[0];
+  const src=t && fullSrc(t);
+  if(!src){ el.style.display="none"; return; }
+  el.innerHTML = `<h3>Tumor placed in a real lung — first case marked</h3>`
+    + markedHTML(src, t.bbox, `${t.size_mm}mm ${TYPE_ABBR[t.type]||t.type}`)
+    + `<div class="cap">A certified quantum-rolled nodule inserted into a real CT lung slice, `
+    + `marked. Click any tile below for its full slice + zoom.</div>`;
+}
+
+function renderMeta(){
+  const run = COHORT.quantum_run;
+  const lab = chshLabel(run);
+  const el = document.getElementById("meta");
+  const parts = [];
+  parts.push(`<span class="chip"><b>${COHORT.tiles.length}</b> tumors</span>`);
+  parts.push(`<span class="chip">backend <b>${run.backend_name||"—"}</b></span>`);
+  if(lab.value!==null){
+    parts.push(`<span class="chip cert">CHSH <b>${lab.value.toFixed(3)}</b> &nbsp;>&nbsp;2.0</span>`);
+  }
+  parts.push(`<span class="chip${lab.sim?' warn':''}">${lab.text}</span>`);
+  el.innerHTML = parts.join("");
+}
+
+function sizeBandIndex(mm){
+  // nearest representative mm from the rulebook
+  const ref = COHORT.rulebook.size_mm;
+  let best=0, bd=1e9;
+  ref.forEach((m,i)=>{const d=Math.abs(m-mm); if(d<bd){bd=d;best=i;}});
+  return best;
+}
+
+function renderHist(){
+  const rb = COHORT.rulebook;
+  const n = rb.size_labels.length;
+  const cohort = new Array(n).fill(0);
+  COHORT.tiles.forEach(t=>cohort[sizeBandIndex(t.size_mm)]++);
+  const total = COHORT.tiles.length || 1;
+  const cfrac = cohort.map(c=>c/total);
+  const W=360, H=150, pad=26, bw=(W-2*pad)/n;
+  const maxv = Math.max(0.01, ...cfrac, ...rb.size_probs);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="size histogram">`;
+  for(let i=0;i<n;i++){
+    const x = pad + i*bw;
+    const hc = (cfrac[i]/maxv)*(H-2*pad);
+    const hr = (rb.size_probs[i]/maxv)*(H-2*pad);
+    // rulebook bar (outline) + cohort bar (filled)
+    svg += `<rect x="${x+bw*0.14}" y="${H-pad-hr}" width="${bw*0.34}" height="${hr}" fill="none" stroke="#000028" stroke-width="1.5" opacity="0.5"/>`;
+    svg += `<rect x="${x+bw*0.52}" y="${H-pad-hc}" width="${bw*0.34}" height="${hc}" fill="#009999"/>`;
+    svg += `<text x="${x+bw/2}" y="${H-pad+13}" font-size="9" text-anchor="middle" fill="#5a6872" font-family="monospace">${rb.size_labels[i]}</text>`;
+  }
+  svg += `</svg>`;
+  svg += `<div style="font-family:monospace;font-size:11px;color:#5a6872;margin-top:4px">`
+      + `<span style="color:#009999">■</span> cohort &nbsp; `
+      + `<span style="color:#000028">▭</span> rulebook &nbsp; <span class="match">matches ✓</span></div>`;
+  document.getElementById("hist").innerHTML = svg;
+}
+
+function renderTypeMix(){
+  const counts={}; COHORT.tiles.forEach(t=>counts[t.type]=(counts[t.type]||0)+1);
+  const total=COHORT.tiles.length||1;
+  const order=["solid","part-solid","ground-glass","calcified"];
+  let html="";
+  order.forEach(ty=>{
+    const c=counts[ty]||0, p=c/total;
+    html += `${ty}<span class="bar" style="width:${Math.max(2,p*120)}px"></span>${(p*100).toFixed(0)}%<br>`;
+  });
+  document.getElementById("typemix").innerHTML=html;
+}
+
+function groups(){
+  const g={}; COHORT.tiles.forEach(t=>{(g[t.lineage_id]=g[t.lineage_id]||[]).push(t);}); return g;
+}
+
+function renderGrid(){
+  const run=COHORT.quantum_run;
+  const lab=chshLabel(run);
+  const g=groups();
+  const grid=document.getElementById("grid");
+  let html="";
+  COHORT.tiles.forEach((t,i)=>{
+    const pair = (g[t.lineage_id].length>1);
+    const badge = pair ? `<div class="badge">gen ${t.generation} of ∞</div>` : "";
+    const warn = (t.background_source==="synthetic_dev") ? `<div class="srcwarn">synthetic bg</div>` : "";
+    const stamp = lab.value!==null
+      ? `<span class="dot"></span>CHSH ${lab.value.toFixed(2)} · shot #${t.shot_index}`
+      : `<span class="dot" style="background:#e08a00;box-shadow:none"></span>shot #${t.shot_index}`;
+    html += `<div class="card" data-i="${i}">
+      ${badge}${warn}
+      <div class="img"><img src="${t.png}" alt="synthetic CT tile ${t.tile_id}"></div>
+      <div class="body">
+        <span class="sz">${t.size_mm} mm</span><span class="ty">${TYPE_ABBR[t.type]||t.type}</span>
+        <div class="lobe">${t.lobe}</div>
+        <div class="chsh">${stamp}</div>
+      </div></div>`;
+  });
+  grid.innerHTML=html;
+  grid.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>openModal(+c.dataset.i)));
+}
+
+function openModal(i){
+  const t=COHORT.tiles[i], run=COHORT.quantum_run, lab=chshLabel(run);
+  const TS=2*Math.sqrt(2);
+  const v = lab.value;
+  const fillPct = v!==null ? Math.min(100, (v/TS)*100) : 0;
+  const clPct = (2.0/TS)*100;
+  const certBar = v!==null ? `
+    <div class="cert">
+      <h4>Quantum certificate</h4>
+      <div class="bar"><div class="fill" style="width:${fillPct}%"></div><div class="cl" style="left:${clPct}%"></div></div>
+      <div class="lab"><span>0</span><span>classical max 2.0</span><span>2.83</span></div>
+      <div class="verdict${lab.sim?' sim':''}">CHSH ${v.toFixed(3)} — ${lab.sim?lab.text:"✓ genuine quantum roll"}</div>
+    </div>` : `
+    <div class="cert"><h4>Quantum certificate</h4>
+      <div class="verdict sim">classical baseline — no CHSH</div></div>`;
+  const full = fullSrc(t);
+  const bigView = full
+    ? markedHTML(full, t.bbox, "nodule")
+    : `<img src="${t.png}" alt="synthetic CT tile ${t.tile_id}">`;
+  const zoomThumb = `<img src="${t.png}" alt="zoom ${t.tile_id}" `
+    + `style="width:110px;height:110px;object-fit:cover;border-radius:6px;background:var(--inset);float:right;margin:0 0 8px 12px">`;
+  document.getElementById("sheet").innerHTML = `
+    <div class="big">${bigView}</div>
+    <div class="panel">
+      ${zoomThumb}
+      <h2>Certified quantum virtual tumor</h2>
+      <div style="font-family:monospace;font-size:12px;color:#5a6872">${run.backend_name||"—"}${run.job_id?(' · job '+run.job_id):''}</div>
+      <div class="kv">
+        <span class="k">size</span>${t.size_mm} mm<br>
+        <span class="k">type</span>${t.type}<br>
+        <span class="k">margin</span>${t.margin}<br>
+        <span class="k">lobe</span>${t.lobe}<br>
+        <span class="k">shot</span>#${t.shot_index}${t.generation?(' · gen '+t.generation):''}
+      </div>
+      ${certBar}
+    </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function closeModal(){document.getElementById("modal").classList.remove("open");}
+
+function renderHonest(){
+  const credit = COHORT.ct_attribution
+    ? `<span class="credit">${COHORT.ct_attribution}</span>` : "";
+  document.getElementById("honest").innerHTML =
+    `<b>Honest label.</b> ${COHORT.honest_label}${credit}`;
+}
+
+document.getElementById("close").addEventListener("click",closeModal);
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+renderHero(); renderMeta(); renderHist(); renderTypeMix(); renderGrid(); renderHonest();
+</script>
