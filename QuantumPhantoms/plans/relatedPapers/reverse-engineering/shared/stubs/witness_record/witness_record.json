@@ -1,0 +1,44 @@
+{
+  "contract": "witness_record",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "quantum_job_record",
+      "path": "../quantum_job_record/quantum_job_record.json",
+      "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+    }
+  ],
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "claim_level": "L1",
+  "job_record_ref": {
+    "path": "../quantum_job_record/quantum_job_record.json",
+    "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+  },
+  "observables": {
+    "XX": {
+      "value": 0.97,
+      "stderr": 0.01
+    },
+    "ZZ": {
+      "value": 0.98,
+      "stderr": 0.01
+    }
+  },
+  "witness_expression": "<XX> + <ZZ> > 1 (GHZ-2 fidelity witness)",
+  "threshold": 1.0,
+  "passed": true,
+  "bases": [
+    "X",
+    "Z"
+  ],
+  "mi_network": null
+}

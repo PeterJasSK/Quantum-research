@@ -32,6 +32,12 @@ code/
   f3_web/            F3 — web demo (the MVP page)
     web_template.html  light Siemens-theme page shell (no logo)
     build_web.py       F3 CLI entrypoint (embeds PNGs + data → one HTML)
+  f4_qalife/         F4 — Mode-A living-process arm (optional)
+    witness.py         within-generation entanglement witness W = ⟨XX⟩+⟨ZZ⟩
+    fitness.py         classical (non-learned) fitness + selection
+    loop.py            Mode-A hybrid loop: divide (P1) + fate (P2) + measure-restart
+    sampler.py         QALifeSampler — third Sampler impl (evolved cohort)
+    run_qalife.py      F4 CLI entrypoint
   README.md
 ```
 
@@ -72,8 +78,11 @@ real `job_id` + CHSH value for the demo (Aer writes `job_id=""`).
 
 ## F2 — lesion → CT image
 
-Builds a 3D lesion per tumor (size→radius, type→HU, margin→surface), inserts its central
-slice into a lung-CT slice with matched noise, writes cropped PNG tiles + `tiles.json`.
+Builds a **realistic procedural** lesion per tumor (F2.1): irregular lobulated/spiculated
+shape, heterogeneous textured interior, soft partial-volume edge; inserts its central slice
+into a lung-CT slice with a scanner point-spread blur (`--psf`, default 0.7) + correlated
+matched noise; writes cropped PNG tiles + `tiles.json`. No ML/training — shape & texture are
+seeded from F1's certified-quantum bits (`morphology_source` per tile: `quantum`/`classical`).
 
 ```bash
 # default — real bundled lung (CC BY-SA, see data/ct_slices/NOTICE.md):
@@ -110,6 +119,35 @@ click-to-open detail modal (full params + CHSH-vs-2.0 certificate) → sibling l
 cohort-vs-rulebook histogram → honest-label footer. Sampler-blind; never recomputes anything
 quantum. Aer/PRNG runs are labeled "simulator"/"classical baseline"; the real-hardware CHSH
 value is the one for the public demo.
+
+## F4 — Mode-A living-process arm (optional)
+
+Turns F1's one-division hint into a real **evolutionary loop**: founder cells divide with
+mutation (P1) and commit a fate in superposition under a phase dial (P2); a **classical host**
+scores fitness, kills losers, and seeds the next generation from the survivor's measured bits
+(measure-and-restart = **Mode A**, constant depth, survives the coherence wall). Each
+generation records a **within-generation entanglement witness** `W = ⟨XX⟩+⟨ZZ⟩` (`W > 1` ⇒
+entangled; ⟨σz⟩ alone is classical — we measure the off-diagonal).
+
+`QALifeSampler` is a third `Sampler` implementation, so the evolved lineage comes out as the
+same `TumorParams` contract — **feed the F4 run dir straight into the unmodified F2 → F3
+commands**; the page renders the multi-generation genealogy via the existing `gen N of ∞`
+lineage badges.
+
+```bash
+# evolve a cohort (default 4 founders × 3 generations × 1 survivor = 12 tiles):
+python -m f4_qalife.run_qalife --backend aer --founders 4 --generations 3 --survivors 1
+# the interference knob — phase sweeps the fate mix (proliferative/quiescent → necrotic):
+python -m f4_qalife.run_qalife --backend aer --phase 1.5708
+# then render with the SAME F2/F3 entrypoints (no code change):
+python -m f2_imaging.build_tiles --run research_runs/qalife_aer_<ts> --ct-source synthetic
+python -m f3_web.build_web       --run research_runs/qalife_aer_<ts>
+```
+
+Writes `cohort_params.json` + `quantum_run.json` (as F1) plus `witness.json` (per-generation
+`W`). Honest label, carried on every artifact: **quantum *within* a generation, classical
+genealogy** — the measure-and-restart seed between generations is classical. Mode B (coherent
+genealogy) and the collapse-curve sub-study are out of scope (physically blocked on Heron).
 
 ## Honest claim (Tier 1 provenance)
 

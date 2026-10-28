@@ -13,3 +13,9 @@ TargetedDosColisionsAndRNGAngle/.venv/
 TargetedDosColisionsAndRNGAngle/testbed/results/**/*.csv
 TargetedDosColisionsAndRNGAngle/testbed/results/**/*.record.json
 TargetedDosColisionsAndRNGAngle/testbed/results/**/*.jsonl
+
+# QuantumPhantoms reverse-engineering: PDFs (~350 MB) and regenerable run outputs stay local;
+# READMEs, dossiers, code, figures and the generated site (index.html, site/) are committed.
+QuantumPhantoms/plans/relatedPapers/papers/
+QuantumPhantoms/plans/relatedPapers/reverse-engineering/**/runs/
+

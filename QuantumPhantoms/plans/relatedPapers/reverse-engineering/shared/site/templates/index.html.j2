@@ -1,0 +1,45 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<h1>Quantum Phantoms: reverse engineering</h1>
+<p class="lede">21 published methods rebuilt standalone, one folder per pipeline letter A–H. Every target goes
+<em>dissect → reproduce → adapt → integrate</em>, or is rejected with a reason. New here? Read the
+<a href="{{ root }}about.html">explainer</a>.</p>
+
+<p class="totals">{% for s in states %}{% if totals[s] %}<span class="badge state-{{ s }}">{{ totals[s] }} {{ s }}</span>{% endif %}{% endfor %}</p>
+
+<section class="cards">
+{% for c in cards %}
+  <a class="card" href="{{ root }}site/{{ c.folder }}/index.html">
+    <span class="card-letter">{{ c.letter }}</span>
+    <span class="card-title">{{ c.title }}</span>
+    <span class="card-folder"><code>{{ c.folder }}/</code> · {{ c.n }} target{{ "s" if c.n != 1 }}</span>
+    <span class="card-states">{% for s in states %}{% if c.counts[s] %}<span class="badge state-{{ s }}">{{ c.counts[s] }} {{ s }}</span>{% endif %}{% endfor %}</span>
+  </a>
+{% endfor %}
+</section>
+
+<h2>All targets</h2>
+<div class="table-wrap">
+<table class="targets">
+  <thead><tr><th>#</th><th>Letter</th><th>Target</th><th>Priority</th><th>Kind</th><th>State</th><th>Claim</th><th>Sim</th><th>Reproduced</th><th>Papers</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td class="num">{{ r.number }}</td>
+      <td><a href="{{ root }}site/{{ r.folder }}/index.html">{{ r.letter }}</a></td>
+      <td><a href="{{ root }}{{ r.href }}">{{ r.name }}</a></td>
+      <td class="stars">{{ r.priority | stars }}</td>
+      <td>{{ r.kind }}</td>
+      <td><span class="badge state-{{ r.state }}" {% if r.rejection_reason %}title="{{ r.rejection_reason }}"{% endif %}>{{ r.state }}</span></td>
+      <td>{{ r.claim_level or "—" }}</td>
+      <td>{{ r.sim_mode or "—" }}</td>
+      <td>{{ r.reproduced_text }}</td>
+      <td class="papers">{{ r.papers | join(", ") or "—" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="legend">States: listed → dissected → reproduced (published number matched) → adapted → integrated | rejected (reason recorded).
+Claim levels: L0 provenance · L1 entangled generative state · L1′ quantum memory advantage. Every quantum number is simulated.</p>
+{% endblock %}

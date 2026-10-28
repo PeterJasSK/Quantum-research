@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/ledger_entry.schema.json",
+  "title": "LedgerEntry (G → H): one line of ledger.jsonl, hash-chained",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "ledger_entry"
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kind": {
+      "enum": [
+        "genesis",
+        "receipt"
+      ]
+    },
+    "prev_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "receipt_sha256": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "created_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entry_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    }
+  },
+  "required": [
+    "contract",
+    "contract_version",
+    "index",
+    "kind",
+    "prev_hash",
+    "receipt_sha256",
+    "created_utc",
+    "entry_hash"
+  ],
+  "unevaluatedProperties": false,
+  "description": "entry_hash = sha256(canonical_json(entry without entry_hash)); genesis prev_hash = 64×'0'."
+}

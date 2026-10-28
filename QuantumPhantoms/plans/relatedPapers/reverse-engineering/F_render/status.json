@@ -1,0 +1,99 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "F",
+  "letter_name": "render",
+  "targets": [
+    {
+      "number": 13,
+      "slug": "synthetic-tumors",
+      "name": "SyntheticTumors / Label-free pipeline",
+      "priority": 3,
+      "kind": "classical",
+      "papers": [
+        "H01"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/13-synthetic-tumors.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 14,
+      "slug": "lesion-model-fitting",
+      "name": "Lesion-model fitting (Ambrosini; Solomon–Samei PMB 2014)",
+      "priority": 3,
+      "kind": "classical",
+      "papers": [
+        "F01"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/14-lesion-model-fitting.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 15,
+      "slug": "scanner-fingerprint",
+      "name": "Scanner fingerprint estimator (Sanders MTF 2016; Divel–Pelc 2019; Peng)",
+      "priority": 3,
+      "kind": "classical",
+      "papers": [
+        "F05"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/15-scanner-fingerprint.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 16,
+      "slug": "xcist-projection-insertion",
+      "name": "Projection-domain insertion rebuilt on XCIST (Mayo; Mayo LDCT raw data)",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "F03",
+        "A06"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/16-xcist-projection-insertion.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 17,
+      "slug": "naeotom-alpha-params",
+      "name": "DukeSim NAEOTOM Alpha parameters (McCabe)",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "F04"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/17-naeotom-alpha-params.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

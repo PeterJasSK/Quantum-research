@@ -1,0 +1,69 @@
+{
+  "contract": "rulebook",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [],
+  "rulebook_id": "stub-rulebook-2node",
+  "nodes": [
+    {
+      "name": "solid",
+      "states": [
+        "no",
+        "yes"
+      ],
+      "parents": [],
+      "context_keys": [
+        "placement_class"
+      ],
+      "cpt_by_context": {
+        "free": [
+          0.3,
+          0.7
+        ],
+        "juxtavascular": [
+          0.2,
+          0.8
+        ],
+        "juxtapleural": [
+          0.25,
+          0.75
+        ]
+      },
+      "sources": [
+        "STUB placeholder: not a published statistic"
+      ]
+    },
+    {
+      "name": "spiculated",
+      "states": [
+        "no",
+        "yes"
+      ],
+      "parents": [
+        "solid"
+      ],
+      "context_keys": [],
+      "cpt": [
+        [
+          0.9,
+          0.1
+        ],
+        [
+          0.7,
+          0.3
+        ]
+      ],
+      "sources": [
+        "STUB placeholder: not a published statistic"
+      ]
+    }
+  ],
+  "rulebook_hash": "fa12258ff7527cdc080f85964e700437e8a4b4cf078c569281bc7d9bbbea85a1"
+}

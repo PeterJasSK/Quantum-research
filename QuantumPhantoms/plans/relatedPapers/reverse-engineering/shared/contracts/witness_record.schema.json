@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/witness_record.schema.json",
+  "title": "WitnessRecord (D → G, H): L1 evidence in ≥ 2 bases",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "witness_record"
+    },
+    "claim_level": {
+      "const": "L1"
+    },
+    "job_record_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observables": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "stderr": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "value",
+          "stderr"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "witness_expression": {
+      "type": "string",
+      "minLength": 1
+    },
+    "threshold": {
+      "type": "number"
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "bases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "mi_network": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "i": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "j": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "mi": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "i",
+                  "j",
+                  "mi"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "nodes",
+            "edges"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "contract",
+    "claim_level",
+    "job_record_ref",
+    "observables",
+    "witness_expression",
+    "threshold",
+    "passed",
+    "bases",
+    "mi_network"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "E",
+  "letter_name": "classical_growth",
+  "targets": [
+    {
+      "number": 11,
+      "slug": "pixel2cancer",
+      "name": "Pixel2Cancer + Kansal–Torquato layers",
+      "priority": 3,
+      "kind": "classical",
+      "papers": [
+        "E01",
+        "E02"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/11-pixel2cancer.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 12,
+      "slug": "hpc-cellular-automaton",
+      "name": "High-performance CA (Poleszczuk–Enderling)",
+      "priority": 1,
+      "kind": "classical",
+      "papers": [
+        "E03"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/12-hpc-cellular-automaton.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

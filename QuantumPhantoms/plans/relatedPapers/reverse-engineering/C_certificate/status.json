@@ -1,0 +1,46 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "C",
+  "letter_name": "certificate",
+  "targets": [
+    {
+      "number": 4,
+      "slug": "bell-entropy-accounting",
+      "name": "Entropy accounting from Bell tests (Pironio; Liu 2025; Vazirani–Vidick)",
+      "priority": 3,
+      "kind": "quantum",
+      "papers": [
+        "C01",
+        "C02",
+        "C05"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/04-bell-entropy-accounting.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 5,
+      "slug": "curby-beacon-chain",
+      "name": "CURBy / NIST beacon chain (Kavuri)",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "C04"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/05-curby-beacon-chain.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

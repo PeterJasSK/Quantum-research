@@ -1,0 +1,71 @@
+{
+  "contract": "growth_trajectory",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "seed_shape",
+      "path": "../seed_shape/seed_shape.json",
+      "sha256": "d82635e18264180ee84ffd3a5ff28f3bc5c8a47aecf26af314a08edab6c5bcd0"
+    },
+    {
+      "contract": "certificate",
+      "path": "../certificate/certificate.json",
+      "sha256": "a31e0cd041cd0aad47f35469a75aa56bcdcfd4cab39864acffba37f46bd6c30a"
+    },
+    {
+      "contract": "tumor_draw",
+      "path": "../tumor_draw/tumor_draw.json",
+      "sha256": "16cb523868913e9044a939cc896fdefd6422a79f36e972105d7c290ba9e41521"
+    }
+  ],
+  "site_id": "S001",
+  "seed_hex": "d25a98c7d2257d60d45ac9f2b19c685d03accf2c5d3ea09aaf8015b767e676fa",
+  "seed_shape_ref": {
+    "path": "../seed_shape/seed_shape.json",
+    "sha256": "d82635e18264180ee84ffd3a5ff28f3bc5c8a47aecf26af314a08edab6c5bcd0"
+  },
+  "origin_mm_lps": [
+    -83.0,
+    21.0,
+    3.25
+  ],
+  "spacing_mm_xyz": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "state_labels": {
+    "0": "host",
+    "1": "proliferating",
+    "2": "dormant",
+    "3": "necrotic"
+  },
+  "snapshots": [
+    {
+      "step": 0,
+      "day": 0.0,
+      "role": "baseline",
+      "npz": {
+        "path": "step_0000.npz",
+        "sha256": "b36f23c9e1313aa5874ff1ca6d11ea2c94d65bdb7e3953b648114d2e30233140"
+      }
+    },
+    {
+      "step": 30,
+      "day": 90.0,
+      "role": "follow-up",
+      "npz": {
+        "path": "step_0030.npz",
+        "sha256": "b31abab1e0df1b756695c93ddad5cafcec677e1f05256f07f53e7ac6eb7ff081"
+      }
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+{
+  "backend": "AerSimulator",
+  "chsh_value": 2.81005859375,
+  "spot_xy": [
+    524,
+    599
+  ],
+  "ct_source": "bundled_real",
+  "frames": [
+    {
+      "generation": 0,
+      "clones": 1,
+      "diameter_mm": 7.0,
+      "process": "Founder \u2014 genotype rolled from the rulebook on the device (quantum state prep).",
+      "witness": {
+        "generation": 0,
+        "n_cells": 1,
+        "survivors": 1,
+        "witness_value": 1.90478515625,
+        "xx": 0.9501953125,
+        "zz": 0.95458984375,
+        "phase": 0.0
+      },
+      "cells": [
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 0,
+          "shot_index": 0,
+          "fate": "quiescent",
+          "dx_mm": 0.0,
+          "dy_mm": 0.0,
+          "born_gen": 0
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "clones": 2,
+      "diameter_mm": 12.95,
+      "process": "Division \u00d71 (P1: controlled-copy + Ry(\u03b8_mut)) + fate commit (P2, phase dial) \u2192 2 clones.",
+      "witness": {
+        "generation": 1,
+        "n_cells": 2,
+        "survivors": 2,
+        "witness_value": 1.89892578125,
+        "xx": 0.95361328125,
+        "zz": 0.9453125,
+        "phase": 0.0
+      },
+      "cells": [
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 0,
+          "shot_index": 0,
+          "fate": "quiescent",
+          "dx_mm": 0.0,
+          "dy_mm": 0.0,
+          "born_gen": 0
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 1,
+          "shot_index": 1,
+          "fate": "proliferative",
+          "dx_mm": -2.19,
+          "dy_mm": 2.01,
+          "born_gen": 1
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "clones": 4,
+      "diameter_mm": 17.31,
+      "process": "Division \u00d72 (P1: controlled-copy + Ry(\u03b8_mut)) + fate commit (P2, phase dial) \u2192 4 clones.",
+      "witness": {
+        "generation": 2,
+        "n_cells": 4,
+        "survivors": 4,
+        "witness_value": 1.9033203125,
+        "xx": 0.95556640625,
+        "zz": 0.94775390625,
+        "phase": 0.0
+      },
+      "cells": [
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 0,
+          "shot_index": 0,
+          "fate": "quiescent",
+          "dx_mm": 0.0,
+          "dy_mm": 0.0,
+          "born_gen": 0
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 1,
+          "shot_index": 1,
+          "fate": "proliferative",
+          "dx_mm": -2.19,
+          "dy_mm": 2.01,
+          "born_gen": 1
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 2,
+          "fate": "proliferative",
+          "dx_mm": 0.37,
+          "dy_mm": -4.19,
+          "born_gen": 2
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 3,
+          "fate": "proliferative",
+          "dx_mm": 3.14,
+          "dy_mm": 4.09,
+          "born_gen": 2
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "clones": 8,
+      "diameter_mm": 22.74,
+      "process": "Division \u00d74 (P1: controlled-copy + Ry(\u03b8_mut)) + fate commit (P2, phase dial) \u2192 8 clones.",
+      "witness": {
+        "generation": 3,
+        "n_cells": 8,
+        "survivors": 8,
+        "witness_value": 1.908203125,
+        "xx": 0.955078125,
+        "zz": 0.953125,
+        "phase": 0.0
+      },
+      "cells": [
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 0,
+          "shot_index": 0,
+          "fate": "quiescent",
+          "dx_mm": 0.0,
+          "dy_mm": 0.0,
+          "born_gen": 0
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 1,
+          "shot_index": 1,
+          "fate": "proliferative",
+          "dx_mm": -2.19,
+          "dy_mm": 2.01,
+          "born_gen": 1
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 2,
+          "fate": "proliferative",
+          "dx_mm": 0.37,
+          "dy_mm": -4.19,
+          "born_gen": 2
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 3,
+          "fate": "proliferative",
+          "dx_mm": 3.14,
+          "dy_mm": 4.09,
+          "born_gen": 2
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 4,
+          "fate": "proliferative",
+          "dx_mm": -5.86,
+          "dy_mm": -1.04,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 5,
+          "fate": "proliferative",
+          "dx_mm": 5.61,
+          "dy_mm": -3.57,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "ground-glass",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 6,
+          "fate": "quiescent",
+          "dx_mm": -1.89,
+          "dy_mm": 7.04,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 7,
+          "fate": "proliferative",
+          "dx_mm": -3.63,
+          "dy_mm": -6.99,
+          "born_gen": 3
+        }
+      ]
+    },
+    {
+      "generation": 4,
+      "clones": 16,
+      "diameter_mm": 30.04,
+      "process": "Division \u00d78 (P1: controlled-copy + Ry(\u03b8_mut)) + fate commit (P2, phase dial) \u2192 16 clones.",
+      "witness": {
+        "generation": 4,
+        "n_cells": 16,
+        "survivors": 16,
+        "witness_value": 1.91845703125,
+        "xx": 0.95263671875,
+        "zz": 0.9658203125,
+        "phase": 0.0
+      },
+      "cells": [
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 0,
+          "shot_index": 0,
+          "fate": "quiescent",
+          "dx_mm": 0.0,
+          "dy_mm": 0.0,
+          "born_gen": 0
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 1,
+          "shot_index": 1,
+          "fate": "proliferative",
+          "dx_mm": -2.19,
+          "dy_mm": 2.01,
+          "born_gen": 1
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 2,
+          "fate": "proliferative",
+          "dx_mm": 0.37,
+          "dy_mm": -4.19,
+          "born_gen": 2
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 2,
+          "shot_index": 3,
+          "fate": "proliferative",
+          "dx_mm": 3.14,
+          "dy_mm": 4.09,
+          "born_gen": 2
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 4,
+          "fate": "proliferative",
+          "dx_mm": -5.86,
+          "dy_mm": -1.04,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 5,
+          "fate": "proliferative",
+          "dx_mm": 5.61,
+          "dy_mm": -3.57,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "ground-glass",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 6,
+          "fate": "quiescent",
+          "dx_mm": -1.89,
+          "dy_mm": 7.04,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 3,
+          "shot_index": 7,
+          "fate": "proliferative",
+          "dx_mm": -3.63,
+          "dy_mm": -6.99,
+          "born_gen": 3
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RUL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 8,
+          "fate": "proliferative",
+          "dx_mm": 7.9,
+          "dy_mm": 2.89,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "LUL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 9,
+          "fate": "quiescent",
+          "dx_mm": -8.25,
+          "dy_mm": 3.41,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 10,
+          "fate": "proliferative",
+          "dx_mm": 3.99,
+          "dy_mm": -8.52,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 11,
+          "fate": "proliferative",
+          "dx_mm": 2.95,
+          "dy_mm": 9.41,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 12,
+          "fate": "proliferative",
+          "dx_mm": -8.92,
+          "dy_mm": -5.17,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 13,
+          "fate": "proliferative",
+          "dx_mm": 10.48,
+          "dy_mm": -2.3,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "ground-glass",
+          "margin": "smooth",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 14,
+          "fate": "proliferative",
+          "dx_mm": -6.4,
+          "dy_mm": 9.11,
+          "born_gen": 4
+        },
+        {
+          "size_mm": 7.0,
+          "type": "calcified",
+          "margin": "lobulated",
+          "lobe": "RLL",
+          "lineage_id": "grow",
+          "generation": 4,
+          "shot_index": 15,
+          "fate": "proliferative",
+          "dx_mm": -1.48,
+          "dy_mm": -11.43,
+          "born_gen": 4
+        }
+      ]
+    }
+  ]
+}

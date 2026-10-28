@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/quantum_job_record.schema.json",
+  "title": "QuantumJobRecord (B/C/D → C, D, G)",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "quantum_job_record"
+    },
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sim_mode": {
+      "$ref": "_envelope.schema.json#/$defs/sim_mode"
+    },
+    "fake_backend": {
+      "const": "FakeMarrakesh"
+    },
+    "sim_seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "shots": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "transpiled_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "propertyNames": {
+        "pattern": "^[01 ]+$"
+      }
+    },
+    "counts_file": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "test_round_mask": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            {
+              "$ref": "_envelope.schema.json#/$defs/file_ref"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "calibration_snapshot": {
+      "$ref": "_envelope.schema.json#/$defs/calibration_snapshot"
+    }
+  },
+  "required": [
+    "contract",
+    "job_id",
+    "sim_mode",
+    "fake_backend",
+    "sim_seed",
+    "shots",
+    "transpiled_hash",
+    "test_round_mask",
+    "calibration_snapshot"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "counts"
+      ]
+    },
+    {
+      "required": [
+        "counts_file"
+      ]
+    }
+  ]
+}

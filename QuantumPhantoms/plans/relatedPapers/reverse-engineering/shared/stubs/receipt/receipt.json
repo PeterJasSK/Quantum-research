@@ -1,0 +1,58 @@
+{
+  "contract": "receipt",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "quantum_job_record",
+      "path": "../quantum_job_record/quantum_job_record.json",
+      "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+    },
+    {
+      "contract": "tumor_draw",
+      "path": "../tumor_draw/tumor_draw.json",
+      "sha256": "16cb523868913e9044a939cc896fdefd6422a79f36e972105d7c290ba9e41521"
+    },
+    {
+      "contract": "hybrid_volume",
+      "path": "../hybrid_volume/hybrid_volume.json",
+      "sha256": "e2daa00823b7b41490028de28cb5a5db3b8eb63cedc6e9db96f7063ca248b7ef"
+    }
+  ],
+  "commit": {
+    "rulebook_hash": "fa12258ff7527cdc080f85964e700437e8a4b4cf078c569281bc7d9bbbea85a1",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a",
+    "committed_utc": "2026-10-28T00:00:00Z"
+  },
+  "fill": {
+    "job_ids": [
+      "sim-stub-0001"
+    ],
+    "counts_sha256": "b1c0b7606856b9aad79eaeb2638bda2443848f5d6d22d29769406591f10df60e",
+    "chsh_S": 2.7,
+    "h_min_per_round": 0.492781,
+    "witness_refs": [
+      {
+        "path": "../witness_record/witness_record.json",
+        "sha256": "d4a5567b9a1e9d3e2b5fc6797b99fdc6b99de66a137689de97f9cf795745a08b"
+      }
+    ],
+    "params_sha256": "16cb523868913e9044a939cc896fdefd6422a79f36e972105d7c290ba9e41521",
+    "seed_hex": "d25a98c7d2257d60d45ac9f2b19c685d03accf2c5d3ea09aaf8015b767e676fa",
+    "hybrid_volume_sha256": "e2daa00823b7b41490028de28cb5a5db3b8eb63cedc6e9db96f7063ca248b7ef"
+  },
+  "signature": {
+    "alg": "Ed25519",
+    "public_key_b64": "BEf2g9BQ3Lav8MsDr+cb97BFAYQnF7g8eYtEHgnG9E8=",
+    "sig_b64": "4O9qV2cIb0OOAqY7tE27a4Yah5OXyk2lUuwlz2i1TxAMF1lx9dG667Fw4A2KEflcU/Cqet76BKGqS78Cj32jCQ==",
+    "signed_over": "canonical_json({commit, fill})"
+  },
+  "state": "ledgered"
+}

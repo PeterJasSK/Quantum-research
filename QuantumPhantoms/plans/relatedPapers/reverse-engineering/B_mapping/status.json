@@ -1,0 +1,66 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "B",
+  "letter_name": "mapping",
+  "targets": [
+    {
+      "number": 1,
+      "slug": "bn-circuit-compiler",
+      "name": "Bayesian-network → circuit compiler (Low–Yoder–Chuang; Borujeni)",
+      "priority": 3,
+      "kind": "quantum",
+      "papers": [
+        "B01",
+        "B09",
+        "B10"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/01-bn-circuit-compiler.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 2,
+      "slug": "quantum-enhanced-mcmc",
+      "name": "Quantum-enhanced MCMC (Layden; Ferguson–Wallden)",
+      "priority": 2,
+      "kind": "quantum",
+      "papers": [
+        "B11",
+        "B12"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/02-quantum-enhanced-mcmc.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 3,
+      "slug": "quantum-blur",
+      "name": "Quantum blur (Wootton)",
+      "priority": 1,
+      "kind": "quantum",
+      "papers": [
+        "B04",
+        "B05"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/03-quantum-blur.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

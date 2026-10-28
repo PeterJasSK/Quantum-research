@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/rulebook.schema.json",
+  "title": "Rulebook (B → B, G, H): published statistics, context-conditioned CPTs",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "rulebook"
+    },
+    "rulebook_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "states",
+          "parents",
+          "context_keys",
+          "sources"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 2
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "context_keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Context-vector fields that select the CPT (B-1)."
+          },
+          "cpt": {
+            "$ref": "#/$defs/prob_table",
+            "description": "Nested by parent states (in 'parents' order); innermost row = P(states)."
+          },
+          "cpt_by_context": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "$ref": "#/$defs/prob_table"
+            },
+            "description": "Key = '|'-joined values of context_keys."
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "cpt"
+            ]
+          },
+          {
+            "required": [
+              "cpt_by_context"
+            ]
+          }
+        ]
+      }
+    },
+    "rulebook_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    }
+  },
+  "required": [
+    "contract",
+    "rulebook_id",
+    "nodes",
+    "rulebook_hash"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ],
+  "$defs": {
+    "prob_table": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          {
+            "$ref": "#/$defs/prob_table"
+          }
+        ]
+      }
+    }
+  },
+  "description": "rulebook_hash = hash_json(doc, exclude=['rulebook_hash','created_utc','produced_by'])."
+}

@@ -1,0 +1,56 @@
+{
+  "contract": "quantum_lineage",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "quantum_job_record",
+      "path": "../quantum_job_record/quantum_job_record.json",
+      "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+    }
+  ],
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "job_record_ref": {
+    "path": "../quantum_job_record/quantum_job_record.json",
+    "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+  },
+  "claim_level": "L1",
+  "generations": [
+    {
+      "g": 0,
+      "measured_bits": "0",
+      "fate": [
+        "divide"
+      ],
+      "chsh_round": false
+    },
+    {
+      "g": 1,
+      "measured_bits": "01",
+      "fate": [
+        "divide",
+        "rest"
+      ],
+      "chsh_round": true
+    },
+    {
+      "g": 2,
+      "measured_bits": "0110",
+      "fate": [
+        "rest",
+        "divide",
+        "divide",
+        "rest"
+      ],
+      "chsh_round": false
+    }
+  ]
+}

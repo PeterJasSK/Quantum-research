@@ -1,0 +1,23 @@
+{
+  "contract": "memory_advantage_record",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [],
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "claim_level": "L1′",
+  "process_description": "STUB: 2-state renewal process (placeholder numbers)",
+  "C_mu_bits": 1.0,
+  "C_q_bits": 0.61,
+  "C_q_measured": null,
+  "n_qubits": 2,
+  "passed": true,
+  "job_record_ref": null
+}

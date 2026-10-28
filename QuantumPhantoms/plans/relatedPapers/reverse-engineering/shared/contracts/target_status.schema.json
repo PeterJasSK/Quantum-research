@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/target_status.schema.json",
+  "title": "TargetStatus: one per letter, <L>_<name>/status.json",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "target_status"
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "letter": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ]
+    },
+    "letter_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "number",
+          "slug",
+          "name",
+          "priority",
+          "kind",
+          "papers",
+          "state",
+          "rejection_reason",
+          "reproduced",
+          "claim_level",
+          "sim_mode",
+          "dossier",
+          "figures",
+          "updated"
+        ],
+        "properties": {
+          "number": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 21
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "kind": {
+            "enum": [
+              "quantum",
+              "classical"
+            ]
+          },
+          "papers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z]{1,2}[0-9]{2}$"
+            }
+          },
+          "state": {
+            "enum": [
+              "listed",
+              "dissected",
+              "reproduced",
+              "adapted",
+              "integrated",
+              "rejected"
+            ]
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reproduced": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "quantity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "paper_value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "our_value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sim_mode": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "ideal",
+                          "heron",
+                          "both",
+                          "n/a"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "figure": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "quantity",
+                  "paper_value",
+                  "our_value",
+                  "agreement"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "claim_level": {
+            "anyOf": [
+              {
+                "enum": [
+                  "L0",
+                  "L1",
+                  "L1′",
+                  "n/a"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sim_mode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ideal",
+                  "heron",
+                  "both",
+                  "n/a"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dossier": {
+            "type": "string",
+            "minLength": 1
+          },
+          "figures": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "updated": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "rejected"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "rejection_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "rejection_reason": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "reproduced",
+                    "adapted",
+                    "integrated"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "reproduced": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "contract_version",
+    "letter",
+    "letter_name",
+    "targets"
+  ],
+  "unevaluatedProperties": false
+}

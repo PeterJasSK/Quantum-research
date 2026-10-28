@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/growth_trajectory.schema.json",
+  "title": "CellLattice / GrowthTrajectory (E → F, H)",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "growth_trajectory"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{3}$"
+    },
+    "seed_hex": {
+      "$ref": "_envelope.schema.json#/$defs/hex"
+    },
+    "seed_shape_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "origin_mm_lps": {
+      "$ref": "_envelope.schema.json#/$defs/vec3"
+    },
+    "spacing_mm_xyz": {
+      "$ref": "_envelope.schema.json#/$defs/pos3"
+    },
+    "state_labels": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([0-9]|1[0-5])$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "properties": {
+        "0": {
+          "const": "host"
+        },
+        "1": {
+          "const": "proliferating"
+        },
+        "2": {
+          "const": "dormant"
+        },
+        "3": {
+          "const": "necrotic"
+        }
+      },
+      "required": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "snapshots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "day": {
+            "type": "number",
+            "minimum": 0
+          },
+          "role": {
+            "enum": [
+              "baseline",
+              "follow-up",
+              "other"
+            ]
+          },
+          "npz": {
+            "$ref": "_envelope.schema.json#/$defs/file_ref"
+          }
+        },
+        "required": [
+          "step",
+          "day",
+          "role",
+          "npz"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "site_id",
+    "seed_hex",
+    "seed_shape_ref",
+    "origin_mm_lps",
+    "spacing_mm_xyz",
+    "state_labels",
+    "snapshots"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

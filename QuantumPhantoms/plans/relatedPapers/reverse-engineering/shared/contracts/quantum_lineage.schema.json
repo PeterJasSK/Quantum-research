@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/quantum_lineage.schema.json",
+  "title": "QuantumLineage (D → E): measured generations",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "quantum_lineage"
+    },
+    "job_record_ref": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "claim_level": {
+      "$ref": "_envelope.schema.json#/$defs/claim_level"
+    },
+    "generations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "g": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "measured_bits": {
+            "type": "string",
+            "pattern": "^[01]*$"
+          },
+          "fate": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "chsh_round": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "g",
+          "measured_bits",
+          "fate",
+          "chsh_round"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "job_record_ref",
+    "claim_level",
+    "generations"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ]
+}

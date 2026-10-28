@@ -1,0 +1,26 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "G",
+  "letter_name": "provenance",
+  "targets": [
+    {
+      "number": 19,
+      "slug": "ct-gan-tamper-test",
+      "name": "CT-GAN as a tamper test",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "G01"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/19-ct-gan-tamper-test.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/simulability_report.schema.json",
+  "title": "SimulabilityReport (D → H): belief-propagation adversary",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "simulability_report"
+    },
+    "circuits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "circuit_hash": {
+            "$ref": "_envelope.schema.json#/$defs/hex64"
+          },
+          "method": {
+            "const": "belief-propagation"
+          },
+          "bond_dim": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fidelity_vs_sim": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "runtime_s": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "circuit_hash",
+          "method",
+          "bond_dim",
+          "fidelity_vs_sim",
+          "runtime_s"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "circuits"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ]
+}

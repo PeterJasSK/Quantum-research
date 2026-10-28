@@ -1,0 +1,23 @@
+{% extends "base.html.j2" %}
+{% block main %}
+{% if target %}
+<div class="meta">
+  <span class="badge state-{{ target.state }}">{{ target.state }}</span>
+  <span class="chip">#{{ target.number }}</span>
+  <span class="chip">letter {{ letter.letter }}</span>
+  <span class="chip">{{ target.priority | stars }}</span>
+  <span class="chip">{{ target.kind }}</span>
+  <span class="chip">claim {{ target.claim_level or "—" }}</span>
+  <span class="chip">sim {{ target.sim_mode or "—" }}</span>
+  {% if target.rejection_reason %}<span class="chip">{{ target.rejection_reason }}</span>{% endif %}
+</div>
+{% elif letter_rows %}
+<div class="meta">
+  {% for r in letter_rows %}<a class="badge state-{{ r.state }}" href="{{ root }}{{ r.href }}">#{{ r.number }} {{ r.state }}</a>{% endfor %}
+</div>
+{% endif %}
+<article class="md">
+{{ body | safe }}
+</article>
+<p class="source">Source: <code>{{ source }}</code></p>
+{% endblock %}

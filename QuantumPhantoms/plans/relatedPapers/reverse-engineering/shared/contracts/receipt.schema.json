@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/receipt.schema.json",
+  "title": "Receipt (G → H): commit → fill → sign → ledger",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "receipt"
+    },
+    "commit": {
+      "type": "object",
+      "properties": {
+        "rulebook_hash": {
+          "$ref": "_envelope.schema.json#/$defs/hex64"
+        },
+        "code_hash": {
+          "$ref": "_envelope.schema.json#/$defs/hex64"
+        },
+        "committed_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "rulebook_hash",
+        "code_hash",
+        "committed_utc"
+      ],
+      "additionalProperties": false
+    },
+    "fill": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "job_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "counts_sha256": {
+              "$ref": "_envelope.schema.json#/$defs/hex64"
+            },
+            "chsh_S": {
+              "type": "number"
+            },
+            "h_min_per_round": {
+              "type": "number",
+              "minimum": 0
+            },
+            "witness_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "_envelope.schema.json#/$defs/file_ref"
+              }
+            },
+            "params_sha256": {
+              "$ref": "_envelope.schema.json#/$defs/hex64"
+            },
+            "seed_hex": {
+              "$ref": "_envelope.schema.json#/$defs/hex"
+            },
+            "hybrid_volume_sha256": {
+              "anyOf": [
+                {
+                  "$ref": "_envelope.schema.json#/$defs/hex64"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "job_ids",
+            "counts_sha256",
+            "chsh_S",
+            "h_min_per_round",
+            "witness_refs",
+            "params_sha256",
+            "seed_hex",
+            "hybrid_volume_sha256"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "signature": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "alg": {
+              "const": "Ed25519"
+            },
+            "public_key_b64": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sig_b64": {
+              "type": "string",
+              "minLength": 1
+            },
+            "signed_over": {
+              "const": "canonical_json({commit, fill})"
+            }
+          },
+          "required": [
+            "alg",
+            "public_key_b64",
+            "sig_b64",
+            "signed_over"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "committed",
+        "filled",
+        "signed",
+        "ledgered"
+      ]
+    }
+  },
+  "required": [
+    "contract",
+    "commit",
+    "fill",
+    "signature",
+    "state"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "signed",
+              "ledgered"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "signature": {
+            "type": "object"
+          },
+          "fill": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ]
+}

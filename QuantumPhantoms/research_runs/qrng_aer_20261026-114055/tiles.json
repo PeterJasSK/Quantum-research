@@ -1,5 +1,5 @@
 {
-  "honest_label": "Tumor parameters are quantum (certified by F1's CHSH > 2); the image is a classical rendering. Provenance is about lesion/cohort selection, not the CT background. All nodules are shown in one shared reference lung (a dev simplification, not 12 distinct patients). Synthetic backgrounds (background_source=synthetic_dev) are development only.",
+  "honest_label": "Size, type, margin, lobe and the lesion's shape/texture are seeded from the same certified-quantum measurement (F1's CHSH > 2); the image is a classical procedural rendering (no training). Provenance is about lesion/cohort selection, not the CT background. All nodules are shown in one shared reference lung (a dev simplification, not 12 distinct patients). Synthetic backgrounds (background_source=synthetic_dev) are development only.",
   "ct_attribution": "CT background: Ptrump16, CC BY-SA 4.0 (Wikimedia Commons); changes: synthetic quantum-rolled lesion inserted.",
   "quantum_run": {
     "backend_name": "AerSimulator",
@@ -64,7 +64,8 @@
         0.47377,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_1_0",
@@ -91,7 +92,8 @@
         0.43652,
         0.01758,
         0.01758
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_2_0",
@@ -104,8 +106,8 @@
       "generation": 0,
       "shot_index": 2,
       "insert_xy": [
-        290,
-        610
+        487,
+        624
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -114,11 +116,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.27023,
-        0.58273,
+        0.46261,
+        0.5964,
         0.02595,
         0.02595
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_3_0",
@@ -131,8 +134,8 @@
       "generation": 0,
       "shot_index": 3,
       "insert_xy": [
-        343,
-        404
+        305,
+        334
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -141,11 +144,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.32826,
-        0.38783,
+        0.29116,
+        0.31948,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_4_0",
@@ -158,8 +162,8 @@
       "generation": 0,
       "shot_index": 4,
       "insert_xy": [
-        261,
-        363
+        375,
+        456
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -168,11 +172,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.24819,
-        0.3478,
+        0.35951,
+        0.43862,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_5_0",
@@ -185,8 +190,8 @@
       "generation": 0,
       "shot_index": 5,
       "insert_xy": [
-        463,
-        286
+        479,
+        255
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -195,11 +200,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.44336,
-        0.27051,
+        0.45898,
+        0.24023,
         0.01758,
         0.01758
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_6_0",
@@ -212,8 +218,8 @@
       "generation": 0,
       "shot_index": 6,
       "insert_xy": [
-        297,
-        431
+        408,
+        406
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -222,11 +228,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.28334,
-        0.4142,
+        0.39174,
+        0.38979,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_7_0",
@@ -239,8 +246,8 @@
       "generation": 0,
       "shot_index": 7,
       "insert_xy": [
-        800,
-        376
+        715,
+        374
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -249,11 +256,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.77246,
-        0.3584,
+        0.68945,
+        0.35645,
         0.01758,
         0.01758
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_8_0",
@@ -266,8 +274,8 @@
       "generation": 0,
       "shot_index": 8,
       "insert_xy": [
-        711,
-        300
+        579,
+        241
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -276,11 +284,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.68136,
-        0.27999,
+        0.55246,
+        0.22238,
         0.02595,
         0.02595
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_8_1",
@@ -293,8 +302,8 @@
       "generation": 1,
       "shot_index": 8,
       "insert_xy": [
-        738,
-        327
+        606,
+        268
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -303,11 +312,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.70773,
-        0.30636,
+        0.57882,
+        0.24874,
         0.02595,
         0.02595
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_9_0",
@@ -320,8 +330,8 @@
       "generation": 0,
       "shot_index": 9,
       "insert_xy": [
-        286,
-        346
+        315,
+        275
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -330,11 +340,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.2726,
-        0.33119,
+        0.30092,
+        0.26186,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     },
     {
       "tile_id": "tile_9_1",
@@ -347,8 +358,8 @@
       "generation": 1,
       "shot_index": 9,
       "insert_xy": [
-        294,
-        354
+        323,
+        283
       ],
       "spacing_mm": 0.7,
       "background_source": "bundled_real",
@@ -357,11 +368,12 @@
       "chsh_value": 2.80322265625,
       "full_png_path": "tiles/full_slice.png",
       "bbox": [
-        0.28041,
-        0.33901,
+        0.30873,
+        0.26967,
         0.01339,
         0.01339
-      ]
+      ],
+      "morphology_source": "quantum"
     }
   ]
 }

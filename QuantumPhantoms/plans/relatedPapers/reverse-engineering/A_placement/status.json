@@ -1,0 +1,29 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "A",
+  "letter_name": "placement",
+  "targets": [
+    {
+      "number": 18,
+      "slug": "syn-lungs-placement",
+      "name": "SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "A01",
+        "A02",
+        "A03",
+        "A04"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/18-syn-lungs-placement.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

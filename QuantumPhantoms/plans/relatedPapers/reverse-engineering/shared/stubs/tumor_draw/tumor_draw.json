@@ -1,0 +1,46 @@
+{
+  "contract": "tumor_draw",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "site_candidates",
+      "path": "../site_candidates/sites.json",
+      "sha256": "5e5752a51a1321d4441f19a93d9228a5842d3fe1ed83c0f00c956e044dc09a86"
+    },
+    {
+      "contract": "rulebook",
+      "path": "../rulebook/rulebook.json",
+      "sha256": "852b024c6b976aaaf94c13e7afc004eccdf8f9dd3a6cdd857947428c7c3e785d"
+    },
+    {
+      "contract": "quantum_job_record",
+      "path": "../quantum_job_record/quantum_job_record.json",
+      "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+    },
+    {
+      "contract": "certificate",
+      "path": "../certificate/certificate.json",
+      "sha256": "a31e0cd041cd0aad47f35469a75aa56bcdcfd4cab39864acffba37f46bd6c30a"
+    }
+  ],
+  "draw_id": "D0001",
+  "site_id": "S001",
+  "size_mm": 8.0,
+  "type": "solid",
+  "margin": "smooth",
+  "shape_seed_hex": "be3bd78d538eccca",
+  "rulebook_hash": "fa12258ff7527cdc080f85964e700437e8a4b4cf078c569281bc7d9bbbea85a1",
+  "job_record_ref": {
+    "path": "../quantum_job_record/quantum_job_record.json",
+    "sha256": "8836e2bf75d47676612e8f7fe44fc8d4565649cf83119bacda8680f9ca820c83"
+  },
+  "shot_index": 0
+}

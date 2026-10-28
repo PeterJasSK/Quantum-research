@@ -1,0 +1,105 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "D",
+  "letter_name": "quantum_growth",
+  "targets": [
+    {
+      "number": 6,
+      "slug": "quantum-causal-states",
+      "name": "Quantum causal-state (memory-efficient) process models (Gu; Elliott; Wu; Palsson; Ghafari)",
+      "priority": 3,
+      "kind": "quantum",
+      "papers": [
+        "D06",
+        "D17",
+        "D16",
+        "D07",
+        "D08"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/06-quantum-causal-states.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 7,
+      "slug": "goldilocks-qca",
+      "name": "Goldilocks quantum cellular automata (Hillberry; Jones; Farrelly)",
+      "priority": 3,
+      "kind": "quantum",
+      "papers": [
+        "D13",
+        "D14",
+        "D03"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/07-goldilocks-qca.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 8,
+      "slug": "dynamic-circuit-feedforward",
+      "name": "Dynamic-circuit feed-forward (Bäumer; Córcoles)",
+      "priority": 3,
+      "kind": "quantum",
+      "papers": [
+        "HW05",
+        "HW06"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/08-dynamic-circuit-feedforward.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 9,
+      "slug": "bp-heavy-hex-adversary",
+      "name": "Belief-propagation simulator of heavy-hex circuits (Tindall)",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "HW04"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/09-bp-heavy-hex-adversary.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 10,
+      "slug": "measurement-induced-transition",
+      "name": "Measurement-induced entanglement transition (Koh)",
+      "priority": 1,
+      "kind": "quantum",
+      "papers": [
+        "D15"
+      ],
+      "state": "rejected",
+      "rejection_reason": "out of scope (epic decision 5, D-4 not built)",
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/10-measurement-induced-transition.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

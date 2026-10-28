@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/seed_shape.schema.json",
+  "title": "SeedShape (D → E): QCA / lineage snapshot as initial CA shape",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "seed_shape"
+    },
+    "lineage_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claim_level": {
+      "$ref": "_envelope.schema.json#/$defs/claim_level"
+    },
+    "npz": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "n_cells": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "contract",
+    "lineage_ref",
+    "claim_level",
+    "npz",
+    "n_cells"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ]
+}

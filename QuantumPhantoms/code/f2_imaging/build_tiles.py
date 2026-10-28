@@ -36,10 +36,11 @@ from f2_imaging.lesion import build_lesion, central_slice
 print = functools.partial(print, flush=True)
 
 HONEST_LABEL = (
-    "Tumor parameters are quantum (certified by F1's CHSH > 2); the image is a classical "
-    "rendering. Provenance is about lesion/cohort selection, not the CT background. "
-    "All nodules are shown in one shared reference lung (a dev simplification, not 12 "
-    "distinct patients). Synthetic backgrounds (background_source=synthetic_dev) are "
+    "Size, type, margin, lobe and the lesion's shape/texture are seeded from the same "
+    "certified-quantum measurement (F1's CHSH > 2); the image is a classical procedural "
+    "rendering (no training). Provenance is about lesion/cohort selection, not the CT "
+    "background. All nodules are shown in one shared reference lung (a dev simplification, "
+    "not 12 distinct patients). Synthetic backgrounds (background_source=synthetic_dev) are "
     "development only."
 )
 
@@ -56,8 +57,27 @@ def _parse_args():
     ap.add_argument("--crop", type=int, default=128, help="tile crop size (px).")
     ap.add_argument("--wl", type=float, default=-600.0, help="lung window level (HU).")
     ap.add_argument("--ww", type=float, default=1500.0, help="lung window width (HU).")
-    ap.add_argument("--seed", type=int, default=0, help="placement/deformation RNG seed.")
+    ap.add_argument("--psf", type=float, default=0.7, help="scanner point-spread blur sigma (px).")
+    ap.add_argument("--seed", type=int, default=0, help="placement RNG + morphology fallback seed.")
     return ap.parse_args()
+
+
+def _quantum_seed(run, p, fallback: int):
+    """Per-tile morphology seed from the tile's certified-quantum bitstring (F2.1 AC-6).
+
+    Falls back to the classical `--seed` when the run carries no raw bits (PRNG).
+    Returns (seed, morphology_source).
+    """
+    rb = getattr(run, "raw_bits", None)
+    if rb:
+        word = str(rb[p.shot_index % len(rb)])
+        try:
+            base = int(word, 2)
+        except ValueError:
+            base = abs(hash(word))
+        seed = (base ^ (p.shot_index * 2654435761) ^ (p.generation + 1)) & 0x7FFFFFFF
+        return seed, "quantum"
+    return (fallback + p.shot_index * 7 + p.generation) & 0x7FFFFFFF, "classical"
 
 
 def _resolve_run(run_arg: str) -> str:
@@ -110,12 +130,13 @@ def main():
     os.makedirs(tiles_dir, exist_ok=True)
 
     # 1) place every nodule into the single shared slice; record each centre + radius.
-    placements = []  # (params, (x, y), radius_vox)
+    placements = []  # (params, (x, y), radius_vox, morphology_source)
     for group in groups:
         base_xy = None
         for p in group:
-            lesion = build_lesion(p, bg.spacing_mm, seed=args.seed + p.shot_index * 7 + p.generation)
-            delta2d, mask2d = central_slice(lesion)
+            mseed, msource = _quantum_seed(run, p, args.seed)
+            lesion = build_lesion(p, bg.spacing_mm, seed=mseed)
+            delta2d, alpha2d = central_slice(lesion)
             if base_xy is None:
                 xy = place_for_lobe(p.lobe, shared.shape, rng, mask=mask)
                 base_xy = xy
@@ -123,8 +144,9 @@ def main():
                 off = int(max(6, lesion.radius_vox * 3))  # sibling daughter: nearby (AC-5)
                 xy = (int(np.clip(base_xy[0] + off, 0, shared.shape[1] - 1)),
                       int(np.clip(base_xy[1] + off, 0, shared.shape[0] - 1)))
-            shared = insert_lesion(shared, delta2d, mask2d, xy, is_hu=bg.is_hu, rng=rng)
-            placements.append((p, xy, lesion.radius_vox))
+            shared = insert_lesion(shared, delta2d, alpha2d, xy,
+                                   is_hu=bg.is_hu, rng=rng, psf_sigma=args.psf)
+            placements.append((p, xy, lesion.radius_vox, msource))
 
     # 2) window the finished shared slice once -> the full-lung view every tile references.
     full_u8 = window_to_uint8(shared, is_hu=bg.is_hu, wl=args.wl, ww=args.ww)
@@ -134,7 +156,7 @@ def main():
 
     # 3) per tile: a zoom crop + a normalised bbox for the F3 marker overlay.
     cohort: list[CohortTile] = []
-    for p, xy, rad in placements:
+    for p, xy, rad, msource in placements:
         patch = crop(full_u8, xy, args.crop)
         tile_id = f"tile_{p.shot_index}_{p.generation}"
         zoom_rel = os.path.join("tiles", f"zoom_{p.shot_index}_{p.generation}.png")
@@ -151,6 +173,7 @@ def main():
             background_source=bg.source,
             backend_name=run.backend_name, job_id=run.job_id, chsh_value=run.chsh_value,
             full_png_path=full_rel, bbox=[round(float(v), 5) for v in bbox],
+            morphology_source=msource,
         ))
 
     out = {
@@ -165,8 +188,10 @@ def main():
 
     print(f"  rendered {len(cohort)} tiles ({len(groups)} lineages) "
           f"from {os.path.basename(run_dir)}")
+    msrcs = sorted({t.morphology_source for t in cohort})
     print(f"  background: {bg.source}   full slice: {W}x{H}   lung mask: "
           f"{'yes' if mask is not None else 'no (region fallback)'}")
+    print(f"  morphology: {', '.join(msrcs)}   PSF sigma: {args.psf}px")
     print(f"  CHSH stamp carried: {run.chsh_value}  backend: {run.backend_name}")
     print(f"  wrote full-slice + {len(cohort)} zoom PNGs -> {tiles_dir}")
     print(f"  wrote      -> {tiles_json}")

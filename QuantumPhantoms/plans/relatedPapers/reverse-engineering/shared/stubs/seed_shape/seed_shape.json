@@ -1,0 +1,31 @@
+{
+  "contract": "seed_shape",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "quantum_lineage",
+      "path": "../quantum_lineage/quantum_lineage.json",
+      "sha256": "efc6c737e93dff29fa21142332426ac6b8e6ec8cf6f5b149880735c9b588ecdf"
+    }
+  ],
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "lineage_ref": {
+    "path": "../quantum_lineage/quantum_lineage.json",
+    "sha256": "efc6c737e93dff29fa21142332426ac6b8e6ec8cf6f5b149880735c9b588ecdf"
+  },
+  "claim_level": "L1",
+  "npz": {
+    "path": "seed_shape.npz",
+    "sha256": "b8e0f5f94245e9e1250c66132b8f3edbb8d9c5b91366216554b4f9d9449f31d2"
+  },
+  "n_cells": 123
+}

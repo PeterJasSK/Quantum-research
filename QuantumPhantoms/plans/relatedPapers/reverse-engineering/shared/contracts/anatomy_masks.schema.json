@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/anatomy_masks.schema.json",
+  "title": "AnatomyMasks (A → E, F): manifest + host-grid NIfTI masks",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "anatomy_masks"
+    },
+    "host_scan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grid": {
+      "type": "object",
+      "properties": {
+        "size_xyz": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "spacing_mm_xyz": {
+          "$ref": "_envelope.schema.json#/$defs/pos3"
+        },
+        "origin_mm_lps": {
+          "$ref": "_envelope.schema.json#/$defs/vec3"
+        }
+      },
+      "required": [
+        "size_xyz",
+        "spacing_mm_xyz",
+        "origin_mm_lps"
+      ],
+      "additionalProperties": false
+    },
+    "files": {
+      "type": "object",
+      "properties": {
+        "host_ct": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "lungs": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "lobes": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "vessels": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "airway": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "body": {
+          "anyOf": [
+            {
+              "$ref": "_envelope.schema.json#/$defs/file_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "host_ct",
+        "lungs",
+        "lobes",
+        "vessels",
+        "airway",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "label_tables": {
+      "type": "object",
+      "properties": {
+        "lungs": {
+          "type": "object",
+          "properties": {
+            "1": {
+              "const": "right"
+            },
+            "2": {
+              "const": "left"
+            }
+          },
+          "required": [
+            "1",
+            "2"
+          ],
+          "additionalProperties": false
+        },
+        "lobes": {
+          "type": "object",
+          "properties": {
+            "1": {
+              "const": "LUL"
+            },
+            "2": {
+              "const": "LLL"
+            },
+            "3": {
+              "const": "RUL"
+            },
+            "4": {
+              "const": "RML"
+            },
+            "5": {
+              "const": "RLL"
+            }
+          },
+          "required": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "lungs",
+        "lobes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "contract",
+    "host_scan_id",
+    "grid",
+    "files",
+    "label_tables"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

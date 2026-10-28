@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/certificate.schema.json",
+  "title": "Certificate (C → D, E, F, G, H): certification-ready, not certified",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "certificate"
+    },
+    "chsh_S": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2.8285
+    },
+    "n_rounds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "n_test_rounds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "h_min_per_round": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "certified_bits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "extractor": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "toeplitz"
+        },
+        "input_bits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bits": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "kind",
+        "input_bits",
+        "output_bits"
+      ],
+      "additionalProperties": false
+    },
+    "curby_pulse_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "job_record_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "extracted_seed_hex": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/hex"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "certification_status": {
+      "const": "certification-ready, not certified (simulated)"
+    },
+    "claim_level": {
+      "const": "L0"
+    }
+  },
+  "required": [
+    "contract",
+    "chsh_S",
+    "n_rounds",
+    "n_test_rounds",
+    "h_min_per_round",
+    "certified_bits",
+    "extractor",
+    "curby_pulse_id",
+    "job_record_ref",
+    "status",
+    "extracted_seed_hex",
+    "certification_status",
+    "claim_level"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ],
+  "if": {
+    "properties": {
+      "status": {
+        "const": "fail"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "extracted_seed_hex": {
+        "type": "null"
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "extracted_seed_hex": {
+        "$ref": "_envelope.schema.json#/$defs/hex"
+      },
+      "chsh_S": {
+        "exclusiveMinimum": 2
+      }
+    }
+  }
+}

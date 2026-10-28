@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/validation_report.schema.json",
+  "title": "ValidationReport (H → —)",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "validation_report"
+    },
+    "hybrid_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "_envelope.schema.json#/$defs/file_ref"
+      }
+    },
+    "realism": {
+      "type": "object"
+    },
+    "radiomics": {
+      "type": "object"
+    },
+    "utility": {
+      "type": "object"
+    },
+    "drift": {
+      "type": "object"
+    },
+    "certificate_stats": {
+      "type": "object"
+    },
+    "baseline": {
+      "type": "object"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "hybrid_refs",
+    "realism",
+    "radiomics",
+    "utility",
+    "drift",
+    "certificate_stats",
+    "baseline",
+    "notes"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

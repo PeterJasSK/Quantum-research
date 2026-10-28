@@ -1,0 +1,46 @@
+{
+  "contract": "compiled_circuit",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "rulebook",
+      "path": "../rulebook/rulebook.json",
+      "sha256": "852b024c6b976aaaf94c13e7afc004eccdf8f9dd3a6cdd857947428c7c3e785d"
+    }
+  ],
+  "rulebook_hash": "fa12258ff7527cdc080f85964e700437e8a4b4cf078c569281bc7d9bbbea85a1",
+  "context": {
+    "placement_class": "free"
+  },
+  "qasm3": {
+    "path": "circuit.qasm",
+    "sha256": "a888098053fe5709d3f478a5c1d9870d22307988ac6caf297eb19d0cb38b3989"
+  },
+  "transpiled_for": "FakeMarrakesh",
+  "qubit_map": {
+    "solid": [
+      0
+    ],
+    "spiculated": [
+      1
+    ]
+  },
+  "gate_counts": {
+    "cz": 4,
+    "measure": 2,
+    "rz": 10,
+    "sx": 11,
+    "x": 1
+  },
+  "depth": 23,
+  "two_qubit_count": 4,
+  "circuit_hash": "a888098053fe5709d3f478a5c1d9870d22307988ac6caf297eb19d0cb38b3989"
+}

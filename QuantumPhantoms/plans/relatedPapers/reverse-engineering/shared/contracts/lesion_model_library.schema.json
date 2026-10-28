@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/lesion_model_library.schema.json",
+  "title": "LesionModelLibrary (F → F, H): fitted parameters only, no voxels",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "lesion_model_library"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "types": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "solid",
+          "part-solid",
+          "ground-glass"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "shape_params": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "edge_profile": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "params": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            },
+            "required": [
+              "model",
+              "params"
+            ],
+            "additionalProperties": false
+          },
+          "hu": {
+            "type": "object",
+            "properties": {
+              "mean": {
+                "type": "number"
+              },
+              "std": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "mean",
+              "std"
+            ],
+            "additionalProperties": false
+          },
+          "n_fitted": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "shape_params",
+          "edge_profile",
+          "hu",
+          "n_fitted"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "source",
+    "types"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

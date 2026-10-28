@@ -1,0 +1,37 @@
+{
+  "contract": "validation_report",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "hybrid_volume",
+      "path": "../hybrid_volume/hybrid_volume.json",
+      "sha256": "e2daa00823b7b41490028de28cb5a5db3b8eb63cedc6e9db96f7063ca248b7ef"
+    },
+    {
+      "contract": "receipt",
+      "path": "../receipt/receipt.json",
+      "sha256": "dd10e77f9e94b8eaed5a0f33137d7c4231fe5568fb2a8ce82ca93e7800072353"
+    }
+  ],
+  "hybrid_refs": [
+    {
+      "path": "../hybrid_volume/hybrid_volume.json",
+      "sha256": "e2daa00823b7b41490028de28cb5a5db3b8eb63cedc6e9db96f7063ca248b7ef"
+    }
+  ],
+  "realism": {},
+  "radiomics": {},
+  "utility": {},
+  "drift": {},
+  "certificate_stats": {},
+  "baseline": {},
+  "notes": "STUB: empty report shape only"
+}

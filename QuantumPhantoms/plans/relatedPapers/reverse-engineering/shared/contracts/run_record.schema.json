@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/run_record.schema.json",
+  "title": "RunRecord: <L>/runs/<ts>-<tag>/run.json (epic §3 Logging)",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "run_record"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "letter": {
+      "$ref": "_envelope.schema.json#/$defs/letter"
+    },
+    "tag": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "git": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "commit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dirty": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "commit",
+            "dirty"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "seed_hex": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/hex"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sim": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "$ref": "_envelope.schema.json#/$defs/sim_mode"
+            },
+            "sim_label": {
+              "$ref": "_envelope.schema.json#/$defs/sim_label"
+            },
+            "fake_backend": {
+              "const": "FakeMarrakesh"
+            },
+            "calibration_snapshot": {
+              "$ref": "_envelope.schema.json#/$defs/calibration_snapshot"
+            }
+          },
+          "required": [
+            "mode",
+            "sim_label",
+            "fake_backend",
+            "calibration_snapshot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "transpiled_hash": {
+            "$ref": "_envelope.schema.json#/$defs/hex64"
+          },
+          "shots": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "counts_file": {
+            "$ref": "_envelope.schema.json#/$defs/file_ref"
+          }
+        },
+        "required": [
+          "job_id",
+          "transpiled_hash",
+          "shots",
+          "counts_file"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "_envelope.schema.json#/$defs/upstream_ref"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "$ref": "_envelope.schema.json#/$defs/upstream_ref"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "run_id",
+    "letter",
+    "tag",
+    "code_hash",
+    "git",
+    "seed_hex",
+    "sim",
+    "jobs",
+    "inputs",
+    "outputs",
+    "notes"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

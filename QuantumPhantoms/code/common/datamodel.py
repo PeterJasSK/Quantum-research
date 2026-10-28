@@ -92,10 +92,39 @@ class CohortTile:
     chsh_value: float
     full_png_path: str = ""      # whole-slice view (F3.1); shared across tiles of one run
     bbox: list[float] = None     # nodule box in full-slice NORMALISED coords [fx, fy, fw, fh]
+    morphology_source: str = "classical"  # "quantum" when shape/texture seeded from raw_bits (F2.1)
 
     def to_dict(self) -> dict:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, d: dict) -> "CohortTile":
+        return cls(**d)
+
+
+@dataclass
+class GenerationRecord:
+    """One generation of the F4 Mode-A loop: the within-generation entanglement
+    witness plus bookkeeping (epic §4 Generation/Lineage row; plan §5).
+
+    `witness_value` is W_g = <XX> + <ZZ> on a representative parent->first-daughter
+    division pair (separable bound 1; entangled if > 1). It is a per-generation,
+    job-level statistic — NOT per cell. Honest Mode-A label: quantum within a
+    generation, classical genealogy (the measure-and-restart seed between
+    generations is classical).
+    """
+
+    generation: int
+    n_cells: int          # candidates measured this generation (founders * offspring)
+    survivors: int        # cells kept by classical selection (founders * survivors)
+    witness_value: float  # W_g = <XX> + <ZZ>
+    xx: float             # <XX> correlator (dedicated job)
+    zz: float             # <ZZ> correlator (dedicated job)
+    phase: float          # P2 fate phase dial (radians) used this run
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "GenerationRecord":
         return cls(**d)

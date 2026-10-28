@@ -1,0 +1,61 @@
+{
+  "contract": "scanner_fingerprint",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "anatomy_masks",
+      "path": "../anatomy_masks/anatomy_masks.json",
+      "sha256": "329d386d39ccae41c02953163be4cd6f8b2ca2cbc4b1fb33e1fc35e16c016f63"
+    }
+  ],
+  "host_scan_id": "stub-phantom-001",
+  "mtf": {
+    "freq_cyc_per_mm": [
+      0.0,
+      0.2,
+      0.4,
+      0.6,
+      0.8
+    ],
+    "values": [
+      1.0,
+      0.8208,
+      0.4538,
+      0.169,
+      0.0424
+    ]
+  },
+  "psf_sigma_mm_zyx": [
+    0.9,
+    0.6,
+    0.6
+  ],
+  "nps": {
+    "freq_cyc_per_mm": [
+      0.0,
+      0.2,
+      0.4,
+      0.6,
+      0.8
+    ],
+    "values": [
+      0.0,
+      40.0,
+      55.0,
+      30.0,
+      8.0
+    ]
+  },
+  "sigma_map": {
+    "path": "sigma_map.nii.gz",
+    "sha256": "4727f89a75319ef277d929e7b601fc8c04a978f0fe3cc93d15b2a29c94f2a706"
+  }
+}

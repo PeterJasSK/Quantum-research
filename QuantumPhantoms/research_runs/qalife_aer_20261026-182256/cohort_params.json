@@ -1,0 +1,110 @@
+[
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "RLL",
+    "lineage_id": "ql0",
+    "generation": 0,
+    "shot_index": 0
+  },
+  {
+    "size_mm": 7.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "ql1",
+    "generation": 0,
+    "shot_index": 1
+  },
+  {
+    "size_mm": 4.0,
+    "type": "calcified",
+    "margin": "smooth",
+    "lobe": "RLL",
+    "lineage_id": "ql2",
+    "generation": 0,
+    "shot_index": 2
+  },
+  {
+    "size_mm": 13.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "LUL",
+    "lineage_id": "ql3",
+    "generation": 0,
+    "shot_index": 3
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "RLL",
+    "lineage_id": "ql0",
+    "generation": 1,
+    "shot_index": 4
+  },
+  {
+    "size_mm": 7.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "ql1",
+    "generation": 1,
+    "shot_index": 5
+  },
+  {
+    "size_mm": 4.0,
+    "type": "calcified",
+    "margin": "smooth",
+    "lobe": "RLL",
+    "lineage_id": "ql2",
+    "generation": 1,
+    "shot_index": 6
+  },
+  {
+    "size_mm": 13.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "LUL",
+    "lineage_id": "ql3",
+    "generation": 1,
+    "shot_index": 7
+  },
+  {
+    "size_mm": 4.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "RLL",
+    "lineage_id": "ql0",
+    "generation": 2,
+    "shot_index": 8
+  },
+  {
+    "size_mm": 7.0,
+    "type": "solid",
+    "margin": "lobulated",
+    "lobe": "RUL",
+    "lineage_id": "ql1",
+    "generation": 2,
+    "shot_index": 9
+  },
+  {
+    "size_mm": 4.0,
+    "type": "calcified",
+    "margin": "smooth",
+    "lobe": "RLL",
+    "lineage_id": "ql2",
+    "generation": 2,
+    "shot_index": 10
+  },
+  {
+    "size_mm": 13.0,
+    "type": "solid",
+    "margin": "spiculated",
+    "lobe": "LUL",
+    "lineage_id": "ql3",
+    "generation": 2,
+    "shot_index": 11
+  }
+]

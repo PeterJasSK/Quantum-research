@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/site_candidates.schema.json",
+  "title": "SiteCandidate / ContextVector (A → B, E, F): sites.json",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "site_candidates"
+    },
+    "host_scan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "anatomy_masks_ref": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "sites": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "pattern": "^S[0-9]{3}$"
+          },
+          "center_vox_zyx": {
+            "$ref": "_envelope.schema.json#/$defs/ivec3"
+          },
+          "center_mm_lps": {
+            "$ref": "_envelope.schema.json#/$defs/vec3"
+          },
+          "context": {
+            "type": "object",
+            "properties": {
+              "placement_class": {
+                "$ref": "_envelope.schema.json#/$defs/placement_class"
+              },
+              "lung": {
+                "enum": [
+                  "right",
+                  "left"
+                ]
+              },
+              "lobe": {
+                "$ref": "_envelope.schema.json#/$defs/lobe"
+              },
+              "dist_pleura_mm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "dist_vessel_mm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "dist_airway_mm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "local_hu_mean": {
+                "type": "number"
+              },
+              "local_hu_std": {
+                "type": "number",
+                "minimum": 0
+              },
+              "extra": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            },
+            "required": [
+              "placement_class",
+              "lung",
+              "lobe",
+              "dist_pleura_mm",
+              "dist_vessel_mm",
+              "dist_airway_mm",
+              "local_hu_mean",
+              "local_hu_std"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "site_id",
+          "center_vox_zyx",
+          "center_mm_lps",
+          "context"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "host_scan_id",
+    "anatomy_masks_ref",
+    "sites"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

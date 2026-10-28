@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/compiled_circuit.schema.json",
+  "title": "CompiledCircuit (B → C, D, G)",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "compiled_circuit"
+    },
+    "rulebook_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "qasm3": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "transpiled_for": {
+      "const": "FakeMarrakesh"
+    },
+    "qubit_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minItems": 1
+      }
+    },
+    "gate_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "two_qubit_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "circuit_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    }
+  },
+  "required": [
+    "contract",
+    "rulebook_hash",
+    "context",
+    "qasm3",
+    "transpiled_for",
+    "qubit_map",
+    "gate_counts",
+    "depth",
+    "two_qubit_count",
+    "circuit_hash"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

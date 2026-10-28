@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/_envelope.schema.json",
+  "title": "Shared $defs: envelope, honesty gates, refs, enums",
+  "$defs": {
+    "hex64": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hex": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{2})+$"
+    },
+    "relpath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\\\:]+$",
+      "description": "Path relative to the file that contains it, '/' separators."
+    },
+    "file_ref": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relpath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hex64"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "upstream_ref": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "$ref": "#/$defs/relpath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hex64"
+        }
+      },
+      "required": [
+        "contract",
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "vec3": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "pos3": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "ivec3": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "letter": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "INT",
+        "stub"
+      ]
+    },
+    "sim_mode": {
+      "enum": [
+        "ideal",
+        "heron"
+      ]
+    },
+    "sim_label": {
+      "enum": [
+        "simulated: ideal",
+        "simulated: Heron-class noise (FakeMarrakesh)"
+      ]
+    },
+    "claim_level": {
+      "enum": [
+        "L0",
+        "L1",
+        "L1′"
+      ]
+    },
+    "placement_class": {
+      "enum": [
+        "free",
+        "juxtavascular",
+        "juxtapleural"
+      ]
+    },
+    "tumor_type": {
+      "enum": [
+        "solid",
+        "part-solid",
+        "ground-glass"
+      ]
+    },
+    "margin": {
+      "enum": [
+        "smooth",
+        "lobulated",
+        "spiculated"
+      ]
+    },
+    "lobe": {
+      "enum": [
+        "LUL",
+        "LLL",
+        "RUL",
+        "RML",
+        "RLL"
+      ]
+    },
+    "calibration_snapshot": {
+      "type": "object",
+      "properties": {
+        "fake_backend": {
+          "const": "FakeMarrakesh"
+        },
+        "qiskit_ibm_runtime_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "props_sha256": {
+          "$ref": "#/$defs/hex64"
+        },
+        "last_update_date": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "fake_backend",
+        "qiskit_ibm_runtime_version",
+        "props_sha256",
+        "last_update_date"
+      ],
+      "additionalProperties": false
+    },
+    "produced_by": {
+      "type": "object",
+      "properties": {
+        "letter": {
+          "$ref": "#/$defs/letter"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code_hash": {
+          "$ref": "#/$defs/hex64"
+        }
+      },
+      "required": [
+        "letter",
+        "tool",
+        "run_id",
+        "code_hash"
+      ],
+      "additionalProperties": false
+    },
+    "envelope": {
+      "type": "object",
+      "description": "Common fields of every contract instance (combine with unevaluatedProperties:false).",
+      "required": [
+        "contract",
+        "contract_version",
+        "produced_by",
+        "created_utc",
+        "stub",
+        "upstream"
+      ],
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "produced_by": {
+          "$ref": "#/$defs/produced_by"
+        },
+        "created_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "stub": {
+          "type": "boolean"
+        },
+        "upstream": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/upstream_ref"
+          }
+        }
+      }
+    },
+    "quantum": {
+      "type": "object",
+      "description": "Honesty gate: every quantum-bearing record is labelled simulated; hardware fields reserved.",
+      "required": [
+        "sim_label",
+        "hardware"
+      ],
+      "properties": {
+        "sim_label": {
+          "$ref": "#/$defs/sim_label"
+        },
+        "hardware": {
+          "type": "null"
+        }
+      }
+    }
+  }
+}

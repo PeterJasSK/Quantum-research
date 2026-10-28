@@ -1,0 +1,64 @@
+{
+  "contract": "lesion_model_library",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [],
+  "source": "STUB placeholder values: not fitted to LIDC (parameters only, no voxels)",
+  "types": {
+    "solid": {
+      "shape_params": {
+        "sphericity": 0.85
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "width_mm": 0.8
+        }
+      },
+      "hu": {
+        "mean": 30.0,
+        "std": 25.0
+      },
+      "n_fitted": 0
+    },
+    "part-solid": {
+      "shape_params": {
+        "sphericity": 0.75
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "width_mm": 1.5
+        }
+      },
+      "hu": {
+        "mean": -350.0,
+        "std": 120.0
+      },
+      "n_fitted": 0
+    },
+    "ground-glass": {
+      "shape_params": {
+        "sphericity": 0.7
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "width_mm": 2.0
+        }
+      },
+      "hu": {
+        "mean": -650.0,
+        "std": 80.0
+      },
+      "n_fitted": 0
+    }
+  }
+}

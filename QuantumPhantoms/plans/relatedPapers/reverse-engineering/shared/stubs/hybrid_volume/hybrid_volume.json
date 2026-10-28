@@ -1,0 +1,68 @@
+{
+  "contract": "hybrid_volume",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "tumor_draw",
+      "path": "../tumor_draw/tumor_draw.json",
+      "sha256": "16cb523868913e9044a939cc896fdefd6422a79f36e972105d7c290ba9e41521"
+    },
+    {
+      "contract": "growth_trajectory",
+      "path": "../growth_trajectory/growth_trajectory.json",
+      "sha256": "cf8ae35da898f847e0c45105fa155a1bb5be061f895d130aac05c78273981eec"
+    },
+    {
+      "contract": "scanner_fingerprint",
+      "path": "../scanner_fingerprint/scanner_fingerprint.json",
+      "sha256": "967b559babef3665265fc3702158d42c8794323716ba6948583dfaa1db7f1b9e"
+    },
+    {
+      "contract": "anatomy_masks",
+      "path": "../anatomy_masks/anatomy_masks.json",
+      "sha256": "329d386d39ccae41c02953163be4cd6f8b2ca2cbc4b1fb33e1fc35e16c016f63"
+    }
+  ],
+  "host_scan_id": "stub-phantom-001",
+  "site_id": "S001",
+  "draw_id": "D0001",
+  "files": {
+    "host_ct": {
+      "path": "host_ct.nii.gz",
+      "sha256": "8698cbee4da4b8ab3f6fae88cf48ed704d3f9e69468c6b47914958e37c2882f3"
+    },
+    "hybrid_ct": {
+      "path": "hybrid_ct.nii.gz",
+      "sha256": "ce11fd06249576fd3f71ac0318134095a3f036b26379e0dd8d5c4e5c1b53d26e"
+    },
+    "lesion_mask": {
+      "path": "lesion_mask.nii.gz",
+      "sha256": "f19e77b4cdfaaefda232a23d9e40eba5c4aa5ca722a5d48828e928cea9393291"
+    }
+  },
+  "insertion": {
+    "method": "STUB: hard sphere replacement (no PSF, no noise)",
+    "params": {
+      "radius_mm": 4.0,
+      "hu": 30
+    }
+  },
+  "seed_hex": "d25a98c7d2257d60d45ac9f2b19c685d03accf2c5d3ea09aaf8015b767e676fa",
+  "fingerprint_ref": {
+    "path": "../scanner_fingerprint/scanner_fingerprint.json",
+    "sha256": "967b559babef3665265fc3702158d42c8794323716ba6948583dfaa1db7f1b9e"
+  },
+  "trajectory_ref": {
+    "path": "../growth_trajectory/growth_trajectory.json",
+    "sha256": "cf8ae35da898f847e0c45105fa155a1bb5be061f895d130aac05c78273981eec"
+  },
+  "snapshot_step": 30
+}

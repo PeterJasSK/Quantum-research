@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/hybrid_volume.schema.json",
+  "title": "HybridVolume (F → G, H): 3-D host + inserted lesion + GT mask",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "hybrid_volume"
+    },
+    "host_scan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{3}$"
+    },
+    "draw_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "files": {
+      "type": "object",
+      "properties": {
+        "host_ct": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "hybrid_ct": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        "lesion_mask": {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        }
+      },
+      "required": [
+        "host_ct",
+        "hybrid_ct",
+        "lesion_mask"
+      ],
+      "additionalProperties": false
+    },
+    "insertion": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "method",
+        "params"
+      ],
+      "additionalProperties": false
+    },
+    "seed_hex": {
+      "$ref": "_envelope.schema.json#/$defs/hex"
+    },
+    "fingerprint_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trajectory_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "snapshot_step": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "contract",
+    "host_scan_id",
+    "site_id",
+    "draw_id",
+    "files",
+    "insertion",
+    "seed_hex",
+    "fingerprint_ref",
+    "trajectory_ref",
+    "snapshot_step"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

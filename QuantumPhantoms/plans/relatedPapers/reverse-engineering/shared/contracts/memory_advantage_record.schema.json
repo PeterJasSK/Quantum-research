@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/memory_advantage_record.schema.json",
+  "title": "MemoryAdvantageRecord (D → G, H): L1′ C_q vs C_μ",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "memory_advantage_record"
+    },
+    "claim_level": {
+      "const": "L1′"
+    },
+    "process_description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "C_mu_bits": {
+      "type": "number",
+      "minimum": 0
+    },
+    "C_q_bits": {
+      "type": "number",
+      "minimum": 0
+    },
+    "C_q_measured": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "n_qubits": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "job_record_ref": {
+      "anyOf": [
+        {
+          "$ref": "_envelope.schema.json#/$defs/file_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "contract",
+    "claim_level",
+    "process_description",
+    "C_mu_bits",
+    "C_q_bits",
+    "C_q_measured",
+    "n_qubits",
+    "passed",
+    "job_record_ref"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    },
+    {
+      "$ref": "_envelope.schema.json#/$defs/quantum"
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+I'll search for quantum procedural generation, structure-to-qubit encodings, and entanglement-based compression of biological complexity.
+
+Your design (quantum makes the starting tumor, then an ordinary random number generator grows it) has direct precedents in the literature. The closest one is from IBM, where a quantum computer produces only the "seed" of a map and classical code builds the rest.
+
+## 1. Procedural generation on quantum computers (closest to your idea)
+
+**James Wootton (IBM Research) is the key author here.**
+
+- **"Procedural generation using quantum computation" (2020), arXiv:2007.11510** ([ar5iv](https://ar5iv.labs.arxiv.org/html/2007.11510), [IBM](https://research.ibm.com/publications/procedural-generation-using-quantum-computation)). Encodes an image or height map into qubit amplitudes, applies small rotations, measures, and gets a varied version back. This "quantum blur" is a quantum way to vary a seed shape.
+- **"A quantum procedure for map generation" (2020), arXiv:2005.10327** ([PDF](https://arxiv.org/pdf/2005.10327)). Generates game terrain on IBM hardware. Press coverage at the time described IBM using quantum computers to generate Minecraft-like levels ([StatNano](https://statnano.com/world-news/77421/IBM-is-using-quantum-computers-to-generate-Minecraft-like-game-levels)). This is the clearest template for "quantum makes the start, classical code finishes it".
+- **"Investigating the usefulness of Quantum Blur" (2021), arXiv:2112.01646** ([PDF](https://arxiv.org/pdf/2112.01646)). An honest evaluation of when the quantum version adds anything over classical blur. Read it before you claim anything about your seed.
+- Wootton also ran a procedural-generation game jam with Qiskit ([Qiskit x ProcJam 2020](https://decodoku.itch.io/qiskit-x-procjam-2020)), and a later talk exists on procedural generation at the dawn of fault-tolerant quantum computers ([BME](https://dtp.physics.bme.hu/node/1779)).
+
+**Heese et al. (Fraunhofer), "Quantum Wave Function Collapse for Procedural Content Generation," arXiv:2312.13853** ([PDF](https://arxiv.org/pdf/2312.13853), [Fraunhofer](https://publica.fraunhofer.de/handle/publica/481270)). Wave Function Collapse is a classical algorithm that builds structures tile by tile while respecting neighbour rules. This paper does it with qubits. It's relevant if you want the seed to obey local rules, such as "a spiculated margin cell can't sit next to a calcified one".
+
+## 2. Mapping structure with dependencies into a circuit (your rulebook)
+
+**Low, Yoder, Chuang (MIT), "Quantum Inference on Bayesian Networks," Phys. Rev. A 89, 062315 (2014)**, arXiv:1402.7359 ([ar5iv](https://ar5iv.labs.arxiv.org/html/1402.7359), [MIT DSpace](https://dspace.mit.edu/handle/1721.1/88648)). This is the formal basis for your design. A Bayesian network (size → type → margin) becomes a circuit of controlled rotations, and one measurement gives one sample. Cite it as the method behind your tumor rulebook encoding. There's even ready-made software: pyAgrum has a quantum Bayesian network sampling module ([docs](https://pyagrum.readthedocs.io/en/3.1.0/qBNSampling.html)).
+
+## 3. "Entanglement reduces complexity": the real results and the trap
+
+**The real result: quantum models of random processes need less memory.**
+- **Gu, Wiesner, Rieper, Vedral, "Quantum mechanics can reduce the complexity of classical models," Nature Communications 3, 762 (2012)** ([Bristol](https://research-information.bris.ac.uk/en/publications/quantum-mechanics-can-reduce-the-complexity-of-classical-models/), [CQT](https://www.cqt.sg/?p=7652)). It proves that to simulate a step-by-step random process, a quantum simulator can remember less about the past than any classical one ([plain-language explainer](https://www.sciencedaily.com/releases/2012/05/120503163146.htm)). Tumor growth is exactly such a process.
+- **Follow-up work (Mile Gu's group, NTU Singapore / CQT, and Griffith University)** has demonstrated this memory advantage on small photonic devices ([Griffith](https://griffith.edu.au/centre-quantum-dynamics/our-research-groups/quantum-optics-information-laboratory/quantum-complexity); [Fields Institute talk](https://www1.fields.utoronto.ca/talks/Quantum-devices-memory-reduction)). From memory, the experimental paper is Palsson et al., *Science Advances* (2017); verify before citing.
+
+This is the one place where "quantum reduces complexity of a biological-style process" is *proven*. It suggests a later thesis chapter: is the quantum memory advantage real for a tumor-growth process?
+
+**The trap: tensor networks.** Tensor-network methods compress big biological probability models when correlations (entanglement) are *low*:
+- Kazeev et al., "Direct solution of the chemical master equation using quantized tensor trains," arXiv:1311.3143 ([PDF](https://pdf.arxiv.org/pdf/1311.3143))
+- Ion et al., "Analysis of tensor methods for stochastic models of gene regulatory networks," arXiv:1910.02520 ([ar5iv](https://ar5iv.labs.arxiv.org/html/1910.02520))
+- DMRG for chemical master equations, arXiv:2501.09692 ([HTML](https://arxiv.org/html/2501.09692v1)); overview at [tensornetwork.org](https://tensornetwork.org/stoch_kin/)
+
+These run on *classical* computers. The lesson is that if a biological model only needs a little entanglement, a classical computer can already compress it. So "use entanglement to simplify biology" only helps a quantum computer when the needed entanglement is high, which a reviewer will check. Cite these to show you know the classical competition.
+
+## 4. The classical growth stage (after the seed)
+
+- **Kansal, Torquato et al. (Princeton), "Cellular automaton of idealized brain tumor growth," BioSystems 55 (2000)** ([PDF](https://torquatocpanel.deptcpanel.princeton.edu/wp-content/uploads/files/publications/papers//paper-175.pdf)). The classic cellular-automaton tumor model: proliferating, dormant and dead layers growing from a few starting cells.
+- **A high-performance cellular-automaton tumor growth model** ([DOI](https://doi.org/10.4236/am.2014.51017); [arXiv](https://www.arxiv.org/pdf/1309.6015)). Covers how to make it fast.
+
+I found no papers that grow tumors on a quantum computer, so the quantum-seed-plus-classical-growth combination looks like open ground (not found, not proven absent).
+
+## How it fits siemens-8
+
+1. **Quantum seed, certified.** A Bayesian-network circuit (Low et al.) draws the starting tumor: size, type, margin, lobe, plus seed cells. A CHSH test in the same job certifies it.
+2. **Classical growth.** A Torquato-style cellular automaton driven by a standard RNG, whose seed is taken from the quantum output. Everything stays reproducible from the signed receipt.
+3. **Optional quantum variation.** Wootton's quantum blur gives the seed shape natural-looking variation.
+
+**A key point for your defence:** a standard RNG seeded from the certified quantum bits keeps the whole growth trajectory certified. Nobody chose the start, and everything after it is deterministic and replayable from the receipt.
+
+Want me to add these as a "related work and growth model" section to siemens-8 and download the free PDFs into your reading-list folder?
+
+
+I can't download files from here: the workspace blocks arXiv and other sites. I'll verify the direct links instead so you can download each PDF in one click.
+
+My workspace can't reach arXiv or publisher sites, so I couldn't download the files for you. Here are verified direct links instead; each one opens or downloads the PDF in one click.
+
+## Free PDFs (papers, all legal open versions)
+
+- **Outeiral et al., "The prospects of quantum computing in computational molecular biology"**
+  PDF: https://arxiv.org/pdf/2005.12792
+- **Emani et al., "Quantum computing at the frontiers of biological sciences"**
+  PDF (arXiv preprint): https://arxiv.org/pdf/1911.07127
+  The NSF repository also hosts the accepted version: https://par.nsf.gov/servlets/purl/10273847
+- **Robert, Barkoutsos, Woerner, Tavernelli, "Resource-efficient quantum algorithm for protein folding"**
+  Verified: npj Quantum Information, February 2021. PDF: https://arxiv.org/pdf/1908.02163
+  There's also a browser-friendly HTML version: https://ar5iv.arxiv.org/html/1908.02163
+- **Alvarez-Rodriguez, Sanz, Lamata, Solano, "Quantum Artificial Life in an IBM Quantum Computer"**
+  PDF: https://arxiv.org/pdf/1711.09442
+  Published open-access version: https://doi.org/10.1038/s41598-018-33125-3
+
+## Web pages, not PDFs
+
+- **"Benchmarking near-term quantum algorithms is an art" (PennyLane blog):** https://pennylane.ai/blog/2024/03/benchmarking-near-term-quantum-algorithms-is-an-art/
+  If you want a PDF, use your browser's "Print → Save as PDF". The full paper behind it is free too: https://arxiv.org/pdf/2403.07059
+- **Quantum Country (Matuschak & Nielsen):** https://quantum.country
+  It's designed to be read online because it has built-in review questions that resurface over the following weeks, so a PDF would lose its best feature.
+
+## Books (need to be bought or borrowed)
+
+- **Terry Rudolph, *Q is for Quantum*.** It's a paid book. Rudolph has, as far as I remember, made Part I available free on the book's own site (qisforquantum.org), but I couldn't verify that here. A search did turn up a full PDF on a random Substack, which is almost certainly an unauthorized copy, so I'm not linking it. The paperback is cheap.
+- **Melanie Mitchell, *Complexity: A Guided Tour*.** A paid book with no legal free PDF. Try the TUKE university library or your city library; it's common in libraries, and an e-book is also an option.
+
+**Suggested order:** the quantum artificial life paper first (short, and closest to your tumor work), then Outeiral, then the PennyLane blog, then the protein folding paper.
+
+Sources:
+- [Quantum Computing at the Frontiers of Biological Sciences (arXiv)](https://arxiv.org/pdf/1911.07127)
+- [NSF Public Access Repository](https://par.nsf.gov/servlets/purl/10273847)
+- [Resource-Efficient Quantum Algorithm for Protein Folding (arXiv)](https://arxiv.org/abs/1908.02163)
+- [npj Quantum Information listing (DOAJ)](https://doaj.org/article/10c48308b29c41958c920067b06a39e8)
+- [ar5iv HTML version](https://ar5iv.arxiv.org/html/1908.02163)
+- [Q is for Quantum (Goodreads)](https://www.goodreads.com/book/show/35913288)
+
+I wrote tumor-seed-reading-guide.txt with five papers, none of them QML. In each one the quantum circuit is set by hand and only measured, never trained.
+
+1. **Wootton (IBM) 2020, "Procedural generation using quantum computation"**: the quantum-blur method for varying a seed shape. [PDF](https://arxiv.org/pdf/2007.11510)
+2. **Wootton (IBM) 2020, "A quantum procedure for map generation"**: quantum start, classical continuation, run on real IBM hardware. [PDF](https://arxiv.org/pdf/2005.10327)
+3. **Low, Yoder, Chuang (MIT) 2014, "Quantum Inference on Bayesian Networks"**: the method for turning your size → type → margin rulebook into a circuit. [PDF](https://arxiv.org/pdf/1402.7359)
+4. **Gu, Wiesner, Rieper, Vedral 2012, "Quantum mechanics can reduce the complexity of classical models"** (the arXiv version is titled "Occam's Quantum Razor"): proves quantum simulators of random processes need less memory than classical ones. [PDF](https://arxiv.org/pdf/1102.1994)
+5. **Kansal & Torquato (Princeton) 2000, "Cellular automaton of idealized brain tumor growth"**: the classical growth stage, driven by a standard RNG. [PDF](https://torquatocpanel.deptcpanel.princeton.edu/wp-content/uploads/files/publications/papers//paper-175.pdf)
+
+For each paper the guide gives a plain description, why it matters for your tumor seed, what to focus on, and a suggested filename numbered 6–10 so it sorts after your first five. It also gives a reading order (2 → 1 → 5 → 3 → 4).
+
+My workspace can't download from these sites, so open each link above and save the PDF into your reading-list folder. Or upload them here like last time and I'll rename them for you.
+
+I left out the Fraunhofer quantum Wave Function Collapse paper because I couldn't confirm it avoids any trained component.
+
+
+I'll verify top-tier journal papers that prove each piece of your pipeline has been done for real.
+
+These seven papers, all in Nature-level or major medical journals, each show that one part of your pipeline has actually been done. None of them is QML. They're in credibility-evidence-guide.txt with links, what each one shows, and a reading order.
+
+**Quantum randomness can be certified**
+- **Pironio et al., Nature 2010.** The founding experiment: a CHSH value above 2 certifies randomness nobody could predict. This is the physics behind your certificate.
+- **Shalm et al. (NIST), Nature Physics 2021** ([QuICS](https://www.quics.umd.edu/publications/device-independent-randomness-expansion-entangled-photons)), with the companion USTC paper ([arXiv](https://arxiv.org/pdf/1912.11159)). Randomness expansion done in a real experiment, which backs your CURBy-seeded upgrade.
+- **Liu et al. (JPMorgan/Quantinuum), Nature 2025.** Certified randomness from a commercial cloud quantum computer, checked by a supercomputer. This is your Perun-verification plan, already demonstrated, and the most important paper on the list.
+
+**IBM-type hardware can do it**
+- **Storz et al. (ETH Zürich), Nature 2023** ([DOI](https://doi.org/10.1038/s41586-023-05885-0)). Superconducting qubits, the same technology IBM uses, passed a fully loophole-free Bell test. It answers the reviewer objection that a single-chip CHSH test isn't loophole-free ([news](https://www.optica-opn.org/home/newsroom/2023/may/superconducting_qubits_pass_bell_test)).
+- **Kim et al. (IBM), Nature 2023** ([open PDF](https://pmc.ncbi.nlm.nih.gov/articles/PMC10266970/)). A noisy 127-qubit IBM chip gave reliable results at a hard-to-simulate scale, which supports the 100-qubit whole-patient plan.
+
+**Quantum can simplify a random process**
+- **Palsson et al., Science Advances 2017** ([PDF](https://arxiv.org/pdf/1602.05683)). The experimental proof of Gu's memory advantage; a single-shot follow-up appeared in Phys. Rev. X 2019 ([PDF](https://arxiv.org/pdf/1812.04251)).
+
+**Fake patients count as real evidence**
+- **Badano et al. (FDA), JAMA Network Open 2018** (VICTRE, [DOI](https://doi.org/10.1001/jamanetworkopen.2018.5474)). 2,986 computer-generated patients reproduced a real trial's result.
+
+**The one-line pitch this supports:** every part has been shown in top journals; nobody has combined them for medical imaging, and that combination is your thesis. Be honest that these papers prove the parts are possible, not that the whole pipeline is useful.
+
+Two things I couldn't verify here: the Pironio arXiv number (0911.3427 is from memory), and an open link for the Liu 2025 paper. Search their titles if a link doesn't open.
+
+Sources: [ETH/Nature 2023](https://ideas.repec.org/a/nat/nature/v617y2023i7960d10.1038_s41586-023-05885-0.html) · [IBM utility paper](https://researcher.ibm.com/publications/evidence-for-the-utility-of-quantum-computing-before-fault-tolerance) · [Palsson et al.](https://researchportal.hw.ac.uk/en/publications/experimentally-modeling-stochastic-processes-with-less-memory-by-/) · [Shalm et al. (ORNL)](https://impact.ornl.gov/en/publications/device-independent-randomness-expansion-with-entangled-photons/)
+
+
+Lungs are the best place to start, and the literature gives you a clear path from simple to advanced.
+
+## Why lungs first
+
+- **High contrast.** A nodule (soft tissue) sits against air-filled lung, so insertion is far easier to make realistic than in the liver or brain.
+- **Free data.** LIDC-IDRI (on The Cancer Imaging Archive) has about 1,000 chest CTs with nodules marked by radiologists.
+- **Clear clinical categories** for your rulebook (size bands, solid / part-solid / ground-glass).
+- **Direct Siemens link** to AI-Rad Companion Chest CT.
+
+## Two ways to insert a lesion
+
+**Image-domain (start here).** You edit the finished CT image directly: draw the nodule into the voxels, blur it to match the scanner's sharpness, and add noise matched to the scan. It's simple, needs only Python, and works with any public scan.
+
+**Projection-domain (advanced).** You add the nodule to the scanner's *raw* data before the image is reconstructed, so the scanner's own physics shapes it. This is more realistic, but you need raw data and reconstruction software.
+
+**The key finding that lets you start simple:** Duke compared both approaches against real physical nodules. Virtual and real nodule volumes differed by under 3% for all techniques, with correlations above 0.97, and the authors conclude both approaches produce realistic nodules ([PubMed](https://pubmed.ncbi.nlm.nih.gov/28786399/)). So image-domain insertion is a defensible choice for your thesis, not a shortcut.
+
+## Papers to read, in order
+
+1. **Ambrosini & O'Dell, "Realistic simulated lung nodule dataset for testing CAD detection and sizing," SPIE Medical Imaging 2010** ([free PDF](https://odell.radonc.med.ufl.edu/abstracts/spie2010_dir/Ambrosini_SimNodDataset_SPIE2010.pdf)). Easy, and the best "how to" for a first version. The recipe:
+   - Place the nodule centre inside the lung with sub-voxel precision.
+   - Set its density to match blood in that scan, with partial-volume edges.
+   - Where it overlaps a vessel, keep the brighter of the two values instead of adding them.
+   - Blur with a Gaussian to mimic the scanner, then add matched Gaussian noise.
+
+   It also covers the three realistic placements: free-standing, attached to a vessel, and touching the chest wall. Simulated and real nodules reached an average 3D correlation of about 0.89.
+
+2. **Duke, "Techniques for virtual lung nodule insertion: volumetric and morphometric comparison of projection-based and image-based methods," *Physics in Medicine and Biology* 62(18), 2017** ([PubMed](https://pubmed.ncbi.nlm.nih.gov/28786399/), [Duke](https://fds.duke.edu/db/pratt/BME/faculty/samei/publications/329138)). Medium. Your justification paper: cite it to show image-domain insertion is validated.
+
+3. **Mayo Clinic, "Evaluation of a projection-domain lung nodule insertion technique in thoracic CT," *J. Medical Imaging* 4(1), 013510, 2017** ([SPIE](https://medicalimaging.spiedigitallibrary.org/journals/journal-of-medical-imaging/volume-4/issue-01/013510/Evaluation-of-a-projection-domain-lung-nodule-insertion-technique-in/10.1117/1.JMI.4.1.013510.full), [Mayo](https://mayoclinic.elsevierpure.com/en/publications/evaluation-of-a-projection-domain-lung-nodule-insertion-technique)). Medium-hard. The upgrade path. Mayo has also inserted lesions into photon-counting CT data ([Mayo](https://mayoclinic.elsevierpure.com/en/publications/insertion-of-hepatic-lesions-into-clinical-photon-counting-detect/)), which is Siemens' scanner class.
+
+4. **Armato et al., "The LIDC/IDRI database," *Medical Physics* (2011)** (from memory; verify). Describes the dataset you'll use.
+
+## A useful find for the Siemens angle
+
+TCIA hosts a Mayo Clinic library of **raw CT projection data**, including 50 low-dose chest screening cases from a Siemens scanner, free under CC BY 3.0 ([TCIA](https://wiki.cancerimagingarchive.net/x/fwAWB)). That makes projection-domain insertion on real Siemens raw data possible later without Duke. One licence condition: using one manufacturer's data by other manufacturers is prohibited, so stick to the Siemens cases for Siemens work. Ask Siemens to confirm that's fine in your contract.
+
+## Your first two weeks
+
+1. **Days 1–2:** download a few LIDC-IDRI scans. Load them with Python using pydicom or SimpleITK, plus the pylidc library for the radiologist annotations.
+2. **Days 3–4:** make a lung mask, so nodules only go inside lung tissue.
+3. **Days 5–7:** implement the Ambrosini recipe for a round, solid nodule.
+4. **Week 2:** add shape variation (lobulated, spiculated), a ground-glass type (lower density), and placement next to vessels and the chest wall. Then feed in parameters from your quantum circuit.
+5. **Check it:** compare your inserted nodules against real annotated LIDC nodules of the same size (density profile, edge sharpness), and ask a radiologist to look at a few.
+
+This is also the feasibility test from before: if quantum-generated nodules sit convincingly in real scans after two weeks, you have your demo for Siemens.
+
+Want me to write the insertion code as a starter script (load LIDC scan, lung mask, insert one nodule from parameters, save as DICOM)?
+
+
+Yes, papers like this exist, and one of them is almost exactly your classical stage. I put six in fake-tumors-in-ct-reading-guide.txt with links and a reading order.
+
+**The most important find is from Johns Hopkins (Alan Yuille and Zongwei Zhou's group).**
+
+- **"From Pixel to Cancer: Cellular Automata in Computed Tomography," MICCAI 2024** ([PDF](https://arxiv.org/pdf/2403.06459)). Tumors grow pixel by pixel using cellular automata with three rules (growth, invasion, death), and are blended into real CT scans. It's rule-based, with no trained generator. Three expert radiologists judged the tumors and their growth stages realistic, and segmentation in liver, pancreas and kidney beat published benchmarks. **This is your growth stage, already validated by experts.**
+- **"Label-Free Liver Tumor Segmentation," CVPR 2023** ([PDF](https://arxiv.org/pdf/2303.14869)). An AI trained *only* on synthetic tumors segmented real liver tumors about as well as one trained on real ones, and doctors mixed up synthetic and real tumors. This is your strongest "fake tumors really train AI" citation for Siemens.
+- **"Analyzing Tumors by Synthesis"** ([PDF](https://arxiv.org/pdf/2409.06035)). A review of the whole field, covering rule-based methods and GAN or diffusion models. In their case studies, models trained with synthetic tumors matched or beat models trained only on real data.
+
+**Also in the guide:**
+- **Lungs:** the Ambrosini 2010 nodule recipe and Duke's SYN-LUNGS (512 procedural nodules in 174 digital patients).
+- **CT-GAN (USENIX Security 2019)** ([PDF](https://arxiv.org/pdf/1901.03597)). A GAN that convincingly injects or removes lung cancer in real scans. It's a strong argument *for* your signed receipts: if fakes can be indistinguishable from real scans, synthetic data needs proof of where it came from. Present it as data traceability, not security, when you pitch it to Jan.
+
+**Where this leaves your idea:** "fake tumors train real AI" and "rule-based growth looks realistic" are both proven. What's still open, as far as I found:
+
+- The Hopkins group works on liver, pancreas and kidney, so rule-based cellular-automaton growth in **lungs** looks untouched.
+- Nobody certifies the **starting state** as unchosen.
+- Nobody attaches a provenance receipt to each image.
+
+**The simplest version of your thesis:** a certified quantum seed, then Pixel2Cancer-style growth in lungs, then a signed receipt. The Hopkins group would be a natural collaborator.
+
+

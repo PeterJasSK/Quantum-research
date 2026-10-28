@@ -1,0 +1,29 @@
+[
+  {
+    "generation": 0,
+    "n_cells": 16,
+    "survivors": 4,
+    "witness_value": 1.89892578125,
+    "xx": 0.95166015625,
+    "zz": 0.947265625,
+    "phase": 0.0
+  },
+  {
+    "generation": 1,
+    "n_cells": 16,
+    "survivors": 4,
+    "witness_value": 1.9033203125,
+    "xx": 0.9453125,
+    "zz": 0.9580078125,
+    "phase": 0.0
+  },
+  {
+    "generation": 2,
+    "n_cells": 16,
+    "survivors": 4,
+    "witness_value": 1.92333984375,
+    "xx": 0.9560546875,
+    "zz": 0.96728515625,
+    "phase": 0.0
+  }
+]

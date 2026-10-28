@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/tumor_draw.schema.json",
+  "title": "TumorDraw (B → D, E, H): one decoded joint sample",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "tumor_draw"
+    },
+    "draw_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{3}$"
+    },
+    "size_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "type": {
+      "$ref": "_envelope.schema.json#/$defs/tumor_type"
+    },
+    "margin": {
+      "$ref": "_envelope.schema.json#/$defs/margin"
+    },
+    "shape_seed_hex": {
+      "$ref": "_envelope.schema.json#/$defs/hex"
+    },
+    "rulebook_hash": {
+      "$ref": "_envelope.schema.json#/$defs/hex64"
+    },
+    "job_record_ref": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    },
+    "shot_index": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "contract",
+    "draw_id",
+    "site_id",
+    "size_mm",
+    "type",
+    "margin",
+    "shape_seed_hex",
+    "rulebook_hash",
+    "job_record_ref",
+    "shot_index"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

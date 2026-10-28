@@ -9,6 +9,7 @@ slice region (no lung segmentation in the MVP). Windowing + cropping produce the
 from __future__ import annotations
 
 import numpy as np
+from scipy.ndimage import gaussian_filter
 
 # Approximate slice-region centres per lobe, as (col_frac, row_frac).
 # Radiological convention: patient-right lung appears on the LEFT of the image.
@@ -84,21 +85,21 @@ def _match_noise(ct_slice, x, y, half, rng):
     return float(np.std(patch))
 
 
-def insert_lesion(ct_slice, hu_delta_2d, mask_2d, xy, *, is_hu: bool, rng) -> np.ndarray:
-    """Insert the 2D lesion delta centered at xy, with matched noise (AC-2).
+def insert_lesion(ct_slice, hu_delta_2d, alpha_2d, xy, *, is_hu: bool, rng,
+                  psf_sigma: float = 0.7) -> np.ndarray:
+    """Insert the lesion at xy: soft-alpha composite + scanner PSF blur + matched noise.
 
-    `ct_slice` is modified on a copy and returned. For intensity (PNG) backgrounds the HU
-    delta is scaled into the 0..255 range.
+    `alpha_2d` is the lesion's partial-volume coverage [0,1] (F2.1 AC-3). The composite is
+    convolved with a Gaussian point-spread (reconstruction-kernel blur, AC-4) so the edge
+    blends, then correlated noise matched to the local background is added (AC-5). HU delta
+    is scaled to the 0..255 window for intensity (PNG/bundled) backgrounds.
     """
     out = ct_slice.astype(np.float32).copy()
     h, w = out.shape
     lh, lw = hu_delta_2d.shape
     x, y = xy
 
-    # top-left placement so the lesion centre sits at (x, y)
-    ty0 = y - lh // 2
-    tx0 = x - lw // 2
-    # clip the lesion footprint to the slice bounds
+    ty0, tx0 = y - lh // 2, x - lw // 2
     sy0, sy1 = max(0, ty0), min(h, ty0 + lh)
     sx0, sx1 = max(0, tx0), min(w, tx0 + lw)
     ly0, ly1 = sy0 - ty0, sy0 - ty0 + (sy1 - sy0)
@@ -106,16 +107,24 @@ def insert_lesion(ct_slice, hu_delta_2d, mask_2d, xy, *, is_hu: bool, rng) -> np
     if sy1 <= sy0 or sx1 <= sx0:
         return out
 
-    delta = hu_delta_2d[ly0:ly1, lx0:lx1]
-    mask = mask_2d[ly0:ly1, lx0:lx1]
+    delta = hu_delta_2d[ly0:ly1, lx0:lx1].astype(np.float32)
+    alpha = alpha_2d[ly0:ly1, lx0:lx1].astype(np.float32)
     if not is_hu:
         delta = delta / (1500.0 / 255.0)  # HU -> lung-window intensity units
 
-    region = out[sy0:sy1, sx0:sx1]
+    region = out[sy0:sy1, sx0:sx1].astype(np.float32)
+    composite = region + delta * alpha            # soft partial-volume blend (AC-3)
+
+    if psf_sigma > 0:
+        composite = gaussian_filter(composite, psf_sigma)   # scanner PSF (AC-4)
+
     sigma = _match_noise(out, x, y, max(lh, lw), rng)
-    noise = rng.normal(0.0, sigma, delta.shape).astype(np.float32) if sigma > 0 else 0.0
-    region[mask] = region[mask] + delta[mask] + (noise[mask] if sigma > 0 else 0.0)
-    out[sy0:sy1, sx0:sx1] = region
+    if sigma > 0:
+        noise = gaussian_filter(rng.normal(0.0, 1.0, composite.shape).astype(np.float32), 0.6)
+        noise = noise * (sigma * 0.7) / (noise.std() + 1e-6)   # correlated, matched (AC-5)
+        composite = composite + noise * (alpha > 0.02)
+
+    out[sy0:sy1, sx0:sx1] = composite
     return out
 
 

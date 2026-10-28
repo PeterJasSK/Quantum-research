@@ -1,0 +1,40 @@
+{
+  "contract": "quantum_job_record",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "stub",
+    "tool": "shared.stubs.make_stubs",
+    "run_id": "20261028-000000-stub",
+    "code_hash": "fd6a55db262ed623df0b4d0083c45f177063a74081978598c5276a4695a5bf5a"
+  },
+  "created_utc": "2026-10-28T00:00:00Z",
+  "stub": true,
+  "upstream": [
+    {
+      "contract": "compiled_circuit",
+      "path": "../compiled_circuit/compiled_circuit.json",
+      "sha256": "0ba86361671fc07789dff278b8cebc2abbf6db635faf1816becc2a0a258b31c8"
+    }
+  ],
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "job_id": "sim-stub-0001",
+  "sim_mode": "ideal",
+  "fake_backend": "FakeMarrakesh",
+  "sim_seed": 7,
+  "shots": 1000,
+  "transpiled_hash": "a888098053fe5709d3f478a5c1d9870d22307988ac6caf297eb19d0cb38b3989",
+  "counts": {
+    "00": 289,
+    "01": 477,
+    "10": 32,
+    "11": 202
+  },
+  "test_round_mask": null,
+  "calibration_snapshot": {
+    "fake_backend": "FakeMarrakesh",
+    "qiskit_ibm_runtime_version": "0.47.0",
+    "props_sha256": "d49d7ae07deb95947ea10e5b9b9c5cbab6df21f98610543817f35ade2b1aece6",
+    "last_update_date": "2025-02-26T14:52:45-05:00"
+  }
+}

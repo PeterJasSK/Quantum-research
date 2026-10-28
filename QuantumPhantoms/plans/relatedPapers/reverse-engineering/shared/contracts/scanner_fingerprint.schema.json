@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qp-re.local/contracts/scanner_fingerprint.schema.json",
+  "title": "ScannerFingerprint (F → F, H): MTF/PSF, NPS, σ map",
+  "type": "object",
+  "properties": {
+    "contract": {
+      "const": "scanner_fingerprint"
+    },
+    "host_scan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mtf": {
+      "type": "object",
+      "properties": {
+        "freq_cyc_per_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "freq_cyc_per_mm",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "psf_sigma_mm_zyx": {
+      "$ref": "_envelope.schema.json#/$defs/pos3"
+    },
+    "nps": {
+      "type": "object",
+      "properties": {
+        "freq_cyc_per_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "freq_cyc_per_mm",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "sigma_map": {
+      "$ref": "_envelope.schema.json#/$defs/file_ref"
+    }
+  },
+  "required": [
+    "contract",
+    "host_scan_id",
+    "mtf",
+    "psf_sigma_mm_zyx",
+    "nps",
+    "sigma_map"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "_envelope.schema.json#/$defs/envelope"
+    }
+  ]
+}

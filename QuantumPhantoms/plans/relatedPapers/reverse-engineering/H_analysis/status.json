@@ -1,0 +1,42 @@
+{
+  "contract": "target_status",
+  "contract_version": "1.0.0",
+  "letter": "H",
+  "letter_name": "analysis",
+  "targets": [
+    {
+      "number": 20,
+      "slug": "victre-pipeline",
+      "name": "FDA VICTRE pipeline",
+      "priority": 2,
+      "kind": "classical",
+      "papers": [
+        "H03"
+      ],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/20-victre-pipeline.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    },
+    {
+      "number": 21,
+      "slug": "ai-rad-companion",
+      "name": "Siemens AI-Rad Companion Chest CT (documented-interface black box)",
+      "priority": 1,
+      "kind": "classical",
+      "papers": [],
+      "state": "listed",
+      "rejection_reason": null,
+      "reproduced": null,
+      "claim_level": null,
+      "sim_mode": null,
+      "dossier": "dossiers/21-ai-rad-companion.md",
+      "figures": [],
+      "updated": "2026-10-28"
+    }
+  ]
+}

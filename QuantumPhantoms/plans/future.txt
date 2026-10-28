@@ -1,0 +1,53 @@
+Read epic + pitch.txt. Yes — more long-term material scattered across §5.2.5 and the epic. Here's the fundable future case, as sayable lines.
+
+## The long-term spine (one line to say)
+
+> *"Complexity grows by adding biological processes on a few qubits over many generations — not by widening the chip. So better hardware doesn't change my architecture, it just buys more coherent generations. That's deeper life, not wider chips — and it's exactly your 10-year horizon."*
+
+This is the central bet (§5.2.5, bull case #6). It's what makes a small PoC *today* credibly scale. Memorize this one.
+
+## Six "why fund the future" pillars — each with a line to say
+
+**1. Tumor IS the perfect quantum-life fit — not a metaphor.**
+> *"A tumor literally is an evolving clonal population — mutation, selection, proliferation, apoptosis, heterogeneity, motility. Every one of those is already a primitive in my quantum-artificial-life stack. I'm not forcing biology onto a circuit; the biology maps one-to-one."*
+
+This is your strongest non-obvious asset. The whole QALife codebase (motile vivarium, germ/soma, Darwinian richness) becomes medically-pointed overnight.
+
+**2. The collapse curve = a hard 10-year number, in biology.**
+> *"I measure how many coherent generations the hardware holds before the living process collapses to classical genealogy. On today's Heron that number is small — I can show you exactly how small. On error-corrected qubits it grows. That collapse point, measured not hand-waved, is the concrete scaling milestone you fund against."*
+
+Turns a *limitation* into a *deliverable metric*. Reviewers accept quantum-essential jumps to 50-60% with this (doc's own estimate).
+
+**3. Longitudinal data falls out for free.**
+> *"Early generation = baseline scan, late generation = follow-up scan, with known true growth between them. That's a labeled prior-comparison pair — exactly what AI-Rad Companion's prior-comparison feature needs to be tested against, and it's a byproduct of the evolution, not extra work."*
+
+Direct Siemens-product hook (§5.2.5, item in the loop).
+
+**4. Privacy by construction — survives forever, scales forever.**
+> *"No patient scan ever enters the generator. Diffusion models memorize 37% of training patients and leak them. Mine can't memorize a patient it never saw. That's not a feature I add — it's structural, and it holds at any scale."*
+
+(Dar 2025, Nat. Biomed. Eng.) This is the cleanest standalone win and it doesn't depend on quantum advantage at all.
+
+**5. First-mover on empty ground.**
+> *"Siemens AG does industrial quantum through QUTAC. Healthineers has zero public quantum program — no paper, no partnership. I'm not competing with an internal team. This is open first-mover land in your own house."*
+
+(ideas.txt §6.3 — the "quantum white space" fact.)
+
+**6. The one dynamical job classical cannot do.**
+> *"One process has no classical substitute: the fate interference knob. At fixed property frequencies, a single phase dial shifts how traits correlate — no classical sampler reproduces that. It's small today, but it's the seed of genuine quantum dynamics, not decoration."*
+
+(P2, §5.2.5.) The honest hard-advantage kernel — present as seed, not finished product.
+
+## The honesty move that closes it (say this on purpose)
+
+> *"I'll tell you where it fails too. Deep coherent genealogy — the real prize — is physically blocked on current hardware; my own coherence-depth data already proves it. So I deliver the buildable part now and measure the gap to the frontier honestly. The honesty is the point: quantum medicine has no proven advantage today, that's your 10-year assignment, so 'useful in 10 years' is your spec, not my weakness."*
+
+(ideas.txt lines 25-34 — this reframing IS the funding thesis. Jan's criterion = credible small-now + scalable-10yr.)
+
+## Single sentence if you get 15 seconds
+
+> *"Classical computers can fake tumors; only quantum can prove nobody chose them — and I grow them as a certified living evolutionary process that deepens with every hardware generation, on no patient's data, in a quantum white space your company hasn't touched."*
+
+---
+
+Realistic odds unchanged from docs: Siemens funds 35-45%, quantum-essential-with-F4 50-60%. The future case is **honest and real but modest** — don't oversell advantage, sell the scaling spine + privacy + first-mover + the measured-gap honesty. That combination is what fits Jan's actual criterion.
