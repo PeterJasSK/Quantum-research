@@ -4,7 +4,7 @@
 **Feature ID:** G
 **Author:** Claude (Opus)
 **Date:** 2026-10-29
-**Status:** Approved (by developer, 2026-10-29; all Q1–Q9 defaults accepted)
+**Status:** Complete (approved 2026-10-29, implemented 2026-10-29)
 
 > **Technical constraints / core directive.**
 > - **Stack.** Python 3.13 (conda base) with libraries already installed: cryptography 44 (Ed25519), pydicom 3.0.2, SimpleITK 2.5.6, numpy 2.4, scipy 1.15, scikit-image 0.25, matplotlib 3.10, jsonschema 4.23. **No new installs.** No torch / TensorFlow / GPU on this machine, so **no GAN is trained or run** (Q2).
@@ -39,24 +39,27 @@ INT can then put a real receipt at the end of the A→G chain, and H gets `Recei
 
 ## 2. Acceptance Criteria
 
-- [ ] **AC-1** (G.1) — *Canonical hashes.*
+- [x] **AC-1** (G.1) — *Canonical hashes.*
   - `voxel_sha256(array_zyx, meta)` = sha256 of `canonical_json({shape, spacing_mm_xyz, origin_mm_lps, dtype:"int16"})` ‖ the array as little-endian int16 (z, y, x), after `shared.volumes.read_volume` (LPS). Identical for the NIfTI and for the DICOM series written from it.
   - `slice_sha256s(array_zyx)` = one sha256 per axial slice (z order), used for tamper localisation.
   - `producer_code_hashes(letters)` = `{letter: shared.seedhash.code_hash([<letter dir>, shared])}` for every producing letter folder that exists (same formula as `shared.runrecord`, so it equals each producer's `produced_by.code_hash`); `commit.code_hash` = `hash_json(producer_code_hashes)` (CCR-G2).
   → `G_provenance/src/hashing.py`; qiskit-free, uses `shared.seedhash` / `shared.volumes` only.
-- [ ] **AC-2** (G.2) — *Signing key and trust.*
+  - **Evidence:** `G_provenance/src/hashing.py:32,37,46,56`
+- [x] **AC-2** (G.2) — *Signing key and trust.*
   - `python -m G_provenance.src.keys init` generates a random Ed25519 key once into `G_provenance/runs/keys/signing_key.pem` (PKCS8, unencrypted, gitignored via `runs/`) and writes `G_provenance/runs/keys/trusted_keys.json` = `[{key_id, public_key_b64, created_utc, note:"demo key, not a PKI"}]`. It refuses to overwrite an existing key.
   - `key_id` = first 16 hex of sha256(raw public key).
   - `load_signer()`, `trusted_public_keys()`; verification accepts a signature only if `public_key_b64` is in the trusted list (Q4).
   → `G_provenance/src/keys.py`.
-- [ ] **AC-3** (G.3) — *Commit before the job.*
+  - **Evidence:** `G_provenance/src/keys.py:40,56,63`
+- [x] **AC-3** (G.3) — *Commit before the job.*
   - `python -m G_provenance.src.receipt commit --rulebook <rulebook.json>` (default: the stub) writes a run dir `G_provenance/runs/<ts>-commit/` via `shared.runrecord.start_run`, with `receipt.json` in state `committed`: `commit = {rulebook_hash, code_hash, committed_utc}`, `fill: null`, and `signature` over `canonical_json({commit, fill: null})` (the schema's `signed_over` string holds for `fill = null`).
   - `rulebook_hash` is the rulebook's own `rulebook_hash` field, re-verified with `hash_json(doc minus rulebook_hash/created_utc/produced_by)` before use (same rule as `shared.validate`).
   - `commit_manifest.json` (letter-local) lists the per-letter code hashes behind `code_hash`.
   - The committed receipt is appended to the ledger as a `kind: "receipt"` entry (CCR-G1 asks for `kind: "commit"`), and the run prints `committed: ledger index i`.
   - Output passes `python -m shared.validate <receipt.json>`.
   → `G_provenance/src/receipt.py` + `src/ledger.py`.
-- [ ] **AC-4** (G.4) — *Fill + order + code checks.*
+  - **Evidence:** `G_provenance/src/receipt.py:81 (commit), src/ledger.py:46`
+- [x] **AC-4** (G.4) — *Fill + order + code checks.*
   - `python -m G_provenance.src.receipt fill --commit <committed receipt.json> --job <quantum_job_record.json> --certificate <certificate.json> --witness <witness_record.json>... --draw <tumor_draw.json> --hybrid <hybrid_volume.json>` (all default to the stubs).
   - Every input passes `shared.validate` first; a failing input aborts with its errors.
   - `fill` fields: `job_ids` (job record), `counts_sha256` = `hash_json(counts)`, `chsh_S` / `h_min_per_round` (certificate), `witness_refs` (file_refs), `seed_hex` = certificate `extracted_seed_hex`, `hybrid_volume_sha256` = sha256 of `hybrid_volume.json`, `params_sha256` = sha256 of `canonical_json(bound_params)` (AC-5).
@@ -66,21 +69,25 @@ INT can then put a real receipt at the end of the A→G chain, and H gets `Recei
   - A stub input (`stub: true`) is exempt from the order and code checks; the exemption is written to `fill_report.json` as `"order not provable (stub input)"` (Q5).
   - Certificate `status: "fail"` → no receipt is filled; the run logs `"certificate failed, nothing to sign"` and exits 0 (consistent with epic decision 6).
   - Any failed check → no signature, `fill_report.json` lists the failures, exit code 1.
-- [ ] **AC-5** (G.5) — *Bound parameters.* `bound_params.json` (letter-local, its sha256 = `fill.params_sha256`) = `{tumor_draw_sha256, certificate_sha256, job_record_sha256, hybrid: {voxel_sha256, slice_sha256s[], grid}, lesion_mask_voxel_sha256, host_voxel_sha256, insertion}`. This is how the receipt binds the actual voxels until CCR-G3 adds a dedicated field.
-- [ ] **AC-6** (G.6) — *Sign + ledger.*
+  - **Evidence:** `G_provenance/src/receipt.py:145 (order / code / rulebook / stub exemption / failed certificate)`
+- [x] **AC-5** (G.5) — *Bound parameters.* `bound_params.json` (letter-local, its sha256 = `fill.params_sha256`) = `{tumor_draw_sha256, certificate_sha256, job_record_sha256, hybrid: {voxel_sha256, slice_sha256s[], grid}, lesion_mask_voxel_sha256, host_voxel_sha256, insertion}`. This is how the receipt binds the actual voxels until CCR-G3 adds a dedicated field.
+  - **Evidence:** `G_provenance/src/receipt.py:127`
+- [x] **AC-6** (G.6) — *Sign + ledger.*
   - After a clean fill, the receipt is signed (`state: "signed"`), the ledger entry is appended (`receipt_sha256` = sha256 of the final `receipt.json` file), and the receipt is re-written with `state: "ledgered"`.
   - Because `receipt_sha256` must cover the final file, the order is: write receipt with `state: "ledgered"` and signature → hash file → append entry. (The signature covers only `{commit, fill}`, so `state` may change without re-signing.)
   - `upstream[]` holds `upstream_ref`s to every consumed input plus the committed receipt.
   - `ledger.py`: `append(entry_body)` computes `entry_hash` = sha256(canonical_json(entry − entry_hash)), `prev_hash` = previous `entry_hash`, genesis `prev_hash` = 64 × "0". The ledger lives at `G_provenance/runs/ledger.jsonl` (persistent across runs, gitignored); a genesis entry is written on first use.
   - `python -m shared.validate G_provenance/runs/ledger.jsonl` and `<receipt.json>` both print OK.
   → `G_provenance/src/ledger.py`, `src/receipt.py`.
-- [ ] **AC-7** (G.7) — *DICOM export with provenance tags.*
+  - **Evidence:** `G_provenance/src/receipt.py:58,208-215, src/ledger.py:46`
+- [x] **AC-7** (G.7) — *DICOM export with provenance tags.*
   - `python -m G_provenance.src.dicom_export <ledgered receipt.json> [--out DIR]` reads `hybrid_ct.nii.gz` via the receipt's `hybrid_volume.json`, and writes one CT Image Storage file per axial slice (pydicom 3, explicit VR little endian, int16 `PixelData`, `RescaleSlope` 1 / `RescaleIntercept` 0, `ImagePositionPatient` / `ImageOrientationPatient` / `PixelSpacing` / `SliceThickness` from the LPS grid).
   - Synthetic markers: `ImageType` `DERIVED\SECONDARY\SYNTHETIC`, `PatientName` `SYNTHETIC^QP-RE`, `PatientID` = `draw_id`, new UIDs derived deterministically from the receipt hash (`pydicom.uid.generate_uid(entropy_srcs=[...])`), no host-scan patient attributes copied.
   - Private block, group `0x0011`, creator `QP-RE G PROVENANCE`: `receipt_json` (canonical, UT), `bound_params_json` (UT), `ledger_index` (UL), `ledger_entry_hash` (LO), `slice_index` (UL), `slice_sha256` (LO).
   - Default `--out` = `G_provenance/runs/<ts>-dicom/series/` (gitignored, can contain LIDC voxels when F used an LIDC host).
   → `G_provenance/src/dicom_export.py`.
-- [ ] **AC-8** (G.8) — *Verifier.*
+  - **Evidence:** `G_provenance/src/dicom_export.py:46,107`
+- [x] **AC-8** (G.8) — *Verifier.*
   - `python -m G_provenance.src.verify <series dir | receipt.json> [--ledger G_provenance/runs/ledger.jsonl]` runs and prints each check as `OK` / `FAIL <where>`:
     1. `signature` — Ed25519 over `canonical_json({commit, fill})` with the receipt's key;
     2. `trusted_key` — key in `trusted_keys.json`;
@@ -93,21 +100,26 @@ INT can then put a real receipt at the end of the A→G chain, and H gets `Recei
   - Verdict line `VERIFIED` or `TAMPER DETECTED: <checks>`; exit 0 / 2. A JSON report goes to `G_provenance/runs/<ts>-verify/verify_report.json`.
   - For a series, the receipt is read from the tags and re-serialised canonically; the per-file `receipt_json` must be identical on all slices (else `FAIL receipt_consistency`).
   → `G_provenance/src/verify.py`.
-- [ ] **AC-9** (G.9) — *CT-GAN-style tamper module (GAN-free).*
+  - **Evidence:** `G_provenance/src/verify.py:53 (8 checks + receipt_consistency), main at :140`
+- [x] **AC-9** (G.9) — *CT-GAN-style tamper module (GAN-free).*
   - `G_provenance/src/ctgan_tamper.py` implements G01 §5 steps on a 3-D array: (2) cut a cuboid around the target sized so that (3) rescaling to 1:1:1 mm gives 32³; (4–5) histogram equalisation + normalisation to [−1, 1]; (6) zero the central 16³; (7) **in-paint classically** (Q2): *removal* = harmonic (Laplace) fill of the masked region from its boundary, plus lung-parenchyma noise; *injection* = in-paint the removal fill, then add a Gaussian-edged solid nodule (diameter drawn in [10, 16] mm, HU ≈ 0–60, like G01's ≥ 10 mm trial nodules); (8–10) un-normalise, un-equalise, spline-rescale (`scipy.ndimage.zoom`, order 3) to the original spacing; (11) touch-up: AWGN with σ = std of the original cuboid's voxels < −600 HU, then merge with W_{α,β}(x) = G(x) / (1 + e^{−(x+α)/β}), α = 500, β = 70, merge = W·x_g + (1 − W)·x_r (eq. 1–2); (12) paste.
   - `inject(vol, meta, center_zyx, rng)` and `remove(vol, meta, center_zyx, rng)`; removal targets the lesion centre from F's `lesion_mask`; injection targets a lung voxel ≥ 15 mm from the lesion, from `anatomy_masks` (stub `lung` mask).
   - Every random choice comes from `shared.seedhash.rng(<receipt seed>, "G.tamper.<k>")`.
-- [ ] **AC-10** (G.10) — *Reproduction #19.*
+  - **Evidence:** `G_provenance/src/ctgan_tamper.py:87,125,130`
+- [x] **AC-10** (G.10) — *Reproduction #19.*
   - `python -m G_provenance.repro.r19_ctgan_tamper [--n 20]` builds one signed, ledgered, DICOM-exported hybrid (stubs by default, or `--receipt` for a real one), then for k = 1..n makes one injection and one removal copy of the series (pixel tamper written back into the DICOM files, tags untouched — the G01 attacker model), plus 4 non-pixel attacks: (a) edit `fill.seed_hex` in the tag; (b) (a) + re-sign with a fresh attacker key; (c) (b) + rewrite the ledger file consistently with the forged receipt; (d) delete the commit entry from the ledger and re-chain.
   - Controls: the untampered series and a re-save after changing an unbound tag (`InstitutionName`) must both verify.
   - Prints a table: attack → detected (y/n), failing checks, localised slices vs ground-truth tampered slices (Jaccard). Expected: 2n/2n pixel tampers detected with slice Jaccard 1.0; (a) by `signature`; (b) by `trusted_key`; (c) by `trusted_key` (and, honestly, **only** by it: a full re-forge with a stolen key + rewritten ledger is undetectable without an external anchor — documented as the limit, future fix = anchor the ledger head in a public beacon pulse, C dossier #5 last row); (d) by `commit_first` / `ledger_chain`; controls 0 false positives.
   - Stealth numbers (for the dossier, not gates): mean / max |ΔHU| inside and outside the tampered cuboid, and confirmation that the plain DICOM header of a tampered file is unchanged.
   - Writes `G_provenance/figures/r19-ctgan-tamper.png` (exported axial slices: original / injected / removed / |Δ| map, plus the verifier's per-slice FAIL strip) and `r19-detection-table.png`, and updates `status.json` #19 `reproduced{}`.
-- [ ] **AC-11** (G.11) — *Dossier #19.* `dossiers/19-ct-gan-tamper-test.md` fills all 8 fixed sections: G01 attack model (PACS data-in-motion / at-rest), the 13-step pipeline, eq. 1–2 with α / β, training-set facts (32³ samples, 16³ mask, pix2pix-style 3-D cGAN), published results (99 % injected → malign, 94 % removed → healthy, 60 % / 87 % after being told, 100 % fooled screening AI, page refs), §7.2 countermeasures (scanner signature, DICOM Digital Signatures, watermarking); our classical-in-painter substitution and why (no GAN, privacy, licence check per Q2); verdict; what to reuse (H's tamper statistic, INT's real chain, DICOM Digital Signatures Sequence as the standard-conformant upgrade).
-- [ ] **AC-12** (G.12) — *README + status.*
+  - **Evidence:** `G_provenance/repro/r19_ctgan_tamper.py:89; figures/r19-*.png`
+- [x] **AC-11** (G.11) — *Dossier #19.* `dossiers/19-ct-gan-tamper-test.md` fills all 8 fixed sections: G01 attack model (PACS data-in-motion / at-rest), the 13-step pipeline, eq. 1–2 with α / β, training-set facts (32³ samples, 16³ mask, pix2pix-style 3-D cGAN), published results (99 % injected → malign, 94 % removed → healthy, 60 % / 87 % after being told, 100 % fooled screening AI, page refs), §7.2 countermeasures (scanner signature, DICOM Digital Signatures, watermarking); our classical-in-painter substitution and why (no GAN, privacy, licence check per Q2); verdict; what to reuse (H's tamper statistic, INT's real chain, DICOM Digital Signatures Sequence as the standard-conformant upgrade).
+  - **Evidence:** `G_provenance/dossiers/19-ct-gan-tamper-test.md`
+- [x] **AC-12** (G.12) — *README + status.*
   - `G_provenance/README.md`: "How to run" (key init → commit → [run C / E / F] → fill → export → verify → repro), "Reproduced result vs. paper", "Claim level and honesty notes" (n/a; traceability, not security; demo key; limit of AC-10c; simulated upstream numbers keep their sim labels inside the receipt), "Contract change requests" CCR-G1..G4 (§5).
   - `status.json` #19 → `adapted` with `reproduced{quantity, paper_value, our_value, agreement, sim_mode: "n/a", figure}`, `claim_level: null`, `figures[]`, `updated`.
   - `python -m shared.validate --status` passes. `python -m shared.site.build` previews locally; the site is **not** committed.
+  - **Evidence:** `G_provenance/README.md, G_provenance/status.json`
 
 ---
 
@@ -217,19 +229,19 @@ No contract is added or changed (`shared/` is frozen). G produces instances of `
 
 All commands run from `RE/` (inside the `re-G` worktree) with conda-base `python`.
 
-- [ ] **Verify AC-2:** `python -m G_provenance.src.keys init` → key + `trusted_keys.json` under `G_provenance/runs/keys/`; a second `init` refuses. `git status --short G_provenance` shows no key file.
-- [ ] **Verify AC-3:** `python -m G_provenance.src.receipt commit` → prints `committed: ledger index 1` on a fresh ledger (0 = genesis); `python -m shared.validate <run>/receipt.json` OK; `state` = `committed`, `fill` = null.
-- [ ] **Verify AC-4 (real order):** after the commit, run `python -m C_certificate.src.certify --mode ideal` (C is on `main`), then `python -m G_provenance.src.receipt fill --commit <commit receipt> --certificate C_certificate/runs/<ts>-chsh-ideal/certificate.json --job C_certificate/runs/<ts>-chsh-ideal/quantum_job_record.json` (other inputs stubs) → passes; `fill_report.json` lists stub exemptions only for stub inputs. Then use a C certificate produced **before** a fresh commit → `FAIL order`, exit 1, no signature.
-- [ ] **Verify AC-4 (code check):** commit, then edit a comment in any `C_certificate/src/*.py`, re-run C, fill → `FAIL code_hash (C)`. Revert the edit.
-- [ ] **Verify AC-4 (fail certificate):** fill with `C_certificate` output from `--settings classical` → "certificate failed, nothing to sign", exit 0, no ledger append.
-- [ ] **Verify AC-5 / AC-6:** after a clean fill, `python -m shared.validate <receipt.json>` and `python -m shared.validate G_provenance/runs/ledger.jsonl` print OK; `sha256sum bound_params` matches `fill.params_sha256` (via `python -c` with `canonical_json`); last ledger line's `receipt_sha256` = `sha256sum receipt.json`.
-- [ ] **Verify AC-7:** `python -m G_provenance.src.dicom_export <receipt>` → N slice files; `python -c "import pydicom; d=pydicom.dcmread('<first>.dcm'); print(d.ImageType, d.PatientName, d[0x0011,0x0010].value)"` → `DERIVED\SECONDARY\SYNTHETIC`, `SYNTHETIC^QP-RE`, `QP-RE G PROVENANCE`. Load the series in SimpleITK and compare to the NIfTI: identical array and grid.
-- [ ] **Verify AC-8:** `python -m G_provenance.src.verify <series>` → 8 × OK, `VERIFIED`, exit 0. Same on the `receipt.json` path.
-- [ ] **Verify AC-9 / AC-10:** `python -m G_provenance.repro.r19_ctgan_tamper --n 20` → table with 40/40 pixel tampers detected, slice Jaccard 1.0, attacks (a)–(d) detected by the expected checks, both controls `VERIFIED`; open `figures/r19-ctgan-tamper.png`: injected nodule and removed lesion are visible on the exported slices and the |Δ| map is confined to the cuboid.
-- [ ] **Verify AC-11 / AC-12:** dossier has all 8 sections filled; `python -m shared.validate --status` → 8 × OK; `python -m shared.site.build` and open `index.html`: #19 shows `adapted`; then `git checkout -- index.html site/` (nothing from the site committed).
-- [ ] **Edge case — isolation:** `grep -rnE "QuantumPhantoms/code|from (A|B|C|D|E|F|H)_" G_provenance/` prints nothing; `git diff --stat main -- shared/` empty.
-- [ ] **Edge case — framing:** `grep -niE "attack(er)?s? (on|against) (hospital|patient)|security product" G_provenance/README.md` empty; README speaks of traceability; the AC-10c limit is stated.
-- [ ] **Edge case — privacy:** when the hybrid comes from an LIDC host, the DICOM series exists only under `G_provenance/runs/` (`git check-ignore` confirms).
+- [x] **Verify AC-2:** `python -m G_provenance.src.keys init` → key + `trusted_keys.json` under `G_provenance/runs/keys/`; a second `init` refuses. `git status --short G_provenance` shows no key file.
+- [x] **Verify AC-3:** `python -m G_provenance.src.receipt commit` → prints `committed: ledger index 1` on a fresh ledger (0 = genesis); `python -m shared.validate <run>/receipt.json` OK; `state` = `committed`, `fill` = null.
+- [x] **Verify AC-4 (real order):** after the commit, run `python -m C_certificate.src.certify --mode ideal` (C is on `main`), then `python -m G_provenance.src.receipt fill --commit <commit receipt> --certificate C_certificate/runs/<ts>-chsh-ideal/certificate.json --job C_certificate/runs/<ts>-chsh-ideal/quantum_job_record.json` (other inputs stubs) → passes; `fill_report.json` lists stub exemptions only for stub inputs. Then use a C certificate produced **before** a fresh commit → `FAIL order`, exit 1, no signature.
+- [x] **Verify AC-4 (code check):** commit, then edit a comment in any `C_certificate/src/*.py`, re-run C, fill → `FAIL code_hash (C)`. Revert the edit.
+- [x] **Verify AC-4 (fail certificate):** fill with `C_certificate` output from `--settings classical` → "certificate failed, nothing to sign", exit 0, no ledger append.
+- [x] **Verify AC-5 / AC-6:** after a clean fill, `python -m shared.validate <receipt.json>` and `python -m shared.validate G_provenance/runs/ledger.jsonl` print OK; `sha256sum bound_params` matches `fill.params_sha256` (via `python -c` with `canonical_json`); last ledger line's `receipt_sha256` = `sha256sum receipt.json`.
+- [x] **Verify AC-7:** `python -m G_provenance.src.dicom_export <receipt>` → N slice files; `python -c "import pydicom; d=pydicom.dcmread('<first>.dcm'); print(d.ImageType, d.PatientName, d[0x0011,0x0010].value)"` → `DERIVED\SECONDARY\SYNTHETIC`, `SYNTHETIC^QP-RE`, `QP-RE G PROVENANCE`. Load the series in SimpleITK and compare to the NIfTI: identical array and grid.
+- [x] **Verify AC-8:** `python -m G_provenance.src.verify <series>` → 8 × OK, `VERIFIED`, exit 0. Same on the `receipt.json` path.
+- [x] **Verify AC-9 / AC-10:** `python -m G_provenance.repro.r19_ctgan_tamper --n 20` → table with 40/40 pixel tampers detected, slice Jaccard 1.0, attacks (a)–(d) detected by the expected checks, both controls `VERIFIED`; open `figures/r19-ctgan-tamper.png`: injected nodule and removed lesion are visible on the exported slices and the |Δ| map is confined to the cuboid.
+- [x] **Verify AC-11 / AC-12:** dossier has all 8 sections filled; `python -m shared.validate --status` → 8 × OK; `python -m shared.site.build` and open `index.html`: #19 shows `adapted`; then `git checkout -- index.html site/` (nothing from the site committed).
+- [x] **Edge case — isolation:** `grep -rnE "QuantumPhantoms/code|from (A|B|C|D|E|F|H)_" G_provenance/` prints nothing; `git diff --stat main -- shared/` empty.
+- [x] **Edge case — framing:** `grep -niE "attack(er)?s? (on|against) (hospital|patient)|security product" G_provenance/README.md` empty; README speaks of traceability; the AC-10c limit is stated.
+- [x] **Edge case — privacy:** when the hybrid comes from an LIDC host, the DICOM series exists only under `G_provenance/runs/` (`git check-ignore` confirms).
 
 ---
 
@@ -249,4 +261,17 @@ All commands run from `RE/` (inside the `re-G` worktree) with conda-base `python
 
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+Built in worktree `re-G`; all code in `RE/G_provenance/`, nothing in `shared/` or other letters touched.
+
+- **Result (stub phantom, n = 20):** 20/20 injections and 20/20 removals flagged by `voxels` with exact slice Jaccard 1.00; forgeries (a) `signature`, (b) `trusted_key`, (c) `trusted_key` only (the documented limit), (d) `commit_first`; both controls verify. Order and code checks verified by hand with real C runs (pass after commit; `FAIL order` for a C run made before a fresh commit; `FAIL code_hash` after a one-comment edit to `C_certificate/src/chsh.py`, reverted; a `fail` certificate signs nothing, exit 0, ledger unchanged).
+- **Deviations / additions (all local):**
+  - `bound_params.json` also carries `commit_receipt{ledger_index, sha256, receipt}` so the verifier can run `commit_first` from the DICOM tags alone (AC-5 listed the other keys).
+  - Receipt files are written as canonical JSON (compact, no newline) so `sha256sum receipt.json` equals the ledger's `receipt_sha256` and tag re-serialisation is stable.
+  - Fill's code check compares per letter (`produced_by.letter`), a subset of "∈ the committed hashes"; a letter folder absent at commit time cannot produce accepted inputs.
+  - Verifier adds a 9th check `receipt_consistency` (series only). Attacks (a) and (b) also trip `ledger_entry` (receipt no longer matches the ledger); (d) also trips `ledger_entry`.
+  - CT-GAN merge weight W is evaluated on the voxel-wise maximum of generated and original cuboid (paper text does not say which cuboid); noted in the dossier. First `remove` / `inject` call spends ~4 s on a cached sparse LU.
+  - Injection site is the lung voxel pick; the stub noise-free phantom gives σ(< −600 HU) = 0, so the AWGN step is a no-op there (it works on real hosts).
+  - The first r19 run per receipt writes a new commit + fill (and ledger entries) into the persistent `runs/ledger.jsonl`.
+- **CT-GAN repo licence:** MIT (checked with `gh api`, 2026-10-29); no code or weights used.
+- **Follow-ups for INT:** decide CCR-G1..G4; anchor the ledger head in a public beacon pulse; DICOM Digital Signatures Sequence instead of the private block; run once on a real LIDC hybrid from F (`--hybrid`, `--receipt`) — not done here (Q8 default: stubs).
+- No automated tests written or run; flake8 clean (max line 130).
