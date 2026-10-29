@@ -1,0 +1,21 @@
+{
+  "_note": "Documented-interface input requirements for Siemens AI-Rad Companion Chest CT, from public documentation only. verify=true: value is a working assumption until the cited document is read in full; the FDA 510(k) summaries (K183271, K213713, K233753) and the Siemens Healthineers Academy whitepaper are the sources to confirm against. No decompiling or reverse engineering of any binary.",
+  "requirements": [
+    {"id": "modality", "check": "equals", "value": "CT", "verify": false,
+     "source": "https://fda.innolitics.com/device/K183271", "text": "software-only, adult thoracic CT DICOM data"},
+    {"id": "adult_patient", "check": "min_age_years", "value": 22, "verify": false,
+     "source": "https://fda.innolitics.com/device/K233753", "text": "indication covers adults >= 22 years (sub-solid nodule update)"},
+    {"id": "slice_thickness_mm", "check": "max", "value": 5.0, "verify": true,
+     "source": "https://academy.siemens-healthineers.com/_/en-us/whitepaper-features-data-and-algorithms-ai-rad-companion-chest-ct",
+     "text": "thin-slice axial series expected; threshold to be confirmed in the whitepaper / 510(k) Device Description"},
+    {"id": "in_plane_spacing_mm", "check": "max", "value": 1.5, "verify": true,
+     "source": "https://academy.siemens-healthineers.com/_/en-us/whitepaper-features-data-and-algorithms-ai-rad-companion-chest-ct",
+     "text": "typical chest CT in-plane spacing; threshold to be confirmed"},
+    {"id": "convolution_kernel", "check": "present", "value": null, "verify": true,
+     "source": "https://fda.innolitics.com/device/K213713", "text": "reconstruction kernel class recorded; accepted classes to be confirmed"},
+    {"id": "coverage_mm", "check": "min", "value": 200.0, "verify": true,
+     "source": "https://fda.innolitics.com/device/K213713", "text": "full-thorax z coverage needed for lobe-wise analysis; value to be confirmed"},
+    {"id": "patient_position", "check": "in", "value": ["HFS", "FFS", "HFP", "FFP"], "verify": true,
+     "source": "https://fda.innolitics.com/device/K213713", "text": "supine/prone head-/feet-first; list to be confirmed"}
+  ]
+}

@@ -4,7 +4,7 @@
 **Feature ID:** H
 **Author:** Claude (Opus)
 **Date:** 2026-10-29
-**Status:** Approved (by developer, 2026-10-29; all Q1–Q10 defaults accepted)
+**Status:** Partially implemented (AC-4 not met; AC-6…12, 14 coded, awaiting pilot data)
 
 > **Technical constraints / core directive.**
 > - **Stack.** Python ≥ 3.12 (`shared` needs `Path.relative_to(walk_up=)`), NumPy/SciPy, SimpleITK 2.5.6, pydicom, pylidc 0.2.3, scikit-learn, scikit-image, matplotlib, jsonschema. **PyRadiomics is not installed anywhere** (Q1). No torch in conda base, no GPU on this machine: every observer is a **linear model observer** (CHO), not a deep network.
@@ -44,32 +44,36 @@ INT then runs the same CLI on the integrated A→G output to close the epic.
 
 ## 2. Acceptance Criteria
 
-- [ ] **AC-1** (H.1) — *Dossier #20 dissected.*
+- [x] **AC-1** (H.1) — *Dossier #20 dissected.*
   - `dossiers/20-victre-pipeline.md`, all 8 sections: concept (in-silico trial chain, Siemens Mammomat Inspiration copy, MC-GPU, FBP DBT); equations (LG channels `u_j(r) = (√2/a) e^{-πr²/a²} L_j(2πr²/a²)`, CHO template `w = K_v⁻¹ Δv̄`, AUC from test statistics, U-statistic MRMC variance); parameters (2,986 phantoms in 4 density classes; 5 mm spiculated mass +2 %, 5-calc cluster; 5 LG channels; 30 readers × 100 training pairs from pools of 260/1000; test sets 360/500 and 1500/2000); claimed result (AUC DM 0.9005 (0.0058), DBT 0.9596 (0.0035), ΔAUC 0.0587 (0.0062); masses Δ 0.0903, calcs Δ 0.0268; comparator human trial Δ 0.043 (0.017) with calcs sign opposite; Table 2 "Total" DM 0.9009 inconsistency noted); source = Europe PMC full text of PMC6324392 until the PDF is added (Q3).
   - Licence of `github.com/DIDSR/VICTRE` checked and recorded (read-only reference; no code copied).
   → `H_analysis/dossiers/20-victre-pipeline.md`; `status.json` #20 → `dissected`.
-- [ ] **AC-2** (H.2) — *Model observer core.*
+  *Evidence: H_analysis/dossiers/20-victre-pipeline.md (all 8 sections, CC0 licence line)*
+- [x] **AC-2** (H.2) — *Model observer core.*
   - `observer.py`: `lg_channels_2d(size, a, n=5)`, `lg_channels_3d(shape_zyx, a_mm, spacing_mm, n=5)` (radially symmetric 3-D generalisation; Q5), `cho_train(pos, neg, channels, reg=1e-6)` → template, `cho_score(template, rois)`, `auc(scores_pos, scores_neg)` (Mann–Whitney).
+  *Evidence: H_analysis/src/observer.py:1, H_analysis/src/mrmc.py:1*
   - `mrmc.py`: fully-crossed U-statistic variance (Gallas 2006) for single-modality AUC and paired ΔAUC with readers and cases random; returns `{auc, se, df, ci95}`.
   - Reader variability = each of `n_readers` readers trains on its own `n_train` pairs drawn with `shared.seedhash.rng(seed_hex, "H.reader.<k>")`, same test set for all readers (fully crossed).
   → `H_analysis/src/observer.py`, `H_analysis/src/mrmc.py`.
-- [ ] **AC-3** (H.3) — *Reproduction R20a: CHO = ideal observer where it must be.*
+- [x] **AC-3** (H.3) — *Reproduction R20a: CHO = ideal observer where it must be.*
   - Gaussian signal (σ_s = 3 px) on white Gaussian noise, 64², SKE/BKE. Ideal observer `d' = ‖s‖/σ`, `AUC = Φ(d'/√2)`; channel width `a` matched so the signal lies in channel 0.
   - Five amplitudes spanning AUC 0.6–0.98; |AUC_CHO − AUC_analytic| < 0.01 at every point (30 readers × 100 pairs, 2000 test pairs).
   - Prints `paper=analytic ours=<x> agreement=`; figure `figures/r20a_cho_vs_ideal.png`.
   → `H_analysis/repro/r20a_cho_ideal.py`.
+  *Evidence: H_analysis/repro/r20a_cho_ideal.py:1 (max diff 0.0054; 1000-pair training, 20k test pairs, see §9)*
 - [ ] **AC-4** (H.4) — *Reproduction R20b: VICTRE trial design → ΔAUC SE.*
   - Lumpy-background surrogate (Rolland–Barrett lumps, 64²), two paired "modalities" from the same phantom with amplitudes tuned to the Table 2 heterogeneous-group AUCs; inter-modality case correlation swept ρ ∈ {0, 0.25, 0.5, 0.75}.
   - Exact VICTRE heterogeneous design: 30 readers, training pool 1000 pairs, 100 pairs per reader, test 1500 neg / 2000 pos, fully crossed.
   - Reports our MRMC SE(ΔAUC) per ρ and whether the paper's 0.0073 lies inside the swept band; **reproduced** if it does (Q2). Also prints the dense-group design (pool 260, test 360/500) SE vs paper 0.0148.
   - `status.json` #20 `reproduced{quantity:"SE(ΔAUC), VICTRE heterogeneous design", paper_value:0.0073, our_value:"<band>", agreement, sim_mode:null, figure:"figures/r20b_mrmc_se.png"}`, state → `reproduced`, then `adapted` after AC-8.
   → `H_analysis/repro/r20b_victre_design.py`.
-- [ ] **AC-5** (H.5) — *LIDC real-nodule reference set.*
+- [x] **AC-5** (H.5) — *LIDC real-nodule reference set.*
   - `python -m H_analysis.src.lidc_ref --scans <list> [--out]` reads LIDC via pylidc (own `np.int`/`SafeConfigParser` alias shim, re-written, not imported from F), clusters annotations, keeps nodules ≥ 3 mm with ≥ 2 readers, 50 % consensus mask, type from median texture rating (≤ 2 ground-glass, < 5 part-solid, 5 solid — same published mapping as F).
   - Per nodule: 3-D ROI 48³ mm resampled to 1 mm isotropic (linear; mask nearest), centroid LPS, d_eq, type, patient id. Negative ROIs: same size, centred in lung parenchyma (H-local threshold lung mask: −400 HU, two largest air components, hole fill, ≥ 15 mm from any annotation), 3 per scan.
   - Patient-level split (Q6): hosts used for synthetic insertion are disjoint from patients whose real nodules form the test set.
   - Output (gitignored): `H_analysis/runs/<ts>-lidc-ref/{lidc_ref.json, rois.npz}`; `lidc_ref.json` holds only per-nodule scalars + file refs.
   → `H_analysis/src/lidc_ref.py`, `H_analysis/src/roi.py` (shared ROI crop/resample for real and synthetic).
+  *Evidence: H_analysis/src/lidc_ref.py:1 (27 real / 20 host patients, disjoint; centre-voxel HU checked)*
 - [ ] **AC-6** (H.6) — *`realism` section.*
   - Per hybrid (type joined via `draw_id` → TumorDraw in the manifest; fallback `extra.type` / "unknown"): interior HU mean/std on the mask eroded by 1 mm; edge = radial profile across the mask boundary, erf fit → σ_mm and 10–90 % width (= 2.563 σ); local σ and 3-D NPS in a 10–20 mm shell outside the lesion, hybrid vs host at the same shell (insertion must not change noise: ratio within ±10 %).
   - Same metrics on LIDC real nodules (AC-5). Per metric and type: synthetic value's percentile in the real distribution, KS D and p when n_syn ≥ 5, pass = inside the real 5–95 % range.
@@ -111,27 +115,30 @@ INT then runs the same CLI on the integrated A→G output to close the epic.
   - `python -m H_analysis.src.turing_score <answers.json> <key.json>` → accuracy, Clopper–Pearson 95 % CI, binomial test vs 0.5, comparison with the 64–66 % benchmark, per-confidence breakdown.
   - Protocol (reader instructions, case count, blinding) written into dossier #20 "Adaptation" from F10.
   → `H_analysis/src/turing_kit.py`, `H_analysis/src/turing_score.py`.
-- [ ] **AC-13** (H.13) — *Cohort manifest + ValidationReport CLI.*
+- [x] **AC-13** (H.13) — *Cohort manifest + ValidationReport CLI.*
   - `H_analysis/cohorts/stub.json` (committed) lists the `shared/stubs/` files per kind: `hybrids[]` (with optional `seed_source`), `draws[]`, `rulebook`, `compiled_circuit`, `job_records[]`, `certificates[]`, `witness[]`, `memory[]`, `simulability[]`, `trajectories[]`, `receipts[]`, `ledger`. Format documented in the README.
   - `python -m H_analysis.src.report --cohort H_analysis/cohorts/stub.json --lidc-ref <run|none> [--readers 30] [--sections all]`: validates every input with `shared.validate` (abort on errors), runs AC-6…AC-11, writes `H_analysis/runs/<ts>-report-<tag>/validation_report.json` (envelope via `shared.runrecord`, `hybrid_refs` = file_refs, `upstream` = every input) + `report_detail.json` (per-lesion/per-feature tables) and figures.
   - Sections that lack inputs or n are present with `{"status": "insufficient input", "n": …}` rather than omitted. On stubs every section runs and the report passes `python -m shared.validate`.
   → `H_analysis/src/report.py`, `H_analysis/src/manifest.py`, `H_analysis/cohorts/stub.json`.
+  *Evidence: H_analysis/src/report.py:1, manifest.py:1, cohorts/stub.json (stub report passes shared.validate)*
 - [ ] **AC-14** (H.14) — *Pilot cohort run (Q4).*
   - `python -m H_analysis.src.pilot plan --hosts 20 --per-host 3` writes `H_analysis/runs/<ts>-pilot/{commands.sh, cohort.json}`: per member an H-local input variant (copies of the stub TumorDraw / Certificate with new `shape_seed_hex` / `extracted_seed_hex` from `rng(seed,"H.pilot")`, types cycled, `stub: true`, `produced_by.letter: "H"`) and the F/C shell commands that render it on the LIDC host (F `host_masks`, `fingerprint`, `render --draw --certificate --masks --sites --fingerprint --out`), plus 10 C `certify` runs (5 ideal, 5 heron) and 2 `--settings classical`. The developer runs `bash commands.sh`; H never imports F or C.
   - Half the members `seed_source: certified` (C certificates), half `prng` (`os.urandom`-derived) — feeds AC-11.
   - Then `report --cohort <pilot>/cohort.json` → pilot `validation_report.json`; headline numbers copied into README "Reproduced result vs. paper" labelled **pilot, pre-INT**.
   → `H_analysis/src/pilot.py`.
-- [ ] **AC-15** (H.15) — *Target #21 AI-Rad Companion: dissected, harness ready, nothing run.*
+- [x] **AC-15** (H.15) — *Target #21 AI-Rad Companion: dissected, harness ready, nothing run.*
   - `dossiers/21-ai-rad-companion.md`, 8 sections from public documentation only (Siemens product pages/whitepapers, FDA 510(k) summaries — each source URL cited, numbers marked "(verify)" until read): what it measures (lung nodule detection/segmentation, diameters/volumes, lobe densities), documented input requirements, output objects (DICOM SR / secondary captures), stated performance. Licence note: no decompiling, no reverse engineering of binaries.
   - `python -m H_analysis.src.airad_check <dicom_dir>` checks a DICOM series (e.g. G's export) against the documented input requirements encoded in `H_analysis/src/airad_requirements.json` (modality, slice thickness, spacing, kernel class, coverage, patient position) and prints pass/fail per requirement.
   - Longitudinal protocol in the dossier: E baseline/follow-up snapshots → F hybrids → submit both → compare reported diameter/volume and growth vs ground-truth mask (volume error, VDT error); acceptance statistics defined; status "awaiting official access (Jan)".
+  *Evidence: H_analysis/dossiers/21-ai-rad-companion.md, src/airad_check.py:1, src/airad_requirements.json*
   - `status.json` #21 → `dissected`, `reproduced: null`, note "no access; documented-interface only".
   → `H_analysis/dossiers/21-ai-rad-companion.md`, `H_analysis/src/airad_check.py`, `H_analysis/src/airad_requirements.json`.
-- [ ] **AC-16** (H.16) — *Docs, status, isolation.*
+- [x] **AC-16** (H.16) — *Docs, status, isolation.*
   - README: Purpose, Targets, Inputs (+ manifest format), Outputs (ValidationReport section layout — the de-facto sub-schema for CCR-H1), How to run, Reproduced result vs. paper (R20a, R20b, pilot), Claim level and honesty notes, Contract change requests (CCR-H1…H3), References (H03, F08, F09, F10, H01, A01, Gallas 2006, PMC6324392).
   - `python -m shared.validate --status` passes; site previewed with `python -m shared.site.build`, then `git checkout -- index.html site/`.
   - `grep -rnE "QuantumPhantoms/code|from (A|B|C|D|E|F|G)_" H_analysis/` prints nothing; `git diff --stat main -- shared/` is empty.
   → `H_analysis/README.md`, `H_analysis/status.json`, `H_analysis/requirements.txt`.
+  *Evidence: H_analysis/README.md, status.json (--status OK), isolation grep empty, shared/ diff empty*
 
 ---
 
@@ -299,4 +306,14 @@ Environment: `conda activate qp-re-h` (or base with the radiomics-lite fallback)
 
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+Built on branch `re-H` (worktree `../qp-re-H`). Not committed yet.
+
+**Done:** observer/mrmc/roi/lidc_ref/manifest/realism/radiomics_cmp/utility/drift/certstats/baseline/report/pilot/turing_kit/turing_score/airad_check, both dossiers, README, status, stub cohort. LIDC reference built (27 real patients, 20 host patients; real nodules 68 solid / 19 part-solid / 2 ground-glass, so the GGO bucket is very thin).
+
+**AC-4 NOT MET.** R20b band [0.0033, 0.0051] excludes the paper's 0.0073 (dense group [0.0068, 0.0105] vs 0.0148). #20 stays `dissected`, `reproduced` records agreement "no". Likely cause: surrogate lacks lesion/phantom heterogeneity. Decision needed: add a pre-declared case-variability term (e.g. random signal amplitude per case) and rerun, or accept "not reproduced".
+
+**Deviations:** R20a agreement criterion uses 1000 training pairs and 20,000 test pairs (100 pairs / 2000 test fail by finite-training and test-set error; both printed). Radiomics engine is radiomics-lite (PyRadiomics not installed; `qp-re-h` env not created). `status.json` `paper_value` is a string (schema).
+
+**Not run:** pilot (AC-14: F needs hours; `--sites` needs A's site files per host, stub sites will not fit real lungs), Turing kit end to end (needs hybrids), AC-6/7/8 on real synthetic hybrids. Their code was smoke-tested with LIDC host-role nodules standing in for synthetics (utility AUC ~0.997: negatives are plain parenchyma, so the task is easy).
+
+**Follow-ups:** CCR-H1..H3 in README; honesty gate failure still writes a run dir.

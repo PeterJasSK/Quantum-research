@@ -13,14 +13,25 @@
       "papers": [
         "H03"
       ],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
-      "reproduced": null,
+      "reproduced": {
+        "quantity": "SE(DeltaAUC), VICTRE heterogeneous design",
+        "paper_value": "0.0073",
+        "our_value": "[0.0033, 0.0051]",
+        "unit": "AUC",
+        "agreement": "no",
+        "sim_mode": "n/a",
+        "figure": "figures/r20b_mrmc_se.png"
+      },
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/20-victre-pipeline.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r20a_cho_vs_ideal.png",
+        "figures/r20b_mrmc_se.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 21,
@@ -29,14 +40,14 @@
       "priority": 1,
       "kind": "classical",
       "papers": [],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
       "reproduced": null,
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/21-ai-rad-companion.md",
       "figures": [],
-      "updated": "2026-10-28"
+      "updated": "2026-10-29"
     }
   ]
 }

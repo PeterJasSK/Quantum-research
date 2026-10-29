@@ -1,0 +1,15 @@
+{
+  "seed_note": "Stub cohort: one lesion, the shared/stubs contract files. Pipeline smoke test only; no statistic here is a result.",
+  "hybrids": [{"path": "../../shared/stubs/hybrid_volume/hybrid_volume.json", "seed_source": "certified"}],
+  "draws": ["../../shared/stubs/tumor_draw/tumor_draw.json"],
+  "rulebook": "../../shared/stubs/rulebook/rulebook.json",
+  "compiled_circuit": "../../shared/stubs/compiled_circuit/compiled_circuit.json",
+  "job_records": ["../../shared/stubs/quantum_job_record/quantum_job_record.json"],
+  "certificates": ["../../shared/stubs/certificate/certificate.json"],
+  "witness": ["../../shared/stubs/witness_record/witness_record.json"],
+  "memory": ["../../shared/stubs/memory_advantage_record/memory_advantage_record.json"],
+  "simulability": ["../../shared/stubs/simulability_report/simulability_report.json"],
+  "trajectories": ["../../shared/stubs/growth_trajectory/growth_trajectory.json"],
+  "receipts": ["../../shared/stubs/receipt/receipt.json"],
+  "ledger": "../../shared/stubs/ledger_entry/ledger.jsonl"
+}
