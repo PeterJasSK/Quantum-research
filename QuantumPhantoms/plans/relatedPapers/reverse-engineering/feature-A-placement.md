@@ -4,7 +4,7 @@
 **Feature ID:** A (target #18)
 **Author:** Claude (Opus)
 **Date:** 2026-10-28
-**Status:** Approved (by developer, 2026-10-28) · **Complete 2026-10-29** (see §9: reproduction stopped at 6 scans by developer; #18 held at `dissected`)
+**Status:** Approved (by developer, 2026-10-28) · **Complete 2026-10-29** (see §9: reproduction stopped at 6 scans by developer; #18 set to `adapted` by developer decision)
 
 > **Constraints.**
 > - Python 3 + NumPy/SciPy/scikit-image + SimpleITK, with lungmask, TotalSegmentator and pylidc on LIDC-IDRI.
@@ -380,3 +380,4 @@ All commands run from `RE/` in env `qp-re-a`.
 - **INT:** consume `runs/<id>-place/` as is. B should treat the measured class proportions as biased.
 - **CCR-A1:** promote `nominal_radius_mm` to a first-class field (see README).
 
+7. **Developer decision (2026-10-29):** #18 set to `adapted` despite the unmatched reproduction (pipeline validation suffices); the miss stays recorded in `status.json.reproduced`.

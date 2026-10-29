@@ -151,7 +151,7 @@ Four of nine nodules lie within 2.5 mm of the lung wall, yet none passes the pre
 
 ## Verdict
 
-**State: `dissected` (the pipeline is built and validated; the published number is not matched).**
+**State: `adapted`** (developer decision 2026-10-29). The pipeline is built and validated, but the published number is **not** matched. The miss is recorded here, not hidden.
 
 - **Pipeline: works, verified by hand.** On LIDC-IDRI-0001 and 0004 the whole chain runs and checks out:
   - DICOM → LPS host CT on the native grid → contract-valid `anatomy_masks`, with the 5 lobes, sides and orientation checked;
@@ -164,7 +164,7 @@ Four of nine nodules lie within 2.5 mm of the lung wall, yet none passes the pre
   - bifurcation points sit on visible branchings.
 - **Reproduction: not matched (n = 9, inconclusive).** Juxtavascular agrees (0.44 vs 0.45), but juxtapleural is 0 vs 0.22 because of the contact-rule undercount above.
 
-The epic defines `reproduced` as "published number matched", so the target stays at `dissected` with the attempt recorded. It moves to `reproduced`/`adapted` after a pre-registered rerun on the 20-scan set with the candidate fix, or when INT accepts the miss.
+The epic's normal gate (`reproduced` means the published number matched) was waived by the developer because pipeline validation is the goal of this stage. A pre-registered rerun on the 20-scan set with the candidate contact fix remains the way to earn a real match.
 
 **Claim level:** classical stage, no quantum claim.
 

@@ -18,7 +18,7 @@ A chooses where a synthetic nodule may sit in a real 3-D chest CT.
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 | # | Target | Priority | Kind | State |
 |---|---|---|---|---|
-| #18 | [SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)](dossiers/18-syn-lungs-placement.md) | ★★ | classical | dissected (pipeline validated; reproduction not matched, n=9) |
+| #18 | [SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)](dossiers/18-syn-lungs-placement.md) | ★★ | classical | adapted (pipeline validated; reproduction not matched, n=9) |
 
 ## Inputs (contract files)
 
