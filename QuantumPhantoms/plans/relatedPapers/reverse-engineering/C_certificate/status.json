@@ -15,13 +15,23 @@
         "C02",
         "C05"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "Pironio 2010 certified min-entropy n·f(Î−ε) (n=3016, Î=2.414, 99% conf.)",
+        "paper_value": "42",
+        "our_value": "40.8",
+        "unit": "bits",
+        "agreement": "-2.8% (analytic f, curve b, vs paper's SDP f, curve a); Î from Table 1 = 2.4145 exact",
+        "sim_mode": "n/a",
+        "figure": "figures/hmin_vs_S.png"
+      },
+      "claim_level": "L0",
+      "sim_mode": "both",
       "dossier": "dossiers/04-bell-entropy-accounting.md",
-      "figures": [],
+      "figures": [
+        "figures/hmin_vs_S.png"
+      ],
       "updated": "2026-10-28"
     },
     {
@@ -33,13 +43,23 @@
       "papers": [
         "C04"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "consecutive NIST Beacon 2.0 pulse links verified (signature, output hash, prev link, precommit)",
+        "paper_value": "all (format guarantee, C04)",
+        "our_value": "11/11 links, 12/12 pulses; 1-bit tamper caught at its pulse",
+        "unit": "links",
+        "agreement": "exact; CURBy nBitsOut 512 / nBitsThreshold 820 match C04 (CIDs not recomputed)",
+        "sim_mode": "n/a",
+        "figure": "figures/beacon_chain.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/05-curby-beacon-chain.md",
-      "figures": [],
+      "figures": [
+        "figures/beacon_chain.png"
+      ],
       "updated": "2026-10-28"
     }
   ]
