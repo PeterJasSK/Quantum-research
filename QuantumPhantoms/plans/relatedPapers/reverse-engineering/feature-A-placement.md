@@ -4,7 +4,7 @@
 **Feature ID:** A (target #18)
 **Author:** Claude (Opus)
 **Date:** 2026-10-28
-**Status:** Approved (by developer, 2026-10-28) — IN PROGRESS, paused 2026-10-29 (see §9 checkpoint; Q2 amended: 20 scans, parallel)
+**Status:** Approved (by developer, 2026-10-28) · **Complete 2026-10-29** (see §9: reproduction stopped at 6 scans by developer; #18 held at `dissected`)
 
 > **Constraints.**
 > - Python 3 + NumPy/SciPy/scikit-image + SimpleITK, with lungmask, TotalSegmentator and pylidc on LIDC-IDRI.
@@ -32,20 +32,20 @@
 
 ## 2. Acceptance Criteria
 
-- [ ] **AC-1** (A.1): A dedicated, reproducible environment runs A.
+- [x] **AC-1** (A.1) — *evidence:* `A_placement/environment.yml:4` (py3.12 + cryptography + setuptools<81, see §9); `shared.validate --stubs` OK in env. *Criterion:* A dedicated, reproducible environment runs A.
   → `A_placement/environment.yml` creates a conda env `qp-re-a` (Python 3.11) with:
     - CPU torch, `lungmask`, `TotalSegmentator`, `pylidc`, `pydicom`, `tcia_utils`;
     - `SimpleITK`, `scipy`, `scikit-image`, `numpy`, `jsonschema`, `matplotlib`.
 
   Running `python -m shared.validate --stubs` succeeds inside it, which proves `shared/` works unchanged in the new env. The README "How to run" section documents creating the env and the `~/.pylidcrc` setup.
-- [ ] **AC-2** (A.2): A downloads a LIDC-IDRI subset reproducibly, outside git.
+- [x] **AC-2** (A.2) — *evidence:* `A_placement/src/lidc_fetch.py:38` select, `:60` fetch, `:24` pylidcrc; subset trimmed to 20 (Q2 amendment), all 40 series on disk (5.0 GB). *Criterion:* A downloads a LIDC-IDRI subset reproducibly, outside git.
   → `A_placement/src/lidc_fetch.py` downloads the CT series of a given patient list via `tcia_utils` into `$LIDC_ROOT` (default `~/data/LIDC-IDRI`, outside the repo) and writes `~/.pylidcrc`.
   The patient list is `A_placement/repro/lidc_subset.txt` (committed). It is selected deterministically by `--select N`: the first N patients in ID order with slice thickness ≤ 2.5 mm and ≥ 1 nodule annotated by ≥ 3 readers.
   The download is idempotent: patients already present are skipped.
-- [ ] **AC-3** (A.3): Host CT conversion lands on the contract grid.
+- [x] **AC-3** (A.3) — *evidence:* `A_placement/src/lidc_io.py:61` load_host, `:84` nodule_masks; overlay on LIDC-IDRI-0001 checked by eye. *Criterion:* Host CT conversion lands on the contract grid.
   → `A_placement/src/lidc_io.py::load_host(patient_id)` reads the DICOM series with SimpleITK `ImageSeriesReader`. It writes `host_ct.nii.gz` through `shared.volumes.write_volume`: LPS, identity direction, `int16` HU clipped to [−1024, 3071], native spacing, **no resampling**.
   `nodule_masks(patient_id, grid)` turns each pylidc consensus nodule (`cluster_annotations()`, `consensus(clevel=0.5)`) into a `(z,y,x)` mask on that exact grid. The pylidc `(i,j,k)` → `(z,y,x)` mapping is verified as described in §7.
-- [ ] **AC-4** (A.4): Anatomy masks are generated and contract-valid.
+- [x] **AC-4** (A.4) — *evidence:* `A_placement/src/segment.py:117` segment, `:62` write_anatomy_json, `:32` TS 2.18 class names; `shared.validate` OK (cache 0001, run 20261029-122607-place). *Criterion:* Anatomy masks are generated and contract-valid.
   → `A_placement/src/segment.py::segment(host_ct_path, out_dir)` produces six masks on the host grid:
 
   | Mask | Source | Values |
@@ -58,9 +58,9 @@
   | `host_ct` | copied from AC-3 | HU |
 
   It writes `anatomy_masks.json` with `produced_by.letter="A"`, an `upstream[]` entry and `file_ref` sha256 values. The file passes `python -m shared.validate <dir>/anatomy_masks.json`, which covers the schema, label sets, LPS orientation and same grid.
-- [ ] **AC-5** (A.5): Known LIDC nodules are excluded from anatomy-driven analysis.
+- [x] **AC-5** (A.5) — *evidence:* `A_placement/src/segment.py:137` (vessel keep-out, 61→0 voxels), `A_placement/src/place.py:56` (d_nodule > 2r). *Criterion:* Known LIDC nodules are excluded from anatomy-driven analysis.
   → All consensus-nodule voxels (dilated by 2 voxels) are removed from `vessels`, so TotalSegmentator cannot count a nodule as vessel. They are also stored as an exclusion zone, so no candidate site lands on or within `2 × nominal_radius` of an existing nodule.
-- [ ] **AC-6** (A.6): The context vector is computed per voxel and per site from the masks.
+- [x] **AC-6** (A.6) — *evidence:* `A_placement/src/context.py:47` load_fields, `:83` site_context; brute-force distances match (S001 15.88, S013 11.22, S026 2.89 mm). *Criterion:* The context vector is computed per voxel and per site from the masks.
   → `A_placement/src/context.py` computes these fields with `scipy.ndimage.distance_transform_edt(sampling=spacing_zyx)`:
     - `dist_pleura_mm`: EDT inside `lungs>0` to the lung boundary.
     - `dist_vessel_mm`: EDT to `vessels`.
@@ -72,12 +72,12 @@
     - `extra.nominal_radius_mm`: the radius the class was decided for.
 
   The `extra` field is the only contract extension point (W Q9 freeze), so no contract change is needed.
-- [ ] **AC-7** (A.7): Vessel bifurcations are detected, so juxtavascular sites follow Ambrosini.
+- [x] **AC-7** (A.7) — *evidence:* `A_placement/src/bifurcation.py:16`; overlay on vessel MIP: points on branchings. *Criterion:* Vessel bifurcations are detected, so juxtavascular sites follow Ambrosini.
   → `A_placement/src/bifurcation.py`:
     1. Skeletonize `vessels` with `skimage.morphology.skeletonize` (3-D).
     2. Mark skeleton voxels with ≥ 3 skeleton neighbours (26-connectivity) as branch points.
     3. Keep only branch points whose local vessel radius (vessel EDT at the skeleton point) is ≥ `min_vessel_radius_mm`, Ambrosini's "large vessel" (default 1.5 mm, Q5).
-- [ ] **AC-8** (A.8): The published placement-class rule is implemented once and shared by the reproduction and placement code.
+- [x] **AC-8** (A.8) — *evidence:* `A_placement/src/classes.py:46` classify_mask, `:68` classify_site_arrays, constants `:18-35`. *Criterion:* The published placement-class rule is implemented once and shared by the reproduction and placement code.
   → `A_placement/src/classes.py` defines two functions.
 
   `classify_mask(nodule_mask, lungs, vessels, spacing)` labels a real nodule (reproduction):
@@ -94,7 +94,7 @@
     - **No class:** anything in the band in between is ambiguous and never emitted.
 
   Every threshold is a named, documented parameter in the dossier's Parameters section and is recorded in the run record.
-- [ ] **AC-9** (A.9): The reproduction compares LIDC class proportions against Kostis via Ambrosini [F01].
+- [x] **AC-9** (A.9) — *evidence:* `A_placement/repro/class_proportions.py:101`, `:59` parallel segment_all; run 20261029-122412-repro-proportions: **n=9 nodules / 6 scans, NOT matched** (developer stopped at 6 scans — see §9). *Criterion:* The reproduction compares LIDC class proportions against Kostis via Ambrosini [F01].
   → `A_placement/repro/class_proportions.py --subset repro/lidc_subset.txt`:
     1. Segments each scan, caching masks under `A_placement/runs/`.
     2. Classifies every consensus nodule (≥ 3 readers, diameter ≥ 3 mm) with `classify_mask`.
@@ -104,7 +104,7 @@
   **Agreement criterion:** every class is within ±10 percentage points of Kostis, **and** the ordering is vascularized > free > juxtapleural.
   The number is recorded in `status.json.reproduced` as `{quantity: "placement-class proportions (vasc/free/juxtapleural)", paper_value, our_value, agreement, figure}`.
   A miss is reported honestly. It is not tuned away: thresholds may be fixed **before** the run (Q5) and are never fitted to Kostis.
-- [ ] **AC-10** (A.10): Candidate sites are sampled per class, deterministically.
+- [x] **AC-10** (A.10) — *evidence:* `A_placement/src/place.py:52`; 10/10/10 sites, same seed identical, other seed differs. *Criterion:* Candidate sites are sampled per class, deterministically.
   → `A_placement/src/place.py --patient <id> --per-class K --seed-hex <hex>`:
     1. Builds the voxel-wise context fields.
     2. Uses the median LIDC consensus radius from AC-9 (from `--radius-mm`, default taken from the latest `proportions.json`) as `nominal_radius_mm`.
@@ -112,7 +112,7 @@
     4. Draws K sites per class with `shared.seedhash.rng(seed_hex, "A.place.<class>")`, keeping a minimum spacing of `2 × r` between sites.
 
   Sites are numbered `S001…` in class order (free, juxtavascular, juxtapleural). If a class has fewer eligible voxels than K, the run emits what exists and states the shortfall in `notes`.
-- [ ] **AC-11** (A.11): `sites.json` is contract-valid and traceable.
+- [x] **AC-11** (A.11) — *evidence:* `A_placement/src/place.py:74-93`; `shared.validate` sites/anatomy_masks/run.json OK. *Criterion:* `sites.json` is contract-valid and traceable.
   → `sites.json` contains:
     - `produced_by.letter="A"` and `stub=false`;
     - `upstream[]` and an `anatomy_masks_ref` holding the sha256 of the `anatomy_masks.json` it was built from;
@@ -121,9 +121,9 @@
 
   The run is wrapped in `shared.runrecord.start_run("A_placement", "place", seed_hex=…)` with its inputs and outputs, then `finish()`.
   `python -m shared.validate runs/<id>/sites.json runs/<id>/anatomy_masks.json runs/<id>/run.json` passes.
-- [ ] **AC-12** (A.12): A 2-D export figure exists for humans, as an export only.
+- [x] **AC-12** (A.12) — *evidence:* `A_placement/src/export_figures.py:25` → `A_placement/figures/18-host-sites.png`. *Criterion:* A 2-D export figure exists for humans, as an export only.
   → `A_placement/src/export_figures.py` renders `A_placement/figures/18-host-sites.png`: three orthogonal slices through one site of each class, with lungs, lobes, vessels and airway as contours and site markers. The figure is generated from the 3-D outputs and never feeds back into the pipeline.
-- [ ] **AC-13** (A.13): Documentation and status are complete.
+- [x] **AC-13** (A.13) — *evidence:* `A_placement/dossiers/18-syn-lungs-placement.md`, `A_placement/README.md`, `A_placement/status.json` (**state `dissected`, not `adapted`** — published number not matched, see §9); `validate --status` OK. *Criterion:* Documentation and status are complete.
   → `A_placement/dossiers/18-syn-lungs-placement.md` fills all eight sections. Three points are explicit:
     - A01 provides **no** placement rules or thresholds; the class rule comes from F01 / Kostis.
     - The lungmask/TotalSegmentator choices and licences.
@@ -345,3 +345,38 @@ All commands run from `RE/` in env `qp-re-a`.
 5. Run `export_figures --run <place run>` to produce `figures/18-host-sites.png` (AC-12).
 6. Write the dossier (8 sections: A01 has no rules, F01/Kostis rule, the TotalSegmentator 2.18 class split, airway = lumen ∪ wall, licences, the lungmask nodule-exclusion note), the README and `status.json` → `adapted`, `papers` + F01. Then run `python -m shared.validate --status` (AC-13).
 7. Do the §6 sanity sweep, tick the ACs with file:line evidence, set Status Complete, commit on `re-A`, and merge to `main`.
+
+### Completion notes — 2026-10-29
+
+**Built.** Complete A pipeline:
+- LIDC subset selection and download;
+- native-grid LPS host CT;
+- pylidc consensus nodules on that grid;
+- lungmask + TotalSegmentator masks, with a per-patient cache;
+- context fields (EDT, vessel density, local HU, bifurcation distance);
+- the F01 placement-class rule (one module);
+- seeded per-class site sampling;
+- contract-valid `anatomy_masks` + `site_candidates` + run record;
+- the 2-D export figure;
+- the class-proportion reproduction with parallel segmentation (`--workers`).
+
+**Final runs (gitignored):**
+- `A_placement/runs/20261029-122412-repro-proportions/`
+- `A_placement/runs/20261029-122607-place/` (host LIDC-IDRI-0004, the Q6 rule: first subset patient with ≤ 1.25 mm slices; r = 4.72 mm, seed `00…00`, 10/10/10 sites)
+
+**Deviations from the plan (developer-visible):**
+1. **Reproduction scope:** the developer stopped the CPU-heavy run on 2026-10-29. Other sessions (B, D, H) were loading the machine (load 30–45 on 8 cores), which pushed scans to ~75 min each. The aim is to validate the working pipeline, not the statistics. The reproduction therefore uses the **6 scans already segmented (n = 9 nodules)**, not 20. Scans 0008+ have no complete cache.
+2. **Result:** free 0.56 / juxtavascular 0.44 / juxtapleural 0.00 vs Kostis 0.33 / 0.45 / 0.22. **Not matched and inconclusive.**
+   - The diagnostic shows 4 of 9 nodules within 0.8–2.5 mm of the wall, failing the pre-registered one-voxel-contact rule, so juxtapleural is undercounted.
+   - Thresholds were **not** tuned.
+   - The candidate fix (gap ≤ 1 in-plane voxel OR ring fraction ≥ 0.10, pre-registered, on all 20 scans) is recorded in the dossier as future work.
+3. **AC-13 state:** `status.json` holds #18 at **`dissected`** with the attempt fully recorded in `reproduced`, rather than `adapted`, because the epic defines `reproduced` as "published number matched". The developer may override this to `adapted` if a pipeline-validated stage is enough.
+4. **Environment:** Python 3.12 (not 3.11), plus `cryptography` and `setuptools<81`. A pylidc numpy-alias shim was added. `pyflakes` was installed in the env for linting only, and is not in `environment.yml`.
+5. **TotalSegmentator 2.18** class split: vessels = arteries ∪ veins, airway = lumen ∪ wall.
+6. **`wilson_ci`** now clamps to [0, 1] (formatting fix, no effect on the verdict).
+
+**Follow-ups:**
+- **Rerun:** run the 20-scan reproduction with the candidate contact fix when the machine is free (`--workers 3`; ~3 h if idle). Scans 0001 and 0003–0007 are cached.
+- **INT:** consume `runs/<id>-place/` as is. B should treat the measured class proportions as biased.
+- **CCR-A1:** promote `nominal_radius_mm` to a first-class field (see README).
+

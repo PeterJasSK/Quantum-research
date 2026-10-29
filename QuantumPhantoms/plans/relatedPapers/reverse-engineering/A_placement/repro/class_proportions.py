@@ -3,8 +3,9 @@ vs Kostis (200 nodules, cited by Ambrosini [F01]): ~0.45 vascularized, ~0.33 wel
 ~0.22 juxtapleural.
 
     python -m A_placement.repro.class_proportions --subset A_placement/repro/lidc_subset.txt [--limit N]
+                                                 [--workers 3]
 
-Each scan is segmented (cached), every consensus nodule (>= 3 readers, >= 3 mm) is classified with
+Each scan is segmented (cached; uncached scans in parallel, --workers processes), every consensus nodule (>= 3 readers, >= 3 mm) is classified with
 classes.classify_mask against the RAW TotalSegmentator vessel mask minus the nodule's own voxels.
 Thresholds are the fixed constants in classes.py; nothing is fitted to Kostis.
 Writes runs/<run_id>/proportions.json and figures/18-class-proportions.png.
@@ -13,6 +14,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import numpy as np
@@ -45,6 +48,31 @@ def classify_scan(cache: Path) -> list[dict]:
     return rows
 
 
+def _segment_worker(pid: str, threads: int) -> str:
+    import torch
+
+    torch.set_num_threads(threads)
+    segment(pid)
+    return pid
+
+
+def segment_all(pids: list[str], workers: int) -> dict:
+    """Segment every scan (cache hits are instant); return {pid: error} for scans that failed."""
+    threads = max(1, (os.cpu_count() or 1) // workers)
+    failed = {}
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        futs = {pool.submit(_segment_worker, pid, threads): pid for pid in pids}
+        for i, fut in enumerate(as_completed(futs), 1):
+            pid = futs[fut]
+            try:
+                fut.result()
+                print(f"[{i}/{len(pids)}] segmented {pid}", flush=True)
+            except (ValueError, FileNotFoundError) as e:
+                failed[pid] = str(e)
+                print(f"[{i}/{len(pids)}] skip {pid}: {e}", flush=True)
+    return failed
+
+
 def figure(props: dict, ci: dict, n: int, path: Path) -> None:
     import matplotlib
     matplotlib.use("Agg")
@@ -74,16 +102,15 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--subset", type=Path, default=A_DIR / "repro" / "lidc_subset.txt")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--workers", type=int, default=3, help="parallel segmentation processes")
     a = ap.parse_args()
 
     subset = read_subset(a.subset)[: a.limit]
-    rows, skipped = [], {}
+    skipped = segment_all([pid for pid, _ in subset], a.workers)
+    rows = []
     for pid, _ in subset:
-        try:
+        if pid not in skipped:
             rows += classify_scan(segment(pid))
-        except (ValueError, FileNotFoundError) as e:
-            skipped[pid] = str(e)
-            print(f"skip {pid}: {e}")
     n = len(rows)
     counts = {c: sum(r["class"] == c for r in rows) for c in CLASSES}
     props = {c: counts[c] / n for c in CLASSES}

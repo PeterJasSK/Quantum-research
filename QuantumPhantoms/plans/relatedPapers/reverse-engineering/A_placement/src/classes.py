@@ -95,7 +95,7 @@ def wilson_ci(k: int, n: int, z: float = 1.959964) -> tuple[float, float]:
     den = 1 + z * z / n
     mid = (p + z * z / (2 * n)) / den
     half = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
-    return float(mid - half), float(mid + half)
+    return max(0.0, float(mid - half)), min(1.0, float(mid + half))
 
 
 def agreement(props: dict) -> dict:
