@@ -17,14 +17,26 @@
         "D07",
         "D08"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "Gu perturbed coin C_q(p) < C_mu and Wu PMD process: D_mu = log2 N, D_q <= 1 qubit for every N ([D06], [D16])",
+        "paper_value": "D06: C_q < 0.5 for p > 0.2, C_q < 0.1 for p > 0.4; D16: D_q <= 1, D_mu = log2 N; distortion < 1e-2 bits/symbol and below the best 1-bit classical model",
+        "our_value": "C_q(0.2) = 0.4690, C_q(0.4) = 0.0815; D_q = 1 and D_mu = log2 N for N = 2..16 (survival error <= 2.2e-16); q-machine N = 8: d_KL 0.00192 (ideal) / 0.00189 (Heron) vs 0.00315 for the best 1-bit classical model at the same sample count",
+        "unit": "bits",
+        "agreement": "agree (analytic); simulated advantage small: Gamma = 0.5, V = 0.4 is weakly modulated and the exact 1-bit classical d_KL (0.00136) is below the 0.00184 sampling floor",
+        "sim_mode": "both",
+        "figure": "figures/cellcycle_memory_advantage.png"
+      },
+      "claim_level": "L1′",
+      "sim_mode": "both",
       "dossier": "dossiers/06-quantum-causal-states.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/gu_perturbed_coin.png",
+        "figures/wu_pmd_memory.png",
+        "figures/cellcycle_memory_advantage.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 7,
@@ -37,14 +49,27 @@
         "D14",
         "D03"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "clustering coefficient C(t) of the T6 mutual-information network, L = 17, noise-free emulation ([D14] Fig. 3)",
+        "paper_value": "read from the figure: C(2..10) ~ 0.09, 0.19, 0.26, 0.30, 0.31 (+-0.03 reading error)",
+        "our_value": "0.089, 0.193, 0.261, 0.308, 0.307 (simulated: ideal); domain-wall invariant O(t) conserved to 2.5e-14",
+        "unit": "",
+        "agreement": "agree within figure-reading tolerance 0.03 (max diff 0.008); plan's +-0.02 not testable from a figure. Heavy-hex adaptation: ideal 21-qubit patch witness passes at 3.04 sigma (borderline, 376 routing SWAPs), Heron-noise 12-qubit hexagon fails (claim L0)",
+        "sim_mode": "both",
+        "figure": "figures/jones_t6_network.png"
+      },
+      "claim_level": "L1",
+      "sim_mode": "both",
       "dossier": "dossiers/07-goldilocks-qca.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/jones_t6_population.png",
+        "figures/jones_t6_network.png",
+        "figures/qca_snapshot_2d.png",
+        "figures/qca_mi_network.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 8,
@@ -56,14 +81,17 @@
         "HW05",
         "HW06"
       ],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
       "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "claim_level": "L1",
+      "sim_mode": "both",
       "dossier": "dossiers/08-dynamic-circuit-feedforward.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/baumer_fidelity_vs_distance.png",
+        "figures/lineage_witness.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 9,
@@ -74,14 +102,17 @@
       "papers": [
         "HW04"
       ],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
       "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/09-bp-heavy-hex-adversary.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/tindall_magnetisation.png",
+        "figures/simulability.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 10,

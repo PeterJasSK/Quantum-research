@@ -14,10 +14,10 @@ The non-classical part of growth. D-2: one-job dynamic-circuit lineage (mid-circ
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 | # | Target | Priority | Kind | State |
 |---|---|---|---|---|
-| #6 | [Quantum causal-state (memory-efficient) process models (Gu; Elliott; Wu; Palsson; Ghafari)](dossiers/06-quantum-causal-states.md) | ★★★ | quantum | listed |
-| #7 | [Goldilocks quantum cellular automata (Hillberry; Jones; Farrelly)](dossiers/07-goldilocks-qca.md) | ★★★ | quantum | listed |
-| #8 | [Dynamic-circuit feed-forward (Bäumer; Córcoles)](dossiers/08-dynamic-circuit-feedforward.md) | ★★★ | quantum | listed |
-| #9 | [Belief-propagation simulator of heavy-hex circuits (Tindall)](dossiers/09-bp-heavy-hex-adversary.md) | ★★ | classical | listed |
+| #6 | [Quantum causal-state (memory-efficient) process models (Gu; Elliott; Wu; Palsson; Ghafari)](dossiers/06-quantum-causal-states.md) | ★★★ | quantum | adapted |
+| #7 | [Goldilocks quantum cellular automata (Hillberry; Jones; Farrelly)](dossiers/07-goldilocks-qca.md) | ★★★ | quantum | adapted |
+| #8 | [Dynamic-circuit feed-forward (Bäumer; Córcoles)](dossiers/08-dynamic-circuit-feedforward.md) | ★★★ | quantum | dissected |
+| #9 | [Belief-propagation simulator of heavy-hex circuits (Tindall)](dossiers/09-bp-heavy-hex-adversary.md) | ★★ | classical | dissected |
 | #10 | [Measurement-induced entanglement transition (Koh)](dossiers/10-measurement-induced-transition.md) | ★ | quantum | rejected (out of scope) |
 
 ## Inputs (contract files)
@@ -39,20 +39,83 @@ The non-classical part of growth. D-2: one-job dynamic-circuit lineage (mid-circ
 
 ## How to run (sim commands)
 
-<!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
-     "simulated: Heron-class noise (FakeMarrakesh)". Runs go to D_quantum_growth/runs/ via shared.runrecord. -->
-_Pending (feature D)._
+All commands run from `reverse-engineering/` (python: conda base). Every quantum number is labelled "simulated: ideal" or "simulated: Heron-class noise (FakeMarrakesh)"; runs go to `D_quantum_growth/runs/<ts>-<tag>/` (gitignored) via `shared.runrecord`. Defaults for the three inputs are the `shared/stubs` files; override with `--tumor-draw`, `--certificate`, `--compiled-circuit`.
+
+```bash
+# whole hand-off in one run (lineage -> q-machine -> QCA -> seed shape -> BP adversary)
+python -m D_quantum_growth.src.grow --mode ideal            # ~30 min, BP chi=16 on the QCA dominates
+python -m D_quantum_growth.src.grow --mode heron            # ~45 min (noisy Aer, 12-qubit hexagon for the QCA)
+python -m D_quantum_growth.src.grow --mode heron --dd       # DD lever on the lineage idle windows
+python -m D_quantum_growth.src.grow --mode ideal --chsh-settings classical   # debug: S <= 2 -> rejected, exit 3
+python -m D_quantum_growth.src.grow --mode ideal --certificate <fail cert>   # exit 2, "draw rejected"
+
+# stages alone
+python -m D_quantum_growth.src.lineage --mode ideal|heron [--dd] [--shots N]
+python -m D_quantum_growth.src.memory_advantage --mode ideal|heron
+python -m D_quantum_growth.src.qca --mode ideal|heron
+python -m D_quantum_growth.src.bp --run D_quantum_growth/runs/<run_dir>
+
+# reproductions
+python -m D_quantum_growth.repro.causal_states_repro        # Gu + Wu, analytic
+python -m D_quantum_growth.repro.jones_t6                   # T6, L = 11/15/17/23 ideal, L = 11 Heron
+python -m D_quantum_growth.repro.baumer_long_range          # dynamic vs unitary Bell pair, n = 2..12
+python -m D_quantum_growth.repro.tindall_kicked_ising       # proof-of-concept sweep (chi 2/4/8)
+python -m D_quantum_growth.src.figures --ideal <run> --heron <run> [--lineage-heron <run> --heron-dd <run>]
+
+# hand-off check to E (read-only use of E; delete E's run afterwards)
+python -m E_classical_growth.src.grow --seed-shape D_quantum_growth/runs/<run>/seed_shape.json
+```
+
+A `grow` run writes `quantum_job_record_{lineage,qmachine,qca}.json`, `quantum_lineage.json`, `witness_record_{lineage,qca}.json`, `memory_advantage_record.json`, `simulability_report.json`, `seed_shape.json` + `seed_shape.npz`, `run.json`, the counts files and letter-local sidecars (`*_detail.json`). All contract files pass `python -m shared.validate`. Outputs are deterministic for a given certificate and mode (job ids are derived from the seed; checked byte-for-byte on the lineage and q-machine stages, ideal mode, two runs; the QCA and BP stages use the same construction but were not re-run twice).
 
 ## Reproduced result vs. paper
 
-<!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-_Pending (feature D)._ Planned: Jones 1-D QCA metrics and a Wu-style C_q vs C_μ, both ideal + Heron-class noise.
+| Target | Paper | Ours | Agreement |
+|---|---|---|---|
+| #6 Gu perturbed coin [D06] | C_q < 0.5 (p > 0.2), < 0.1 (p > 0.4) | 0.4690 at p = 0.2, 0.0815 at p = 0.4 | analytic match |
+| #6 Wu PMD [D16] | D_μ = log₂ N, D_q ≤ 1, statistically exact | n_causal = N, D_q = 1, survival error ≤ 2.2·10⁻¹⁶ (N = 2…16) | analytic match |
+| #7 Jones T6 clustering, L = 17 [D14 Fig. 3] | ≈ 0.09 / 0.19 / 0.26 / 0.30 / 0.31 at t = 2/4/6/8/10 (figure reading, ±0.03) | 0.089 / 0.193 / 0.261 / 0.308 / 0.307; O(t) conserved to 2.5·10⁻¹⁴ | within reading tolerance (max 0.008); plan's ±0.02 not testable from a figure |
+| #8 Bäumer long-range Bell pair [HW05] | dynamic beats unitary for chains ≳ 10 (CNOT teleportation) | ideal: F = 1.000 at all n ✓. Heron-class noise: no crossover up to n = 12 (n = 10: unitary 0.902 vs dynamic 0.890) | **not matched**; suspect readout ≫ 2q error, no feed-forward latency |
+| #9 Tindall kicked Ising [HW04] | exact agreement for < 6 steps | BP vs exact light-cone: 5.7·10⁻³ (θ = π/4) and 4.3·10⁻² (θ = 1.0) at χ = 8, falling with χ | **proof of concept only**, not matched at χ ≤ 8 |
+
+D-2 lineage (4 000 shots, one job):
+
+| Sim mode | S_chsh | ⟨XX⟩+⟨ZZ⟩ per generation (> 1) | passed |
+|---|---|---|---|
+| simulated: ideal | 2.867 ± 0.033 | 1.54 – 1.76 | yes |
+| simulated: Heron-class noise (FakeMarrakesh) | 2.602 ± 0.038 | 1.40 – 1.62 | yes |
+| simulated: Heron-class noise, DD off / on (20 000 shots) | 2.660 ± 0.016 / 2.645 ± 0.017 | mean 1.4696 / 1.4669 (diff −0.0027 ± 0.0060) | **no measured effect** |
+
+D-5 memory advantage (N = 8 division timer, L = 10, C_μ = 1.799, C_q theory 0.0640):
+
+| Sim mode | d_KL quantum | d_KL 1-bit classical (same samples) | C_q measured | passed |
+|---|---|---|---|---|
+| simulated: ideal | 0.00192 | 0.00315 | 0.0627 ± 0.0054 | yes |
+| simulated: Heron-class noise (FakeMarrakesh) | 0.00189 | 0.00315 | 0.1743 ± 0.0048 | yes |
+
+The sampling floor is 0.00184; the exact 1-bit classical d_KL is 0.00136 (below the floor), so the advantage is small for this weakly modulated process.
+
+D-3 QCA (t_max = 10, 4 000 shots):
+
+| Sim mode | patch | SWAPs | best negativity | witness | seed shape |
+|---|---|---|---|---|---|
+| simulated: ideal | 21 qubits | 376 | 0.0167 ± 0.0055 (3.04σ) | passed (borderline) | 301 voxels, L1 |
+| simulated: Heron-class noise (FakeMarrakesh) | 12-qubit hexagon | 0 | 0 (decohered) | **failed** | 90 voxels, **L0** |
+
+BP adversary (`simulability_report`): smallest χ with fidelity_vs_sim ≥ 0.99 is 2 for the lineage blocks and the q-machine step (tiny circuits) and **none ≤ 16** for the QCA circuits (21-qubit patch 0.80 / 0.83 / 0.88 / 0.90 at χ = 2/4/8/16; hexagon saturates ≈ 0.96).
+
+Figures: [`baumer_fidelity_vs_distance`](figures/baumer_fidelity_vs_distance.png), [`gu_perturbed_coin`](figures/gu_perturbed_coin.png), [`wu_pmd_memory`](figures/wu_pmd_memory.png), [`cellcycle_memory_advantage`](figures/cellcycle_memory_advantage.png), [`lineage_witness`](figures/lineage_witness.png), [`jones_t6_population`](figures/jones_t6_population.png), [`jones_t6_network`](figures/jones_t6_network.png), [`qca_snapshot_2d`](figures/qca_snapshot_2d.png), [`qca_mi_network`](figures/qca_mi_network.png), [`tindall_magnetisation`](figures/tindall_magnetisation.png), [`simulability`](figures/simulability.png).
 
 ## Claim level and honesty notes
 
-<!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
-     Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-L1 (witness, ⟨XX⟩+⟨ZZ⟩ style, ≥ 2 bases) and L1′ (memory advantage). No L2: shallow heavy-hex circuits are belief-propagation-simulable — #9 makes that a measured number. Check Aer support for noisy dynamic-circuit feed-forward before relying on it.
+L1 (lineage witness; QCA witness only where it passes) and L1′ (memory advantage). **Never L2 / L3**; nothing here is "classically impossible" or "quantum biology". Everything is simulation; the in-job CHSH is "certification-ready, not certified (simulated)".
+
+- **Lineage (L1).** Fate is read from the pair's joint outcome in the coin's basis, never from a single-qubit Z phase dial. Fate-rotation angles are illustrative constants, not fitted biology. The test mask lives only in the job record.
+- **Memory advantage (L1′).** Wu's exact 1-qubit model; the measured advantage over a 1-bit classical model is real but small (details in dossier #6). C_q(measured) < C_μ is nearly automatic for a qubit.
+- **QCA (L1 / L0).** The ideal 21-qubit witness passes at 3.04σ for the best of 22 edges with no look-elsewhere correction: weak. The Heron-noise hexagon fails, so its seed shape carries claim L0 ("MI structure only, no L1"). The exact "one neighbour" rule is not SWAP-free on the full patch (376 SWAPs); the odd-parity shortcut differs by up to 0.57 in population and was not used. The Heron QCA is a 12-qubit hexagon, not the 21-qubit patch (Aer cost).
+- **Dynamic-circuit crossover not reproduced** (#8) and **DD has no measured effect**. XY4 DD is not available on this target, so X–X echoes are inserted by hand into explicit idle windows.
+- **BP (#9).** BP is a classical approximation; "smallest χ ≥ 0.99" is the measured simulability number. The Tindall reproduction is a proof of concept (χ ≤ 8).
+- **Seeds and hidden choices** come from the certificate seed via `shared.seedhash`; no MVP or QALife/QDEP code is imported.
 
 ## References (paper codes)
 
@@ -63,4 +126,10 @@ L1 (witness, ⟨XX⟩+⟨ZZ⟩ style, ≥ 2 bases) and L1′ (memory advantage).
 
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-_None yet._
+- **CCR-D1: `quantum_job_record`, multi-circuit jobs.** *Need:* the q-machine job runs 3 tomography circuits and the QCA job 20, but the record has one `transpiled_hash` and one counts dict. *Request:* optional `transpiled_hashes[]` (as CCR-C1). *Local workaround:* `transpiled_hash` = sha256(canonical_json([per-circuit hashes])); counts are merged in a `counts_file` with a binary circuit-index prefix ("00 0101…").
+- **CCR-D2: `memory_advantage_record`, distortion field.** *Need:* `passed` depends on d_KL, but there is no field for it. *Request:* add `d_kl_bits_per_symbol` (quantum and best classical baseline). *Local workaround:* values in `process_description` and the sidecar `memory_advantage_detail.json`.
+- **CCR-D3: `witness_record`, CHSH block.** *Need:* the lineage S_chsh (value, stderr, n test samples). *Request:* optional `chsh` block (plan Q7a). *Local workaround:* `S_chsh` as an observable `{value, stderr}`.
+- **CCR-D4: `witness_record.claim_level` is const `L1`.** A failed QCA witness still says L1 with `passed: false`; only `seed_shape.claim_level` can be L0. *Request:* allow L0 when `passed` is false, or leave as is and document.
+- **CCR-D5: `quantum_job_record.fake_backend` const `FakeMarrakesh`** blocks job records for repro-only geometry (Eagle for #9); those scripts write no job record (plan Q7b).
+- **CCR-D6: `quantum_lineage.fate` is an array per generation.** One entry per generation is emitted here; the schema suggests one entry per cell/pair. Clarify.
+- **CCR-D7: `witness_record.mi_network` indices.** `nodes` are strings (physical qubit ids) and `edges[].i, j` index into `nodes`; the schema does not say which. Clarify.
