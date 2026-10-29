@@ -79,6 +79,107 @@ Provenance layer (claim level n/a, no quantum claim). Everything after the quant
 - Simulated upstream numbers keep their `sim_label` inside the files the receipt references; G does not restate them as hardware results.
 - No GAN was trained or run; the in-painter is classical, so stealth against human readers is not claimed.
 
+
+## Pipeline readiness
+
+<!-- readiness: prototype -->
+
+G blocks the chain. `receipt fill --job` takes one value, the chain passes five quantum job records (C, B, 3× D), and
+argparse keeps only the last (D's QCA job), so C's, B's and two of D's jobs are not bound into the receipt (probe `runs/20261029-185947-probe-gaps`: the only `block`).
+The commit ran in all four prefix chains, but its ledger entry says `kind: "receipt"` (CCR-G1), and its code hash
+freezes the `.py` files of A–F only. G and H code and the parameter JSONs can change after the commit. The verifier
+itself catches every edit in R19 (20 / 20); keys are a per-machine demo key with no PKI.
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| `fill --job` single value | integration | only one of five quantum jobs is signed; C, B and two D jobs escape the receipt | probe `G.fill` (block) | `action="append"`; bind every job id + counts hash |
+| Commit covers `.py` of A–F only | integration | G/H code and parameter JSONs (`class_prior`, `params_lung`, lesion library) are not frozen | `commit_manifest.json` keys `ABCDEF`; probe `G.commit` | add G, H and parameter-file hashes (CCR-G2) |
+| Demo key, no PKI | assumption | anyone with the machine key can re-forge the ledger end to end | honesty notes above | PKI / HSM; anchor the ledger head in a beacon pulse |
+| Ledger `kind` | contract | commits are told apart only by `state: "committed"` | prefix runs' ledger | CCR-G1 |
+| 1-s ordering resolution | assumption | commit and fill in the same second are ordered by ledger index only | honesty notes above | sub-second timestamps |
+
+**Used as-is in the chain?** No: the chain stops at `sign` until `--job` accepts repeats (or the runner is run with `--allow-gaps`). Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[G01] Mirsky et al. (CT-GAN):** shows that an attacker can **inject or remove lung tumours in 3-D CT** with a
+  generative model, fooling both radiologists and AI, and proposes digitally signing scans as a defence.
+
+Why it matters: synthetic medical images are only useful as evidence if anyone can check **where they came from
+and that nothing changed since**.
+
+### 2. Contribution
+
+- **Commit before draw:** rulebook + code hashes are signed and ledgered *before* the quantum job, so nothing
+  can be tuned after seeing the result. <span class="chip evidence">evidence-based</span>
+- An Ed25519 receipt, a hash-chained ledger and a DICOM private tag. Injection and removal are detected 20/20 each,
+  with 0 false positives. <span class="chip evidence">evidence-based</span>
+- INT findings: the commit freezes only A–F `.py` code, and `fill --job` binds 1 of 5 jobs. <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**End goal:** every synthetic case used to train or test a cancer detector is **traceable** to its rulebook,
+code version, quantum job and seed, and an auditor can **replay** it. A detector's validation set can then be
+proven unchanged since it was committed. This is credibility, not security. <span class="chip extrapolation">extrapolation</span>
+
+### 4. Beyond lungs
+
+- **Any synthetic medical data** (MR, pathology, genomics), and **virtual clinical trials**, where regulators ask
+for traceable in-silico evidence [G02]. <span class="chip extrapolation">extrapolation</span>
+- **Real-data lineage.** The same receipts can document preprocessing of real scans used for AI training. <span class="chip extrapolation">extrapolation</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> A twin that informs decisions must be **auditable**: which model version, which data and which random
+inputs produced a forecast. Path: (1) receipts for synthetic tumours (now) → (2) receipts for every pipeline run,
+anchored in a public beacon → (3) a provenance layer under every twin simulation, so any forecast can be
+replayed bit-for-bit.
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* demo keys; a local ledger.
+- Verification catches every voxel edit in the R19 setting. <span class="chip evidence">evidence-based</span>
+- The ledger head is anchored in public beacon pulses, and parameter JSONs are frozen in the commit. <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* institutional PKI / HSM keys; standards for synthetic-data provenance.
+- Receipts travel inside DICOM as an accepted provenance record for research datasets. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant quantum hardware exists.
+- <span class="chip speculative">speculative</span> Shor's algorithm on such hardware breaks elliptic-curve signatures, Ed25519 included. Receipts must
+  migrate to post-quantum signatures well before then, and old ledgers need re-anchoring. This is the one place
+  where fault tolerance is a *threat* to the pipeline rather than an opportunity.
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| Demo key, no PKI | technical | a holder of the key can re-forge the ledger | PKI / HSM; beacon anchoring |
+| Incomplete commit | technical | parameter files and G/H code not frozen (INT) | hash them into the commit |
+| Post-quantum migration | technical | Ed25519 breaks on fault-tolerant hardware | PQ signatures; re-anchoring plan |
+| Legal weight | regulatory | a receipt is not yet a recognised record | align with virtual-trial guidance [G02] |
+| Security framing | regulatory | traceability can be oversold as security | keep the "credibility, not security" wording |
+
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->

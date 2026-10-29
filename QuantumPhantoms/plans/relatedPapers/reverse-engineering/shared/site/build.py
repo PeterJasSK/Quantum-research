@@ -4,9 +4,10 @@
     python -m shared.site.build --update-readme  # also rewrite the STATUS block in README.md (W / INT only)
 
 Steps: validate every status.json and the 21-target set (abort on error) → render letter READMEs,
-dossiers and the shared docs with markdown-it-py through jinja2 → rewrite relative links (.md → .html,
-anything else → the source file) → copy figures/ → write index.html, site/**, site/style.css.
-No network, no CDN, no scripts.
+dossiers, the shared docs, future.md and INT_integration/README.md with markdown-it-py through jinja2 → rewrite relative
+links (.md → .html, anything else → the source file) → copy figures/ → write index.html, site/**, site/style.css.
+INT: each letter README's `<!-- readiness: … -->` marker becomes a rating badge (missing → warning, "unrated");
+pipeline-overview.md's `<!-- weak-edges: X>Y, … -->` marker highlights diagram edges (its text is not rendered). No network, no CDN, no scripts.
 """
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from html import unescape
 from urllib.parse import quote, unquote
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -28,12 +30,45 @@ HERE = Path(__file__).resolve().parent
 SITE = RE_ROOT / "site"
 INDEX = RE_ROOT / "index.html"
 README = RE_ROOT / "README.md"
+OVERVIEW = RE_ROOT / "pipeline-overview.md"
+FUTURE = RE_ROOT / "future.md"
+INT_README = RE_ROOT / "INT_integration" / "README.md"
 SHARED_DOCS = [SHARED / "README.md", SHARED / "contracts" / "README.md", SHARED / "contracts" / "VOLUMES.md",
                SHARED / "stubs" / "README.md"]
 STATES = ["listed", "dissected", "reproduced", "adapted", "integrated", "rejected"]
 STATUS_BEGIN, STATUS_END = "<!-- STATUS:BEGIN -->", "<!-- STATUS:END -->"
 _SCHEME = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
 _EXTERNAL_ASSET = re.compile(r"<(script|link|img)\b[^>]*\b(src|href)=\"(https?:)?//", re.I)
+READINESS = {"not-ready": "Not ready", "prototype": "Prototype", "caveats": "Usable with caveats",
+             "production": "Production-ready"}
+STEP = {"A": "Where a tumour sits", "B": "What kind of tumour", "C": "How it is certified", "D": "How it grows (quantum)",
+        "E": "How it grows (tissue)", "F": "How it looks on CT", "G": "How it is traced", "H": "How it is validated"}
+# Images to show per step on the index ("See each step"): (figure file, caption, kind). kind: ct = real LIDC CT
+# pixels, phantom = synthetic/stub volume, plot = chart. Best showable image first.
+GALLERY = {
+    "A": [("18-host-sites.png", "Anatomy masks and candidate sites on a real chest CT (LIDC-IDRI-0004)", "ct"),
+          ("18-class-proportions.png", "Placement-class proportions vs the paper", "plot")],
+    "B": [("drift_b1_b2.png", "Tumour draws: ideal vs Heron-class noise", "plot"),
+          ("qemcmc_tumor_gap.png", "Quantum-enhanced MCMC on a tumour energy landscape", "plot")],
+    "C": [("hmin_vs_S.png", "Bell value S → certified entropy per round", "plot"),
+          ("beacon_chain.png", "Public beacon chain verified pulse by pulse", "plot")],
+    "D": [("qca_snapshot_2d.png", "Quantum cellular automaton → 3-D tumour seed shape", "phantom"),
+          ("lineage_witness.png", "Cell-lineage entanglement witness per generation", "plot"),
+          ("cellcycle_memory_advantage.png", "Quantum memory advantage for cell-division timing", "plot")],
+    "E": [("lung_S002.png", "Tumour growth, baseline → follow-up, against a vessel (lung masks, stub host)", "phantom"),
+          ("kt_cross_sections.png", "Layered tumour: proliferating rim, dormant shell, necrotic core", "phantom"),
+          ("lung_growth_curves.png", "Growth curves per tumour type", "plot")],
+    "F": [("render-lidc0001-lung.png", "Synthetic nodule inserted into a real chest CT (LIDC-IDRI-0001), lung window", "ct"),
+          ("render-lidc0001-mediastinal.png", "Same nodule, mediastinal window", "ct"),
+          ("r15-peng-patch-noise.png", "Scanner-matched noise", "phantom")],
+    "G": [("r19-ctgan-tamper.png", "Injected / removed tumour caught by the signature, slice by slice", "phantom")],
+    "H": [("r20a_cho_vs_ideal.png", "Model observer checked against the ideal observer", "plot"),
+          ("r20b_mrmc_se.png", "Reader-study variance (MRMC)", "plot")],
+}
+KIND_LABEL = {"ct": "real CT", "phantom": "phantom", "plot": "plot"}
+_READY = re.compile(r"<!--\s*readiness:\s*([\w-]+)\s*-->")
+_WEAK = re.compile(r"<!--\s*weak-edges:\s*(.*?)\s*-->")
+_HEADING = re.compile(r"<h([23])>(.*?)</h\1>")
 
 
 def _out_path(src: Path) -> Path:
@@ -51,6 +86,26 @@ def _stars(n: int) -> str:
     return "★" * n
 
 
+def _readiness(md_text: str) -> str | None:
+    m = _READY.search(md_text)
+    return m.group(1) if m and m.group(1) in READINESS else None
+
+
+def _slug(html: str) -> str:
+    text = unescape(re.sub(r"<[^>]+>", "", html)).lower()
+    return re.sub(r"[^\w]+", "-", text).strip("-")
+
+
+def _anchor(html: str) -> str:
+    """Give h2/h3 an id (GitHub-style slug) so `README.md#pipeline-readiness` links resolve on the site."""
+    return _HEADING.sub(lambda m: f'<h{m.group(1)} id="{_slug(m.group(2))}">{m.group(2)}</h{m.group(1)}>', html)
+
+
+def _badge(r: str | None) -> str:
+    r = r or "unrated"
+    return f'<span class="badge ready-{r}">{READINESS.get(r, "unrated")}</span>'
+
+
 class Builder:
     def __init__(self, statuses: dict):
         self.statuses = statuses
@@ -63,20 +118,31 @@ class Builder:
             self.sources.append(RE_ROOT / folder / "README.md")
             self.sources += sorted((RE_ROOT / folder / "dossiers").glob("*.md"))
         self.sources += [p for p in SHARED_DOCS if p.is_file()]
+        self.sources += [p for p in (FUTURE, INT_README) if p.is_file()]
         self.pages = {p.resolve(): _out_path(p) for p in self.sources}
         self.pages[README.resolve()] = INDEX
+        self.pages[OVERVIEW.resolve()] = INDEX
         self.assets: dict[Path, Path] = {}
         self.dossier_target = {}
         for letter, st in statuses.items():
             folder = RE_ROOT / LETTERS[letter]
             for t in st["targets"]:
                 self.dossier_target[(folder / t["dossier"]).resolve()] = (letter, t)
-        self.letters = [{"letter": L, "folder": f, "title": self._letter_title(L)} for L, f in LETTERS.items()]
+        self.letters = [{"letter": L, "folder": f, "title": self._letter_title(L), "step": STEP[L],
+                         "readiness": self._letter_ready(f)}
+                        for L, f in LETTERS.items()]
+        self.warnings = [f"{x['folder']}/README.md: no readiness marker (shown as unrated)"
+                         for x in self.letters if not x["readiness"]]
 
     def _letter_title(self, letter: str) -> str:
         readme = RE_ROOT / LETTERS[letter] / "README.md"
         title = _title(readme.read_text(), LETTERS[letter]) if readme.is_file() else LETTERS[letter]
         return title.split("—", 1)[-1].strip()
+
+    @staticmethod
+    def _letter_ready(folder: str) -> str | None:
+        readme = RE_ROOT / folder / "README.md"
+        return _readiness(readme.read_text()) if readme.is_file() else None
 
     def _rewrite(self, url: str, src: Path, out: Path) -> str:
         if not url or url.startswith(("#", "/")) or _SCHEME.match(url):
@@ -96,7 +162,8 @@ class Builder:
                 attr = "href" if child.type == "link_open" else "src" if child.type == "image" else None
                 if attr:
                     child.attrSet(attr, self._rewrite(child.attrGet(attr) or "", src, out))
-        return self.md.renderer.render(tokens, self.md.options, {})
+        html = self.md.renderer.render(tokens, self.md.options, {})
+        return _anchor(_READY.sub(lambda m: _badge(m.group(1) if m.group(1) in READINESS else None), html))
 
     def _root(self, out: Path) -> str:
         rel = os.path.relpath(RE_ROOT, out.parent)
@@ -163,7 +230,24 @@ class Builder:
             mine = [r for r in rows if r["letter"] == L["letter"]]
             cards.append({**L, "n": len(mine), "counts": {s: sum(r["state"] == s for r in mine) for s in STATES}})
         totals = {s: sum(r["state"] == s for r in rows) for s in STATES}
-        self._write(INDEX, "index.html.j2", title="Index", cards=cards, rows=rows, states=STATES, totals=totals)
+        weak = []
+        if OVERVIEW.is_file():
+            m = _WEAK.search(OVERVIEW.read_text())
+            weak = [e.strip() for e in m.group(1).split(",") if e.strip()] if m else []
+        ready = {L["letter"]: L["readiness"] or "unrated" for L in self.letters}
+        gallery = []
+        for L in self.letters:
+            items = []
+            for name, caption, kind in GALLERY.get(L["letter"], []):
+                src = RE_ROOT / L["folder"] / "figures" / name
+                if not src.is_file():
+                    self.warnings.append(f"gallery: {src.relative_to(RE_ROOT)} missing")
+                    continue
+                items.append({"href": f"site/{L['folder']}/figures/{name}", "caption": caption, "kind": kind,
+                              "kind_label": KIND_LABEL[kind]})
+            gallery.append({**L, "items": items})
+        self._write(INDEX, "index.html.j2", title="Index", cards=cards, rows=rows, states=STATES, totals=totals,
+                    weak_edges=weak, gallery=gallery, ready=ready, ready_labels=READINESS)
         return len(self.sources) + 1
 
 
@@ -198,6 +282,8 @@ def main(argv=None) -> int:
         return 1
     b = Builder(statuses)
     n = b.build()
+    for w in b.warnings:
+        print(f"warning: {w}", file=sys.stderr)
     if a.update_readme:
         update_readme(b.targets())
     rows = b.targets()

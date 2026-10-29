@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-dissected">dissected</span>
   <span class="chip">#21</span>
   <span class="chip">letter H</span>
   <span class="chip">★</span>
@@ -38,30 +37,57 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>AI-Rad Companion Chest CT (Siemens Healthineers) is a commercial, software-only assistant for adult thoracic CT: lung nodule detection and measurement, lung/lobe density, and cardiovascular and musculoskeletal modules. We treat it strictly as a <strong>documented-interface black box</strong>: we know what goes in (DICOM CT) and what comes out (structured report), nothing inside. <strong>No decompiling, no reverse engineering of binaries, ever.</strong> Status: dissected from public documentation; nothing run; official access to be asked of Jan (no one contacted).</p>
+<h2 id="equations">Equations</h2>
+<p>None: no model is published. Planned acceptance statistics for the longitudinal test: volume error <code>e_V = (V_reported - V_true) / V_true</code> per lesion (Bland-Altman bias and 95 % limits of agreement), diameter error in mm, and volume-doubling-time error <code>e_VDT = VDT_reported - VDT_true</code> with <code>VDT = Δt ln2 / ln(V2/V1)</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Documented</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td>Adult thoracic CT, DICOM; software-only</td>
+<td>https://fda.innolitics.com/device/K183271</td>
+</tr>
+<tr>
+<td>Indication</td>
+<td>adults ≥ 22 y for the sub-solid nodule update (K233753, 2024), DICE / bias / RMSE vs ground truth</td>
+<td>https://fda.innolitics.com/device/K233753</td>
+</tr>
+<tr>
+<td>Pulmonary update</td>
+<td>K213713 (2022); no acceptance numbers for lobe segmentation given</td>
+<td>https://fda.innolitics.com/device/K213713</td>
+</tr>
+<tr>
+<td>Product description</td>
+<td>Pulmonary / cardiovascular / musculoskeletal modules, runs on teamplay</td>
+<td>https://academy.siemens-healthineers.com/_/en-us/whitepaper-features-data-and-algorithms-ai-rad-companion-chest-ct</td>
+</tr>
+<tr>
+<td>Slice thickness, spacing, kernel, coverage, positions</td>
+<td><strong>(verify)</strong> not found in the search snippets; see <code>src/airad_requirements.json</code></td>
+<td>510(k) summaries on accessdata.fda.gov</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>No paper. Stated performance (510(k) summaries): retrospective evaluation on &gt; 4,500 CT datasets for the first clearance (K183271); sub-solid nodule segmentation reported as DICE, bias, RMSE (K233753). Exact numbers <strong>(verify)</strong>.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p>Not reproducible without access. <code>status.json</code>: <code>reproduced: null</code>, note &quot;no access; documented-interface only&quot;. Harness ready: <code>python -m H_analysis.src.airad_check &lt;dicom_dir&gt;</code> checks a DICOM series against the encoded documented requirements; checked on a LIDC host series as a smoke test (modality, thickness, spacing, kernel, coverage and position lines print; <code>adult_patient</code> is unknown because LIDC strips age).</p>
+<h2 id="adaptation">Adaptation</h2>
+<p>Longitudinal protocol: E baseline/follow-up snapshots → F hybrids (known ground-truth masks) → G DICOM export → submit both timepoints → compare reported diameter/volume and growth with the ground-truth mask: per-lesion volume error, VDT error, Bland-Altman limits, fraction of lesions detected at baseline and follow-up. Acceptance: |bias| of volume error &lt; 10 % and VDT classification (growing vs stable at a 400-day threshold) agreement ≥ 0.8 (thresholds are ours, to be agreed). Status: awaiting official access (Jan).</p>
+<h2 id="verdict">Verdict</h2>
+<p>Dissected. Claim level n/a. Not run.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<p>When access exists: export the pilot cohort through G's DICOM export, run <code>airad_check</code> on it first, then execute the protocol above and add the numbers to the <code>utility</code> section of the report.</p>
 
 </article>
 <p class="source">Source: <code>H_analysis/dossiers/21-ai-rad-companion.md</code></p>

@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#7</span>
   <span class="chip">letter D</span>
   <span class="chip">★★★</span>
   <span class="chip">quantum</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim L1</span>
+  <span class="chip">sim both</span>
   
 </div>
 
@@ -38,30 +37,116 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
+<h2 id="concept">Concept</h2>
 <!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
+<p>A quantum cellular automaton updates qubits by local controlled rules. Goldilocks rules activate a site only for a &quot;just right&quot; neighbourhood, and generate non-equilibrating coherent dynamics and complex mutual-information networks [D13]. Jones et al. [D14] ran the 1-D rule T6 on a 23-qubit Sycamore-class chip. D-3 re-derives T6, then builds a heavy-hex-native rule on a patch of the FakeMarrakesh lattice and lifts one snapshot to a 3-D seed shape for E.</p>
+<h2 id="equations">Equations</h2>
 <!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
+<pre><code class="language-text">T6 (D14 SM Eq. 3):   U_i = |00&gt;&lt;00| + |01&gt; H &lt;01| + |10&gt; H &lt;10| + |11&gt;&lt;11|   (on the neighbours; H acts on site i)
+Compile:             H iff exactly one neighbour is 1  &lt;=&gt;  CH(a-&gt;i) CH(b-&gt;i) (H H = 1);  CH = RY(pi/4) CZ RY(-pi/4)
+Cycle:               sublattice holding the central flip first, then the other; |0&gt; padding at both ends
+Invariant:           O = sum_i Z_i Z_{i+1} (domain walls) conserved by T6
+MI network:          I_ij = H(z_i) + H(z_j) - H(z_i,z_j)  (Shannon, z basis)
+Clustering:          C = Tr[I^3] / sum_{i!=j} [I^2]_ij;  path length l = mean_ij min_path sum 1/I_kl;  node strength g_i = sum_j I_ij/(L-1)
+Heavy-hex rule:      H on site i iff exactly one neighbour is 1; A sublattice then B (heavy-hex is bipartite)
+                     = CH from every neighbour (H^k) + one C^3-H on the 3 neighbours of a degree-3 site (cancels k=3)
+Witness:             negativity N_ij = sum |negative eigenvalues of rho_ij^{T_B}|, rho_ij by linear inversion from 9 bipartite settings
+                     (sublattice A basis x sublattice B basis in {X,Y,Z}^2) + nearest physical state (Smolin-Gambetta-Smith)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
 <!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
+<ul>
+<li>T6: single central flip, t ≤ 15 cycles, L ∈ {11, 15, 17, 23} ideal (Aer statevector), L = 11 Heron-class noise (1 000 shots per cycle).</li>
+<li>Heavy-hex: 21-qubit patch = two adjacent heavy-hex cells (FakeMarrakesh physical qubits 3–11, 16–18, 23–31, centre qubit 7), t_max = 10, 4 000 shots, 11 population circuits + 9 setting circuits in one job. Seed: 0.5 mm voxels, tube radius 1.2 voxels.</li>
+<li><strong>Heron mode runs one 12-qubit hexagon of this patch</strong>, not the 21-qubit patch: Aer re-simulates every shot, one ideal 21-qubit circuit takes ~37 s and the noisy MPS run did not finish 20 shots (decision recorded with the developer).</li>
+</ul>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
 <!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
+<p>D14 prints no numeric table for the emulated curves; Fig. 3 (clustering coefficient C(t), L = 15, 17, 19, blue = noise-free emulation) is graphical. Main claims: the T6 mutual-information network has large clustering that does not decay with L, short path length and a broad node-strength distribution (small-world); raw Weber data decay to the random limit at t ≈ 12. SM: O = Σ Z_i Z_{i+1} is a dynamical invariant.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
 <!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
+<p><code>python -m D_quantum_growth.repro.jones_t6</code> (figures <code>jones_t6_population.png</code>, <code>jones_t6_network.png</code>).</p>
+<ul>
+<li><strong>Invariant O(t)</strong> conserved to ≤ 2.5·10⁻¹⁴ for L = 11, 15, 17, 23 (ideal): the rule is implemented exactly.</li>
+<li><strong>Clustering vs D14 Fig. 3, L = 17</strong> (paper values read from the printed figure, ±0.03 reading error; simulated: ideal):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>t</th>
+<th>2</th>
+<th>4</th>
+<th>6</th>
+<th>8</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>paper (figure reading)</td>
+<td>0.09</td>
+<td>0.19</td>
+<td>0.26</td>
+<td>0.30</td>
+<td>0.31</td>
+</tr>
+<tr>
+<td>ours</td>
+<td>0.089</td>
+<td>0.193</td>
+<td>0.261</td>
+<td>0.308</td>
+<td>0.307</td>
+</tr>
+</tbody>
+</table>
+<p>Max difference 0.008. The plan asked for ±0.02 against values read from the figure; pixel reading limits the paper side to about ±0.03, so agreement is stated at that tolerance. The update order matters: updating the sublattice that does <em>not</em> hold the central flip first gives C(2) = 0.115 for L = 17 and misses the printed curve; the sublattice holding the flip first matches.</p>
+<ul>
+<li>Heron-class noise, L = 11: C(t) peaks at ≈ 0.21 (t = 5–7) and decays towards the random limit by t ≈ 10–11, the qualitative decay D14 reports for raw hardware data (no numeric matching claim; label simulated: Heron-class noise (FakeMarrakesh)).</li>
+<li>Network measures: D14's three measures (clustering, path length, node strength) are implemented; the plan's &quot;density and disparity&quot; are not D14's measures and were not used.</li>
+</ul>
+<h2 id="adaptation">Adaptation</h2>
 <!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
+<p>Heavy-hex Goldilocks rule on FakeMarrakesh (<code>src/qca.py</code>, <code>src/heavyhex.py</code>), updated sublattice by sublattice, read in Z per cycle and in the 9 bipartite settings at t_max; negativity witness and MI network from the reconstructed nearest-neighbour states; one Z snapshot → 3-D <code>seed_shape</code> (solid of revolution about the principal axis through the centre node, closing, connected component). E accepts it (<code>python -m E_classical_growth.src.grow --seed-shape …</code> ran to completion).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>simulated: ideal (21-qubit patch)</th>
+<th>simulated: Heron-class noise (12-qubit hexagon)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>routing SWAPs</td>
+<td>376 (C³-H on degree-3 sites)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>best NN negativity</td>
+<td>0.0167 ± 0.0055 (qubits 16–23), 3.04σ</td>
+<td>0 (state decohered; measured populations deviate 0.51 from exact)</td>
+</tr>
+<tr>
+<td>witness passed (some N_ij &gt; 3σ)</td>
+<td>yes, barely; best of 22 edges, no look-elsewhere correction</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>seed shape</td>
+<td>301 voxels, claim L1</td>
+<td>90 voxels, claim <strong>L0</strong> (&quot;MI structure only, no L1&quot;)</td>
+</tr>
+</tbody>
+</table>
+<p>Measured populations vs exact statevector (ideal): max deviation 0.020 (shot noise at 4 000 shots).</p>
+<p><strong>Deviations.</strong> (1) The exact rule on the degree-3 sites needs a C³-H between mutually non-adjacent neighbours, so the full patch is <strong>not SWAP-free</strong> (376 routing SWAPs); the hexagon has no degree-3 site and is SWAP-free. The cheaper odd-parity form (CH from every neighbour only) was rejected: it differs from the exact rule by up to 0.57 in population. (2) Heron QCA is the 12-qubit hexagon. (3) The ideal 3σ pass is borderline and is the maximum over 22 edges; treat as weak evidence of NN entanglement, not a strong L1.</p>
+<h2 id="verdict">Verdict</h2>
 <!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
+<p><strong>adapted</strong> (T6 reproduced within the figure-reading tolerance; heavy-hex rule built). Claim level <strong>L1 only for the ideal run, and borderline</strong>; <strong>L0 for the Heron-noise hexagon</strong> (witness failed). No L2: the BP adversary (#9) does not reproduce the 21-qubit circuit up to χ = 16, which is a statement about BP, not a quantum-advantage claim.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
 <!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<p><code>qca.py</code> (<code>t6_run</code>, <code>goldilocks_circuit</code>, MI measures) and <code>seed_shape.py</code> (3-D lift) are reusable. INT: the QCA initial condition could be coupled to the lineage outcome (plan Q2, proposal only). A less noise-sensitive witness (fewer cycles, or error-mitigated tomography) is needed before the Heron-noise QCA can claim L1.</p>
 
 </article>
 <p class="source">Source: <code>D_quantum_growth/dossiers/07-goldilocks-qca.md</code></p>

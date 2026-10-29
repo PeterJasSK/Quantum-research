@@ -265,6 +265,8 @@ Other items:
 
 ## Manual-download checklist (13): publisher or PMC bot-walls
 
+**Status 2026-10-29: 12 of 13 downloaded and renamed in `papers/`. Still missing: H03 (Badano VICTRE).**
+
 PMC, Nature and Springer return HTML challenge pages to scripts. Open each link in a browser and save with this name in `papers/`:
 
 | Save as | Link |

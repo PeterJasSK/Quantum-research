@@ -12,9 +12,8 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
@@ -25,7 +24,7 @@
 <p>The epic is <strong>fully 3-D</strong>. Every imaging artifact (masks, context features, cell lattices, PSF/NPS, hybrid CT)
 is a 3-D volume; 2-D slices are a final export only (PNG under a letter's <code>figures/</code>), never a contract input.
 Use <a href="../../../shared/volumes.py"><code>shared/volumes.py</code></a>: it is the only sanctioned NIfTI / NPZ I/O path.</p>
-<h2>NIfTI (everything on the host grid)</h2>
+<h2 id="nifti-everything-on-the-host-grid">NIfTI (everything on the host grid)</h2>
 <table>
 <thead>
 <tr>
@@ -100,7 +99,7 @@ Use <a href="../../../shared/volumes.py"><code>shared/volumes.py</code></a>: it 
 </tr>
 </tbody>
 </table>
-<h2>NPZ (off-grid arrays: lattices, kernels, spectra)</h2>
+<h2 id="npz-off-grid-arrays-lattices-kernels-spectra">NPZ (off-grid arrays: lattices, kernels, spectra)</h2>
 <p>Write with <code>volumes.save_npz</code> (deterministic bytes), read with <code>volumes.load_npz(path, required=...)</code>.
 Every NPZ holds 3-D arrays in <strong>(z, y, x)</strong> plus <code>spacing_mm_xyz</code> (float64, shape (3,)). Placement in the host
 is given by the manifest's <code>origin_mm_lps</code> (LPS position of lattice index (0, 0, 0)) + <code>spacing_mm_xyz</code>.</p>
@@ -127,7 +126,7 @@ is given by the manifest's <code>origin_mm_lps</code> (LPS position of lattice i
 </table>
 <p><strong>Cell states</strong> (<code>state</code>): 0 host/empty · 1 proliferating · 2 dormant (non-proliferating) · 3 necrotic.
 Codes 4–15 are reserved for letter-specific states and must be named in the manifest's <code>state_labels</code>.</p>
-<h2>Privacy</h2>
+<h2 id="privacy">Privacy</h2>
 <p>No patient voxels enter any generator. Host volumes are only <em>read</em> to place, fingerprint and insert into;
 lesion appearance comes from fitted parameters (<code>lesion_model_library</code>) and published statistics only.</p>
 

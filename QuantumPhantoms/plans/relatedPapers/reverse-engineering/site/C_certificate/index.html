@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/C_certificate/dossiers/04-bell-entropy-accounting.html">#4 listed</a><a class="badge state-listed" href="../../site/C_certificate/dossiers/05-curby-beacon-chain.html">#5 listed</a>
+  <a class="badge state-adapted" href="../../site/C_certificate/dossiers/04-bell-entropy-accounting.html">#4 adapted</a><a class="badge state-adapted" href="../../site/C_certificate/dossiers/05-curby-beacon-chain.html">#5 adapted</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,10 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/C_certificate/index.html</code>.
 Target states live only in <a href="../../C_certificate/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
 <p>Make &quot;certified&quot; a number: CHSH value → min-entropy bound H_min ≥ 1 − log₂(1 + √(2 − S²/4)) → certified-bit count → Toeplitz-extracted seed, with hidden test rounds whose choice is seeded from CURBy, and a ledger format modelled on the beacon chain. The extracted seed seeds every PRNG downstream (shared.seedhash.rng).</p>
-<h2>Targets and their status</h2>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,46 +51,336 @@ Target states live only in <a href="../../C_certificate/status.json"><code>statu
 <td><a href="dossiers/04-bell-entropy-accounting.html">Entropy accounting from Bell tests (Pironio; Liu 2025; Vazirani–Vidick)</a></td>
 <td>★★★</td>
 <td>quantum</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#5</td>
 <td><a href="dossiers/05-curby-beacon-chain.html">CURBy / NIST beacon chain (Kavuri)</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
 <li><code>quantum_job_record</code> — own CHSH runs; stub: <a href="../../shared/stubs/quantum_job_record/quantum_job_record.json"><code>shared/stubs/quantum_job_record/quantum_job_record.json</code></a> · schema: <a href="../../shared/contracts/quantum_job_record.schema.json"><code>quantum_job_record.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
 <li><code>certificate</code> — schema: <a href="../../shared/contracts/certificate.schema.json"><code>certificate.schema.json</code></a> · stub example: <a href="../../shared/stubs/certificate/certificate.json"><code>shared/stubs/certificate/certificate.json</code></a></li>
 <li><code>quantum_job_record</code> — schema: <a href="../../shared/contracts/quantum_job_record.schema.json"><code>quantum_job_record.schema.json</code></a> · stub example: <a href="../../shared/stubs/quantum_job_record/quantum_job_record.json"><code>shared/stubs/quantum_job_record/quantum_job_record.json</code></a></li>
 </ul>
-<h2>How to run (sim commands)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to C_certificate/runs/ via shared.runrecord. -->
-<p><em>Pending (feature C).</em></p>
-<h2>Reproduced result vs. paper</h2>
-<!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature C).</em> Planned: Pironio H_min-vs-S curve, then applied to our measured S.</p>
-<h2>Claim level and honesty notes</h2>
+<p>All commands run with cwd <code>reverse-engineering/</code> and the conda base <code>python</code>. Only <code>fetch_pulses</code> uses the network.</p>
+<pre><code class="language-bash"># certificate runs → C_certificate/runs/&lt;ts&gt;-chsh-&lt;mode&gt;[-classical]/
+python -m C_certificate.src.certify --mode ideal      # simulated: ideal
+python -m C_certificate.src.certify --mode heron      # simulated: Heron-class noise (FakeMarrakesh)
+python -m C_certificate.src.certify --mode ideal --settings classical   # fail path: S ≤ 2 → rejected + logged
+#   options: --rounds 100000 --test-frac 0.2 --pulse-index -1 --eps-est 1e-6 --eps-ext 1e-6 --out-len 256
+
+# reproductions → figures/
+python -m C_certificate.repro.pironio        # #4: Pironio 42 bits + H_min-vs-S curve with our latest runs
+python -m C_certificate.repro.beacon_chain   # #5: verify cached beacon chain + tamper test
+
+# one-off: refresh the committed pulse cache repro/data/beacon_pulses.json (network)
+python -m C_certificate.repro.fetch_pulses --n 12
+
+# check outputs against the frozen contracts
+python -m shared.validate C_certificate/runs/&lt;run&gt;/certificate.json C_certificate/runs/&lt;run&gt;/quantum_job_record.json
+</code></pre>
+<p><strong>Run directory contents:</strong></p>
+<ul>
+<li><code>run.json</code>, <code>counts_&lt;job&gt;.json</code>;</li>
+<li><code>quantum_job_record.json</code>, with counts keyed <code>&quot;xy ab&quot;</code> and <code>test_round_mask</code> as a file_ref;</li>
+<li><code>certificate.json</code>;</li>
+<li><code>accounting.json</code>, with every number used: Ŝ, E_xy, n_xy, δ_xy, S_low, ε values, h, bits, pulse and circuit hashes;</li>
+<li><code>rounds.npz</code> (x, y, a, b, test), <code>test_round_mask.json</code>;</li>
+<li><code>extracted.bin</code> (pass only).</li>
+</ul>
+<p>Rejections are appended to <code>runs/rejections.jsonl</code>. Runs are deterministic for a given cached pulse and mode: the test mask, the Aer seeds and the Toeplitz seed are all derived from the pulse.</p>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Paper</th>
+<th>Ours</th>
+<th>Agreement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#4 Pironio C01: certified bits, n = 3016, Î = 2.414, 99 %</td>
+<td>42 bits</td>
+<td>40.8 bits (Î from Table 1 = 2.4145)</td>
+<td>−2.8 % (analytic vs SDP f)</td>
+</tr>
+<tr>
+<td>#5 beacon chain format (C04 / NIST Beacon 2.0)</td>
+<td>tamper-evident chain</td>
+<td>11/11 links, 12/12 signatures + outputs verify; 1-bit edit caught at its pulse</td>
+<td>exact</td>
+</tr>
+<tr>
+<td>#5 CURBy protocol parameters</td>
+<td>512 out / 820 threshold</td>
+<td>512 / 820 (cached request block)</td>
+<td>exact</td>
+</tr>
+</tbody>
+</table>
+<p>Applied to our simulated CHSH (N = 100 000, q = 0.2, pulse <code>nist:2:2003321</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Sim mode</th>
+<th>Ŝ</th>
+<th>S_low</th>
+<th>h</th>
+<th>certified bits</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>simulated: ideal</td>
+<td>2.8058</td>
+<td>2.4868</td>
+<td>0.2569</td>
+<td>20 551</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>simulated: Heron-class noise (FakeMarrakesh)</td>
+<td>2.7037</td>
+<td>2.3847</td>
+<td>0.1841</td>
+<td>14 726</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>simulated: ideal, classical settings</td>
+<td>2.0000</td>
+<td>1.6810</td>
+<td>0</td>
+<td>0</td>
+<td>fail (rejected, logged)</td>
+</tr>
+</tbody>
+</table>
+<p>Figures: <a href="figures/hmin_vs_S.png"><code>figures/hmin_vs_S.png</code></a>, <a href="figures/beacon_chain.png"><code>figures/beacon_chain.png</code></a>.</p>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
 <p>L0 only. <strong>Simulated CHSH certifies nothing</strong>: the deliverable is the accounting pipeline validated on simulated data — every certificate says &quot;certification-ready, not certified (simulated)&quot;. S ≤ 2 ⇒ status fail, no seed, draw rejected and logged (no retry, no fallback).</p>
-<h2>References (paper codes)</h2>
+<ul>
+<li><strong>Pass/fail rule.</strong> Pass requires the <em>lower confidence bound</em> S_low &gt; 2, not only Ŝ &gt; 2. Too little entropy for a 256-bit seed is a second fail reason.</li>
+<li><strong>Statistical model.</strong> The accounting is i.i.d. with Hoeffding finite statistics, not the EAT. It is fine for a pipeline validated on simulated data; a real hardware claim needs an EAT-style bound [C06, C07].</li>
+<li><strong>The simulator knows the mask.</strong> Hidden test rounds only matter against a real device.</li>
+<li><strong>External seed source.</strong> The external pulse is <strong>NIST Beacon 2.0</strong>, fully verified offline. CURBy [C04] is dissected only: its CIDs are not recomputed, and its latest round (2025-08-22) is flagged <code>isQuantum: False</code>.</li>
+<li><strong>Not reachable.</strong> Liu 2025 [C02] (XEB certified randomness) is an L2-type claim and is read only.</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-caveats">Usable with caveats</span>
+<p>C is the only quantum stage that ran inside the chain: four <code>commit → certify</code> prefixes in Heron mode all passed
+(Ŝ 2.722–2.762, S_low 2.403–2.442, 15 668–17 869 certified bits; <code>C_certificate/runs/20261029-18*-chsh-heron</code>).
+No chain obtained a beacon pulse later than its commit: NIST <code>/pulse/last</code> lagged 2–3 min and then timed out, so the
+runner fell back to the cache (<code>beacon_fresh: false</code>). Reusing that pulse reproduced the <strong>identical</strong> certificate and
+seed (<code>7dfb4d50…</code>) in two chains with different commits. &quot;Usable with caveats&quot; means inside this simulated pipeline:
+simulated CHSH certifies nothing.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beacon freshness</td>
+<td>integration</td>
+<td>the test-round choice is not provably post-commit</td>
+<td><code>runs/20261029-1851*-e2e-probe-prefix3/4</code> <code>chain.json</code> <code>beacon_fetch</code></td>
+<td>fetch only the newest pulse with backoff; select &quot;first pulse after <code>committed_utc</code>&quot; in <code>beacon.py</code></td>
+</tr>
+<tr>
+<td>Same pulse ⇒ same seed</td>
+<td>assumption</td>
+<td>the simulator is seeded from the public pulse, so two chains (or anyone holding the pulse) reproduce the &quot;certified&quot; seed</td>
+<td>prefix3 vs prefix4: byte-identical <code>certificate.json</code></td>
+<td>refuse a pulse already used (the runner warns); real device randomness on hardware</td>
+</tr>
+<tr>
+<td><code>fetch_pulses</code> overwrites the tracked cache</td>
+<td>integration</td>
+<td>every chain run dirties git and mixes repro and chain pulses</td>
+<td>probe <code>C.fetch</code></td>
+<td>write chain pulses into the run dir</td>
+</tr>
+<tr>
+<td><code>certify</code> exits 0 on S ≤ 2</td>
+<td>integration</td>
+<td>callers must parse <code>status</code>; B, D and E exit 2</td>
+<td><code>certify.py</code> <code>main</code></td>
+<td>exit 2 on fail</td>
+</tr>
+<tr>
+<td>i.i.d. Hoeffding, not EAT</td>
+<td>assumption</td>
+<td>not valid for a hardware claim</td>
+<td>honesty notes above</td>
+<td>EAT bound (post-epic)</td>
+</tr>
+<tr>
+<td>Certificate fields</td>
+<td>contract</td>
+<td>no <code>beacon_pulse_id</code>, <code>chsh_S_lower</code>, <code>eps</code>; entropy not recomputable</td>
+<td>runner check <code>_post_certify</code></td>
+<td>CCR-C2, CCR-C3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Yes. It works end to end in the prefix chain; freshness and seed reuse are the caveats. Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[C01] Pironio et al. 2010:</strong> randomness <strong>certified by a Bell-inequality violation</strong>. A CHSH value above 2
+bounds how predictable the outputs can be, without trusting the device.</li>
+<li><strong>[C05] Vazirani–Vidick:</strong> &quot;certifiable quantum dice&quot;: randomness expansion with untrusted devices.</li>
+<li><strong>[C02] Liu 2025:</strong> certified randomness from random-circuit sampling on a trapped-ion processor (a classical-
+hardness-based claim; read only here).</li>
+<li><strong>[C04] Kavuri (CURBy):</strong> traceable public random numbers published in a hash-chained beacon.</li>
+</ul>
+<p>Why it matters: &quot;random&quot; becomes <strong>auditable</strong>. You get a number of certified bits with a proof, plus a public
+timestamp that shows the randomness was not chosen after the fact.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>The accounting pipeline reproduced: 40.8 certified bits against Pironio's 42 (−2.8 %). <span class="chip evidence">evidence-based</span></li>
+<li>A beacon chain verified offline: 11/11 links and 12/12 signatures; a 1-bit edit is caught at its pulse. <span class="chip evidence">evidence-based</span></li>
+<li>In the INT chain prefix (Heron-class noise): Ŝ 2.722–2.762, S_low 2.403–2.442, 15 668–17 869 certified bits; the
+S ≤ 2 path is rejected and logged. <span class="chip evidence">evidence-based</span></li>
+<li>INT findings: no post-commit pulse was obtained (beacon lag), and a reused pulse reproduces the same seed. <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> every synthetic cohort used to train or test a cancer detector carries a certificate proving its
+random choices were fixed by an external, timestamped source, <strong>not hand-picked</strong> (no cherry-picking of easy or
+hard cases after seeing results). This is data credibility for audits and regulators. It does not raise
+detection accuracy by itself. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Any randomized step in medicine:</strong> virtual-trial arm assignment, Monte Carlo dose simulation (how the PRNG
+affects radiotherapy simulations is studied in [E05]), and audit of trial randomization. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Other synthetic data.</strong> MR, pathology and genomics generators need the same &quot;not cherry-picked&quot; guarantee. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> A digital twin runs many stochastic simulations (growth, response, imaging). C's role is to make each one
+<strong>replayable and trustworthy</strong>: every random input is traceable to a certified, timestamped source. Path:
+(1) a simulated certificate + public beacon (now) → (2) a hardware certificate per cohort →
+(3) device-independent certified randomness as a service that twin platforms call for every simulation batch.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> superconducting hardware without loophole-free conditions; i.i.d. finite statistics; NIST Beacon available.</p>
+<ul>
+<li>Accounting is validated on simulated data; <strong>simulated CHSH certifies nothing</strong>. <span class="chip evidence">evidence-based</span></li>
+<li>Loophole-free Bell tests on superconducting circuits exist in the lab [C03]. Device-independent randomness
+expansion has been shown with photons [C06]. <span class="chip evidence">evidence-based</span></li>
+<li>One Heron hardware CHSH run gives a real (not loophole-free) certificate for a small cohort. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> entropy-accumulation (EAT) finite statistics [C06, C07]; service-grade public beacons.</p>
+<ul>
+<li>Certified-randomness services become a standard provenance stamp for regulated synthetic datasets. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant hardware.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Certified randomness from random-circuit sampling at scale [C02], where the guarantee rests on classical
+hardness (claim level L2), becomes cheap enough to stamp every simulation batch of a twin platform.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simulation certifies nothing</td>
+<td>validation</td>
+<td>the current certificates are a pipeline test only</td>
+<td>hardware run (post-epic)</td>
+</tr>
+<tr>
+<td>i.i.d. vs EAT</td>
+<td>technical</td>
+<td>i.i.d. bounds are not valid against an adversarial device</td>
+<td>EAT bound [C06, C07]</td>
+</tr>
+<tr>
+<td>Beacon dependency</td>
+<td>technical</td>
+<td>NIST lag 2–3 min and timeouts were observed in INT</td>
+<td>backoff; first pulse after commit</td>
+</tr>
+<tr>
+<td>Pulse reuse ⇒ same seed</td>
+<td>technical</td>
+<td>two cohorts can be identical</td>
+<td>refuse used pulses</td>
+</tr>
+<tr>
+<td>No standard for &quot;certified&quot; medical data</td>
+<td>regulatory</td>
+<td>certificates may carry no legal weight</td>
+<td>position as traceability evidence, not compliance</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
 <p>[C01], [C02], [C04], [C05] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<ul>
+<li><strong>CCR-C1: <code>quantum_job_record</code>, multi-circuit jobs.</strong>
+<ul>
+<li><em>Need:</em> one logical CHSH job runs 4 setting circuits, but <code>transpiled_hash</code> holds one hash.</li>
+<li><em>Request:</em> add an optional <code>transpiled_hashes[]</code>, one per circuit.</li>
+<li><em>Local workaround:</em> <code>transpiled_hash</code> = sha256(canonical_json([4 circuit hashes])). The list is in <code>accounting.json</code> as <code>circuit_hashes</code>. <code>sim_seed</code> is the base Aer seed; setting k (00, 01, 10, 11) uses <code>sim_seed + k</code>.</li>
+</ul>
+</li>
+<li><strong>CCR-C2: <code>certificate</code>, recomputable entropy.</strong>
+<ul>
+<li><em>Need:</em> <code>h_min_per_round</code> = f(S_low), not f(chsh_S), so a consumer cannot recompute it from the certificate.</li>
+<li><em>Request:</em> add <code>chsh_S_lower</code> and <code>eps {est, ext}</code>. The validator could then check h = f(chsh_S_lower) and <code>certified_bits</code> = ⌊n_gen · h⌋.</li>
+<li><em>Related:</em> the schema caps <code>chsh_S</code> at 2.8285, but a statistical Ŝ can exceed 2√2 (we saw 2.8365 on one ideal run). We clip <code>chsh_S</code> to 2.8284 and keep the raw Ŝ in <code>accounting.json</code>. Consider <code>maximum: 4</code> (the algebraic CHSH bound).</li>
+<li><em>Local workaround:</em> everything is in <code>accounting.json</code>.</li>
+</ul>
+</li>
+<li><strong>CCR-C3: <code>certificate.curby_pulse_id</code>, naming.</strong> The pulse comes from the NIST Beacon (<code>nist:&lt;chain&gt;:&lt;index&gt;</code>), not CURBy. Consider renaming the field to <code>beacon_pulse_id</code>. <em>Local workaround:</em> the field name is kept, and the value carries the source prefix.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>C_certificate/README.md</code></p>

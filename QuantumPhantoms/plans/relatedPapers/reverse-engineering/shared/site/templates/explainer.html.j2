@@ -1,0 +1,20 @@
+{# Explainer sections, merged from the former hand-written about.html (feature W) into the index (INT). #}
+<h2 id="why">Why reverse-engineer</h2>
+<p>For every stage, some published method already solves part of the problem: a Bayesian-network compiler, Bell-test
+entropy accounting, quantum causal-state models, Pixel2Cancer, scanner fingerprinting, VICTRE and others. Rebuilding
+each method ourselves, from the paper and without copying proprietary code, gives us components we understand, can
+cite, and can adapt to lungs. Every target goes through the same lifecycle:</p>
+<ol class="steps">
+  <li><strong>Dissect</strong>: a dossier with method, equations, parameters and claimed result.</li>
+  <li><strong>Reproduce</strong>: match one published number or figure in <code>repro/</code> before changing anything.</li>
+  <li><strong>Adapt</strong>: to lungs, 3-D, certification and our contracts.</li>
+  <li><strong>Integrate</strong>, or <strong>reject</strong> with a written reason.</li>
+</ol>
+<p>States move <code>listed → dissected → reproduced → adapted → integrated | rejected</code>, recorded per letter in
+<code>&lt;L&gt;_&lt;name&gt;/status.json</code> and shown as badges in the <a href="#targets">target table</a>.</p>
+
+<h2 id="privacy">Privacy by construction</h2>
+<p>No patient voxels enter any generator. Host CT scans (LIDC-IDRI, later Mayo Siemens raw data) are only
+<em>read</em>: to choose a site, measure the scanner fingerprint, and insert into. The tumor's appearance comes from
+<strong>fitted parameters</strong> (shape, edge profile, HU per nodule type) and published statistics only. Learned
+refiners trained on patients (DiffTumor, MAISI) appear only as ablations.</p>

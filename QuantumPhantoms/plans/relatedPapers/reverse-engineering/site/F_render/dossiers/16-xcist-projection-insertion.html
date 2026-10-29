@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#16</span>
   <span class="chip">letter F</span>
   <span class="chip">★★</span>
   <span class="chip">classical</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim n/a</span>
+  <span class="chip">sim n/a</span>
   
 </div>
 
@@ -38,30 +37,225 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>Mayo's projection-domain lesion insertion [F03 §2.1] works in four steps:</p>
+<ol>
+<li>decode the Siemens raw data (geometry, flying focal spot, post-log projections);</li>
+<li>forward-project a segmented lesion with that exact geometry;</li>
+<li>add the lesion's line integrals to the patient projections;</li>
+<li>reconstruct with the scanner's own reconstruction.</li>
+</ol>
+<p>The lesion therefore inherits the scanner's real blur, noise and reconstruction non-linearities. Robins et al. (Duke) [F02]
+compared this projection-domain insertion (Technique A) against image-domain insertion (Technique B: voxelise,
+partial-volume correct, blur with the system MTF, add). They found both within a few percent in volume of nodules that
+were physically present.</p>
+<p><strong>Access:</strong></p>
+<ul>
+<li>Mayo's code and the vendor decoder are not public.</li>
+<li>F02, F03 and F04 were read as full text from PubMed Central (PMC5693368, PMC5374359), since they are not in <code>papers/</code>.</li>
+<li>The Mayo LDCT raw data [A06] needs a TCIA data-use agreement and was <strong>not</strong> used (plan Q3).</li>
+</ul>
+<p>So the scanner is XCIST configured from published parameters, and the host is a synthetic voxel phantom.</p>
+<h2 id="equations">Equations</h2>
+<pre><code class="language-text">p_host(θ, u, v)   = −ln(I/I0)                       post-log projections (XCIST prep)
+p_les (θ, u, v)   = ∫ Δµ_lesion dl                   lesion excess over lung, projected alone, noise off
+p_A               = p_host + p_les                   (Technique A)
+image_A           = FBP(p_A)
+image_B           = FBP(p_host) + PSF ⊗ [ F_pv · (HU_nod − HU_lung) ]     (Technique B; F_pv partial volume)
+PD                = 100 · (V_technique − V_real) / V_real
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>scanner</td>
+<td>SOMATOM Definition Flash, 120 kV, 128 × 0.6 mm, 0.28 s, B46f</td>
+<td>[F03 §2.2]</td>
+</tr>
+<tr>
+<td>geometry</td>
+<td>SID 595 mm, SDD 1085.6 mm, 736 channels</td>
+<td>published Definition geometry (Flohr et al. 2006; not in <code>papers/</code>)</td>
+</tr>
+<tr>
+<td>reductions</td>
+<td>24 rows, 500 views, axial</td>
+<td>compute budget (marked &quot;(reduced)&quot; in the cfg)</td>
+</tr>
+<tr>
+<td>lesion projection</td>
+<td>polychromatic, log-domain add</td>
+<td>ours (Mayo: monochromatic 70 keV [F03 §2.1])</td>
+</tr>
+<tr>
+<td>phantom</td>
+<td>Ø 180 mm water cylinder, Ø 150 mm lung core at 0.2 water, 0.4 mm voxels</td>
+<td>ours</td>
+</tr>
+<tr>
+<td>nodules</td>
+<td>5 / 8 / 10 mm × sphere / lobulated SH (#14 powers)</td>
+<td>after [F02] (3 sizes × 4 morphologies)</td>
+</tr>
+<tr>
+<td>segmentation</td>
+<td>threshold at the lung/nodule HU midpoint, connected component</td>
+<td>after [F02] (commercial tool)</td>
+</tr>
+</tbody>
+</table>
+<p>Config: <a href="../../../F_render/xcist/siemens_definition_like.cfg"><code>../xcist/siemens_definition_like.cfg</code></a>. Every line is cited.</p>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>[F02] Table 4: average volume PD of virtual vs CT-derived (physically present) nodules.</p>
+<ul>
+<li><strong>Technique B (image domain):</strong> −0.28 %, +0.34 %, +0.57 %, −2.28 % across FBP/IR at 1.4/22 mGy.</li>
+<li><strong>Technique A (projection domain):</strong> −2.24 %, −1.03 %, −1.01 %, −1.69 %.</li>
+<li>R² 0.98–0.99 throughout.</li>
+</ul>
+<p>[F03]'s headline is reader-based (AUC 0.62 for real-vs-inserted discrimination), so it cannot be reproduced without readers.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p>Command: <code>python -m F_render.repro.r16_projection_vs_image</code>.</p>
+<ul>
+<li><strong>Cost:</strong> three XCIST scans, ~45 min CPU.</li>
+<li><strong>Re-analysis without rescanning:</strong> <code>--xcist-dir &lt;old run&gt;/xcist</code>.</li>
+<li><strong>Run dir:</strong> <code>F_render/runs/*-repro-16/</code> (<code>r16_results.json</code>).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Nodule</th>
+<th>True (mm³)</th>
+<th>Real (CT-derived)</th>
+<th>A projection</th>
+<th>PD_A</th>
+<th>B image</th>
+<th>PD_B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 mm sphere</td>
+<td>65.2</td>
+<td>60.0</td>
+<td>62.4</td>
+<td>+4.00 %</td>
+<td>59.1</td>
+<td>−1.50 %</td>
+</tr>
+<tr>
+<td>5 mm lobulated</td>
+<td>71.1</td>
+<td>64.2</td>
+<td>66.3</td>
+<td>+3.27 %</td>
+<td>65.2</td>
+<td>+1.64 %</td>
+</tr>
+<tr>
+<td>8 mm sphere</td>
+<td>268.2</td>
+<td>257.1</td>
+<td>259.8</td>
+<td>+1.05 %</td>
+<td>256.9</td>
+<td>−0.06 %</td>
+</tr>
+<tr>
+<td>8 mm lobulated</td>
+<td>298.4</td>
+<td>285.4</td>
+<td>288.4</td>
+<td>+1.05 %</td>
+<td>286.6</td>
+<td>+0.42 %</td>
+</tr>
+<tr>
+<td>10 mm sphere</td>
+<td>523.9</td>
+<td>509.8</td>
+<td>514.8</td>
+<td>+0.97 %</td>
+<td>511.8</td>
+<td>+0.38 %</td>
+</tr>
+<tr>
+<td>10 mm lobulated</td>
+<td>600.4</td>
+<td>581.2</td>
+<td>589.9</td>
+<td>+1.50 %</td>
+<td>584.7</td>
+<td>+0.59 %</td>
+</tr>
+<tr>
+<td><strong>mean ± sd</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>+1.97 ± 1.32 %</strong></td>
+<td></td>
+<td><strong>+0.25 ± 1.02 %</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Setup</strong> (simulated: XCIST, not a physical phantom):</p>
+<ul>
+<li><strong>Recon:</strong> lung −794 HU, nodule −2 HU, threshold −398 HU.</li>
+<li><strong>PSF:</strong> measured by #15 on the host reconstruction, MTF f50 0.37 mm⁻¹.</li>
+<li><strong>Co-registration:</strong> 0.17 px.</li>
+</ul>
+<p><strong>Comparison with [F02]:</strong></p>
+<ul>
+<li><strong>Technique B (image domain, the main F path):</strong> agrees with [F02]'s −0.28…+0.57 %.</li>
+<li><strong>Technique A:</strong> has the same magnitude as [F02]'s −2.24…−1.01 % but the opposite sign. Both are within the paper's ±3 %.
+<ul>
+<li><strong>Likely cause:</strong> we project the lesion polychromatically <strong>alone</strong>, so its spectrum is not hardened by the body. Its line integrals are therefore slightly too large.</li>
+<li>Mayo avoided this by projecting monochromatically at the beam-hardening-correction energy (70 keV) [F03 §2.1]. That is the next refinement.</li>
+</ul>
+</li>
+<li><strong>CT-derived vs true volume:</strong> −3 % to −10 %, smallest nodules worst. [F02] Table 3 reports 13–16 % for its commercial segmentation tool.</li>
+</ul>
+<p><strong>Agreement:</strong> agree. |PD| &lt; 3 % on average for both techniques. Figure: <a href="../figures/r16-projection-vs-image.png"><code>r16-projection-vs-image.png</code></a>.</p>
+<h2 id="adaptation">Adaptation</h2>
+<ul>
+<li>
+<p><code>F_render/src/projection_insert.py</code>: an XCIST voxel-phantom writer, <code>simulate</code> (seeded quantum and electronic noise),
+<code>add_prep</code> (the insertion) and <code>reconstruct</code>.</p>
+</li>
+<li>
+<p>The image-domain arm (Technique B) uses our own pieces:</p>
+<ul>
+<li>the #14 spherical-harmonic voxeliser with partial volume;</li>
+<li>the #15 estimator measuring the PSF of the XCIST reconstruction.</li>
+</ul>
+<p>The comparison therefore also validates the F image-domain insert against a projection-domain reference.</p>
+</li>
+<li>
+<p>The main F path stays image-domain, because [F02] shows it is within ~3 % of projection-domain. Projection domain
+is the Siemens-native upgrade.</p>
+</li>
+</ul>
+<h2 id="verdict">Verdict</h2>
+<p><strong>adapted.</strong> The [F02] volume agreement is reproduced in simulation. The XCIST projection-domain pipeline exists, and it validates the image-domain
+insert used on the main path. Real Mayo Siemens raw-data insertion stays future work. It needs the TCIA agreement and the
+vendor geometry. Only Siemens cases may be used for Siemens work (epic §6).</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li><strong>INT / Siemens path:</strong> replace the synthetic phantom with Mayo LDCT Siemens projections [A06] once access is granted.
+<ul>
+<li>Use XCIST only as the forward projector for the lesion.</li>
+<li><code>add_prep</code> is the insertion step unchanged.</li>
+</ul>
+</li>
+<li><strong>H:</strong> the 6-nodule A/B/real set gives a physics benchmark (volume, HU, edge) for the image-domain insert.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>F_render/dossiers/16-xcist-projection-insertion.md</code></p>

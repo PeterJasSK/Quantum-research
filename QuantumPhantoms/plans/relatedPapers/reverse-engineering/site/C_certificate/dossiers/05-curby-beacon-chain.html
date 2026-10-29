@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#5</span>
   <span class="chip">letter C</span>
   <span class="chip">★★</span>
   <span class="chip">classical</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim n/a</span>
+  <span class="chip">sim n/a</span>
   
 </div>
 
@@ -38,30 +37,194 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p><strong>Kavuri et al. 2025 [C04]</strong> run <strong>CURBy</strong>, the CU Randomness Beacon, a public beacon whose bits come from a loophole-free photonic Bell test at NIST.</p>
+<p>Traceability comes from <strong>Twine</strong>, which intertwines hash chains into a hash graph:</p>
+<ul>
+<li>Every stage is a block on a hash chain. The stages are: request with pre-committed protocol parameters → Bell-test data hash → entropy check → seed from the DRAND beacon → extraction → output pulse.</li>
+<li>Each block includes the hash of its predecessor, and of blocks on other parties' chains (NIST, CU, DRAND, a time-stamping chain).</li>
+<li>Rewriting any stage would require rewriting every chain it is woven into.</li>
+<li>Pulses follow the NIST randomness-beacon standard format: 512-bit values, signed and time-stamped.</li>
+</ul>
+<p>Two ideas matter for us:</p>
+<ol>
+<li><strong>An external, public, unpredictable source</strong> for choices the device must not know in advance. For us, that is the hidden test-round mask.</li>
+<li><strong>Commit → act → publish, hash-chained and signed.</strong> This is the template for G's receipt and ledger.</li>
+</ol>
+<p>The NIST Beacon 2.0 format, which CURBy is &quot;closely based on&quot; (C04), is the documented, fully verifiable instance of the format. That is the one we reproduce.</p>
+<h2 id="equations">Equations</h2>
+<pre><code class="language-text">NIST Beacon 2.0 pulse p (chain c, index i), all integers big-endian:
+  M(p) = len‖uri ‖ len‖version ‖ u32 cipherSuite ‖ u32 period ‖ len‖certificateId ‖ u64 chainIndex
+         ‖ u64 pulseIndex ‖ len‖timeStamp ‖ len‖localRandomValue ‖ len‖ext.sourceId ‖ u32 ext.statusCode
+         ‖ len‖ext.value ‖ len‖previous ‖ len‖hour ‖ len‖day ‖ len‖month ‖ len‖year
+         ‖ len‖precommitmentValue ‖ u32 statusCode                     (len = u32 byte length)
+  signatureValue = RSA-PKCS#1 v1.5 / SHA-512 over M(p)                  (NIST certificate)
+  outputValue    = SHA-512( M(p) ‖ signatureValue )                     (raw sig bytes, no length prefix)
+Chain links:
+  p_i.listValues[previous]   = p_{i−1}.outputValue
+  p_{i−1}.precommitmentValue = SHA-512( p_i.localRandomValue )          (commit one minute ahead)
+Our use:
+  pulse_seed = SHA-256(outputValue) → rng(pulse_seed, &quot;C.test_mask&quot;)    (hidden test rounds)
+  Toeplitz seed bits = SHAKE-256(outputValue ‖ &quot;C.toeplitz&quot;)
+</code></pre>
+<p>The serialization was confirmed empirically against live pulses: the signature verifies over M(p), and the output value matches only for <code>M ‖ raw signature</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CURBy pulse size</td>
+<td>512 bits</td>
+<td>C04 abstract</td>
+</tr>
+<tr>
+<td>Min-entropy threshold per pulse</td>
+<td>820 bits (smooth)</td>
+<td>C04 main text</td>
+</tr>
+<tr>
+<td>Soundness error</td>
+<td>2⁻⁶⁴</td>
+<td>C04 main text</td>
+</tr>
+<tr>
+<td>Protocol success</td>
+<td>7434 / 7454 attempts = 99.7 % over 40 days</td>
+<td>C04 abstract</td>
+</tr>
+<tr>
+<td>Extractor</td>
+<td>TMPS, seeded from the DRAND beacon</td>
+<td>C04</td>
+</tr>
+<tr>
+<td>NIST Beacon period</td>
+<td>60 000 ms</td>
+<td>live pulses (<code>period</code>)</td>
+</tr>
+<tr>
+<td>Our cache</td>
+<td>12 consecutive pulses <code>nist:2:2003310</code> … <code>nist:2:2003321</code> + 3 CURBy blocks</td>
+<td><code>../repro/data/beacon_pulses.json</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p><strong>C04:</strong> every stage of a randomness pulse is traceable through intertwined hash chains, so tampering with any block is detectable. The operational result is 7434 / 7454 pulses delivered (99.7 %), each 512 bits from ≥ 820 bits of certified min-entropy.</p>
+<p>The Bell-test throughput cannot be reproduced without the photonic experiment. What we reproduce is the <strong>format property</strong>: a chain of real public pulses verifies end-to-end offline, and a one-bit edit is caught.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p><code>python -m C_certificate.repro.beacon_chain</code> (<a href="../figures/beacon_chain.png">figure</a>):</p>
+<ul>
+<li><strong>NIST Beacon 2.0, chain 2: <code>chain OK (11 links, 12 pulses)</code>.</strong> All 12 signatures verify against the cached NIST certificate, all 12 output values recompute, all 11 previous-links match, and all 11 precommitments match.</li>
+<li><strong>Tamper test.</strong> Flipping 1 bit of <code>localRandomValue</code> in pulse #6 makes pulse #6 fail on <strong>signature</strong>, <strong>output</strong> and <strong>precommit</strong>. Every other pulse still verifies, so the edit is localized.</li>
+<li><strong>CURBy (format sample, 3 blocks of round 28297).</strong>
+<ul>
+<li>The request block publishes <code>nBitsOut = 512</code> and <code>nBitsThreshold = 820</code>, matching C04 exactly.</li>
+<li>Each later block's <code>links[0]</code> is the previous block's CID: link-by-reference verified.</li>
+<li>The CIDs themselves (IPLD dag-cbor + multihash) are <strong>not recomputed</strong>, because that needs a dag-cbor library that is not installed (no new installs).</li>
+<li>Observation: the latest CURBy round is dated <strong>2025-08-22</strong> and its request is flagged <code>isQuantum: False</code>. CURBy is therefore not a live quantum source today. This is why the NIST Beacon (plan Q3 fallback) is our operational source.</li>
+</ul>
+</li>
+</ul>
+<p>As a cross-check of the C04 numbers against our own extractor: with the leftover hash lemma at ε = 2⁻⁶⁴, 512 output bits need only 512 + 128 = 640 bits of min-entropy. C04's 820 includes smoothing, the TMPS extractor's loss, and finite-statistics margins. The ratio 820 / 512 ≈ 1.6 is the &quot;price&quot; to compare with our 256 + 40.</p>
+<h2 id="adaptation">Adaptation</h2>
+<ul>
+<li><strong>Test-round choice.</strong> <code>certify</code> refuses any pulse that fails a chain check, then seeds the hidden test-round mask (and the Toeplitz seed) from the selected pulse. <code>certificate.curby_pulse_id</code> = <code>nist:&lt;chain&gt;:&lt;index&gt;</code>. The field name is kept from the contract; the source is recorded in <code>accounting.json</code>.</li>
+<li><strong>Offline by design.</strong> Only <code>python -m C_certificate.repro.fetch_pulses</code> touches the network. The cache is committed, so every run is replayable.</li>
+<li><strong>No fallback on failure.</strong> A failing certificate is never retried with another pulse (epic decision 6).</li>
+</ul>
+<h3 id="ledger-template-for-g">Ledger template for G</h3>
+<p>How the beacon fields map onto our <code>Receipt</code> / <code>LedgerEntry</code> contracts (frozen in <code>shared/contracts/</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Beacon / CURBy field</th>
+<th>Role</th>
+<th>Our field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pulseIndex</code> / Twine <code>index</code></td>
+<td>position in chain</td>
+<td><code>LedgerEntry.index</code></td>
+</tr>
+<tr>
+<td><code>listValues[previous]</code> / <code>links[0]</code> (prev CID)</td>
+<td>hash link to predecessor</td>
+<td><code>LedgerEntry.prev_hash</code> (64 × &quot;0&quot; at genesis)</td>
+</tr>
+<tr>
+<td><code>outputValue</code> = SHA-512(M ‖ sig) / block CID</td>
+<td>identity of this entry</td>
+<td><code>LedgerEntry.entry_hash</code> = sha256(canonical(entry − entry_hash))</td>
+</tr>
+<tr>
+<td>signed message M(p)</td>
+<td>what is signed</td>
+<td><code>Receipt</code> canonical_json({commit, fill})</td>
+</tr>
+<tr>
+<td><code>signatureValue</code> + <code>certificateId</code></td>
+<td>signature + key id</td>
+<td><code>Receipt.signature{alg &quot;Ed25519&quot;, public_key_b64, sig_b64}</code></td>
+</tr>
+<tr>
+<td><code>precommitmentValue</code> (commit to next local random value) / CURBy request block with <code>parameters</code></td>
+<td>commit before act</td>
+<td><code>Receipt.commit{rulebook_hash, code_hash, committed_utc}</code> (written BEFORE the job)</td>
+</tr>
+<tr>
+<td><code>timeStamp</code></td>
+<td>time ordering</td>
+<td><code>LedgerEntry.created_utc</code>, <code>commit.committed_utc</code></td>
+</tr>
+<tr>
+<td>CURBy <code>dataHash</code> (hash of raw Bell data)</td>
+<td>binds raw data</td>
+<td><code>Receipt.fill.counts_sha256</code></td>
+</tr>
+<tr>
+<td>CURBy <code>paramsHash</code></td>
+<td>binds protocol parameters</td>
+<td><code>Receipt.fill.params_sha256</code></td>
+</tr>
+<tr>
+<td>CURBy <code>randomness</code></td>
+<td>the output</td>
+<td><code>Receipt.fill.seed_hex</code></td>
+</tr>
+<tr>
+<td>intertwined external chains (DRAND, NIST)</td>
+<td>cross-party anchoring</td>
+<td>future: anchor our ledger head in a public beacon pulse (e.g. put <code>entry_hash</code> into a CURBy/Twine chain)</td>
+</tr>
+</tbody>
+</table>
+<p>What G should copy:</p>
+<ol>
+<li>Commit (rulebook + code hash + parameters) is a separate, earlier, signed entry.</li>
+<li>Verification recomputes the hash from canonical bytes; it never trusts a stored hash.</li>
+<li>Verification reports <em>which</em> check failed at <em>which</em> index, as <code>verify_chain</code> does.</li>
+</ol>
+<h2 id="verdict">Verdict</h2>
+<p><strong>Adapted (classical, claim level n/a).</strong></p>
+<ul>
+<li>Reproduction: the beacon chain format verifies end-to-end on real pulses (11/11 links), the tamper test is localized, and the CURBy parameters match C04.</li>
+<li>The pulse is used as the external seed for the hidden test rounds.</li>
+<li>CURBy itself is dissected only: its CIDs are not recomputed, and it is not live-quantum as of the cache date.</li>
+</ul>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li><strong>G:</strong> the ledger mapping table above, and <code>beacon.verify_chain</code>'s per-check, per-index report style. Re-implement it; letters do not import each other.</li>
+<li><strong>INT / future:</strong> to make the ledger externally anchored, publish the ledger head hash into a public chain (CURBy/Twine API or a beacon external value). If CURBy resumes quantum operation, add a dag-cbor CID check and switch <code>fetch_pulses</code> to it.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>C_certificate/dossiers/05-curby-beacon-chain.md</code></p>

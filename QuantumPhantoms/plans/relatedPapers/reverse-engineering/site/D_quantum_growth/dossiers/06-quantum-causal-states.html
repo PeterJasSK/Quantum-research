@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#6</span>
   <span class="chip">letter D</span>
   <span class="chip">★★★</span>
   <span class="chip">quantum</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim L1′</span>
+  <span class="chip">sim both</span>
   
 </div>
 
@@ -38,30 +37,115 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
+<h2 id="concept">Concept</h2>
 <!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
+<p>A stochastic process has a <strong>causal-state</strong> model: the minimal classical memory that predicts its future (statistical complexity C_μ, topological D_μ = log₂ #states). Gu et al. [D06] showed a quantum model whose memory states are non-orthogonal can store less, C_q = S(ρ) &lt; C_μ. Wu et al. [D16] proved that for the <strong>periodically modulated decay (PMD)</strong> renewal family a <em>single qubit</em> (D_q ≤ 1) models the process exactly for every period N, while D_μ = log₂ N grows. D17 gives the general theory. D-5 uses this on a cell-cycle division timer: run the 1-qubit-memory model as a dynamic circuit and measure the advantage.</p>
+<h2 id="equations">Equations</h2>
 <!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
+<pre><code class="language-text">Renewal process, survival Φ(n):      P(two ticks ≥ n steps apart) = Φ(n)
+PMD (Wu Eq. 1):                      Φ(n) = Γⁿ (1 − V sin²(nθ)),   θ = π/N
+Causal states:                       j = zeros since last tick (mod N); hazard h_j = 1 − Φ(j+1)/Φ(j)
+C_μ = H(π),  D_μ = log₂ #states      π = stationary distribution
+Quantum model (D16 SM S1):           A₀ = (1/η)[[1, α(e^{iφ}−1)],[0, e^{iφ}]],  A₁ = ζ|σ₀⟩⟨w|,  φ = 2π/N
+                                     |σ_n⟩ ∝ A₀ⁿ|σ₀⟩ = β₀|Z₀⟩ + β₁ e^{inφ}|Z₁⟩
+                                     Γ = 1/η², V = 4αβ₀β₁, (β₀+αβ₁)² + β₁² = 1, η² = 1 + g/2 + ½√(g²+4g), g = 4α² sin²(φ/2)
+C_q = S(ρ),  ρ = Σ π_n |σ_n⟩⟨σ_n|,  D_q = log₂ rank{|σ_n⟩}
+Gu perturbed coin:                   |S₀⟩ = √(1−p)|0⟩+√p|1⟩, |S₁⟩ = √p|0⟩+√(1−p)|1⟩, C_q = H₂((1+2√(p(1−p)))/2), C_μ = 1
+Circuit:                             U|s⟩|0⟩ = A₀|s⟩|0⟩ + A₁|s⟩|1⟩ (isometry completed to 4×4 unitary); per step U → measure output → reset
+d_KL = (1/L) D(P_sim ‖ P_exact) in bits/symbol
+</code></pre>
+<h2 id="parameters">Parameters</h2>
 <!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
+<ul>
+<li>Cell-cycle division timer: <strong>N = 8, Γ = 0.5, V = 0.4</strong>, L = 10 steps, initial memory |σ₀⟩ (just after a tick). Source: Wu Fig. 5a uses Γ = 0.5, V = 0.4, N = 3…8 (experiment Γ 0.49–0.64, N 3–8, V = 0.4, L = 2). Described as &quot;a division-timer process of PMD form&quot;, <strong>not fitted tumor biology</strong> (plan Q3).</li>
+<li>40 000 shots per tomography variant (Z / X / Y memory readout), one Aer job per mode; word statistics from the Z variant only (see honesty note).</li>
+<li>1-bit classical baseline: 2-state edge-emitting HMM, 24 L-BFGS-B multi-starts seeded from the certificate seed.</li>
+</ul>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
 <!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
+<p>[D06] prints: C_q &lt; 0.5 for p &gt; 0.2 and C_q &lt; 0.1 for p &gt; 0.4 (perturbed coin). [D16]: for any PMD process a statistically exact quantum model with D_q ≤ 1 exists while D_μ = log₂ N; experiments with distortion below 10⁻² bits/symbol, below the best 1-bit classical model, at L = 2. D16 prints no table of C_q values.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
 <!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
+<p>Analytic (figures <code>gu_perturbed_coin.png</code>, <code>wu_pmd_memory.png</code>; <code>python -m D_quantum_growth.repro.causal_states_repro</code>, label &quot;analytic: exact theory&quot;):</p>
+<table>
+<thead>
+<tr>
+<th>quantity</th>
+<th>paper</th>
+<th>ours</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gu C_q(p=0.2) &lt; 0.5</td>
+<td>printed</td>
+<td>0.4690</td>
+</tr>
+<tr>
+<td>Gu C_q(p=0.4) &lt; 0.1</td>
+<td>printed</td>
+<td>0.0815</td>
+</tr>
+<tr>
+<td>Wu D_μ = log₂ N, N = 2…16</td>
+<td>printed</td>
+<td>exact (n_causal = N for all N)</td>
+</tr>
+<tr>
+<td>Wu D_q ≤ 1 qubit, any N</td>
+<td>printed</td>
+<td>D_q = 1 for all N = 2…16; survival error ≤ 2.2·10⁻¹⁶</td>
+</tr>
+</tbody>
+</table>
+<p>Simulated q-machine (<code>python -m D_quantum_growth.src.memory_advantage --mode ideal|heron</code>; runs <code>20261029-112717-grow-ideal</code>, <code>20261029-112719-grow-heron</code>; figure <code>cellcycle_memory_advantage.png</code>). C_μ = 1.799 bits, C_q (theory) = 0.0640:</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>d_KL quantum (bits/sym)</th>
+<th>d_KL best 1-bit classical (same sample count)</th>
+<th>C_q measured</th>
+<th>memory fidelity</th>
+<th>passed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>simulated: ideal</td>
+<td>0.00192</td>
+<td>0.00315 (exact 0.00136)</td>
+<td>0.0627 ± 0.0054</td>
+<td>0.99998</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>simulated: Heron-class noise (FakeMarrakesh)</td>
+<td>0.00189</td>
+<td>0.00315</td>
+<td>0.1743 ± 0.0048</td>
+<td>0.9943</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>The KL sampling floor at 40 000 samples is ≈ 0.00184 bits/symbol, so the quantum d_KL is <strong>at the floor in both modes</strong>; Heron noise shows up in the memory state (C_q 0.064 → 0.174), not in the output statistics.</p>
+<h2 id="adaptation">Adaptation</h2>
 <!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
+<p>The PMD process is used as a cell-cycle division timer (N = 8 steps per cycle). The 1-qubit model becomes a 2-qubit unitary (memory + output), compiled to the FakeMarrakesh CZ basis, 10 steps in one dynamic circuit (mid-circuit measure of the output, reset), three tomography variants in one job. Output: <code>memory_advantage_record</code> (claim L1′), <code>n_qubits = 1</code>. <code>passed</code> = C_q(measured) &lt; C_μ <strong>and</strong> d_KL &lt; 10⁻² <strong>and</strong> d_KL &lt; best 1-bit classical.</p>
+<p><strong>Honesty notes.</strong></p>
+<ul>
+<li>With Γ = 0.5, V = 0.4 the modulation is weak: the best exact 1-bit classical model already reaches d_KL = 0.00136, <em>below</em> the sampling floor. The comparison &quot;quantum &lt; classical&quot; is therefore made at the same sample count (0.00192 vs 0.00315) and is resolved only because the classical model's distortion is real while the quantum model's excess is sampling noise. A stronger-correlation process would show a larger gap. [D-5] caution: the advantage needs strong correlations; low-correlation processes are compressed classically too.</li>
+<li>C_q(measured) &lt; C_μ is essentially guaranteed for a qubit (≤ 1 bit &lt; 1.80); the informative number is C_q(measured) vs theory (0.0627 ideal, 0.174 Heron).</li>
+<li>The three tomography circuits share one simulator seed, so their word samples are copies of each other; word statistics use the Z variant only.</li>
+<li><code>memory_advantage_record</code> has no d_KL field: the values are in <code>process_description</code> and the sidecar <code>memory_advantage_detail.json</code> (CCR-D2).</li>
+</ul>
+<h2 id="verdict">Verdict</h2>
 <!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
+<p><strong>adapted</strong>, claim level <strong>L1′</strong> (simulated, both modes). Published statements matched (Gu inequalities, Wu D_μ/D_q). Quantum model exact with one qubit; measured advantage over a 1-bit classical model is small for this weakly modulated process and is stated as such. Never L2.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
 <!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<p><code>causal_states.py</code> (renewal machine, Gram fixed point, Wu Kraus model, isometry → unitary, best classical HMM) is reusable for any survival function, e.g. a process built from E's calibrated hazard (plan Q3 alternative: may land in a low-correlation regime). INT: wire E's division hazard into <code>pmd_survival</code> and rerun.</p>
 
 </article>
 <p class="source">Source: <code>D_quantum_growth/dossiers/06-quantum-causal-states.md</code></p>

@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/H_analysis/dossiers/20-victre-pipeline.html">#20 listed</a><a class="badge state-listed" href="../../site/H_analysis/dossiers/21-ai-rad-companion.html">#21 listed</a>
+  <a class="badge state-dissected" href="../../site/H_analysis/dossiers/20-victre-pipeline.html">#20 dissected</a><a class="badge state-dissected" href="../../site/H_analysis/dossiers/21-ai-rad-companion.html">#21 dissected</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,10 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/H_analysis/index.html</code>.
 Target states live only in <a href="../../H_analysis/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
 <p>VICTRE-modelled study architecture over the hybrid volumes: physics realism (HU, edge, NPS vs LIDC), PyRadiomics distributions, in-context visual Turing test, train-synthetic/test-real detection, cohort drift vs rulebook, certificate and witness statistics, classical baseline. AI-Rad Companion only as a documented-interface black box (no decompiling).</p>
-<h2>Targets and their status</h2>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,18 +51,18 @@ Target states live only in <a href="../../H_analysis/status.json"><code>status.j
 <td><a href="dossiers/20-victre-pipeline.html">FDA VICTRE pipeline</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>dissected</td>
 </tr>
 <tr>
 <td>#21</td>
 <td><a href="dossiers/21-ai-rad-companion.html">Siemens AI-Rad Companion Chest CT (documented-interface black box)</a></td>
 <td>★</td>
 <td>classical</td>
-<td>listed</td>
+<td>dissected</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
 <li><code>hybrid_volume</code> — stub: <a href="../../shared/stubs/hybrid_volume/hybrid_volume.json"><code>shared/stubs/hybrid_volume/hybrid_volume.json</code></a> · schema: <a href="../../shared/contracts/hybrid_volume.schema.json"><code>hybrid_volume.schema.json</code></a></li>
@@ -77,29 +76,247 @@ Target states live only in <a href="../../H_analysis/status.json"><code>status.j
 <li><code>receipt</code> — stub: <a href="../../shared/stubs/receipt/receipt.json"><code>shared/stubs/receipt/receipt.json</code></a> · schema: <a href="../../shared/contracts/receipt.schema.json"><code>receipt.schema.json</code></a></li>
 <li><code>ledger_entry</code> — stub: <a href="../../shared/stubs/ledger_entry/ledger.jsonl"><code>shared/stubs/ledger_entry/ledger.jsonl</code></a> · schema: <a href="../../shared/contracts/ledger_entry.schema.json"><code>ledger_entry.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
 <li><code>validation_report</code> — schema: <a href="../../shared/contracts/validation_report.schema.json"><code>validation_report.schema.json</code></a> · stub example: <a href="../../shared/stubs/validation_report/validation_report.json"><code>shared/stubs/validation_report/validation_report.json</code></a></li>
 </ul>
-<h2>How to run (sim commands)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to H_analysis/runs/ via shared.runrecord. -->
-<p><em>Pending (feature H).</em></p>
-<h2>Reproduced result vs. paper</h2>
-<!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature H).</em> Planned: VICTRE study architecture / model-observer analysis on our cohort shape.</p>
-<h2>Claim level and honesty notes</h2>
+<p>Working directory <code>reverse-engineering/</code>. Environment: base Python 3.13 works (radiomics-lite engine); <code>requirements.txt</code> documents the <code>qp-re-h</code> env for PyRadiomics.</p>
+<pre><code class="language-bash">python -m H_analysis.repro.r20a_cho_ideal                       # CHO vs analytic ideal observer (~3 min)
+python -m H_analysis.repro.r20b_victre_design                   # VICTRE design -&gt; SE(dAUC) (~25 min)
+python -m H_analysis.src.lidc_ref --scans all                   # real-nodule reference (LIDC on disk, ~30 min)
+python -m H_analysis.src.report --cohort H_analysis/cohorts/stub.json --lidc-ref none      # stub smoke test
+python -m H_analysis.src.pilot plan --hosts 20 --per-host 3     # then: bash H_analysis/runs/&lt;ts&gt;-pilot/commands.sh
+python -m H_analysis.src.report --cohort H_analysis/runs/&lt;ts&gt;-pilot/cohort.json --lidc-ref H_analysis/runs/&lt;ts&gt;-lidc-ref
+python -m H_analysis.src.turing_kit --manifest &lt;cohort.json&gt; --lidc-ref &lt;run&gt; --n 40
+python -m H_analysis.src.turing_score answers.json key.json
+python -m H_analysis.src.airad_check &lt;dicom_dir&gt;
+</code></pre>
+<p>Every quantum number in a report keeps its label (&quot;simulated: ideal&quot; / &quot;simulated: Heron-class noise (FakeMarrakesh)&quot;); no hardware numbers exist.</p>
+<h3 id="cohort-manifest-format">Cohort manifest format</h3>
+<p><code>cohorts/*.json</code>, paths relative to the manifest, every file checked with <code>shared.validate</code> (a failure aborts the report, nothing is written):
+<code>seed_note</code>, <code>hybrids[]{path, seed_source?: certified|prng}</code>, <code>draws[]</code>, <code>rulebook</code>, <code>compiled_circuit</code>, <code>job_records[]</code>, <code>certificates[]</code>, <code>witness[]</code>, <code>memory[]</code>, <code>simulability[]</code>, <code>trajectories[]</code>, <code>receipts[]</code>, <code>ledger</code>.
+<code>seed_source</code> lives in the manifest because the contracts have no field for it.</p>
+<h2 id="outputs-validationreport-section-layout-de-facto-sub-schema-ccr-h1">Outputs: ValidationReport section layout (de-facto sub-schema, CCR-H1)</h2>
+<pre><code class="language-text">realism            {per_type:{type:{metric:{syn[], real_summary{p5,p50,p95,n}, syn_percentile[], ks_D, ks_p, pass}}}, shell_noise_ratio, n}
+radiomics          {engine:&quot;radiomics-lite&quot;, n_features, frac_abs_smd_lt_0p5, c2st{auc,ci95}, null{frac_abs_smd_lt_0p5,c2st_auc}, per_feature_ref}
+utility            {task, observer:&quot;CHO-LG3D&quot;, n_readers, n_train, n_test{pos,neg}, auc_train_syn, auc_train_real, delta_auc{value,se,ci95,df}, per_type, auc_2d_central_slice, powered}
+drift              {by_sim_label:{label:{per_node:{tvd,rmspe_pct,chi2_p,n}, joint_tvd, invalid_shot_fraction, n}}, cohort, exact_marginals}
+certificate_stats  {certificates{by_sim_label}, witnesses, memory, simulability, bp_simulability_join, receipts, hardware:null, certification_status}
+baseline           {pairs[]{quantity, quantum_value, classical_value, note, sim_label}, seed_source_arm, honesty{ok,...}}
+</code></pre>
+<p>Sections without inputs read <code>{&quot;status&quot;: &quot;insufficient input&quot;, &quot;n&quot;: ...}</code>. <code>report_detail.json</code> (per-lesion / per-feature tables) sits beside the report and is not part of the contract.</p>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Quantity</th>
+<th>Paper</th>
+<th>Ours</th>
+<th>Agreement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#20 R20a</td>
+<td>CHO AUC vs analytic ideal observer, 5 amplitudes (method check)</td>
+<td>analytic</td>
+<td>max abs diff 0.0054</td>
+<td><strong>yes</strong> (criterion &lt; 0.01; 1000 training pairs, 20,000 test pairs, see dossier)</td>
+</tr>
+<tr>
+<td>#20 R20b</td>
+<td>SE(ΔAUC), VICTRE heterogeneous design</td>
+<td>0.0073</td>
+<td>[0.0033, 0.0051] over ρ ∈ [0, 0.75]</td>
+<td><strong>no</strong> (surrogate too homogeneous; dense group [0.0068, 0.0105] vs 0.0148)</td>
+</tr>
+<tr>
+<td>#20 pilot</td>
+<td>validation report on the pilot cohort</td>
+<td>n/a</td>
+<td><em>pending: pilot not yet run</em></td>
+<td>pilot, pre-INT</td>
+</tr>
+</tbody>
+</table>
+<p>Figures: <code>figures/r20a_cho_vs_ideal.png</code>, <code>figures/r20b_mrmc_se.png</code>.</p>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>Analysis stage (n/a). Reports every quantum number with its sim label, classical baseline and simulability number.</p>
-<h2>References (paper codes)</h2>
-<!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
-<p>[H03] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<p>Analysis stage (n/a). Forbidden claims (never made here): the phrases &quot;more realistic because quantum&quot;, &quot;quantum biology&quot;, &quot;classically impossible&quot;. Reports every quantum number with its sim label, classical baseline and simulability number.</p>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-prototype">Prototype</span>
+<p>Draft rating, not yet confirmed by the chain (the chain has not reached H). H's CLI accepts the chain's cohort
+manifest (the runner writes it in H's format), but the analysis is n = 1 in INT: MRMC and train-synthetic/test-real
+sections cannot give a number, and H does not yet label them &quot;n=1 — not powered&quot;. R20b is not matched
+(SE 0.0033–0.0051 vs 0.0073), the pilot never ran, and radiomics is the lite engine. No <code>lidc_ref</code> run is on disk,
+so the first chain also pays a full LIDC reference pass.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n = 1</td>
+<td>data</td>
+<td>no powered statistic from one tumour</td>
+<td>plan Q7</td>
+<td>multi-tumour cohort (one per placement class)</td>
+</tr>
+<tr>
+<td>R20b not matched</td>
+<td>component</td>
+<td>the MRMC variance model is too homogeneous</td>
+<td>R20b row</td>
+<td>heterogeneous surrogate</td>
+</tr>
+<tr>
+<td>Radiomics-lite</td>
+<td>component</td>
+<td>not PyRadiomics; features not comparable to the literature</td>
+<td>plan Q8</td>
+<td><code>qp-re-h</code> env with pyradiomics</td>
+</tr>
+<tr>
+<td>No cached LIDC reference</td>
+<td>precondition</td>
+<td>the first <code>validate</code> stage runs a full <code>lidc_ref</code></td>
+<td><code>H_analysis/runs/</code> absent</td>
+<td>run <code>lidc_ref</code> once; the runner reuses the latest</td>
+</tr>
+<tr>
+<td><code>contract_version</code> hard-coded</td>
+<td>contract</td>
+<td><code>report.py:173</code> writes &quot;1.0.0&quot; whatever the contract version</td>
+<td>agent read</td>
+<td>use <code>shared.CONTRACT_VERSION</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Expected yes; its numbers will be n = 1 and must be read as plumbing, not validation. Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[H03] Badano et al. (VICTRE):</strong> an entirely <strong>in-silico imaging trial</strong> that reproduced the conclusion of a
+real clinical trial, and a precedent for regulatory use of simulation.</li>
+<li><strong>[H04] Abadi, [G03] Badano, [G02] AAPM TG-387:</strong> virtual clinical trials, stochastic digital human cohorts, and
+their role in regulatory science.</li>
+<li><strong>[F10] Chuquicusma:</strong> a visual Turing test (can radiologists tell synthetic nodules from real ones?).
+<strong>[H01]</strong> train-synthetic/test-real detection. <strong>[H05]</strong> PyRadiomics features.</li>
+<li><strong>#21 AI-Rad Companion:</strong> a commercial chest-CT assistant, treated as a documented-interface black box.</li>
+</ul>
+<p>Why it matters: the whole pipeline is only worth something if <strong>real-world evidence</strong> shows synthetic cohorts
+change detector performance on real patients.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>A channelized Hotelling observer checked against the analytic ideal observer (max difference 0.0054). <span class="chip evidence">evidence-based</span></li>
+<li>MRMC variance reproduction <strong>not matched</strong> (SE 0.0033–0.0051 vs 0.0073). <span class="chip evidence">evidence-based</span></li>
+<li>A six-section validation report (realism, radiomics, utility, drift, certificate statistics, baseline), plus a
+cohort manifest that INT writes from real chain files. <span class="chip evidence">evidence-based</span></li>
+<li>A longitudinal protocol for AI-Rad Companion: reported vs true volume and doubling time (not run). <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> show, with powered statistics, that (a) readers cannot tell synthetic from real nodules,
+(b) detectors trained or tested on synthetic cohorts behave the same on real data, and (c) a commercial
+assistant's volume and growth errors can be measured against exact ground truth. This is the evidence a clinical
+partner needs. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Virtual trials for any device or AI</strong> [H04, G02]: the VICTRE design is not lung-specific. <span class="chip evidence">evidence-based</span></li>
+<li><strong>In-silico arms for treatment studies.</strong> Once E/F model response, H's design could compare virtual cohorts
+under different therapies. <span class="chip speculative">speculative</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> A twin is only as trustworthy as its <strong>validation framework</strong>. Path: (1) one-tumour report (INT, n = 1) →
+(2) pilot cohorts (20 hosts × 3 placement classes) → (3) reader studies and train-synthetic/test-real at power →
+(4) continuous validation of each twin's forecasts against that patient's next real scan.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> public LIDC data; radiomics-lite (no new installs); small reader pools.</p>
+<ul>
+<li>Every section can be produced, but n = 1 gives no powered statistic. <span class="chip evidence">evidence-based</span></li>
+<li>A pilot cohort with a visual Turing test and a train-synthetic/test-real detection experiment. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> access to multi-centre data and reader panels; accepted virtual-trial methodology [G02].</p>
+<ul>
+<li>In-silico validation of a nodule-detection product, in the style of VICTRE, as supporting evidence. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant hardware; mature twin cohorts.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Analysis stays classical. Quantum machine-learning detectors may be benchmarked here against classical
+ones under fair rules [H06, H09], but a practical advantage on imaging data is unproven.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n = 1</td>
+<td>validation</td>
+<td>no powered conclusion</td>
+<td>multi-tumour cohort (post-INT)</td>
+</tr>
+<tr>
+<td>MRMC model too homogeneous</td>
+<td>technical</td>
+<td>R20b not matched</td>
+<td>heterogeneous surrogate</td>
+</tr>
+<tr>
+<td>Reader access</td>
+<td>data</td>
+<td>Turing tests need radiologists</td>
+<td>collaboration with a clinical partner</td>
+</tr>
+<tr>
+<td>Black-box vendor tool</td>
+<td>regulatory</td>
+<td>AI-Rad Companion results depend on documented inputs only</td>
+<td>documented-interface protocol (#21)</td>
+</tr>
+<tr>
+<td>Memorization</td>
+<td>regulatory</td>
+<td>generative baselines may leak patients [H07, H08]</td>
+<td>privacy-by-construction rendering</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
+<p>[H03] Badano et al. 2018 (VICTRE; Europe PMC PMC6324392; PDF to be added to <code>../../papers/</code>) · [F08], [F09], [F10] Chuquicusma-line visual Turing test papers · [H01], [A01] train-synthetic/test-real references · Gallas 2006, MRMC U-statistic variance (iMRMC). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<p>INT decides: <strong>CCR-H1</strong> replace the six open ValidationReport objects with the sub-schemas above (v1.1.0); <strong>CCR-H2</strong> <code>compiled_circuit.state_encoding</code> (bit order per node; H assumes little-endian over <code>qubit_map</code>); <strong>CCR-H3</strong> <code>hybrid_volume.tumor_type</code> / <code>size_mm</code> (H joins through <code>draw_id</code>).</p>
 
 </article>
 <p class="source">Source: <code>H_analysis/README.md</code></p>

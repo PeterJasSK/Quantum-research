@@ -90,10 +90,110 @@ Figures: `figures/r20a_cho_vs_ideal.png`, `figures/r20b_mrmc_se.png`.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
 Analysis stage (n/a). Forbidden claims (never made here): the phrases "more realistic because quantum", "quantum biology", "classically impossible". Reports every quantum number with its sim label, classical baseline and simulability number.
 
-## References (paper codes)
 
-<!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
-Contract change requests (INT decides): **CCR-H1** replace the six open ValidationReport objects with the sub-schemas above (v1.1.0); **CCR-H2** `compiled_circuit.state_encoding` (bit order per node; H assumes little-endian over `qubit_map`); **CCR-H3** `hybrid_volume.tumor_type` / `size_mm` (H joins through `draw_id`).
+## Pipeline readiness
+
+<!-- readiness: prototype -->
+
+Draft rating, not yet confirmed by the chain (the chain has not reached H). H's CLI accepts the chain's cohort
+manifest (the runner writes it in H's format), but the analysis is n = 1 in INT: MRMC and train-synthetic/test-real
+sections cannot give a number, and H does not yet label them "n=1 — not powered". R20b is not matched
+(SE 0.0033–0.0051 vs 0.0073), the pilot never ran, and radiomics is the lite engine. No `lidc_ref` run is on disk,
+so the first chain also pays a full LIDC reference pass.
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| n = 1 | data | no powered statistic from one tumour | plan Q7 | multi-tumour cohort (one per placement class) |
+| R20b not matched | component | the MRMC variance model is too homogeneous | R20b row | heterogeneous surrogate |
+| Radiomics-lite | component | not PyRadiomics; features not comparable to the literature | plan Q8 | `qp-re-h` env with pyradiomics |
+| No cached LIDC reference | precondition | the first `validate` stage runs a full `lidc_ref` | `H_analysis/runs/` absent | run `lidc_ref` once; the runner reuses the latest |
+| `contract_version` hard-coded | contract | `report.py:173` writes "1.0.0" whatever the contract version | agent read | use `shared.CONTRACT_VERSION` |
+
+**Used as-is in the chain?** Expected yes; its numbers will be n = 1 and must be read as plumbing, not validation. Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[H03] Badano et al. (VICTRE):** an entirely **in-silico imaging trial** that reproduced the conclusion of a
+  real clinical trial, and a precedent for regulatory use of simulation.
+- **[H04] Abadi, [G03] Badano, [G02] AAPM TG-387:** virtual clinical trials, stochastic digital human cohorts, and
+  their role in regulatory science.
+- **[F10] Chuquicusma:** a visual Turing test (can radiologists tell synthetic nodules from real ones?).
+  **[H01]** train-synthetic/test-real detection. **[H05]** PyRadiomics features.
+- **#21 AI-Rad Companion:** a commercial chest-CT assistant, treated as a documented-interface black box.
+
+Why it matters: the whole pipeline is only worth something if **real-world evidence** shows synthetic cohorts
+change detector performance on real patients.
+
+### 2. Contribution
+
+- A channelized Hotelling observer checked against the analytic ideal observer (max difference 0.0054). <span class="chip evidence">evidence-based</span>
+- MRMC variance reproduction **not matched** (SE 0.0033–0.0051 vs 0.0073). <span class="chip evidence">evidence-based</span>
+- A six-section validation report (realism, radiomics, utility, drift, certificate statistics, baseline), plus a
+  cohort manifest that INT writes from real chain files. <span class="chip evidence">evidence-based</span>
+- A longitudinal protocol for AI-Rad Companion: reported vs true volume and doubling time (not run). <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**End goal:** show, with powered statistics, that (a) readers cannot tell synthetic from real nodules,
+(b) detectors trained or tested on synthetic cohorts behave the same on real data, and (c) a commercial
+assistant's volume and growth errors can be measured against exact ground truth. This is the evidence a clinical
+partner needs. <span class="chip extrapolation">extrapolation</span>
+
+### 4. Beyond lungs
+
+- **Virtual trials for any device or AI** [H04, G02]: the VICTRE design is not lung-specific. <span class="chip evidence">evidence-based</span>
+- **In-silico arms for treatment studies.** Once E/F model response, H's design could compare virtual cohorts
+  under different therapies. <span class="chip speculative">speculative</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> A twin is only as trustworthy as its **validation framework**. Path: (1) one-tumour report (INT, n = 1) →
+(2) pilot cohorts (20 hosts × 3 placement classes) → (3) reader studies and train-synthetic/test-real at power →
+(4) continuous validation of each twin's forecasts against that patient's next real scan.
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* public LIDC data; radiomics-lite (no new installs); small reader pools.
+- Every section can be produced, but n = 1 gives no powered statistic. <span class="chip evidence">evidence-based</span>
+- A pilot cohort with a visual Turing test and a train-synthetic/test-real detection experiment. <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* access to multi-centre data and reader panels; accepted virtual-trial methodology [G02].
+- In-silico validation of a nodule-detection product, in the style of VICTRE, as supporting evidence. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant hardware; mature twin cohorts.
+- <span class="chip speculative">speculative</span> Analysis stays classical. Quantum machine-learning detectors may be benchmarked here against classical
+  ones under fair rules [H06, H09], but a practical advantage on imaging data is unproven.
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| n = 1 | validation | no powered conclusion | multi-tumour cohort (post-INT) |
+| MRMC model too homogeneous | technical | R20b not matched | heterogeneous surrogate |
+| Reader access | data | Turing tests need radiologists | collaboration with a clinical partner |
+| Black-box vendor tool | regulatory | AI-Rad Companion results depend on documented inputs only | documented-interface protocol (#21) |
+| Memorization | regulatory | generative baselines may leak patients [H07, H08] | privacy-by-construction rendering |
 
 ## References (paper codes)
 
@@ -103,4 +203,4 @@ Contract change requests (INT decides): **CCR-H1** replace the six open Validati
 
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-_None yet._
+INT decides: **CCR-H1** replace the six open ValidationReport objects with the sub-schemas above (v1.1.0); **CCR-H2** `compiled_circuit.state_encoding` (bit order per node; H assumes little-endian over `qubit_map`); **CCR-H3** `hybrid_volume.tumor_type` / `size_mm` (H joins through `draw_id`).

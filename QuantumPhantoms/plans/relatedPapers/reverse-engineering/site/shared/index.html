@@ -12,9 +12,8 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
@@ -76,7 +75,7 @@ Letters import only <code>shared</code>, never another letter, and nothing from 
 </tr>
 </tbody>
 </table>
-<h2><code>seedhash</code> (no qiskit)</h2>
+<h2 id="seedhash-no-qiskit"><code>seedhash</code> (no qiskit)</h2>
 <ul>
 <li><code>sha256_bytes(data)</code>, <code>sha256_file(path)</code>: hex digests.</li>
 <li><code>canonical_json(obj) -&gt; bytes</code>: sorted keys, <code>(&quot;,&quot;, &quot;:&quot;)</code> separators, UTF-8. Everything hashed or signed uses it.</li>
@@ -87,7 +86,7 @@ Letters import only <code>shared</code>, never another letter, and nothing from 
 <li><code>rng(seed_hex, label) -&gt; numpy.random.Generator</code> (PCG64): <strong>the</strong> way to seed every PRNG in E/F from
 C's <code>extracted_seed_hex</code>. Use a distinct label per consumer, e.g. <code>rng(seed, &quot;E.growth&quot;)</code>, <code>rng(seed, &quot;F.noise&quot;)</code>.</li>
 </ul>
-<h2><code>volumes</code></h2>
+<h2 id="volumes"><code>volumes</code></h2>
 <ul>
 <li><code>read_volume(path) -&gt; (array_zyx, meta)</code>: reorients to LPS identity; <code>meta</code> has <code>size_xyz</code>, <code>spacing_mm_xyz</code>,
 <code>origin_mm_lps</code>, <code>direction</code>.</li>
@@ -95,7 +94,7 @@ C's <code>extracted_seed_hex</code>. Use a distinct label per consumer, e.g. <co
 <li><code>read_header(path)</code>, <code>same_grid(a, b)</code>, <code>check_same_grid(paths) -&gt; [errors]</code>.</li>
 <li><code>save_npz(path, **arrays)</code> (byte-identical output), <code>load_npz(path, required={key: (dtype, ndim)})</code>.</li>
 </ul>
-<h2><code>simbackend</code></h2>
+<h2 id="simbackend"><code>simbackend</code></h2>
 <ul>
 <li><code>REFERENCE_FAKE = &quot;FakeMarrakesh&quot;</code>; <code>fake_backend()</code> (cached).</li>
 <li><code>transpile_heron(circ, *, seed, optimization_level=1)</code>: always to the FakeMarrakesh target (heavy-hex, CZ).</li>
@@ -107,7 +106,7 @@ same transpiled circuit, so only the noise differs.</li>
 <li><code>circuit_hash(circ)</code>: sha256 of <code>qiskit.qasm3.dumps(circ)</code>.</li>
 <li>Not checked here: Aer support for <strong>noisy dynamic-circuit feed-forward</strong>. D must verify it before relying on it.</li>
 </ul>
-<h2><code>runrecord</code></h2>
+<h2 id="runrecord"><code>runrecord</code></h2>
 <pre><code class="language-python">from shared.runrecord import start_run
 from shared.simbackend import run_counts
 
@@ -120,12 +119,12 @@ run.finish(&quot;notes&quot;)                                        # validates
 </code></pre>
 <p><code>run.json</code> records backend, sim label, calibration snapshot, job IDs, transpiled hashes, counts files,
 code hash, git state and seed. <code>runs/</code> folders are gitignored.</p>
-<h2><code>validate</code></h2>
+<h2 id="validate"><code>validate</code></h2>
 <pre><code class="language-text">python -m shared.validate --stubs              # all stubs
 python -m shared.validate --status             # all letter status.json + the 21-target set
 python -m shared.validate path/to/output.json  # any contract file (or ledger .jsonl)
 </code></pre>
-<h2><code>site.build</code></h2>
+<h2 id="site-build"><code>site.build</code></h2>
 <pre><code class="language-text">python -m shared.site.build                    # renders index.html + site/ (letters: preview only, never commit)
 python -m shared.site.build --update-readme    # also refreshes the STATUS table in README.md (W / INT only)
 </code></pre>

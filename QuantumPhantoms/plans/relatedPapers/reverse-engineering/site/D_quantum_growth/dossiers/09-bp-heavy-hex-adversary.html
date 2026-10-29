@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-dissected">dissected</span>
   <span class="chip">#9</span>
   <span class="chip">letter D</span>
   <span class="chip">★★</span>
   <span class="chip">classical</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim n/a</span>
+  <span class="chip">sim n/a</span>
   
 </div>
 
@@ -38,30 +37,95 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
+<h2 id="concept">Concept</h2>
 <!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
+<p>Tindall et al. [HW04] simulate IBM's 127-qubit Eagle kicked-Ising experiment classically with a tensor network that has one tensor per qubit and one bond per coupling edge, kept in a canonical gauge by belief propagation (BP): messages along edges are iterated to a fixed point and give the environment for truncation and expectation values. It is exact on trees and accurate when correlations are locally tree-like. Here it is the <strong>adversary</strong>: the measured number of how small a bond dimension reproduces each D circuit, i.e. the measured &quot;no L2 claim&quot;.</p>
+<h2 id="equations">Equations</h2>
 <!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
+<pre><code class="language-text">state:            tensors T_i[p, legs per edge], bond weights lambda_e (Vidal form)
+2q gate on (i,j): weight the other legs by lambda, apply the gate, SVD, keep chi, divide the weights out (simple update)
+BP messages:      m_{i-&gt;j}[x,x'] = sum_{p,b} T_i[p,x,b] conj(T_i[p,x',b']) prod_{k != j} m_{k-&gt;i}[b_k,b_k']   (normalised, iterated)
+BP gauge:         m_{i-&gt;j} = P_i P_i^+, m_{j-&gt;i} = P_j P_j^+, P_i^T P_j = U L W^+ ;  X_i = pinv(P_i^T) U,  X_j = (W^+ pinv(P_j))^T ;  new bond L
+expectation:      &lt;O_i&gt; from T_i contracted with incoming messages;  &lt;O_i O_j&gt; from the two edge environments
+kicked Ising (HW04 Eq. 1):  U = prod_&lt;vv'&gt; exp(i pi/4 Z Z) prod_v exp(-i theta_h X / 2)
+fidelity_vs_sim (plan Q6):  1 - 1/2 mean |BP - exact| over every &lt;Z_i&gt;, nearest-neighbour &lt;Z_i Z_j&gt;, &lt;X_i X_j&gt;, clipped to [0,1]
+</code></pre>
+<h2 id="parameters">Parameters</h2>
 <!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
+<p>chi ∈ {2, 4, 8, 16} for D circuits; proof-of-concept Tindall sweep chi ∈ {2, 4, 8}, θ_h ∈ {π/4, 1.0} for the exact comparison and 5 θ_h points for the ⟨Z₆₂⟩ sweep (cut down on request: the full 5-χ, 9-θ sweep took more than an hour with other jobs on the machine). Eagle coupling map from FakeSherbrooke (geometry only), 5 Trotter steps, BP ≤ 60 iterations, tol 10⁻¹⁰.</p>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
 <!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
+<p>[HW04] p. 2: &quot;For short circuit depths n &lt; 6 our method gives perfect agreement with the exact simulation&quot; (the light cone does not reach round the loops); BP error grows at larger depth and shrinks with the number of hexagons at fixed χ.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
 <!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
+<p><code>python -m D_quantum_growth.repro.tindall_kicked_ising</code> (figure <code>tindall_magnetisation.png</code>; classical, no noise model). <strong>Proof of concept</strong>, not a full reproduction.</p>
+<p>Max |BP − exact light-cone statevector| of ⟨Z⟩ over 3 sites (0, 1, 2; light cone ≤ 20 qubits), 5 steps:</p>
+<table>
+<thead>
+<tr>
+<th>θ_h</th>
+<th>χ = 2</th>
+<th>χ = 4</th>
+<th>χ = 8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>π/4</td>
+<td>3.8·10⁻¹</td>
+<td>7.7·10⁻²</td>
+<td>5.7·10⁻³</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>6.9·10⁻¹</td>
+<td>2.1·10⁻¹</td>
+<td>4.3·10⁻²</td>
+</tr>
+</tbody>
+</table>
+<p>The error falls monotonically with χ, but the 10⁻³ level the paper's &quot;perfect agreement&quot; implies is <strong>not reached at χ ≤ 8</strong> (this repro caps χ at 8; the paper uses far larger bond dimensions). ⟨Z₆₂⟩ sweep over θ_h = 0, π/8, π/4, 3π/8, π/2 at χ = 8: +1.000, +0.922, +0.530, +0.102, +0.007. Separate sanity check: on small random loopy circuits BP is exact at χ ≥ 4 for shallow depth and keeps a ~10⁻² loop error at depth 5 on a ring with chords, as expected for BP.</p>
+<h2 id="adaptation">Adaptation</h2>
 <!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
+<p><code>src/bp.py</code> runs on every D circuit (<code>python -m D_quantum_growth.src.bp --run &lt;run_dir&gt;</code>, also called by <code>grow</code>): lineage generation blocks, q-machine step, and the QCA t_max circuit (transpiled to the FakeMarrakesh coupling map so every gate is an edge). Output <code>simulability_report</code> (circuit_hash, method, bond_dim, fidelity_vs_sim, runtime_s). Measured (run <code>20261029-112717-grow-ideal</code>, <code>…-112719-grow-heron</code>):</p>
+<table>
+<thead>
+<tr>
+<th>circuit</th>
+<th>smallest χ with fidelity_vs_sim ≥ 0.99</th>
+<th>fidelity at χ = 2 / 4 / 8 / 16</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lineage blocks (divide_Z, divide_X, chsh)</td>
+<td>2</td>
+<td>1.000</td>
+</tr>
+<tr>
+<td>q-machine step</td>
+<td>2</td>
+<td>1.000</td>
+</tr>
+<tr>
+<td>QCA, 21-qubit patch, t = 10 (ideal run)</td>
+<td><strong>none ≤ 16</strong></td>
+<td>0.799 / 0.830 / 0.881 / 0.899 (χ = 16: 20 min)</td>
+</tr>
+<tr>
+<td>QCA, 12-qubit hexagon, t = 10 (Heron run)</td>
+<td><strong>none ≤ 16</strong></td>
+<td>0.888 / 0.949 / 0.960 / 0.956</td>
+</tr>
+</tbody>
+</table>
+<p>The lineage and q-machine circuits are tiny (3 and 2 qubits) and BP-trivial; they are not evidence of anything beyond their size. The QCA circuits are not reproduced to 0.99 by BP up to χ = 16: the hexagon saturates near 0.96 at χ ≥ 8 (single 12-ring plus loop correction), the full patch is still rising at χ = 16. This says BP is not a cheap classical shortcut for these QCA circuits at this depth; it does <strong>not</strong> establish quantum advantage (an exact 21-qubit statevector is trivial).</p>
+<h2 id="verdict">Verdict</h2>
 <!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
+<p><strong>dissected</strong>, used as the adversary; the reproduction is a proof of concept (monotone convergence, paper's exact-agreement level not reached at χ ≤ 8). Classical method, claim level n/a. The explicit BP gauge step is implemented (<code>BPTN.gauge</code>) and runs in every simulation; for expectation values it does not change results (BP environments are gauge-invariant).</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
 <!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<p><code>bp.py</code> is a drop-in adversary for any circuit whose 2-qubit gates sit on coupling edges; raising χ and the sweep size is the first step to a full reproduction of HW04's Fig. 4. INT: run it on B's real founder circuit and on G's receipts' circuits.</p>
 
 </article>
 <p class="source">Source: <code>D_quantum_growth/dossiers/09-bp-heavy-hex-adversary.md</code></p>

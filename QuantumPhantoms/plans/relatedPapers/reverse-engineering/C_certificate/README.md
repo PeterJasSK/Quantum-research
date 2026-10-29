@@ -92,6 +92,115 @@ L0 only. **Simulated CHSH certifies nothing**: the deliverable is the accounting
 - **External seed source.** The external pulse is **NIST Beacon 2.0**, fully verified offline. CURBy [C04] is dissected only: its CIDs are not recomputed, and its latest round (2025-08-22) is flagged `isQuantum: False`.
 - **Not reachable.** Liu 2025 [C02] (XEB certified randomness) is an L2-type claim and is read only.
 
+
+## Pipeline readiness
+
+<!-- readiness: caveats -->
+
+C is the only quantum stage that ran inside the chain: four `commit → certify` prefixes in Heron mode all passed
+(Ŝ 2.722–2.762, S_low 2.403–2.442, 15 668–17 869 certified bits; `C_certificate/runs/20261029-18*-chsh-heron`).
+No chain obtained a beacon pulse later than its commit: NIST `/pulse/last` lagged 2–3 min and then timed out, so the
+runner fell back to the cache (`beacon_fresh: false`). Reusing that pulse reproduced the **identical** certificate and
+seed (`7dfb4d50…`) in two chains with different commits. "Usable with caveats" means inside this simulated pipeline:
+simulated CHSH certifies nothing.
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| Beacon freshness | integration | the test-round choice is not provably post-commit | `runs/20261029-1851*-e2e-probe-prefix3/4` `chain.json` `beacon_fetch` | fetch only the newest pulse with backoff; select "first pulse after `committed_utc`" in `beacon.py` |
+| Same pulse ⇒ same seed | assumption | the simulator is seeded from the public pulse, so two chains (or anyone holding the pulse) reproduce the "certified" seed | prefix3 vs prefix4: byte-identical `certificate.json` | refuse a pulse already used (the runner warns); real device randomness on hardware |
+| `fetch_pulses` overwrites the tracked cache | integration | every chain run dirties git and mixes repro and chain pulses | probe `C.fetch` | write chain pulses into the run dir |
+| `certify` exits 0 on S ≤ 2 | integration | callers must parse `status`; B, D and E exit 2 | `certify.py` `main` | exit 2 on fail |
+| i.i.d. Hoeffding, not EAT | assumption | not valid for a hardware claim | honesty notes above | EAT bound (post-epic) |
+| Certificate fields | contract | no `beacon_pulse_id`, `chsh_S_lower`, `eps`; entropy not recomputable | runner check `_post_certify` | CCR-C2, CCR-C3 |
+
+**Used as-is in the chain?** Yes. It works end to end in the prefix chain; freshness and seed reuse are the caveats. Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[C01] Pironio et al. 2010:** randomness **certified by a Bell-inequality violation**. A CHSH value above 2
+  bounds how predictable the outputs can be, without trusting the device.
+- **[C05] Vazirani–Vidick:** "certifiable quantum dice": randomness expansion with untrusted devices.
+- **[C02] Liu 2025:** certified randomness from random-circuit sampling on a trapped-ion processor (a classical-
+  hardness-based claim; read only here).
+- **[C04] Kavuri (CURBy):** traceable public random numbers published in a hash-chained beacon.
+
+Why it matters: "random" becomes **auditable**. You get a number of certified bits with a proof, plus a public
+timestamp that shows the randomness was not chosen after the fact.
+
+### 2. Contribution
+
+- The accounting pipeline reproduced: 40.8 certified bits against Pironio's 42 (−2.8 %). <span class="chip evidence">evidence-based</span>
+- A beacon chain verified offline: 11/11 links and 12/12 signatures; a 1-bit edit is caught at its pulse. <span class="chip evidence">evidence-based</span>
+- In the INT chain prefix (Heron-class noise): Ŝ 2.722–2.762, S_low 2.403–2.442, 15 668–17 869 certified bits; the
+  S ≤ 2 path is rejected and logged. <span class="chip evidence">evidence-based</span>
+- INT findings: no post-commit pulse was obtained (beacon lag), and a reused pulse reproduces the same seed. <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**End goal:** every synthetic cohort used to train or test a cancer detector carries a certificate proving its
+random choices were fixed by an external, timestamped source, **not hand-picked** (no cherry-picking of easy or
+hard cases after seeing results). This is data credibility for audits and regulators. It does not raise
+detection accuracy by itself. <span class="chip extrapolation">extrapolation</span>
+
+### 4. Beyond lungs
+
+- **Any randomized step in medicine:** virtual-trial arm assignment, Monte Carlo dose simulation (how the PRNG
+  affects radiotherapy simulations is studied in [E05]), and audit of trial randomization. <span class="chip extrapolation">extrapolation</span>
+- **Other synthetic data.** MR, pathology and genomics generators need the same "not cherry-picked" guarantee. <span class="chip extrapolation">extrapolation</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> A digital twin runs many stochastic simulations (growth, response, imaging). C's role is to make each one
+**replayable and trustworthy**: every random input is traceable to a certified, timestamped source. Path:
+(1) a simulated certificate + public beacon (now) → (2) a hardware certificate per cohort →
+(3) device-independent certified randomness as a service that twin platforms call for every simulation batch.
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* superconducting hardware without loophole-free conditions; i.i.d. finite statistics; NIST Beacon available.
+- Accounting is validated on simulated data; **simulated CHSH certifies nothing**. <span class="chip evidence">evidence-based</span>
+- Loophole-free Bell tests on superconducting circuits exist in the lab [C03]. Device-independent randomness
+  expansion has been shown with photons [C06]. <span class="chip evidence">evidence-based</span>
+- One Heron hardware CHSH run gives a real (not loophole-free) certificate for a small cohort. <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* entropy-accumulation (EAT) finite statistics [C06, C07]; service-grade public beacons.
+- Certified-randomness services become a standard provenance stamp for regulated synthetic datasets. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant hardware.
+- <span class="chip speculative">speculative</span> Certified randomness from random-circuit sampling at scale [C02], where the guarantee rests on classical
+  hardness (claim level L2), becomes cheap enough to stamp every simulation batch of a twin platform.
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| Simulation certifies nothing | validation | the current certificates are a pipeline test only | hardware run (post-epic) |
+| i.i.d. vs EAT | technical | i.i.d. bounds are not valid against an adversarial device | EAT bound [C06, C07] |
+| Beacon dependency | technical | NIST lag 2–3 min and timeouts were observed in INT | backoff; first pulse after commit |
+| Pulse reuse ⇒ same seed | technical | two cohorts can be identical | refuse used pulses |
+| No standard for "certified" medical data | regulatory | certificates may carry no legal weight | position as traceability evidence, not compliance |
+
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->

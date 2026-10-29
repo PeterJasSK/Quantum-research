@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-dissected">dissected</span>
   <span class="chip">#12</span>
   <span class="chip">letter E</span>
   <span class="chip">★</span>
@@ -38,30 +37,79 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>Poleszczuk &amp; Enderling (Appl. Math. 2014, arXiv:1309.6015) [E03] is an implementation paper about how to make agent-based tumor cellular automata fast enough for millions of cells. The model is a 2-D/3-D lattice with cancer stem cells (immortal, unlimited divisions) and non-stem cells (limited proliferation potential ρ, death rate α, migration µ). Cells need a vacant neighbour to divide or migrate, and they are updated in random order once per day. The contribution is the data structures:</p>
+<ul>
+<li>the lattice stored as a <strong>flattened 1-D array</strong>, so the neighbours of index i are i ± fixed strides (cache-friendly);</li>
+<li>a separate <strong>list of the cells</strong> (agents), iterated in random order, instead of scanning the whole lattice;</li>
+<li>a <strong>dynamically growing domain</strong>: the lattice is reallocated only when the tumor approaches the border;</li>
+<li>a lookup of vacant neighbours, with the right structure chosen by tumor density (dense vs diffusive).</li>
+</ul>
+<h2 id="equations">Equations</h2>
+<p>There is no new growth law. The update per step (one day) for each cell, in random order:</p>
+<pre><code class="language-text">if no vacant Moore neighbour: quiescent (no action)
+else, with probability p_div · Δt:  divide into a random vacant neighbour
+        stem cell:  symmetric with probability p_s, otherwise asymmetric (one stem + one non-stem, ρ = ρmax)
+        non-stem:   ρ ← ρ − 1;  ρ = 0 → cell dies
+     else with probability µ · Δt: migrate to a random vacant neighbour
+non-stem cells die spontaneously with rate α
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Meaning</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cct</td>
+<td>cell-cycle time (≈ 1 day)</td>
+<td>sets p_div per step</td>
+</tr>
+<tr>
+<td>ρmax</td>
+<td>proliferation capacity of non-stem cells</td>
+<td>E03 §2</td>
+</tr>
+<tr>
+<td>p_s</td>
+<td>symmetric stem-division probability</td>
+<td>E03 §2</td>
+</tr>
+<tr>
+<td>α, µ</td>
+<td>spontaneous death, migration</td>
+<td>E03 §2</td>
+</tr>
+<tr>
+<td>p = 0.99 / 0.5</td>
+<td>&quot;dense&quot; vs &quot;diffusive&quot; occupancy cases used for the data-structure comparison</td>
+<td>E03 §3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>Simulation speed and memory for populations of millions of cells on a desktop PC, for the different data structures (E03 §3–4). The result is an engineering benchmark, not a biological number.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p>Not reproduced (★, read only; plan Q9). At nodule scale the lung lattice holds ≤ 10⁶ voxels (a 30 mm nodule at 0.5 mm is ≈ 2 × 10⁵ cells), and one <code>grow</code> run takes seconds (stub S001: about 520 simulated days in ~3 s). There is no performance problem to benchmark against.</p>
+<h2 id="adaptation">Adaptation</h2>
+<p>These ideas are used in <code>src/engine.py</code>, without a reproduction:</p>
+<ul>
+<li><strong>Flattened, padded 1-D lattice.</strong> Neighbour offsets are fixed integer strides. The padding is a hard barrier, so no bounds checks are needed.</li>
+<li><strong>Active-cell list.</strong> Only proliferating voxels (<code>np.flatnonzero(state == 1)</code>) are iterated, in a seeded random order, not the whole box.</li>
+<li><strong>Bounding-box work.</strong> Distance transform, edge detection and contact counts run on the tumor's bounding box (+2 voxels), not on the full lattice.</li>
+</ul>
+<p>The growing domain is not used: E sizes the box up front from the drawn size and the expected follow-up growth, and logs <code>touched_box_edge</code> if the tumor reaches it (false in all runs so far).</p>
+<h2 id="verdict">Verdict</h2>
+<p><strong>dissected.</strong> The ideas are documented and partly used. A reproduction is not needed at nodule scale, so the state is left non-terminal: cohort-scale work (thousands of tumors, or whole-lobe lattices) may advance it later.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li>If <strong>H</strong> cohorts or a whole-lung lattice make <code>grow</code> slow, port the inner division loop of <code>engine.py</code> to a compiled kernel. Numba is not installed, so this needs a dependency decision. Add E03's growing domain at the same time.</li>
+<li>The density-dependent choice of vacant-neighbour structure (E03 §3) matters for diffusive (ground-glass-like) growth, if F/H ever need a sparse, lepidic cell pattern.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>E_classical_growth/dossiers/12-hpc-cellular-automaton.md</code></p>

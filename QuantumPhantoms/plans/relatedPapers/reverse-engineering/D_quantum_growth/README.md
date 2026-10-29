@@ -117,6 +117,120 @@ L1 (lineage witness; QCA witness only where it passes) and L1′ (memory advanta
 - **BP (#9).** BP is a classical approximation; "smallest χ ≥ 0.99" is the measured simulability number. The Tindall reproduction is a proof of concept (χ ≤ 8).
 - **Seeds and hidden choices** come from the certificate seed via `shared.seedhash`; no MVP or QALife/QDEP code is imported.
 
+
+## Pipeline readiness
+
+<!-- readiness: prototype -->
+
+D runs standalone, but the hand-off from B is not real: `grow --tumor-draw` only records the draw as an upstream
+reference, and the lineage uses fixed fate angles (`PHI0, DPHI = 0.5, 0.35`) with the parent in |1⟩
+(`src/lineage.py:26, 135`), so every chain tumour gets the same founder. Under Heron-class noise the QCA witness fails
+(seed shape L0) while `witness_record` still says L1 (CCR-D4). D's BP adversary cannot take B's circuits (probe
+`runs/20261029-185947-probe-gaps`: `--circuit` missing, `--run` required).
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| Founder ignores B's draw | integration | the quantum growth is the same for every drawn tumour: D is wired, not integrated | `lineage.py:26, 135`; runner check `_post_grow_q` | founder preset from draw `type × margin`, lineage seed from `shape_seed_hex` (plan AC-8) |
+| QCA witness fails under Heron | component | the seed shape E grows from carries L0 only | D-3 table: negativity 0 (decohered), witness failed | smaller patch, DD, or ideal-only L1 with the Heron result as the honest bound |
+| Ideal QCA witness 3.04σ, best of 22 edges | assumption | no look-elsewhere correction; weak even when it passes | D-3 table | Bonferroni / pre-registered edge |
+| BP adversary not reusable | gap | B's circuits have no simulability number | probe `D.bp_b` | `bp --circuit <compiled_circuit.json>` |
+| Witness `claim_level` const L1 | contract | a failed witness is still labelled L1 | CCR-D4 | allow L0 on fail |
+| Memory advantage small | component | d_KL 0.00189 vs 0.00315 at a sampling floor of 0.00184 | D-5 table | a more strongly modulated process |
+
+**Used as-is in the chain?** Runs with the chain's flags, but the draw does not influence it; not integrated in substance. Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[D06] Gu et al. ("Occam's quantum razor"):** quantum models of stochastic processes can need **less memory**
+  than the best classical model.
+- **[D07] Palsson, [D08] Ghafari:** experimental demonstrations of that memory advantage (photonic).
+- **[D16] Wu:** quantum dimensionality reduction for stochastic simulation; **[D17] Elliott:** memory-efficient tracking.
+- **[D13] Hillberry, [D14] Jones, [D03] Farrelly:** "Goldilocks" quantum cellular automata, simple local rules that
+  produce complex, entangled dynamics, run on hardware.
+- **[HW05] Bäumer:** dynamic circuits (measure mid-circuit, then feed forward). **[HW04] Tindall:** a classical
+  belief-propagation (BP) simulator that reproduces such hardware experiments.
+
+Why it matters: these papers ask where a quantum description of a growth-like process is *genuinely more compact*,
+and BP checks honestly whether a classical simulator does just as well.
+
+### 2. Contribution
+
+- Analytic matches: Gu's perturbed coin (C_q 0.4690 at p = 0.2) and Wu's PMD (D_q = 1). <span class="chip evidence">evidence-based</span>
+- Jones T6 clustering within figure-reading tolerance (max deviation 0.008). <span class="chip evidence">evidence-based</span>
+- Lineage witness that survives Heron-class noise: S_chsh 2.602 ± 0.038, ⟨XX⟩+⟨ZZ⟩ 1.40–1.62 (L1). <span class="chip evidence">evidence-based</span>
+- Memory advantage: C_q measured 0.1743 against C_μ 1.799 under Heron noise. The distortion gap is small
+  (d_KL 0.00189 vs 0.00315, floor 0.00184) (L1′). <span class="chip evidence">evidence-based</span>
+- The QCA witness passes ideal (3.04σ) and **fails** under Heron noise (L0). BP finds none ≤ χ 16 for the 21-qubit
+  QCA. Bäumer's crossover is **not** reproduced. <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**Honest position:** D gives **no direct detection benefit** today. <span class="chip evidence">evidence-based</span> Its possible end goal is indirect:
+compact stochastic models of cell fate and division timing that make large virtual-cohort simulation cheaper, and
+seed shapes that E grows from. Clinical relevance would require fitting these models to real cell or imaging data,
+which nobody has done. <span class="chip speculative">speculative</span>
+
+### 4. Beyond lungs
+
+- **Process-agnostic.** The memory-advantage framework applies to any stochastic process: cell-cycle timing, immune
+  dynamics, switching between drug-sensitive and resistant states. <span class="chip extrapolation">extrapolation</span>
+- **Classical competitors.** Tensor-network solvers of the chemical master equation [D09–D12] are the baseline any
+  biological use must beat. <span class="chip evidence">evidence-based</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> A twin is many coupled stochastic processes tracked over time. If the memory advantage holds for *complex*
+processes, quantum process models could store patient-state histories more compactly [D17]. Path:
+(1) 1-qubit models with small advantage (now) → (2) multi-qubit models of realistic cell-cycle data →
+(3) coupled process models inside a twin. Step 2 has no evidence yet.
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* noisy devices; shallow heavy-hex circuits that BP simulates.
+- Small blocks keep their witness under Heron noise (lineage S 2.602); large QCA patches do not. <span class="chip evidence">evidence-based</span>
+- Shallow circuits are BP-simulable at small χ (lineage χ = 2), so no classical-hardness claim is made. <span class="chip evidence">evidence-based</span>
+- Memory advantage is shown on hardware for 1–2-qubit process models (photonic precedent [D07, D08]). <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* tens of logical qubits; fast mid-circuit feed-forward.
+- QCA patches move beyond BP's reach. (No χ ≤ 16 at 21 qubits is a hint, not a proof.) <span class="chip extrapolation">extrapolation</span>
+- Multi-qubit causal-state models are fitted to measured cell-cycle statistics. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant hardware.
+- <span class="chip speculative">speculative</span> Quantum simulation of large stochastic tissue models in regimes where classical tensor methods fail would
+  be a claim-level-L2 result, and fault tolerance is what would make it testable. Whether biology needs those
+  regimes is itself an open question.
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| Classical simulability | technical | BP or tensor networks may match any shallow circuit | BP number next to every claim |
+| Witness fragility | technical | QCA witness fails under Heron noise | smaller patches; error mitigation |
+| Illustrative parameters | validation | fate angles are constants, not fitted to biology | fit to cell-tracking data before any biological claim |
+| Overclaiming | regulatory | "quantum" in a medical context invites unfounded readings | claim ladder L0–L3 on every number |
+| Draw not wired | technical | D ignores B's tumour (INT finding) | founder from draw (plan AC-8) |
+
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->

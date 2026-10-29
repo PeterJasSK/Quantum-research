@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/G_provenance/dossiers/19-ct-gan-tamper-test.html">#19 listed</a>
+  <a class="badge state-adapted" href="../../site/G_provenance/dossiers/19-ct-gan-tamper-test.html">#19 adapted</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,10 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/G_provenance/index.html</code>.
 Target states live only in <a href="../../G_provenance/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
 <p>Commit rulebook + code hash before the job; fill the receipt (job IDs, counts, S/H_min, witnesses, params, seed, code hash); sign with Ed25519; append to a hash-chained ledger (format modelled on C's beacon chain) and a DICOM tag. A CT-GAN-style injection/removal must fail verification. Pitched as traceability, not security.</p>
-<h2>Targets and their status</h2>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,11 +51,11 @@ Target states live only in <a href="../../G_provenance/status.json"><code>status
 <td><a href="dossiers/19-ct-gan-tamper-test.html">CT-GAN as a tamper test</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
 <li><code>rulebook</code> — stub: <a href="../../shared/stubs/rulebook/rulebook.json"><code>shared/stubs/rulebook/rulebook.json</code></a> · schema: <a href="../../shared/contracts/rulebook.schema.json"><code>rulebook.schema.json</code></a></li>
@@ -68,30 +67,271 @@ Target states live only in <a href="../../G_provenance/status.json"><code>status
 <li><code>hybrid_volume</code> — stub: <a href="../../shared/stubs/hybrid_volume/hybrid_volume.json"><code>shared/stubs/hybrid_volume/hybrid_volume.json</code></a> · schema: <a href="../../shared/contracts/hybrid_volume.schema.json"><code>hybrid_volume.schema.json</code></a></li>
 <li><code>run_record</code> — stub: <a href="../../shared/stubs/run_record/run.json"><code>shared/stubs/run_record/run.json</code></a> · schema: <a href="../../shared/contracts/run_record.schema.json"><code>run_record.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
 <li><code>receipt</code> — schema: <a href="../../shared/contracts/receipt.schema.json"><code>receipt.schema.json</code></a> · stub example: <a href="../../shared/stubs/receipt/receipt.json"><code>shared/stubs/receipt/receipt.json</code></a></li>
 <li><code>ledger_entry</code> — schema: <a href="../../shared/contracts/ledger_entry.schema.json"><code>ledger_entry.schema.json</code></a> · stub example: <a href="../../shared/stubs/ledger_entry/ledger.jsonl"><code>shared/stubs/ledger_entry/ledger.jsonl</code></a></li>
 </ul>
-<h2>How to run (sim commands)</h2>
-<!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
-     "simulated: Heron-class noise (FakeMarrakesh)". Runs go to G_provenance/runs/ via shared.runrecord. -->
-<p><em>Pending (feature G).</em></p>
-<h2>Reproduced result vs. paper</h2>
-<!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature G).</em> Planned: CT-GAN injection and removal both detected by signature/receipt verification.</p>
-<h2>Claim level and honesty notes</h2>
-<!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
-     Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>Provenance layer (n/a). Everything after the quantum job must be deterministic and replayable from the receipt.</p>
-<h2>References (paper codes)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
+<p>Working directory <code>reverse-engineering/</code>. G runs no quantum job; every number it reports comes from files other letters made.
+Runs go to <code>G_provenance/runs/</code> (gitignored: keys, the ledger, series that may hold LIDC voxels).</p>
+<pre><code class="language-bash">python -m G_provenance.src.keys init                       # once: demo Ed25519 key + trusted_keys.json
+python -m G_provenance.src.receipt commit                  # BEFORE the job: prints &quot;committed: ledger index i&quot;
+# ... run C (certify), E / F, as usual ...
+python -m G_provenance.src.receipt fill --commit G_provenance/runs/&lt;ts&gt;-commit/receipt.json \
+    [--certificate .../certificate.json --job .../quantum_job_record.json --hybrid .../hybrid_volume.json ...]
+python -m G_provenance.src.dicom_export G_provenance/runs/&lt;ts&gt;-fill/receipt.json   # CT series with provenance tags
+python -m G_provenance.src.verify G_provenance/runs/&lt;ts&gt;-dicom/series              # VERIFIED / TAMPER DETECTED: ...
+python -m G_provenance.repro.r19_ctgan_tamper --n 20       # target #19: tamper test, table + figures
+</code></pre>
+<p>Inputs not given default to <code>shared/stubs/</code> (exempt from the order and code checks, recorded in <code>fill_report.json</code>).
+A certificate with <code>status: &quot;fail&quot;</code> signs nothing (&quot;certificate failed, nothing to sign&quot;, exit 0). Any failed check
+(order, producer code hash, rulebook hash) writes <code>fill_report.json</code>, signs nothing and exits 1.</p>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
+<p>Target #19 (G01 §7.2: sign each scan to detect CT-GAN tampering). The GAN is replaced by a classical in-painter;
+everything else in the pre/post-processing follows the paper (see the <a href="dossiers/19-ct-gan-tamper-test.html">dossier</a>).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>paper</th>
+<th>ours (stub phantom, n = 20 per kind)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>injection / removal detected by the signature</td>
+<td>qualitative claim</td>
+<td>20 / 20 and 20 / 20, failing check <code>voxels</code>, slice Jaccard 1.00</td>
+</tr>
+<tr>
+<td>forgeries: seed edit / re-sign / ledger rewrite / commit deletion</td>
+<td>—</td>
+<td>caught by <code>signature</code> / <code>trusted_key</code> / <code>trusted_key</code> only / <code>commit_first</code></td>
+</tr>
+<tr>
+<td>controls (untampered, unbound tag re-saved)</td>
+<td>—</td>
+<td>0 false positives</td>
+</tr>
+<tr>
+<td>readers misdiagnose 99 % (injected) and 94 % (removed); AI 100 %</td>
+<td>measured</td>
+<td>not reproduced (needs radiologists and the trained GAN; H's territory)</td>
+</tr>
+</tbody>
+</table>
+<p>Figures: <a href="figures/r19-ctgan-tamper.png"><code>figures/r19-ctgan-tamper.png</code></a>, <a href="figures/r19-detection-table.png"><code>figures/r19-detection-table.png</code></a>.</p>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
+<p>Provenance layer (claim level n/a, no quantum claim). Everything after the quantum job must be deterministic and replayable from the receipt.</p>
+<ul>
+<li><strong>Traceability, not security.</strong> The tamper test checks that data still matches what was committed and signed.</li>
+<li><strong>Demo key, not a PKI.</strong> One random Ed25519 key per machine, pinned in <code>trusted_keys.json</code>. The stub key is never trusted.</li>
+<li><strong>Limit (attack c).</strong> A forger who holds the trusted key and rewrites the ledger end to end cannot be detected from the files alone; only the pinned key stops it. Future fix: anchor the ledger head in a public beacon pulse (C dossier #5).</li>
+<li><strong>Order is proved by ledger index + <code>created_utc</code></strong>, with one-second resolution; stub inputs are exempt and flagged.</li>
+<li>Simulated upstream numbers keep their <code>sim_label</code> inside the files the receipt references; G does not restate them as hardware results.</li>
+<li>No GAN was trained or run; the in-painter is classical, so stealth against human readers is not claimed.</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-prototype">Prototype</span>
+<p>G blocks the chain. <code>receipt fill --job</code> takes one value, the chain passes five quantum job records (C, B, 3× D), and
+argparse keeps only the last (D's QCA job), so C's, B's and two of D's jobs are not bound into the receipt (probe <code>runs/20261029-185947-probe-gaps</code>: the only <code>block</code>).
+The commit ran in all four prefix chains, but its ledger entry says <code>kind: &quot;receipt&quot;</code> (CCR-G1), and its code hash
+freezes the <code>.py</code> files of A–F only. G and H code and the parameter JSONs can change after the commit. The verifier
+itself catches every edit in R19 (20 / 20); keys are a per-machine demo key with no PKI.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fill --job</code> single value</td>
+<td>integration</td>
+<td>only one of five quantum jobs is signed; C, B and two D jobs escape the receipt</td>
+<td>probe <code>G.fill</code> (block)</td>
+<td><code>action=&quot;append&quot;</code>; bind every job id + counts hash</td>
+</tr>
+<tr>
+<td>Commit covers <code>.py</code> of A–F only</td>
+<td>integration</td>
+<td>G/H code and parameter JSONs (<code>class_prior</code>, <code>params_lung</code>, lesion library) are not frozen</td>
+<td><code>commit_manifest.json</code> keys <code>ABCDEF</code>; probe <code>G.commit</code></td>
+<td>add G, H and parameter-file hashes (CCR-G2)</td>
+</tr>
+<tr>
+<td>Demo key, no PKI</td>
+<td>assumption</td>
+<td>anyone with the machine key can re-forge the ledger end to end</td>
+<td>honesty notes above</td>
+<td>PKI / HSM; anchor the ledger head in a beacon pulse</td>
+</tr>
+<tr>
+<td>Ledger <code>kind</code></td>
+<td>contract</td>
+<td>commits are told apart only by <code>state: &quot;committed&quot;</code></td>
+<td>prefix runs' ledger</td>
+<td>CCR-G1</td>
+</tr>
+<tr>
+<td>1-s ordering resolution</td>
+<td>assumption</td>
+<td>commit and fill in the same second are ordered by ledger index only</td>
+<td>honesty notes above</td>
+<td>sub-second timestamps</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> No: the chain stops at <code>sign</code> until <code>--job</code> accepts repeats (or the runner is run with <code>--allow-gaps</code>). Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[G01] Mirsky et al. (CT-GAN):</strong> shows that an attacker can <strong>inject or remove lung tumours in 3-D CT</strong> with a
+generative model, fooling both radiologists and AI, and proposes digitally signing scans as a defence.</li>
+</ul>
+<p>Why it matters: synthetic medical images are only useful as evidence if anyone can check <strong>where they came from
+and that nothing changed since</strong>.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li><strong>Commit before draw:</strong> rulebook + code hashes are signed and ledgered <em>before</em> the quantum job, so nothing
+can be tuned after seeing the result. <span class="chip evidence">evidence-based</span></li>
+<li>An Ed25519 receipt, a hash-chained ledger and a DICOM private tag. Injection and removal are detected 20/20 each,
+with 0 false positives. <span class="chip evidence">evidence-based</span></li>
+<li>INT findings: the commit freezes only A–F <code>.py</code> code, and <code>fill --job</code> binds 1 of 5 jobs. <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> every synthetic case used to train or test a cancer detector is <strong>traceable</strong> to its rulebook,
+code version, quantum job and seed, and an auditor can <strong>replay</strong> it. A detector's validation set can then be
+proven unchanged since it was committed. This is credibility, not security. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Any synthetic medical data</strong> (MR, pathology, genomics), and <strong>virtual clinical trials</strong>, where regulators ask
+for traceable in-silico evidence [G02]. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Real-data lineage.</strong> The same receipts can document preprocessing of real scans used for AI training. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> A twin that informs decisions must be <strong>auditable</strong>: which model version, which data and which random
+inputs produced a forecast. Path: (1) receipts for synthetic tumours (now) → (2) receipts for every pipeline run,
+anchored in a public beacon → (3) a provenance layer under every twin simulation, so any forecast can be
+replayed bit-for-bit.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> demo keys; a local ledger.</p>
+<ul>
+<li>Verification catches every voxel edit in the R19 setting. <span class="chip evidence">evidence-based</span></li>
+<li>The ledger head is anchored in public beacon pulses, and parameter JSONs are frozen in the commit. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> institutional PKI / HSM keys; standards for synthetic-data provenance.</p>
+<ul>
+<li>Receipts travel inside DICOM as an accepted provenance record for research datasets. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant quantum hardware exists.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Shor's algorithm on such hardware breaks elliptic-curve signatures, Ed25519 included. Receipts must
+migrate to post-quantum signatures well before then, and old ledgers need re-anchoring. This is the one place
+where fault tolerance is a <em>threat</em> to the pipeline rather than an opportunity.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Demo key, no PKI</td>
+<td>technical</td>
+<td>a holder of the key can re-forge the ledger</td>
+<td>PKI / HSM; beacon anchoring</td>
+</tr>
+<tr>
+<td>Incomplete commit</td>
+<td>technical</td>
+<td>parameter files and G/H code not frozen (INT)</td>
+<td>hash them into the commit</td>
+</tr>
+<tr>
+<td>Post-quantum migration</td>
+<td>technical</td>
+<td>Ed25519 breaks on fault-tolerant hardware</td>
+<td>PQ signatures; re-anchoring plan</td>
+</tr>
+<tr>
+<td>Legal weight</td>
+<td>regulatory</td>
+<td>a receipt is not yet a recognised record</td>
+<td>align with virtual-trial guidance [G02]</td>
+</tr>
+<tr>
+<td>Security framing</td>
+<td>regulatory</td>
+<td>traceability can be oversold as security</td>
+<td>keep the &quot;credibility, not security&quot; wording</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
 <p>[G01] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
-<!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
-     INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<h2 id="contract-change-requests">Contract change requests</h2>
+<p><code>shared/</code> is frozen; G works around each of these locally. INT decides.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Contract</th>
+<th>Change</th>
+<th>Local workaround</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CCR-G1</td>
+<td><code>ledger_entry</code></td>
+<td><code>kind</code> gains <code>&quot;commit&quot;</code></td>
+<td><code>kind &quot;receipt&quot;</code>, told apart by the receipt's <code>state: &quot;committed&quot;</code></td>
+</tr>
+<tr>
+<td>CCR-G2</td>
+<td><code>receipt.commit</code></td>
+<td>gains <code>code_hashes{letter: hex64}</code></td>
+<td><code>commit_manifest.json</code> + <code>code_hash = hash_json(code_hashes)</code></td>
+</tr>
+<tr>
+<td>CCR-G3</td>
+<td><code>receipt.fill</code></td>
+<td>gains <code>voxel_sha256</code> (+ optional <code>slice_sha256s</code>)</td>
+<td>bound via <code>params_sha256</code> → <code>bound_params.json</code></td>
+</tr>
+<tr>
+<td>CCR-G4</td>
+<td><code>shared.validate</code></td>
+<td>receipt check takes an optional trusted-key list</td>
+<td><code>G_provenance.src.verify</code> pins keys</td>
+</tr>
+</tbody>
+</table>
 
 </article>
 <p class="source">Source: <code>G_provenance/README.md</code></p>

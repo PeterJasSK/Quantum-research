@@ -12,81 +12,269 @@
   <nav>
     <a class="brand" href="index.html">QP · reverse engineering</a>
     <a href="index.html">Index</a>
-    <a href="about.html">About</a>
-    <a href="site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="site/future.html">Future</a>
+    <a href="site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
-<h1>Quantum Phantoms: reverse engineering</h1>
-<p class="lede">21 published methods rebuilt standalone, one folder per pipeline letter A–H. Every target goes
-<em>dissect → reproduce → adapt → integrate</em>, or is rejected with a reason. New here? Read the
-<a href="about.html">explainer</a>.</p>
+<h1>Quantum Phantoms <span class="live" title="This page is regenerated as the work progresses; states, ratings and numbers change.">(live document)</span></h1>
+<p class="live-note">Live document: it tracks the progress of the reverse-engineering work and is rebuilt from the
+letter READMEs and <code>status.json</code> as targets move. States, ratings and numbers will change.</p>
+<p class="lede"><strong>What we aim to achieve:</strong> synthetic lung tumours inside real 3-D chest CT that are
+realistic enough to train cancer-detection AI, controlled enough to test it on exactly the cases it misses, and
+traceable enough that a clinician or regulator can trust the result.</p>
 
-<p class="totals"><span class="badge state-listed">20 listed</span><span class="badge state-rejected">1 rejected</span></p>
+<p><strong>Why it matters.</strong> Detection models fail most on the cases real data has least of: tiny,
+ground-glass, and wall- or vessel-touching nodules, usually without exact ground truth, follow-up scans or the right
+to share them. Synthetic tumours with exact masks, chosen difficulty and a baseline and follow-up scan can fill that
+gap without using any patient voxels. They are only trustworthy if every step rests on a published, reproduced method
+and every case can be traced back to how it was made. If the pipeline reaches clinical validation, it can bring
+better-trained and better-tested lung-cancer detection forward by a few years.
+<span class="chip extrapolation">extrapolation</span></p>
 
-<section class="cards">
+<p><strong>Why quantum.</strong> The plan is to build one large quantum circuit that maps how a tumour starts growing:
+in D the first cell lineage and tissue patch grow through entangled quantum dynamics on IBM's heavy-hex chip. It runs
+at 21 qubits in simulation today; the planned 108-qubit version aims beyond classical simulation (claim level L2,
+<a href="site/future.html#planned-l2-in-d-at-108-qubits">plan and conditions</a>).
+<span class="chip speculative">speculative</span>
+C certifies every tumour draw with a Bell test, and B draws site and tumour type together in one quantum circuit.
+<span class="chip evidence">evidence-based</span></p>
 
-  <a class="card" href="site/A_placement/index.html">
-    <span class="card-letter">A</span>
-    <span class="card-title">Placement: anatomy-informed site + context vector</span>
-    <span class="card-folder"><code>A_placement/</code> · 1 target</span>
-    <span class="card-states"><span class="badge state-listed">1 listed</span></span>
-  </a>
+<p><strong>Disclaimer.</strong> At today's sizes the quantum stages can still be simulated classically, on laptops or
+supercomputers, so this work builds a quantum pipeline that is ready when hardware outgrows them. See the
+<a href="site/future.html">Future</a> and its
+<a href="site/future.html#disclaimer-what-quantum-is-allowed-to-mean-here">claim ladder</a>.</p>
 
-  <a class="card" href="site/B_mapping/index.html">
-    <span class="card-letter">B</span>
-    <span class="card-title">Mapping: rulebook + CT context → circuit</span>
-    <span class="card-folder"><code>B_mapping/</code> · 3 targets</span>
-    <span class="card-states"><span class="badge state-listed">3 listed</span></span>
-  </a>
+<h2 id="pipeline">Pipeline readiness</h2>
 
-  <a class="card" href="site/C_certificate/index.html">
-    <span class="card-letter">C</span>
-    <span class="card-title">Certificate: CHSH → certified bits → seed</span>
-    <span class="card-folder"><code>C_certificate/</code> · 2 targets</span>
-    <span class="card-states"><span class="badge state-listed">2 listed</span></span>
-  </a>
 
-  <a class="card" href="site/D_quantum_growth/index.html">
-    <span class="card-letter">D</span>
-    <span class="card-title">Quantum growth: certified quantum generations + honest simulability</span>
-    <span class="card-folder"><code>D_quantum_growth/</code> · 5 targets</span>
-    <span class="card-states"><span class="badge state-listed">4 listed</span><span class="badge state-rejected">1 rejected</span></span>
-  </a>
+<div class="figure">
+<svg class="pipe" viewBox="0 0 960 350" role="img" aria-labelledby="pipe-title">
+  <title id="pipe-title">Chain order with each letter coloured by pipeline readiness; dashed red edges are the weakest links</title>
+  <defs><marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="head-weak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <path class="arrow edge-weak" d="M190,70 L268,70"/>
+  <text class="lbl edge-weak" x="196" y="62">seed</text>
+  <path class="arrow" d="M440,70 L518,70"/>
+  <text class="lbl" x="448" y="62">sites</text>
+  <path class="arrow edge-weak" d="M690,70 L768,70"/>
+  <text class="lbl edge-weak" x="698" y="62">draw</text>
+  <path class="arrow" d="M855,120 L855,170 L105,170 L105,228"/>
+  <text class="lbl" x="560" y="164">seed_shape (+ draw, cert)</text>
+  <path class="arrow" d="M190,280 L268,280"/>
+  <text class="lbl" x="194" y="272">trajectory</text>
+  <path class="arrow" d="M440,280 L518,280"/>
+  <text class="lbl" x="450" y="272">hybrid</text>
+  <path class="arrow" d="M690,280 L768,280"/>
+  <text class="lbl" x="696" y="272">receipt</text>
+  <path class="arrow" d="M355,120 L355,228"/>
+  <text class="lbl" x="361" y="205">anatomy_masks</text>
+  <path class="arrow edge-weak" d="M605,120 L605,228"/>
+  <text class="lbl edge-weak" x="611" y="205">job records (B, C, D)</text>
+  
+  <a href="site/C_certificate/index.html">
+  
+  <g class="node ready-caveats"><title>C · How it is certified · C_certificate/ · 2 targets · Usable with caveats</title><rect x="20" y="20" width="170" height="100" rx="10"/>
+    <text class="letter" x="34" y="52">C</text><text class="out" x="62" y="48">stage: certify</text>
+    <text class="name" x="34" y="80">How it is certified</text>
+    <text class="rating" x="34" y="104">Usable with caveats</text></g></a>
+  <a href="site/A_placement/index.html">
+  
+  <g class="node ready-prototype"><title>A · Where a tumour sits · A_placement/ · 1 target · Prototype</title><rect x="270" y="20" width="170" height="100" rx="10"/>
+    <text class="letter" x="284" y="52">A</text><text class="out" x="312" y="48">stage: place</text>
+    <text class="name" x="284" y="80">Where a tumour sits</text>
+    <text class="rating" x="284" y="104">Prototype</text></g></a>
+  <a href="site/B_mapping/index.html">
+  
+  <g class="node ready-prototype"><title>B · What kind of tumour · B_mapping/ · 3 targets · Prototype</title><rect x="520" y="20" width="170" height="100" rx="10"/>
+    <text class="letter" x="534" y="52">B</text><text class="out" x="562" y="48">stage: draw</text>
+    <text class="name" x="534" y="80">What kind of tumour</text>
+    <text class="rating" x="534" y="104">Prototype</text></g></a>
+  <a href="site/D_quantum_growth/index.html">
+  
+  <g class="node ready-prototype"><title>D · How it grows (quantum) · D_quantum_growth/ · 5 targets · Prototype</title><rect x="770" y="20" width="170" height="100" rx="10"/>
+    <text class="letter" x="784" y="52">D</text><text class="out" x="812" y="48">stage: grow_q</text>
+    <text class="name" x="784" y="80">How it grows (quantum)</text>
+    <text class="rating" x="784" y="104">Prototype</text></g></a>
+  <a href="site/E_classical_growth/index.html">
+  
+  <g class="node ready-caveats"><title>E · How it grows (tissue) · E_classical_growth/ · 2 targets · Usable with caveats</title><rect x="20" y="230" width="170" height="100" rx="10"/>
+    <text class="letter" x="34" y="262">E</text><text class="out" x="62" y="258">stage: grow_c</text>
+    <text class="name" x="34" y="290">How it grows (tissue)</text>
+    <text class="rating" x="34" y="314">Usable with caveats</text></g></a>
+  <a href="site/F_render/index.html">
+  
+  <g class="node ready-caveats"><title>F · How it looks on CT · F_render/ · 5 targets · Usable with caveats</title><rect x="270" y="230" width="170" height="100" rx="10"/>
+    <text class="letter" x="284" y="262">F</text><text class="out" x="312" y="258">stage: render</text>
+    <text class="name" x="284" y="290">How it looks on CT</text>
+    <text class="rating" x="284" y="314">Usable with caveats</text></g></a>
+  <a href="site/G_provenance/index.html">
+  
+  <g class="node ready-prototype"><title>G · How it is traced · G_provenance/ · 1 target · Prototype</title><rect x="520" y="230" width="170" height="100" rx="10"/>
+    <text class="letter" x="534" y="262">G</text><text class="out" x="562" y="258">stage: commit/sign</text>
+    <text class="name" x="534" y="290">How it is traced</text>
+    <text class="rating" x="534" y="314">Prototype</text></g></a>
+  <a href="site/H_analysis/index.html">
+  
+  <g class="node ready-prototype"><title>H · How it is validated · H_analysis/ · 2 targets · Prototype</title><rect x="770" y="230" width="170" height="100" rx="10"/>
+    <text class="letter" x="784" y="262">H</text><text class="out" x="812" y="258">stage: validate</text>
+    <text class="name" x="784" y="290">How it is validated</text>
+    <text class="rating" x="784" y="314">Prototype</text></g></a>
+  
+</svg>
+</div>
+<ul class="key">
+  <li><span class="swatch ready-not-ready-box"></span>Not ready</li>
+  <li><span class="swatch ready-prototype-box"></span>Prototype</li>
+  <li><span class="swatch ready-caveats-box"></span>Usable with caveats</li>
+  <li><span class="swatch ready-production-box"></span>Production-ready</li>
+  <li><span class="line"></span>contract file passed on</li>
+  <li><span class="line weak"></span>weakest link</li>
+</ul>
 
-  <a class="card" href="site/E_classical_growth/index.html">
-    <span class="card-letter">E</span>
-    <span class="card-title">Classical growth: lung Pixel2Cancer engine</span>
-    <span class="card-folder"><code>E_classical_growth/</code> · 2 targets</span>
-    <span class="card-states"><span class="badge state-listed">2 listed</span></span>
-  </a>
 
-  <a class="card" href="site/F_render/index.html">
-    <span class="card-letter">F</span>
-    <span class="card-title">Render into CT: realistic, scanner-matched insertion</span>
-    <span class="card-folder"><code>F_render/</code> · 5 targets</span>
-    <span class="card-states"><span class="badge state-listed">5 listed</span></span>
-  </a>
+<h2 id="see">See each step</h2>
+<p class="legend">Images already produced by each step. <span class="chip kind-ct">real CT</span> shows real LIDC
+chest-CT pixels; <span class="chip kind-phantom">phantom</span> is a synthetic or stub volume;
+<span class="chip kind-plot">plot</span> is a chart of the measured result. Click an image for full size.</p>
+<div class="gallery">
 
-  <a class="card" href="site/G_provenance/index.html">
-    <span class="card-letter">G</span>
-    <span class="card-title">Sign / provenance: commit-before-draw receipt + tamper test</span>
-    <span class="card-folder"><code>G_provenance/</code> · 1 target</span>
-    <span class="card-states"><span class="badge state-listed">1 listed</span></span>
-  </a>
+  <section class="g-step">
+    <h3><span class="g-letter">A</span> Where a tumour sits <a class="g-more" href="site/A_placement/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-ct" href="site/A_placement/figures/18-host-sites.png"><img src="site/A_placement/figures/18-host-sites.png" alt="Anatomy masks and candidate sites on a real chest CT (LIDC-IDRI-0004)" loading="lazy">
+        <span class="g-cap"><span class="chip kind-ct">real CT</span> Anatomy masks and candidate sites on a real chest CT (LIDC-IDRI-0004)</span></a>
+    
+      <a class="g-item g-plot" href="site/A_placement/figures/18-class-proportions.png"><img src="site/A_placement/figures/18-class-proportions.png" alt="Placement-class proportions vs the paper" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Placement-class proportions vs the paper</span></a>
+    
+    </div>
+  </section>
 
-  <a class="card" href="site/H_analysis/index.html">
-    <span class="card-letter">H</span>
-    <span class="card-title">Analysis / use: VICTRE-shaped validation + black-box target</span>
-    <span class="card-folder"><code>H_analysis/</code> · 2 targets</span>
-    <span class="card-states"><span class="badge state-listed">2 listed</span></span>
-  </a>
+  <section class="g-step">
+    <h3><span class="g-letter">B</span> What kind of tumour <a class="g-more" href="site/B_mapping/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-plot" href="site/B_mapping/figures/drift_b1_b2.png"><img src="site/B_mapping/figures/drift_b1_b2.png" alt="Tumour draws: ideal vs Heron-class noise" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Tumour draws: ideal vs Heron-class noise</span></a>
+    
+      <a class="g-item g-plot" href="site/B_mapping/figures/qemcmc_tumor_gap.png"><img src="site/B_mapping/figures/qemcmc_tumor_gap.png" alt="Quantum-enhanced MCMC on a tumour energy landscape" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Quantum-enhanced MCMC on a tumour energy landscape</span></a>
+    
+    </div>
+  </section>
 
-</section>
+  <section class="g-step">
+    <h3><span class="g-letter">C</span> How it is certified <a class="g-more" href="site/C_certificate/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-plot" href="site/C_certificate/figures/hmin_vs_S.png"><img src="site/C_certificate/figures/hmin_vs_S.png" alt="Bell value S → certified entropy per round" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Bell value S → certified entropy per round</span></a>
+    
+      <a class="g-item g-plot" href="site/C_certificate/figures/beacon_chain.png"><img src="site/C_certificate/figures/beacon_chain.png" alt="Public beacon chain verified pulse by pulse" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Public beacon chain verified pulse by pulse</span></a>
+    
+    </div>
+  </section>
 
-<h2>All targets</h2>
+  <section class="g-step">
+    <h3><span class="g-letter">D</span> How it grows (quantum) <a class="g-more" href="site/D_quantum_growth/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-phantom" href="site/D_quantum_growth/figures/qca_snapshot_2d.png"><img src="site/D_quantum_growth/figures/qca_snapshot_2d.png" alt="Quantum cellular automaton → 3-D tumour seed shape" loading="lazy">
+        <span class="g-cap"><span class="chip kind-phantom">phantom</span> Quantum cellular automaton → 3-D tumour seed shape</span></a>
+    
+      <a class="g-item g-plot" href="site/D_quantum_growth/figures/lineage_witness.png"><img src="site/D_quantum_growth/figures/lineage_witness.png" alt="Cell-lineage entanglement witness per generation" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Cell-lineage entanglement witness per generation</span></a>
+    
+      <a class="g-item g-plot" href="site/D_quantum_growth/figures/cellcycle_memory_advantage.png"><img src="site/D_quantum_growth/figures/cellcycle_memory_advantage.png" alt="Quantum memory advantage for cell-division timing" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Quantum memory advantage for cell-division timing</span></a>
+    
+    </div>
+  </section>
+
+  <section class="g-step">
+    <h3><span class="g-letter">E</span> How it grows (tissue) <a class="g-more" href="site/E_classical_growth/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-phantom" href="site/E_classical_growth/figures/lung_S002.png"><img src="site/E_classical_growth/figures/lung_S002.png" alt="Tumour growth, baseline → follow-up, against a vessel (lung masks, stub host)" loading="lazy">
+        <span class="g-cap"><span class="chip kind-phantom">phantom</span> Tumour growth, baseline → follow-up, against a vessel (lung masks, stub host)</span></a>
+    
+      <a class="g-item g-phantom" href="site/E_classical_growth/figures/kt_cross_sections.png"><img src="site/E_classical_growth/figures/kt_cross_sections.png" alt="Layered tumour: proliferating rim, dormant shell, necrotic core" loading="lazy">
+        <span class="g-cap"><span class="chip kind-phantom">phantom</span> Layered tumour: proliferating rim, dormant shell, necrotic core</span></a>
+    
+      <a class="g-item g-plot" href="site/E_classical_growth/figures/lung_growth_curves.png"><img src="site/E_classical_growth/figures/lung_growth_curves.png" alt="Growth curves per tumour type" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Growth curves per tumour type</span></a>
+    
+    </div>
+  </section>
+
+  <section class="g-step">
+    <h3><span class="g-letter">F</span> How it looks on CT <a class="g-more" href="site/F_render/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-ct" href="site/F_render/figures/render-lidc0001-lung.png"><img src="site/F_render/figures/render-lidc0001-lung.png" alt="Synthetic nodule inserted into a real chest CT (LIDC-IDRI-0001), lung window" loading="lazy">
+        <span class="g-cap"><span class="chip kind-ct">real CT</span> Synthetic nodule inserted into a real chest CT (LIDC-IDRI-0001), lung window</span></a>
+    
+      <a class="g-item g-ct" href="site/F_render/figures/render-lidc0001-mediastinal.png"><img src="site/F_render/figures/render-lidc0001-mediastinal.png" alt="Same nodule, mediastinal window" loading="lazy">
+        <span class="g-cap"><span class="chip kind-ct">real CT</span> Same nodule, mediastinal window</span></a>
+    
+      <a class="g-item g-phantom" href="site/F_render/figures/r15-peng-patch-noise.png"><img src="site/F_render/figures/r15-peng-patch-noise.png" alt="Scanner-matched noise" loading="lazy">
+        <span class="g-cap"><span class="chip kind-phantom">phantom</span> Scanner-matched noise</span></a>
+    
+    </div>
+  </section>
+
+  <section class="g-step">
+    <h3><span class="g-letter">G</span> How it is traced <a class="g-more" href="site/G_provenance/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-phantom" href="site/G_provenance/figures/r19-ctgan-tamper.png"><img src="site/G_provenance/figures/r19-ctgan-tamper.png" alt="Injected / removed tumour caught by the signature, slice by slice" loading="lazy">
+        <span class="g-cap"><span class="chip kind-phantom">phantom</span> Injected / removed tumour caught by the signature, slice by slice</span></a>
+    
+    </div>
+  </section>
+
+  <section class="g-step">
+    <h3><span class="g-letter">H</span> How it is validated <a class="g-more" href="site/H_analysis/index.html">details →</a></h3>
+    <div class="g-items">
+    
+      <a class="g-item g-plot" href="site/H_analysis/figures/r20a_cho_vs_ideal.png"><img src="site/H_analysis/figures/r20a_cho_vs_ideal.png" alt="Model observer checked against the ideal observer" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Model observer checked against the ideal observer</span></a>
+    
+      <a class="g-item g-plot" href="site/H_analysis/figures/r20b_mrmc_se.png"><img src="site/H_analysis/figures/r20b_mrmc_se.png" alt="Reader-study variance (MRMC)" loading="lazy">
+        <span class="g-cap"><span class="chip kind-plot">plot</span> Reader-study variance (MRMC)</span></a>
+    
+    </div>
+  </section>
+
+</div>
+
+
+<h2 id="why">Why reverse-engineer</h2>
+<p>For every stage, some published method already solves part of the problem: a Bayesian-network compiler, Bell-test
+entropy accounting, quantum causal-state models, Pixel2Cancer, scanner fingerprinting, VICTRE and others. Rebuilding
+each method ourselves, from the paper and without copying proprietary code, gives us components we understand, can
+cite, and can adapt to lungs. Every target goes through the same lifecycle:</p>
+<ol class="steps">
+  <li><strong>Dissect</strong>: a dossier with method, equations, parameters and claimed result.</li>
+  <li><strong>Reproduce</strong>: match one published number or figure in <code>repro/</code> before changing anything.</li>
+  <li><strong>Adapt</strong>: to lungs, 3-D, certification and our contracts.</li>
+  <li><strong>Integrate</strong>, or <strong>reject</strong> with a written reason.</li>
+</ol>
+<p>States move <code>listed → dissected → reproduced → adapted → integrated | rejected</code>, recorded per letter in
+<code>&lt;L&gt;_&lt;name&gt;/status.json</code> and shown as badges in the <a href="#targets">target table</a>.</p>
+
+<h2 id="privacy">Privacy by construction</h2>
+<p>No patient voxels enter any generator. Host CT scans (LIDC-IDRI, later Mayo Siemens raw data) are only
+<em>read</em>: to choose a site, measure the scanner fingerprint, and insert into. The tumor's appearance comes from
+<strong>fitted parameters</strong> (shape, edge profile, HU per nodule type) and published statistics only. Learned
+refiners trained on patients (DiffTumor, MAISI) appear only as ablations.</p>
+
+
+<h2 id="targets">All targets</h2>
 <div class="table-wrap">
 <table class="targets">
   <thead><tr><th>#</th><th>Letter</th><th>Target</th><th>Priority</th><th>Kind</th><th>State</th><th>Claim</th><th>Sim</th><th>Reproduced</th><th>Papers</th></tr></thead>
@@ -98,10 +286,10 @@
       <td><a href="site/B_mapping/dossiers/01-bn-circuit-compiler.html">Bayesian-network → circuit compiler (Low–Yoder–Chuang; Borujeni)</a></td>
       <td class="stars">★★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>L0</td>
+      <td>both</td>
+      <td>0.36 % (mcry), 0.18 % (ancilla); marginals within ±0.01 of Netica % vs paper 0.1 % % (match (criterion: marginals ±0.01, RMSPE ≤ 0.5 %))</td>
       <td class="papers">B01, B09, B10</td>
     </tr>
   
@@ -111,10 +299,10 @@
       <td><a href="site/B_mapping/dossiers/02-quantum-enhanced-mcmc.html">Quantum-enhanced MCMC (Layden; Ferguson–Wallden)</a></td>
       <td class="stars">★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-adapted" >adapted</span></td>
       <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td>both</td>
+      <td>0.250; local 1.017; uniform 0.939 k vs paper 0.264(4); local 0.94(4); uniform 0.948(7) k (match within ±0.08 (quantum) / ±0.15 (baselines); speedup is ideal-simulation only)</td>
       <td class="papers">B11, B12</td>
     </tr>
   
@@ -124,9 +312,9 @@
       <td><a href="site/B_mapping/dossiers/03-quantum-blur.html">Quantum blur (Wootton)</a></td>
       <td class="stars">★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-rejected" title="Classical Gaussian blur is equivalent where the quantum blur acts as a spatial blur (r = 0.97 2-D, 0.99 3-D at θ = 0.1π); at larger θ it scrambles coordinate bits non-locally. No advantage.">rejected</span></td>
       <td>—</td>
-      <td>—</td>
+      <td>ideal</td>
       <td>—</td>
       <td class="papers">B04, B05</td>
     </tr>
@@ -137,10 +325,10 @@
       <td><a href="site/C_certificate/dossiers/04-bell-entropy-accounting.html">Entropy accounting from Bell tests (Pironio; Liu 2025; Vazirani–Vidick)</a></td>
       <td class="stars">★★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>L0</td>
+      <td>both</td>
+      <td>40.8 bits vs paper 42 bits (-2.8% (analytic f, curve b, vs paper&#39;s SDP f, curve a); Î from Table 1 = 2.4145 exact)</td>
       <td class="papers">C01, C02, C05</td>
     </tr>
   
@@ -150,10 +338,10 @@
       <td><a href="site/C_certificate/dossiers/05-curby-beacon-chain.html">CURBy / NIST beacon chain (Kavuri)</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>11/11 links, 12/12 pulses; 1-bit tamper caught at its pulse links vs paper all (format guarantee, C04) links (exact; CURBy nBitsOut 512 / nBitsThreshold 820 match C04 (CIDs not recomputed))</td>
       <td class="papers">C04</td>
     </tr>
   
@@ -163,10 +351,10 @@
       <td><a href="site/D_quantum_growth/dossiers/06-quantum-causal-states.html">Quantum causal-state (memory-efficient) process models (Gu; Elliott; Wu; Palsson; Ghafari)</a></td>
       <td class="stars">★★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>L1′</td>
+      <td>both</td>
+      <td>C_q(0.2) = 0.4690, C_q(0.4) = 0.0815; D_q = 1 and D_mu = log2 N for N = 2..16 (survival error &lt;= 2.2e-16); q-machine N = 8: d_KL 0.00192 (ideal) / 0.00189 (Heron) vs 0.00315 for the best 1-bit classical model at the same sample count bits vs paper D06: C_q &lt; 0.5 for p &gt; 0.2, C_q &lt; 0.1 for p &gt; 0.4; D16: D_q &lt;= 1, D_mu = log2 N; distortion &lt; 1e-2 bits/symbol and below the best 1-bit classical model bits (agree (analytic); simulated advantage small: Gamma = 0.5, V = 0.4 is weakly modulated and the exact 1-bit classical d_KL (0.00136) is below the 0.00184 sampling floor)</td>
       <td class="papers">D06, D17, D16, D07, D08</td>
     </tr>
   
@@ -176,10 +364,10 @@
       <td><a href="site/D_quantum_growth/dossiers/07-goldilocks-qca.html">Goldilocks quantum cellular automata (Hillberry; Jones; Farrelly)</a></td>
       <td class="stars">★★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>L1</td>
+      <td>both</td>
+      <td>0.089, 0.193, 0.261, 0.308, 0.307 (simulated: ideal); domain-wall invariant O(t) conserved to 2.5e-14 vs paper read from the figure: C(2..10) ~ 0.09, 0.19, 0.26, 0.30, 0.31 (+-0.03 reading error) (agree within figure-reading tolerance 0.03 (max diff 0.008); plan&#39;s +-0.02 not testable from a figure. Heavy-hex adaptation: ideal 21-qubit patch witness passes at 3.04 sigma (borderline, 376 routing SWAPs), Heron-noise 12-qubit hexagon fails (claim L0))</td>
       <td class="papers">D13, D14, D03</td>
     </tr>
   
@@ -189,9 +377,9 @@
       <td><a href="site/D_quantum_growth/dossiers/08-dynamic-circuit-feedforward.html">Dynamic-circuit feed-forward (Bäumer; Córcoles)</a></td>
       <td class="stars">★★★</td>
       <td>quantum</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-dissected" >dissected</span></td>
+      <td>L1</td>
+      <td>both</td>
       <td>—</td>
       <td class="papers">HW05, HW06</td>
     </tr>
@@ -202,9 +390,9 @@
       <td><a href="site/D_quantum_growth/dossiers/09-bp-heavy-hex-adversary.html">Belief-propagation simulator of heavy-hex circuits (Tindall)</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-dissected" >dissected</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
       <td>—</td>
       <td class="papers">HW04</td>
     </tr>
@@ -228,10 +416,10 @@
       <td><a href="site/E_classical_growth/dossiers/11-pixel2cancer.html">Pixel2Cancer + Kansal–Torquato layers</a></td>
       <td class="stars">★★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-adapted" >adapted</span></td>
       <td>—</td>
       <td>—</td>
-      <td>—</td>
+      <td>GF 0.50/0.29/0.20/0.19 · NF 0.08/0.36/0.54/0.58 · VDT 10.5/25.7/64.8/105.1 d (1.85e6 sites); P2C B1–B4 PASS fraction, days vs paper GF 0.40/0.30/0.19/0.13 · NF 0.38/0.45/0.57/0.60 · VDT 5/38/72/112 d fraction, days (3 of 4 stages within tolerance (±10 pp fractions, ±35 % VDT, ±25 % day); 0.5 mm spheroid stage off)</td>
       <td class="papers">E01, E02</td>
     </tr>
   
@@ -241,7 +429,7 @@
       <td><a href="site/E_classical_growth/dossiers/12-hpc-cellular-automaton.html">High-performance CA (Poleszczuk–Enderling)</a></td>
       <td class="stars">★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-dissected" >dissected</span></td>
       <td>—</td>
       <td>—</td>
       <td>—</td>
@@ -254,10 +442,10 @@
       <td><a href="site/F_render/dossiers/13-synthetic-tumors.html">SyntheticTumors / Label-free pipeline</a></td>
       <td class="stars">★★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>small: core mean 101.4 HU (µt 98.9), σ 5.2; medium: core mean 43.2 HU (µt 41.9), σ 5.5; edits confined to γmax: True HU vs paper Fig. 3 / Appendix Figs 8–10 (qualitative); tumour mean HU = µt ~ U(30, µp − 10) HU (qualitative + parameter match; DSC 59.81 % (LiTS training) not reproduced — needs data + training)</td>
       <td class="papers">H01</td>
     </tr>
   
@@ -267,10 +455,10 @@
       <td><a href="site/F_render/dossiers/14-lesion-model-fitting.html">Lesion-model fitting (Ambrosini; Solomon–Samei PMB 2014)</a></td>
       <td class="stars">★★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>0.8699 ± 0.0664 (n = 11 solid LIDC nodules); all types 0.7141 ± 0.2422 (n = 22) vs paper 0.8897 ± 0.0609 (n = 17 metastases) (agree (difference -0.0198, within one paper sd: True))</td>
       <td class="papers">F01</td>
     </tr>
   
@@ -280,10 +468,10 @@
       <td><a href="site/F_render/dossiers/15-scanner-fingerprint.html">Scanner fingerprint estimator (Sanders MTF 2016; Divel–Pelc 2019; Peng)</a></td>
       <td class="stars">★★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>left (σ 20, soft NPS): σ +1.53 %, kurtosis -1.27 %; right (σ 35, sharp NPS): σ +0.19 %, kurtosis +0.35 %; self-check PSF/σ within 10 % % vs paper differences within 2 % (up to 4th moment) % (agree (worst 1.53 %); synthetic ground-truth noise, not the orange-man phantom)</td>
       <td class="papers">F05</td>
     </tr>
   
@@ -293,10 +481,10 @@
       <td><a href="site/F_render/dossiers/16-xcist-projection-insertion.html">Projection-domain insertion rebuilt on XCIST (Mayo; Mayo LDCT raw data)</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-adapted" >adapted</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>B +0.25 ± 1.02 %; A +1.97 ± 1.32 % (6 nodules, XCIST synthetic phantom) % vs paper Technique B −0.28 … +0.57 % (one protocol −2.28 %); Technique A −2.24 … −1.01 % % (agree (|PD| &lt; 3 %); simulated XCIST phantom, not the physical KYOTO phantom)</td>
       <td class="papers">F03, A06</td>
     </tr>
   
@@ -306,10 +494,10 @@
       <td><a href="site/F_render/dossiers/17-naeotom-alpha-params.html">DukeSim NAEOTOM Alpha parameters (McCabe)</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
-      <td>—</td>
-      <td>—</td>
-      <td>—</td>
+      <td><span class="badge state-dissected" >dissected</span></td>
+      <td>n/a</td>
+      <td>n/a</td>
+      <td>0.573 mm⁻¹ (XCIST FBP &#39;standard&#39;); noise ∝ mAs^-0.50 mm⁻¹ vs paper 0.39 mm⁻¹ (real NAEOTOM Alpha, Br40, QIR-3); DukeSim 0.39 mm⁻¹ (outside 25 % (+47 %); approximation — XCIST kernel ≠ Br40, CZT response ≠ CdTe)</td>
       <td class="papers">F04</td>
     </tr>
   
@@ -319,11 +507,11 @@
       <td><a href="site/A_placement/dossiers/18-syn-lungs-placement.html">SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-adapted" >adapted</span></td>
       <td>—</td>
       <td>—</td>
-      <td>—</td>
-      <td class="papers">A01, A02, A03, A04</td>
+      <td>0.56 / 0.44 / 0.00 (n=9 nodules, 6 LIDC scans; 95% CI 0.27-0.81 / 0.19-0.73 / 0.00-0.30) fraction vs paper 0.33 / 0.45 / 0.22 (Kostis, 200 nodules, via Ambrosini F01) fraction (NOT MATCHED (inconclusive at n=9): juxtavascular within 10 pp, free and juxtapleural outside; ordering fails. Juxtapleural undercounted: 4/9 nodules lie 0.8-2.5 mm from the wall but fail the pre-registered 1-voxel-contact rule. Thresholds not tuned.)</td>
+      <td class="papers">A01, A02, A03, A04, F01</td>
     </tr>
   
     <tr>
@@ -332,10 +520,10 @@
       <td><a href="site/G_provenance/dossiers/19-ct-gan-tamper-test.html">CT-GAN as a tamper test</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-adapted" >adapted</span></td>
       <td>—</td>
       <td>—</td>
-      <td>—</td>
+      <td>40/40 pixel injections+removals detected, slice Jaccard 1.00; forgeries a-d: 4/4 caught by the expected check; controls: 0 false positives detection rate vs paper countermeasure claim (qualitative): signing each scan detects the attack; readers 99% injected / 94% removed misdiagnosed detection rate (claim reproduced qualitatively; (c) full re-forge with a stolen key is detected only by the pinned-key check (needs an external anchor); reader numbers not reproduced (H))</td>
       <td class="papers">G01</td>
     </tr>
   
@@ -345,10 +533,10 @@
       <td><a href="site/H_analysis/dossiers/20-victre-pipeline.html">FDA VICTRE pipeline</a></td>
       <td class="stars">★★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-dissected" >dissected</span></td>
       <td>—</td>
       <td>—</td>
-      <td>—</td>
+      <td>[0.0033, 0.0051] AUC vs paper 0.0073 AUC (no)</td>
       <td class="papers">H03</td>
     </tr>
   
@@ -358,7 +546,7 @@
       <td><a href="site/H_analysis/dossiers/21-ai-rad-companion.html">Siemens AI-Rad Companion Chest CT (documented-interface black box)</a></td>
       <td class="stars">★</td>
       <td>classical</td>
-      <td><span class="badge state-listed" >listed</span></td>
+      <td><span class="badge state-dissected" >dissected</span></td>
       <td>—</td>
       <td>—</td>
       <td>—</td>
@@ -370,6 +558,15 @@
 </div>
 <p class="legend">States: listed → dissected → reproduced (published number matched) → adapted → integrated | rejected (reason recorded).
 Claim levels: L0 provenance · L1 entangled generative state · L1′ quantum memory advantage. Every quantum number is simulated.</p>
+
+<h2 id="next">Where to go next</h2>
+<ul>
+  <li><a href="site/future.html">Future</a>: where the whole pipeline leads (cancer detection, other organs, digital twin, 5 / 10 / 15 years).</li>
+  <li><a href="site/INT_integration/index.html">INT</a>: the chain runner, the gap probe and every weak link found.</li>
+  <li><a href="README.md">README.md</a>: conventions, ownership rules and commands, written for agents.</li>
+  <li><a href="site/shared/contracts/index.html">Contracts</a> and <a href="site/shared/contracts/VOLUMES.html">volume conventions</a>.</li>
+  <li><a href="epic-reverse-engineering.md">Epic plan</a> and <a href="reverse-engineering-targets.md">targets list</a>.</li>
+</ul>
 
 </main>
 <footer>Simulation only (AerSimulator ideal / FakeMarrakesh Heron-class noise); no hardware results. Generated from Markdown + status.json by <code>python -m shared.site.build</code>.</footer>

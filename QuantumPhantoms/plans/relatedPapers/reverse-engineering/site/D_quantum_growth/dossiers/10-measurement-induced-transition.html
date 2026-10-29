@@ -12,9 +12,8 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
@@ -38,31 +37,26 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
+<h2 id="concept">Concept</h2>
 <!-- The method in plain words: what problem it solves, the core idea. -->
 <p><strong>Rejected: out of scope</strong> (epic decision 5: option D-4 is not built). Kept for future reference only.</p>
-<p>Post-selection note: the one idea worth keeping from Koh [D15] is the trick that avoids post-selection when measuring a measurement-induced entanglement transition (decoding the measurement record classically instead of discarding non-matching shots). Read it only if D-4 is ever chosen.</p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
+<p>Post-selection note: the one idea worth keeping from Koh [D15] is the trick that avoids post-selection when measuring a measurement-induced entanglement transition (decoding the measurement record classically instead of discarding non-matching shots). Read it only if D-4 is ever chosen. Koh's trick [D15]: instead of post-selecting the shots whose mid-circuit outcomes match a reference record, the measurement record is kept and the entanglement of each trajectory is decoded classically from it, so the transition can be measured without the exponential post-selection overhead.</p>
+<h2 id="equations">Equations</h2>
+<p>Not built (epic decision 5). See the post-selection note under Concept.</p>
+<h2 id="parameters">Parameters</h2>
+<p>Not built (epic decision 5).</p>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>Not reproduced (epic decision 5).</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p>Not built (epic decision 5).</p>
+<h2 id="adaptation">Adaptation</h2>
+<p>Not adapted (epic decision 5).</p>
+<h2 id="verdict">Verdict</h2>
 <!-- integrated | rejected (with reason). Claim level for quantum targets. -->
 <p>rejected — out of scope (epic decision 5).</p>
-<h2>What to reuse next</h2>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
 <!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<p>Nothing: out of scope.</p>
 
 </article>
 <p class="source">Source: <code>D_quantum_growth/dossiers/10-measurement-induced-transition.md</code></p>

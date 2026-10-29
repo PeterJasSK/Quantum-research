@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/B_mapping/dossiers/01-bn-circuit-compiler.html">#1 listed</a><a class="badge state-listed" href="../../site/B_mapping/dossiers/02-quantum-enhanced-mcmc.html">#2 listed</a><a class="badge state-listed" href="../../site/B_mapping/dossiers/03-quantum-blur.html">#3 listed</a>
+  <a class="badge state-adapted" href="../../site/B_mapping/dossiers/01-bn-circuit-compiler.html">#1 adapted</a><a class="badge state-adapted" href="../../site/B_mapping/dossiers/02-quantum-enhanced-mcmc.html">#2 adapted</a><a class="badge state-rejected" href="../../site/B_mapping/dossiers/03-quantum-blur.html">#3 rejected</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,10 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/B_mapping/index.html</code>.
 Target states live only in <a href="../../B_mapping/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
 <p>Turn a cited rulebook (published statistics only) plus A's context vector into a quantum circuit with no hand-written gates: a standalone Bayesian-network → circuit compiler (CPT → controlled rotations; one measurement = one joint sample). B-1: context selects the CPTs. B-2: site × phenotype drawn jointly in superposition (the novel contribution). B-5: QeMCMC tumor-in-anatomy energy sampler as a research arm. Quantum blur only together with its classical-blur baseline.</p>
-<h2>Targets and their status</h2>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,31 +51,32 @@ Target states live only in <a href="../../B_mapping/status.json"><code>status.js
 <td><a href="dossiers/01-bn-circuit-compiler.html">Bayesian-network → circuit compiler (Low–Yoder–Chuang; Borujeni)</a></td>
 <td>★★★</td>
 <td>quantum</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#2</td>
 <td><a href="dossiers/02-quantum-enhanced-mcmc.html">Quantum-enhanced MCMC (Layden; Ferguson–Wallden)</a></td>
 <td>★★</td>
 <td>quantum</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#3</td>
 <td><a href="dossiers/03-quantum-blur.html">Quantum blur (Wootton)</a></td>
 <td>★</td>
 <td>quantum</td>
-<td>listed</td>
+<td>rejected</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
+<li><code>certificate</code> — stub: <a href="../../shared/stubs/certificate/certificate.json"><code>shared/stubs/certificate/certificate.json</code></a> (or C's real <code>certificate.json</code>) · seed source for every B seed; <code>status: fail</code> → no draw · schema: <a href="../../shared/contracts/certificate.schema.json"><code>certificate.schema.json</code></a></li>
 <li><code>site_candidates</code> — stub: <a href="../../shared/stubs/site_candidates/sites.json"><code>shared/stubs/site_candidates/sites.json</code></a> · schema: <a href="../../shared/contracts/site_candidates.schema.json"><code>site_candidates.schema.json</code></a></li>
 <li><code>anatomy_masks</code> — stub: <a href="../../shared/stubs/anatomy_masks/anatomy_masks.json"><code>shared/stubs/anatomy_masks/anatomy_masks.json</code></a> · schema: <a href="../../shared/contracts/anatomy_masks.schema.json"><code>anatomy_masks.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
 <li><code>rulebook</code> — schema: <a href="../../shared/contracts/rulebook.schema.json"><code>rulebook.schema.json</code></a> · stub example: <a href="../../shared/stubs/rulebook/rulebook.json"><code>shared/stubs/rulebook/rulebook.json</code></a></li>
@@ -84,24 +84,343 @@ Target states live only in <a href="../../B_mapping/status.json"><code>status.js
 <li><code>quantum_job_record</code> — schema: <a href="../../shared/contracts/quantum_job_record.schema.json"><code>quantum_job_record.schema.json</code></a> · stub example: <a href="../../shared/stubs/quantum_job_record/quantum_job_record.json"><code>shared/stubs/quantum_job_record/quantum_job_record.json</code></a></li>
 <li><code>tumor_draw</code> — schema: <a href="../../shared/contracts/tumor_draw.schema.json"><code>tumor_draw.schema.json</code></a> · stub example: <a href="../../shared/stubs/tumor_draw/tumor_draw.json"><code>shared/stubs/tumor_draw/tumor_draw.json</code></a></li>
 </ul>
-<h2>How to run (sim commands)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to B_mapping/runs/ via shared.runrecord. -->
-<p><em>Pending (feature B).</em></p>
-<h2>Reproduced result vs. paper</h2>
+<p>All commands run with cwd = <code>reverse-engineering/</code> (conda <code>base</code>). Every quantum number is labelled <code>simulated: ideal</code> or <code>simulated: Heron-class noise (FakeMarrakesh)</code>; <code>hardware: null</code>. Runs land in <code>B_mapping/runs/&lt;timestamp&gt;-&lt;tag&gt;/</code> (gitignored).</p>
+<pre><code class="language-text">python -m B_mapping.src.lidc_stats                              # data/lidc_counts.json (LIDC counts only)
+python -m B_mapping.src.rulebook --write --joint --context free # data/rulebook_lung.json, class_prior.json
+python -m B_mapping.src.compiler --check &lt;rulebook.json&gt;        # statevector vs exact joint, both control modes
+python -m B_mapping.repro.borujeni --mode ideal|heron           # Borujeni 4-node repro (+ figure for heron)
+python -m B_mapping.src.map --variant b1 --mode ideal|heron --site S001 [--sites F] [--certificate F] [--shots 4096]
+python -m B_mapping.src.map --variant b2 --mode ideal|heron [--k-sites 8] [--multi-control mcry|ancilla]
+python -m B_mapping.src.drift_report                            # B-1 x 3 classes + B-2, both modes, figure
+python -m B_mapping.repro.layden                                # Layden gap scaling (ideal)
+python -m B_mapping.src.qemcmc --tumor --mode ideal|heron [--patch 2,2,2|2,3,1]
+python -m B_mapping.src.qemcmc_figure                           # figures/qemcmc_tumor_gap.png
+python -m B_mapping.repro.wootton_blur                          # quantum blur vs Gaussian
+</code></pre>
+<p>Run a Python process alone or set <code>OMP_NUM_THREADS=1</code>: several concurrent BLAS-threaded jobs stalled the Layden run.</p>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
 <!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature B).</em> Planned: Borujeni 4-node network on Aer (ideal, then Heron-class noise); drift (TVD) vs the network.</p>
-<h2>Claim level and honesty notes</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Quantity</th>
+<th>Paper</th>
+<th>Ours</th>
+<th>Agreement</th>
+<th>Sim mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1</td>
+<td>Borujeni oil-stock RMSPE of marginals</td>
+<td>0.1 % (simulator)</td>
+<td>0.36 % (<code>mcry</code>), 0.18 % (<code>ancilla</code>); marginals within ±0.01 of Netica</td>
+<td>match (≤ 0.5 %, ±0.01)</td>
+<td>simulated: ideal</td>
+</tr>
+<tr>
+<td>#1</td>
+<td>Borujeni RMSPE, transpiler level 0 → 3</td>
+<td>4.9–36.3 % → 9.1–24 % (2020 hardware)</td>
+<td>1.70 → 0.82 % (<code>mcry</code>), 2.89 → 1.19 % (<code>ancilla</code>)</td>
+<td>comparison only (2025 Heron model vs 2020 devices)</td>
+<td>simulated: Heron-class noise (FakeMarrakesh)</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>Layden k_quantum / k_local / k_uniform</td>
+<td>0.264 / 0.94 / 0.948</td>
+<td>0.250 / 1.017 / 0.939</td>
+<td>match (±0.08 / ±0.15)</td>
+<td>simulated: ideal</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>Tumor patch gap δ quantum / local / uniform (8 spins)</td>
+<td>—</td>
+<td>0.0180 / 0.0121 / 0.0084</td>
+<td>adaptation</td>
+<td>simulated: ideal</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>Tumor patch gap δ quantum / local / uniform (6 spins)</td>
+<td>—</td>
+<td>0.0392 / 0.0379 / 0.0469</td>
+<td>adaptation</td>
+<td>simulated: ideal</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>Tumor patch gap, noisy proposal (6 spins), asymmetry 0.135</td>
+<td>—</td>
+<td>0.0536</td>
+<td>noise flattens Q; target distribution only approximately preserved</td>
+<td>simulated: Heron-class noise (FakeMarrakesh)</td>
+</tr>
+<tr>
+<td>#3</td>
+<td>Quantum blur vs best Gaussian (θ = 0.1π), correlation</td>
+<td>qualitative figure</td>
+<td>2-D 0.967, 3-D 0.993</td>
+<td>equivalent to a Gaussian → rejected</td>
+<td>simulated: ideal</td>
+</tr>
+</tbody>
+</table>
+<p>Drift of the pipeline draws (joint TVD to the exact rulebook; 4096 shots, B-2 Heron 256 shots; classical ancestral sampler at the same shot count in brackets):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>simulated: ideal</th>
+<th>simulated: Heron-class noise (FakeMarrakesh)</th>
+<th>Heron invalid shots</th>
+<th>depth / CZ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B-1 free</td>
+<td>0.018 (0.023)</td>
+<td>0.571</td>
+<td>35 %</td>
+<td>5862 / 2033</td>
+</tr>
+<tr>
+<td>B-1 juxtavascular</td>
+<td>0.019 (0.028)</td>
+<td>0.596</td>
+<td>35 %</td>
+<td>5862 / 2033</td>
+</tr>
+<tr>
+<td>B-1 juxtapleural</td>
+<td>0.018 (0.024)</td>
+<td>0.685</td>
+<td>33 %</td>
+<td>5862 / 2033</td>
+</tr>
+<tr>
+<td>B-2 joint (3 stub sites)</td>
+<td>0.039 (0.042)</td>
+<td>0.737 (0.159)</td>
+<td>59 %</td>
+<td>31 965 / 11 516</td>
+</tr>
+</tbody>
+</table>
+<p>Ideal circuits equal the classical sampler to shot noise; the Heron-class circuits are noise-dominated at this depth. Figure: <a href="figures/drift_b1_b2.png"><code>figures/drift_b1_b2.png</code></a>. B-2 at K = 8 (synthetic 8-site file, 9 logical qubits + 7 ancillas) was run <strong>simulated: ideal</strong> only (depth 106 531, 38 123 CZ).</p>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>B-1 is L0 (provenance only: a certified sample of a classical distribution). B-2 may claim L1 only with a multi-qubit witness read in ≥ 2 bases (a single-qubit dial in Z is a classical biased coin). QeMCMC speedups are ideal-simulation only; report mixing time vs classical Metropolis.</p>
-<h2>References (paper codes)</h2>
+<ul>
+<li><strong>B-1: claim level L0</strong> (provenance only: a certified sample of a classical distribution). The classical ancestral sampler draws the same distribution with lower error at the same shot count.</li>
+<li><strong>B-2: claim level L0.</strong> The joint site × phenotype draw is a lookup table classically; no interference claim, no entanglement witness (<code>WitnessRecord</code> is D's).</li>
+<li><strong>QeMCMC: no claim level.</strong> A correct sampler with quantum proposals; any speedup is ideal-simulation only (Layden k_quantum 0.250 vs k_local 1.017, simulated: ideal) and the noisy proposal is asymmetric (0.135).</li>
+<li><strong>Quantum blur: none.</strong> Equivalent to a Gaussian where it blurs; rejected.</li>
+<li>Belief-propagation simulability number for the B circuits: <strong>pending D #9</strong> (gate counts are recorded in each run's <code>drift.json</code>).</li>
+<li>Context tilts and the placement prior are marked <em>(verify)</em> in the rulebook sources: the cited papers are not in <code>../papers/</code>.</li>
+<li>The stub <code>anatomy_masks</code> give an almost flat tumor energy landscape (h ≈ −0.1 everywhere); the QeMCMC adaptation needs A's real masks to say more.</li>
+<li>Real A output and the real C certificate are not wired in here (INT).</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-prototype">Prototype</span>
+<p>Ideal draws match the classical sampler (joint TVD 0.018–0.039), but under Heron-class noise the draw is
+noise-dominated (TVD 0.571–0.737, 33–59 % invalid shots at depth 5 862–31 965). The chain asks for B-2 at K = 8 in
+Heron mode, a setting that has only run ideal (depth 106 531, 38 123 CZ), so its cost and validity are unknown. The
+honesty gate is still open: B's circuits have no BP simulability number, because D's BP adversary cannot read a B
+circuit (probe <code>runs/20261029-185947-probe-gaps</code>: <code>bp --circuit</code> missing). All <code>map</code> flags the chain uses exist.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heron noise dominates the draw</td>
+<td>component</td>
+<td>the sampled distribution is far from the rulebook; only an L0 provenance claim survives</td>
+<td>drift table: TVD 0.571–0.737, invalid 33–59 %</td>
+<td>fewer CZ (shallower encoding), K = 4, or draw ideal and keep Heron as a stress test</td>
+</tr>
+<tr>
+<td>B-2 K = 8 Heron never run</td>
+<td>data</td>
+<td>runtime and invalid fraction at the chain's own setting are unknown</td>
+<td>README: K = 8 ideal only</td>
+<td>one standalone Heron run before the chain; record drift</td>
+</tr>
+<tr>
+<td>No BP simulability number</td>
+<td>gap</td>
+<td>the classical-baseline + simulability gate is unmet for B</td>
+<td><code>drift.json</code> <code>bp_simulability: &quot;pending D #9&quot;</code>; probe <code>D.bp_b</code></td>
+<td>D <code>bp --circuit</code> (plan AC-9)</td>
+</tr>
+<tr>
+<td>Class prior outside the commit</td>
+<td>integration</td>
+<td><code>data/class_prior.json</code> is neither in the rulebook hash nor in the <code>.py</code> code hash, so it can change after the commit</td>
+<td>probe <code>G.commit</code></td>
+<td>CCR-B1 (prior inside the rulebook)</td>
+</tr>
+<tr>
+<td>Rulebook sources <em>(verify)</em></td>
+<td>assumption</td>
+<td>tilts and prior are not traceable to a paper in <code>../papers/</code></td>
+<td>honesty notes above</td>
+<td>add the papers, or label the values as assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Yes, all flags exist; in Heron mode its output is noise-dominated and B's job record is dropped by G (<code>fill --job</code>). Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[B01] Low–Yoder–Chuang:</strong> write a Bayesian network (a chain of conditional probabilities) as a quantum
+circuit, so one measurement returns one joint sample, with a possible quadratic speedup for inference.</li>
+<li><strong>[B09] / [B10] Borujeni:</strong> a practical recipe for such circuits, and its accuracy on IBM hardware.</li>
+<li><strong>[B11] Layden, [B12] Ferguson–Wallden:</strong> quantum-enhanced Markov-chain Monte Carlo, with quantum proposals that
+can mix faster on rugged energy landscapes, extended to problems larger than the device.</li>
+<li><strong>[B04] / [B05] Wootton:</strong> quantum procedural generation and &quot;quantum blur&quot; for images.</li>
+</ul>
+<p>Why it matters: a <strong>rulebook made only of published statistics</strong>, compiled without hand-written gates, makes
+every tumour property traceable to a citation.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>A standalone BN → circuit compiler: Borujeni marginal RMSPE 0.36 % (<code>mcry</code>) / 0.18 % (<code>ancilla</code>) against
+the paper's 0.1 %, and marginals within ±0.01 of Netica. <span class="chip evidence">evidence-based</span></li>
+<li>QeMCMC reproduced: k_quantum / k_local / k_uniform = 0.250 / 1.017 / 0.939 against 0.264 / 0.94 / 0.948
+(simulated: ideal). <span class="chip evidence">evidence-based</span></li>
+<li><strong>B-2</strong>, a joint site × phenotype draw: placement and tumour type drawn together in one quantum job. <span class="chip evidence">evidence-based</span></li>
+<li>An honest drift table: ideal circuits equal the classical sampler (TVD 0.018–0.039); Heron-class noise does
+not (0.571–0.737). Quantum blur is rejected (correlation 0.967 / 0.993 with a Gaussian). <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> cohorts whose tumour mix (type, size, margin, location) follows a <strong>cited rulebook exactly</strong>, with
+every draw traceable. That turns detector testing into a controlled experiment: &quot;how does sensitivity change
+for 6 mm ground-glass nodules at the pleura?&quot; <span class="chip extrapolation">extrapolation</span> The quantum circuit provides provenance (claim level L0). It does
+not provide better tumours: the classical sampler draws the same distribution with lower error today. <span class="chip evidence">evidence-based</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Any disease with published statistics.</strong> Liver, breast (procedural breast phantoms [H12]) and brain lesions can
+be rulebooks too: the compiler is organ-agnostic. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Comprehensive medicine.</strong> BN nodes can encode comorbidities, risk factors or drug-response categories. A
+rulebook is then machine-readable clinical knowledge that a cohort generator samples from. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Treatment and drug response.</strong> Conditional tables such as &quot;response | phenotype, dose&quot; would let virtual cohorts
+carry an outcome label. <span class="chip speculative">speculative</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> B is the twin's <strong>prior-knowledge layer</strong>. Path: (1) a tumour-phenotype rulebook (now) →
+(2) a patient-level network (age, smoking, genetics → risk → phenotype) →
+(3) conditioning on the patient's own measurements, so the twin samples only futures consistent with them →
+(4) quantum sampling of very large joint distributions, which pays off only when the circuits are deep and
+error-corrected [B01]. Step 4 is the only quantum-dependent step.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> Heron-class noisy devices; noise as in FakeMarrakesh; the classical ancestral sampler stays the baseline.</p>
+<ul>
+<li>At chain depth (5 862–31 965) Heron-class draws are noise-dominated (TVD 0.57–0.74, 33–59 % invalid shots). <span class="chip evidence">evidence-based</span></li>
+<li>Useful near-term setups are small rulebooks, shallower compilations and K ≤ 4 sites, or an ideal draw stamped
+with a hardware certificate. <span class="chip extrapolation">extrapolation</span></li>
+<li>B's BP simulability number (D #9) shows these circuits are classically easy at their width. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> devices that run 10⁴–10⁵ two-qubit gates with error mitigation (utility-scale results exist
+before fault tolerance [H11]).</p>
+<ul>
+<li>B-2 at K = 8–16 sites runs at chain depth with drift close to the classical sampler. <span class="chip extrapolation">extrapolation</span></li>
+<li>QeMCMC proposals run on real-anatomy energy landscapes. Any speedup is unproven: today it exists in ideal
+simulation only. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant hardware with deep, error-corrected circuits.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Amplitude-amplified inference over large networks [B01] could estimate rare-event probabilities (rare
+phenotype × location combinations) with quadratically fewer samples. This is a claim-level-L3 capability and the
+first point where B's quantum path could beat its classical baseline.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Noise dominates the draw</td>
+<td>technical</td>
+<td>the drawn distribution drifts from the rulebook</td>
+<td>shallow encodings; ideal draws + hardware certificate</td>
+</tr>
+<tr>
+<td>Classical simulability</td>
+<td>technical</td>
+<td>if BP simulates the circuits, the quantum path adds provenance only</td>
+<td>publish the BP number next to every quantum claim</td>
+</tr>
+<tr>
+<td>Rulebook sources <em>(verify)</em></td>
+<td>data</td>
+<td>priors without papers cannot be audited</td>
+<td>add papers to <code>../papers/</code>; label assumptions</td>
+</tr>
+<tr>
+<td>Prevalence ≠ realism</td>
+<td>validation</td>
+<td>drift is measured against the rulebook, not real-world prevalence</td>
+<td>compare cohorts with LIDC statistics in H</td>
+</tr>
+<tr>
+<td>Versioning of priors</td>
+<td>regulatory</td>
+<td>changed priors silently change cohorts</td>
+<td>priors inside the committed rulebook (CCR-B1)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
 <p>[B01], [B04], [B05], [B09], [B10], [B11], [B12] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<p><strong>CCR-B1: <code>rulebook</code>, class prior slot.</strong></p>
+<ul>
+<li><em>Need:</em> the placement-class prior P(free, juxtavascular, juxtapleural) belongs to the rulebook (A emits equal counts per class).</li>
+<li><em>Request:</em> an optional top-level <code>params</code> object (or <code>prior</code> field) in <code>rulebook</code>; nodes and top level are <code>additionalProperties: false</code> / <code>unevaluatedProperties: false</code> today.</li>
+<li><em>Local workaround:</em> sidecar <a href="../../B_mapping/data/class_prior.json"><code>data/class_prior.json</code></a>, read by <code>joint.py</code>.</li>
+</ul>
+<p><strong>CCR-B2: <code>compiled_circuit</code>, logical-to-physical layout and ancillas.</strong></p>
+<ul>
+<li><em>Need:</em> record the logical qubit order (clbit i = logical qubit i, node order, little-endian) and which physical qubits are ancillas.</li>
+<li><em>Request:</em> an optional <code>extra</code> object on <code>compiled_circuit</code>.</li>
+<li><em>Local workaround:</em> <code>qubit_map</code> holds the physical qubit whose measurement feeds each node's clbits (matches <code>$n</code> in the QASM); ancillas are an extra key <code>ancilla</code> (final layout); the logical order is documented here. No information is lost for decoding because decoding uses the compiler's own maps.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>B_mapping/README.md</code></p>

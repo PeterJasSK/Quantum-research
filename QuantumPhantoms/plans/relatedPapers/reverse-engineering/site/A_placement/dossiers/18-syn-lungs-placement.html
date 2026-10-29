@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#18</span>
   <span class="chip">letter A</span>
   <span class="chip">★★</span>
@@ -33,35 +32,312 @@
 
 <article class="md">
 <h1>#18 — SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)</h1>
-<p><strong>Letter:</strong> A (<a href="../index.html"><code>A_placement</code></a>) · <strong>Priority:</strong> ★★ · <strong>Kind:</strong> classical · <strong>Papers:</strong> A01, A02, A03, A04 · <strong>State:</strong> see <a href="../../../A_placement/status.json"><code>status.json</code></a></p>
+<p><strong>Letter:</strong> A (<a href="../index.html"><code>A_placement</code></a>) · <strong>Priority:</strong> ★★ · <strong>Kind:</strong> classical · <strong>Papers:</strong> A01, A02, A03, A04, F01 · <strong>State:</strong> see <a href="../../../A_placement/status.json"><code>status.json</code></a></p>
 <blockquote>
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>Where a synthetic lung nodule sits matters as much as what it looks like. Real nodules fall into three border classes:</p>
+<ul>
+<li><strong>well-circumscribed (free):</strong> surrounded by parenchyma;</li>
+<li><strong>vascularized (juxtavascular):</strong> attached to a vessel;</li>
+<li><strong>juxtapleural:</strong> merged with the chest wall or mediastinal pleura.</li>
+</ul>
+<p>The class drives B's phenotype rules (e.g. no ground-glass at the pleura; juxtavascular → lobulated more likely), E's growth constraints and F's insertion (clip juxtapleural lesions with the lung mask).</p>
+<p><strong>Source gap (important).</strong> The target was listed as &quot;SYN-LUNGS placement logic&quot; [A01]. Dissection found that the A01 PDF (arXiv:2502.21187v4, <em>Virtual Patients, Real Gains</em>) contains <strong>no placement rules, class definitions, thresholds or class proportions</strong>. What it does say:</p>
+<ul>
+<li>X-Lesions inserts 512 nodules (4–30 mm, sizes from NLST) into 174 XCAT digital twins, at 0.1 mm voxels with CLB texture.</li>
+<li>Its only LIDC link is LUNA16 (601 scans / 1,186 nodules).</li>
+</ul>
+<p>The operational rule therefore comes from <strong>Ambrosini et al. [F01]</strong>, which defines the three classes for nodule simulation and cites <strong>Kostis et al.</strong> (200 nodules) for their proportions. A01 contributes only the size range and the &quot;anatomy-aware insertion&quot; framing.</p>
+<p><strong>Pipeline.</strong> Everything is re-implemented here, and every step is 3-D on the native host grid:</p>
+<ol>
+<li>LIDC host CT.</li>
+<li>lungmask [A03]: lungs (R231) + lobes (LTRCLobes fused with R231).</li>
+<li>TotalSegmentator [A04] task <code>lung_vessels</code>: vessels + airway.</li>
+<li>Euclidean distance maps.</li>
+<li>Large-vessel bifurcation points.</li>
+<li>Placement class of a nodule-sized sphere at each voxel.</li>
+<li>Seeded candidate sites per class, each with its context vector.</li>
+</ol>
+<h2 id="equations">Equations</h2>
+<p>The contact ring of a nodule mask <em>N</em> (6-connected dilation δ₆, one step):</p>
+<pre><code class="language-text">R(N) = δ₆(N) \ N
+</code></pre>
+<p>The class of an annotated nodule (reproduction, <code>classes.classify_mask</code>). Precedence is pleura &gt; vessel &gt; free, so the classes are mutually exclusive:</p>
+<pre><code class="language-text">out        = ¬(Lungs ∪ N ∪ Airway)
+f_pleura   = |R ∩ out| / |R|          juxtapleural   if f_pleura ≥ 0.10
+n_vessel   = |R ∩ V|  (V without N)   juxtavascular  elif n_vessel ≥ 5
+                                      free           otherwise
+</code></pre>
+<p>The class of a planned sphere of radius <em>r</em> centred at voxel <em>x</em> (placement, <code>classes.classify_site_arrays</code>). All distances are Euclidean in mm: <code>d_P</code> = EDT inside Lungs to the lung boundary, <code>d_V</code> = EDT to vessels, <code>d_B</code> = EDT to large-vessel bifurcations, <code>m</code> = margin.</p>
+<pre><code class="language-text">juxtapleural   0 &lt; d_P(x) ≤ r
+juxtavascular  d_P(x) &gt; r + m  ∧  0 &lt; d_V(x) ≤ r  ∧  d_B(x) ≤ r
+free           d_P(x) &gt; r + m  ∧  d_V(x) &gt; r + m
+(otherwise ambiguous → never emitted)
+</code></pre>
+<p>Bifurcations: skeleton voxels <em>s</em> of the vessel mask with ≥ 3 skeleton neighbours (26-connectivity) and a local vessel radius of at least 1.5 mm (EDT inside the vessel at <em>s</em>).</p>
+<p>Wilson 95 % interval for a class proportion k/n, with z = 1.96:</p>
+<pre><code class="language-text">centre = (p + z²/2n) / (1 + z²/n),   half = z·√(p(1−p)/n + z²/4n²) / (1 + z²/n)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<p>The class thresholds were fixed <strong>before</strong> the reproduction run (plan Q5) and are never fitted to Kostis. The code source is <code>src/classes.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source / reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contact ring</td>
+<td>1 voxel, 6-connected</td>
+<td>F01 &quot;no voxel overlap&quot; / &quot;share voxels&quot;: contact is voxel adjacency</td>
+</tr>
+<tr>
+<td><code>pleura_contact_frac</code></td>
+<td>0.10</td>
+<td>F01 &quot;merged with lung contour&quot;; a tangent touch is not enough (pre-registered)</td>
+</tr>
+<tr>
+<td><code>vessel_contact_vox</code></td>
+<td>5</td>
+<td>F01 &quot;share voxels with vessel&quot;; guards single-voxel segmentation noise (pre-registered)</td>
+</tr>
+<tr>
+<td><code>min_vessel_radius_mm</code></td>
+<td>1.5</td>
+<td>F01 &quot;large vessel&quot; (pre-registered)</td>
+</tr>
+<tr>
+<td>Site margin <em>m</em></td>
+<td>3 mm</td>
+<td>clearance band between contact and free (pre-registered)</td>
+</tr>
+<tr>
+<td>Consensus</td>
+<td>pylidc <code>consensus(clevel=0.5)</code>, ≥ 3 of 4 readers, mean diameter ≥ 3 mm</td>
+<td>LIDC [A02] outlines nodules ≥ 3 mm</td>
+</tr>
+<tr>
+<td>Nominal radius <em>r</em></td>
+<td>median consensus radius of the reproduction set</td>
+<td>plan Q8; stored per site in <code>context.extra.nominal_radius_mm</code></td>
+</tr>
+<tr>
+<td>Vessel density</td>
+<td>vessel-voxel fraction in a 10 mm sphere</td>
+<td><code>context.extra.vessel_density</code> (B's &quot;vessel density&quot; context)</td>
+</tr>
+<tr>
+<td>Local HU</td>
+<td>mean/std over a sphere of radius <em>r</em>, vessel voxels excluded</td>
+<td>contract <code>local_hu_mean/std</code></td>
+</tr>
+<tr>
+<td>Sites per class</td>
+<td>10 (equal counts)</td>
+<td>plan Q7; the class prior belongs to B's rulebook</td>
+</tr>
+<tr>
+<td>Kostis reference</td>
+<td>vascularized 0.45 · free 0.33 · juxtapleural 0.22</td>
+<td>F01 citing Kostis: &quot;almost half … around one-third … approaching one-quarter&quot;</td>
+</tr>
+<tr>
+<td>Pass criterion</td>
+<td>each class within ±10 pp <strong>and</strong> the ordering vasc &gt; free &gt; juxtapleural</td>
+<td>plan Q3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tools (versions pinned in each cache <code>meta.json</code>):</strong></p>
+<ul>
+<li>lungmask 0.2.22 (Apache-2.0);</li>
+<li>TotalSegmentator 2.18.0 (Apache-2.0; task <code>lung_vessels</code> needs no licence key);</li>
+<li>pylidc 0.2.3 (MIT);</li>
+<li>tcia_utils 3.3.5 (Apache-2.0).</li>
+</ul>
+<p>LIDC-IDRI comes from TCIA (CC BY 3.0).</p>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>The reproduction target is Ambrosini et al. [F01], citing Kostis et al. (200 pulmonary nodules): &quot;almost half of all nodules were vascularized, around one-third had well-circumscribed boundaries, and approaching one-quarter of all nodules were juxtapleural&quot;. A fourth class, pleural tails, is about 1 %. We merge it into juxtapleural and do not model it separately.</p>
+<p>The figures are qualitative fractions, so the numeric reference 0.45 / 0.33 / 0.22 is our reading of them (plan Q3).</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p><strong>The result is not matched, and it is inconclusive at n = 9 nodules.</strong></p>
+<ul>
+<li><strong>Run:</strong> <code>A_placement/runs/20261029-122412-repro-proportions/</code> (gitignored), command <code>python -m A_placement.repro.class_proportions --limit 6 --workers 1</code>.</li>
+<li><strong>Figure:</strong> <a href="../figures/18-class-proportions.png"><code>../figures/18-class-proportions.png</code></a>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Ours (n=9)</th>
+<th>95 % Wilson CI</th>
+<th>Kostis via F01</th>
+<th>Within ±10 pp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>free (well-circumscribed)</td>
+<td>5 · 0.56</td>
+<td>0.27–0.81</td>
+<td>0.33</td>
+<td>no</td>
+</tr>
+<tr>
+<td>juxtavascular (vascularized)</td>
+<td>4 · 0.44</td>
+<td>0.19–0.73</td>
+<td>0.45</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>juxtapleural</td>
+<td>0 · 0.00</td>
+<td>0.00–0.30</td>
+<td>0.22</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>The ordering vasc &gt; free &gt; juxtapleural fails. The median consensus radius is <strong>4.72 mm</strong>, which becomes <code>nominal_radius_mm</code> for placement.</p>
+<p><strong>Sample.</strong> The plan called for 40 scans, later amended to 20. CPU segmentation took about 25 min per scan alone, and up to 75 min while other sessions loaded the machine. The developer stopped the run after 6 scans (LIDC-IDRI-0001, 0003–0007), with the goal of validating the working pipeline rather than the statistics. The full 20-scan list holds 44 eligible nodules, whose CI half-width would be about ±13–14 pp.</p>
+<p><strong>Diagnostic (not used to tune anything).</strong> Distance from each nodule to the nearest non-lung, non-airway voxel:</p>
+<table>
+<thead>
+<tr>
+<th>Nodule</th>
+<th>Diameter mm</th>
+<th>Class</th>
+<th>Gap to wall mm</th>
+<th>Ring fraction outside lung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0001-1</td>
+<td>32.8</td>
+<td>juxtavascular</td>
+<td>1.41</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0003-1</td>
+<td>31.0</td>
+<td>juxtavascular</td>
+<td>15.87</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0003-2</td>
+<td>13.3</td>
+<td>free</td>
+<td>2.32</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0003-3</td>
+<td>15.0</td>
+<td>free</td>
+<td><strong>0.82</strong></td>
+<td>0.035</td>
+</tr>
+<tr>
+<td>0004-1</td>
+<td>6.8</td>
+<td>free</td>
+<td>8.74</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0005-1</td>
+<td>5.7</td>
+<td>free</td>
+<td>5.19</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0005-2</td>
+<td>7.9</td>
+<td>free</td>
+<td>6.84</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0006-1</td>
+<td>8.8</td>
+<td>juxtavascular</td>
+<td>11.49</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>0007-1</td>
+<td>34.4</td>
+<td>juxtavascular</td>
+<td>2.50</td>
+<td>0.002</td>
+</tr>
+</tbody>
+</table>
+<p>Four of nine nodules lie within 2.5 mm of the lung wall, yet none passes the pre-registered rule (one-voxel contact, at least 10 % of the ring outside the lung). Two causes:</p>
+<ul>
+<li><strong>Mask boundary:</strong> R231's lung mask includes a thin rim of wall-side tissue, so a nodule that touches the pleura radiologically still sees &quot;lung&quot; in its ring.</li>
+<li><strong>Consensus shrinkage:</strong> the 50 % consensus outline shrinks the nodule border slightly.</li>
+</ul>
+<p><strong>Consequence for downstream:</strong> the rule as fixed <strong>undercounts juxtapleural</strong> nodules on real annotations. Placement of <em>planned</em> spheres uses distances, not this ring: juxtapleural sites satisfy <code>d_P ≤ r</code> and do sit against the wall (see the site figure). So A's candidate sites are usable, but the measured class prior is biased.</p>
+<p><strong>Candidate fix (needs a new, pre-registered run, not done here):</strong> contact = &quot;gap to the lung boundary ≤ 1 in-plane voxel <em>or</em> ring fraction ≥ 0.10&quot;, evaluated on the full 20-scan set.</p>
+<h2 id="adaptation">Adaptation</h2>
+<ul>
+<li><strong>Lungs, 3-D, native grid:</strong>
+<ul>
+<li>every mask and distance map is computed on the host's own DICOM grid (LPS, no resampling);</li>
+<li>2-D images exist only as the exported figures.</li>
+</ul>
+</li>
+<li><strong>TotalSegmentator 2.18 class split:</strong> task <code>lung_vessels</code> no longer emits <code>lung_vessels</code> / <code>lung_trachea_bronchia</code>. It emits <code>lung_arteries</code>, <code>lung_veins</code>, <code>lung_airways</code> and <code>lung_airways_wall</code>. We use vessels = arteries ∪ veins and airway = airway lumen ∪ airway wall. The wall counts as airway, so it never counts as &quot;outside the lung&quot; or as an eligible site.</li>
+<li><strong>lungmask excludes juxtapleural nodules from <code>lungs</code>.</strong> R231 often carves a large wall-adjacent nodule out of the lung mask (seen on LIDC-IDRI-0001). The nodule rule therefore uses <code>Lungs ∪ N</code>, so the nodule's own carve-out is not mistaken for chest wall.</li>
+<li><strong>Nodule hygiene (AC-5):</strong>
+<ul>
+<li>consensus nodules, dilated by 2 voxels, are removed from the delivered <code>vessels</code> mask, because TotalSegmentator labels nodule borders as vessel;</li>
+<li>no candidate site lies within 2r of a known nodule;</li>
+<li>the reproduction uses the raw vessel mask minus the nodule's own voxels, because a contact ring needs the vessel voxels right next to the nodule.</li>
+</ul>
+</li>
+<li><strong>From real nodules to planned sites:</strong> a sphere of radius <em>r</em> inherits the same three contact definitions through distance maps. Juxtavascular additionally requires a large-vessel bifurcation within <em>r</em> (F01: inserted &quot;at a large vessel bifurcation&quot;).</li>
+<li><strong>Determinism:</strong> sites are drawn with <code>shared.seedhash.rng(seed_hex, &quot;A.place.&lt;class&gt;&quot;)</code>, keeping at least 2r between sites. The same seed gives the same <code>sites.json</code>.</li>
+<li><strong>Speed:</strong> CPU only, about 25 min per scan (TotalSegmentator dominates). The reproduction set is therefore the first 20 patients of a deterministic LIDC list, segmented 3 at a time (plan Q2 amendment).</li>
+</ul>
+<h2 id="verdict">Verdict</h2>
+<p><strong>State: <code>adapted</code></strong> (developer decision 2026-10-29). The pipeline is built and validated, but the published number is <strong>not</strong> matched. The miss is recorded here, not hidden.</p>
+<ul>
+<li><strong>Pipeline: works, verified by hand.</strong> On LIDC-IDRI-0001 and 0004 the whole chain runs and checks out:
+<ul>
+<li>DICOM → LPS host CT on the native grid → contract-valid <code>anatomy_masks</code>, with the 5 lobes, sides and orientation checked;</li>
+<li>LIDC consensus outlines land exactly on the nodules;</li>
+<li>nodules are removed from vessels (61 → 0 voxels);</li>
+<li>placement emits 10/10/10 contract-valid sites;</li>
+<li>recomputed distances match by brute force (S001 15.88, S013 11.22, S026 2.89 mm);</li>
+<li>every site re-checks to its class;</li>
+<li>the same seed gives identical <code>sites.json</code> and a different seed gives different sites;</li>
+<li>bifurcation points sit on visible branchings.</li>
+</ul>
+</li>
+<li><strong>Reproduction: not matched (n = 9, inconclusive).</strong> Juxtavascular agrees (0.44 vs 0.45), but juxtapleural is 0 vs 0.22 because of the contact-rule undercount above.</li>
+</ul>
+<p>The epic's normal gate (<code>reproduced</code> means the published number matched) was waived by the developer because pipeline validation is the goal of this stage. A pre-registered rerun on the 20-scan set with the candidate contact fix remains the way to earn a real match.</p>
+<p><strong>Claim level:</strong> classical stage, no quantum claim.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li><strong>B:</strong> read <code>sites[].context</code>. The placement class plus <code>extra.vessel_density</code> and <code>extra.dist_bifurcation_mm</code> are the conditioning variables. The LIDC class proportions in <code>proportions.json</code> are a candidate prior for B's rulebook, cited as Kostis/F01, with our measured value alongside.</li>
+<li><strong>E:</strong> constrain growth with <code>lungs</code>/<code>lobes</code> (pleura and fissures) and <code>vessels</code>/<code>airway</code> from the same <code>anatomy_masks.json</code>.</li>
+<li><strong>F:</strong> juxtapleural sites must be clipped by the lung mask at insertion. <code>local_hu_mean/std</code> is the host background for additive-delta insertion.</li>
+<li><strong>INT:</strong> use the final <code>place</code> run directory, which is self-contained: masks, <code>anatomy_masks.json</code>, <code>sites.json</code> and <code>run.json</code>. If B draws a size very different from <code>nominal_radius_mm</code>, re-check the class with <code>classes.classify_site</code>.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>A_placement/dossiers/18-syn-lungs-placement.md</code></p>

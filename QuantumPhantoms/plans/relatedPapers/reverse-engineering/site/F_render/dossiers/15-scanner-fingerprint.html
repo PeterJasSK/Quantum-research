@@ -12,22 +12,21 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#15</span>
   <span class="chip">letter F</span>
   <span class="chip">★★★</span>
   <span class="chip">classical</span>
-  <span class="chip">claim —</span>
-  <span class="chip">sim —</span>
+  <span class="chip">claim n/a</span>
+  <span class="chip">sim n/a</span>
   
 </div>
 
@@ -38,30 +37,143 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>An inserted lesion only looks scanned if it carries the host scan's own blur and noise. F therefore measures both
+from the patient image itself, with no phantom scan:</p>
+<ul>
+<li><strong>Resolution (Sanders, Hurwitz &amp; Samei, Med. Phys. 2016):</strong>
+<ul>
+<li>the air–skin boundary of every patient is a natural high-contrast edge;</li>
+<li>profiles across it give an oversampled edge-spread function (ESF), then the line-spread function (LSF), then the MTF.</li>
+</ul>
+</li>
+<li><strong>Noise (Peng et al. 2023 [F05], after Divel &amp; Pelc, SPIE 2019):</strong>
+<ul>
+<li>CT noise is non-stationary;</li>
+<li>estimate a noise power spectrum (NPS) per small patch;</li>
+<li>synthesise noise by filtering white noise with √NPS patch by patch;</li>
+<li>merge the overlapping patches with trapezoid windows.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Source availability:</strong> Sanders 2016 and Divel–Pelc 2019 are paywalled and <strong>not in <code>papers/</code></strong>. Their methods are
+re-derived from the descriptions quoted in [F05] §2.2.1 and the analysis doc. Only [F05] supplies a number.</p>
+<h2 id="equations">Equations</h2>
+<pre><code class="language-text">ESF        pixels in a 1.5 px-wide strip along the outward body normal, binned by projected distance s − s0
+           (s0 = the strip's own sub-pixel edge, from the area under the normalised profile); 0.1 px bins
+LSF        −dESF/ds ;  MTF(f) = |FFT(LSF · Hann)| / MTF(0) ;  σ_xy from a Gaussian fit to the LSF
+σ_z        same strip method across lung/soft-tissue boundaries with |n_z| &gt; 0.9 (fallback: slice/2.355)
+NPS        S(fx, fy) = Δx Δy / (Nx Ny) · ⟨|F(n)|²⟩         ([F05] eq. 3); single-scan ROIs are 2nd-order detrended
+synthesis  n = F⁻¹( √(S / ΔxΔy) · F(w) ),  w ~ N(0, 1)  →  var(n) = Σ S / (N ΔxΔy)
+patches    6.8 mm, 30 % overlap, trapezoid weights, Σ w n / √Σ w²   ([F05] §2.2.1)
+σ map      σ² = G_w[(x − G_1.5 x)² · flat] / G_w[flat] / k²,  k² = Σ S (1 − Ĝ)² / Σ S   (high-pass gain from the NPS)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>strip half-length</td>
+<td>8 mm</td>
+<td>ours</td>
+</tr>
+<tr>
+<td>ESF bin</td>
+<td>0.1 px</td>
+<td>standard oversampled-edge practice</td>
+</tr>
+<tr>
+<td>boundary points</td>
+<td>3000 (xy), 12000 candidates (z)</td>
+<td>ours</td>
+</tr>
+<tr>
+<td>NPS ROI</td>
+<td>24 mm, soft tissue (−150…150 HU), ≥ 10 mm inside the body</td>
+<td>ours</td>
+</tr>
+<tr>
+<td>patch size / overlap</td>
+<td>6.8 mm / 30 %</td>
+<td>[F05] §2.2.1</td>
+</tr>
+<tr>
+<td>repeated acquisitions for patch NPS</td>
+<td>20</td>
+<td>[F05] §2.2.1</td>
+</tr>
+<tr>
+<td>σ-map window / flat threshold</td>
+<td>10 mm / gradient &lt; 15 HU/mm, 2 px from edges</td>
+<td>ours</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<p>[F05] §3, Fig. 2(i): noise synthesised from the patch NPS matches the real repeated-scan noise. Its moments
+up to the 4th order differ by <strong>within 2 %</strong>.</p>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p>Command: <code>python -m F_render.repro.r15_fingerprint</code> (run dir <code>F_render/runs/*-repro-15/</code>).</p>
+<ul>
+<li>
+<p><strong>[F05] moments:</strong></p>
+<ul>
+<li><strong>Setup:</strong> a non-stationary ground-truth noise field stands in for the orange-man phantom. It has a soft NPS with σ 20 HU on the left
+and a sharp NPS with σ 35 HU on the right.
+<ul>
+<li>20 realisations give the patch NPS.</li>
+<li>It is compared with 20 independent realisations.</li>
+</ul>
+</li>
+<li><strong>σ difference:</strong> <strong>+1.53 %</strong> (left), <strong>+0.19 %</strong> (right).</li>
+<li><strong>Kurtosis difference:</strong> <strong>−1.27 %</strong> (left), <strong>+0.35 %</strong> (right).</li>
+<li><strong>Agreement:</strong> agree, worst case 1.53 % ≤ 2 %.</li>
+<li><strong>Figure:</strong> <a href="../figures/r15-peng-patch-noise.png"><code>r15-peng-patch-noise.png</code></a>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Self-check (plan AC-5):</strong></p>
+<ul>
+<li><strong>Setup:</strong> the stub phantom blurred by a known PSF σ = (3.0, 1.6, 1.6) mm (z, y, x), with NPS-shaped noise of σ = 15 HU.</li>
+<li><strong>Estimated:</strong> σ_z 2.78 mm (−7 %), σ_xy 1.65 mm (+3 %), σ map 14.3 HU (−5 %). The NPS peak is within one bin.</li>
+<li><strong>Result:</strong> <strong>PASS</strong>.</li>
+<li><strong>Figure:</strong> <a href="../figures/r15-selfcheck.png"><code>r15-selfcheck.png</code></a>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Real host (LIDC-IDRI-0001, 0.70 × 0.70 × 2.5 mm):</strong></p>
+<ul>
+<li>in-plane σ 0.81 mm, from 2454 air–skin strips;</li>
+<li>σ_z 1.33 mm, from 660 lung z-edges;</li>
+<li>global NPS σ 35 HU, σ-map median 26 HU.</li>
+</ul>
+<p>The NPS σ is above the σ map because single-scan soft-tissue ROIs still contain fat/muscle texture.</p>
+</li>
+</ul>
+<h2 id="adaptation">Adaptation</h2>
+<ul>
+<li>Fully 3-D. In-plane strips sit on axial planes; z strips run along lung domes and apices.</li>
+<li><strong>Output:</strong> <code>scanner_fingerprint.json</code> with MTF, <code>psf_sigma_mm_zyx</code>, NPS and <code>sigma_map.nii.gz</code>.</li>
+<li><strong>Local NPS patches</strong> go to <code>local_nps.npz</code>. This is contract change request <strong>CR-F1</strong>, because the frozen schema has only a global NPS.</li>
+<li>The patient has only one acquisition, so the patch NPS of a host comes from detrended single-scan ROIs.
+[F05]'s 20-repeat ensemble is used only in the reproduction.</li>
+<li><strong>Consumer:</strong> the F insert blurs only the lesion delta with this PSF. If the lesion interior is quieter than the surrounding lung, it tops the noise up with this NPS.</li>
+</ul>
+<h2 id="verdict">Verdict</h2>
+<p><strong>adapted.</strong> Both the estimator and the patch-NPS synthesis are reproduced and used in every hybrid.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li><strong>H:</strong> &quot;NPS inside the lesion vs outside&quot; and the MTF are the physics-realism checks.</li>
+<li><strong>INT:</strong> apply CR-F1 (<code>local_nps</code>) and CR-F2 (slice-sensitivity profile instead of a single σ_z).</li>
+<li><strong>#16:</strong> the estimator measures the XCIST reconstruction's PSF for the image-domain arm.</li>
+<li><strong>#17:</strong> it measures the NAEOTOM approximation's f50.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>F_render/dossiers/15-scanner-fingerprint.md</code></p>

@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/F_render/dossiers/13-synthetic-tumors.html">#13 listed</a><a class="badge state-listed" href="../../site/F_render/dossiers/14-lesion-model-fitting.html">#14 listed</a><a class="badge state-listed" href="../../site/F_render/dossiers/15-scanner-fingerprint.html">#15 listed</a><a class="badge state-listed" href="../../site/F_render/dossiers/16-xcist-projection-insertion.html">#16 listed</a><a class="badge state-listed" href="../../site/F_render/dossiers/17-naeotom-alpha-params.html">#17 listed</a>
+  <a class="badge state-adapted" href="../../site/F_render/dossiers/13-synthetic-tumors.html">#13 adapted</a><a class="badge state-adapted" href="../../site/F_render/dossiers/14-lesion-model-fitting.html">#14 adapted</a><a class="badge state-adapted" href="../../site/F_render/dossiers/15-scanner-fingerprint.html">#15 adapted</a><a class="badge state-adapted" href="../../site/F_render/dossiers/16-xcist-projection-insertion.html">#16 adapted</a><a class="badge state-dissected" href="../../site/F_render/dossiers/17-naeotom-alpha-params.html">#17 dissected</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,10 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/F_render/index.html</code>.
 Target states live only in <a href="../../F_render/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
 <p>Cell states → HU from an LIDC-fitted lesion library; supersampled partial volume; additive-delta insertion (vessel max-rule, ground-glass α-blend); 3-D PSF + noise from the host scan's own fingerprint (MTF from the air–skin edge, local NPS and σ), inserted into the full 3-D host volume. 2-D slices only as a final export. Upgrade path: projection-domain insertion on Mayo Siemens raw data via XCIST, then a NAEOTOM Alpha approximation.</p>
-<h2>Targets and their status</h2>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,39 +51,39 @@ Target states live only in <a href="../../F_render/status.json"><code>status.jso
 <td><a href="dossiers/13-synthetic-tumors.html">SyntheticTumors / Label-free pipeline</a></td>
 <td>★★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#14</td>
 <td><a href="dossiers/14-lesion-model-fitting.html">Lesion-model fitting (Ambrosini; Solomon–Samei PMB 2014)</a></td>
 <td>★★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#15</td>
 <td><a href="dossiers/15-scanner-fingerprint.html">Scanner fingerprint estimator (Sanders MTF 2016; Divel–Pelc 2019; Peng)</a></td>
 <td>★★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#16</td>
 <td><a href="dossiers/16-xcist-projection-insertion.html">Projection-domain insertion rebuilt on XCIST (Mayo; Mayo LDCT raw data)</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#17</td>
 <td><a href="dossiers/17-naeotom-alpha-params.html">DukeSim NAEOTOM Alpha parameters (McCabe)</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>dissected</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
 <li><code>growth_trajectory</code> — stub: <a href="../../shared/stubs/growth_trajectory/growth_trajectory.json"><code>shared/stubs/growth_trajectory/growth_trajectory.json</code></a> · schema: <a href="../../shared/contracts/growth_trajectory.schema.json"><code>growth_trajectory.schema.json</code></a></li>
@@ -93,31 +92,350 @@ Target states live only in <a href="../../F_render/status.json"><code>status.jso
 <li><code>tumor_draw</code> — stub: <a href="../../shared/stubs/tumor_draw/tumor_draw.json"><code>shared/stubs/tumor_draw/tumor_draw.json</code></a> · schema: <a href="../../shared/contracts/tumor_draw.schema.json"><code>tumor_draw.schema.json</code></a></li>
 <li><code>certificate</code> — extracted seed; stub: <a href="../../shared/stubs/certificate/certificate.json"><code>shared/stubs/certificate/certificate.json</code></a> · schema: <a href="../../shared/contracts/certificate.schema.json"><code>certificate.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
 <li><code>lesion_model_library</code> — schema: <a href="../../shared/contracts/lesion_model_library.schema.json"><code>lesion_model_library.schema.json</code></a> · stub example: <a href="../../shared/stubs/lesion_model_library/lesion_model_library.json"><code>shared/stubs/lesion_model_library/lesion_model_library.json</code></a></li>
 <li><code>scanner_fingerprint</code> — schema: <a href="../../shared/contracts/scanner_fingerprint.schema.json"><code>scanner_fingerprint.schema.json</code></a> · stub example: <a href="../../shared/stubs/scanner_fingerprint/scanner_fingerprint.json"><code>shared/stubs/scanner_fingerprint/scanner_fingerprint.json</code></a></li>
 <li><code>hybrid_volume</code> — schema: <a href="../../shared/contracts/hybrid_volume.schema.json"><code>hybrid_volume.schema.json</code></a> · stub example: <a href="../../shared/stubs/hybrid_volume/hybrid_volume.json"><code>shared/stubs/hybrid_volume/hybrid_volume.json</code></a></li>
 </ul>
-<h2>How to run (sim commands)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to F_render/runs/ via shared.runrecord. -->
-<p><em>Pending (feature F).</em></p>
-<h2>Reproduced result vs. paper</h2>
+<p>F is classical, so no quantum labels apply. All commands run with cwd = <code>reverse-engineering/</code> and conda-base <code>python</code>.
+Extra dependencies are in <a href="../../F_render/requirements.txt"><code>requirements.txt</code></a>. Every run writes <code>F_render/runs/&lt;ts&gt;-&lt;tag&gt;/run.json</code> (gitignored).</p>
+<pre><code class="language-bash"># render: growth snapshot → hybrid_volume (defaults: shared/stubs/ + the fitted library)
+python -m F_render.src.render                         # follow-up snapshot (last step)
+python -m F_render.src.render --step 0 --tag baseline # baseline of the longitudinal pair
+python -m F_render.src.render --export                # + final 2-D PNG slices in figures/
+python -m F_render.src.export_slices &lt;hybrid_volume.json&gt; --tag NAME
+
+# real LIDC host (F-local masks + one free site, plan Q8; patient voxels stay in runs/)
+python -m F_render.src.lidc download --n 20           # once; ~4.3 GB to ~/data/LIDC-IDRI
+python -m F_render.src.host_masks --lidc LIDC-IDRI-0001
+python -m F_render.src.fingerprint --masks F_render/runs/&lt;ts&gt;-host-LIDC-IDRI-0001/anatomy_masks.json --slice-thickness 2.5
+python -m F_render.src.render --masks &lt;…/anatomy_masks.json&gt; --sites &lt;…/sites.json&gt; \
+       --fingerprint &lt;…-fingerprint/scanner_fingerprint.json&gt; --tag lidc0001 --export
+
+# #14 library (parameters only) → F_render/library/lesion_model_library.json
+python -m F_render.src.lesion_fit --lidc 20           # ~1 h CPU
+
+# reproductions (each updates status.json and writes its figure)
+python -m F_render.repro.r13_synthetic_tumors
+python -m F_render.repro.r14_lesion_fit
+python -m F_render.repro.r15_fingerprint [--selfcheck]
+python -m F_render.repro.r16_projection_vs_image      # ~45 min, XCIST
+python -m F_render.repro.r17_naeotom_spectrum         # ~25 min, XCIST
+</code></pre>
+<p><strong>Seeds.</strong></p>
+<ul>
+<li>Appearance (HU, texture, residual noise) comes from <code>rng(certificate.extracted_seed_hex, &quot;F.&lt;label&gt;&quot;)</code>.</li>
+<li>Geometry (edge σ, lobulation, deformation, spicules) comes from <code>rng(tumor_draw.shape_seed_hex, &quot;F.&lt;label&gt;&quot;)</code>.</li>
+<li>A <code>fail</code> certificate rejects the draw: exit code 2, nothing written.</li>
+<li>The same inputs give a byte-identical <code>hybrid_ct.nii.gz</code>.</li>
+</ul>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
 <!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature F).</em> Planned: Robins/Duke volume agreement (&lt; 3 %) on one case.</p>
-<h2>Claim level and honesty notes</h2>
+<p>F is classical, so <code>sim_mode</code> is n/a. &quot;Simulated&quot; below means a software phantom or simulator, never a scanner.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Paper's number</th>
+<th>Ours</th>
+<th>Agreement</th>
+<th>Figure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13</td>
+<td>[H01] generation pipeline, Table 1/6 (qualitative, Fig. 3)</td>
+<td>recipe reproduced on a synthetic liver; core HU = sampled µt</td>
+<td>qualitative + parameter match; DSC 59.81 % <strong>not</strong> reproduced (needs LiTS training)</td>
+<td><a href="figures/r13-synthetic-tumors-liver.png">r13</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>[F01] SH(l≤3) 3-D correlation 0.8897 ± 0.0609 (17 metastases, 8–20 mm)</td>
+<td>0.8699 ± 0.0664 (11 solid LIDC nodules, 8–20 mm); all types 0.714 ± 0.242</td>
+<td>agree (Δ −0.020, z −0.79)</td>
+<td><a href="figures/r14-lesion-library.png">r14</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>[F05] patch-NPS noise moments within 2 %</td>
+<td>σ +1.53 / +0.19 %, kurtosis −1.27 / +0.35 %; self-check PSF/σ within 10 % (PASS)</td>
+<td>agree (synthetic ground truth)</td>
+<td><a href="figures/r15-peng-patch-noise.png">r15</a>, <a href="figures/r15-selfcheck.png">self-check</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td>[F02] Table 4 volume PD: image −0.28…+0.57 %, projection −2.24…−1.01 %</td>
+<td>image <strong>+0.25 ± 1.02 %</strong>, projection +1.97 ± 1.32 % (6 nodules, XCIST phantom)</td>
+<td>agree, |PD| &lt; 3 % (simulated)</td>
+<td><a href="figures/r16-projection-vs-image.png">r16</a></td>
+</tr>
+<tr>
+<td>17</td>
+<td>[F04] Table 1 real f50 0.39 mm⁻¹ (Br40)</td>
+<td>0.573 mm⁻¹ (pre-registered XCIST 'standard'); noise ∝ mAs^−0.501</td>
+<td><strong>disagree</strong> (+47 %); approximation only</td>
+<td><a href="figures/r17-naeotom.png">r17</a></td>
+</tr>
+</tbody>
+</table>
+<p>The epic's F-row headline was Robins/Duke volume agreement &lt; 3 %. The image-domain insert reproduces it (+0.25 ± 1.02 %).
+Real-host render: <a href="figures/render-lidc0001-lung.png"><code>figures/render-lidc0001-lung.png</code></a>.</p>
+<ul>
+<li>Volume 263 mm³ vs 264 mm³ in the lattice.</li>
+<li>σ inside/outside the lesion is 1.10.</li>
+<li>Every changed voxel lies within 8.1 mm of the lesion centre.</li>
+</ul>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>Classical stage (n/a). Privacy-by-construction: only fitted parameters leave LIDC; learned refiners (DiffTumor, MAISI) are ablation only. Mayo raw data: Siemens cases only for Siemens work.</p>
-<h2>References (paper codes)</h2>
+<p>Classical stage (claim level n/a).</p>
+<ul>
+<li><strong>Privacy-by-construction.</strong>
+<ul>
+<li>Only fitted parameters leave LIDC: <a href="../../F_render/library/lesion_model_library.json"><code>library/lesion_model_library.json</code></a>, about 4 KB of scalars.</li>
+<li>LIDC pixel data live outside the repo (<code>~/data/LIDC-IDRI</code>). Hybrids of LIDC hosts stay in gitignored <code>runs/</code>.</li>
+<li>The committed <code>figures/render-lidc0001-*.png</code> show a cropped slice of the public LIDC-IDRI scan 0001 (CC BY 3.0). That is a display export, not generator input.</li>
+<li>Learned refiners (DiffTumor, MAISI) are ablation only and are not built.</li>
+</ul>
+</li>
+<li><strong>F-local substitutes, replaced in INT.</strong>
+<ul>
+<li>Masks and the single site on LIDC hosts come from <code>src/host_masks.py</code>: thresholds + connected components, lobes not
+derivable (all 0), lobe label by z-half.</li>
+<li>These are not A's lungmask/TotalSegmentator masks.</li>
+</ul>
+</li>
+<li><strong>Image domain is the main path.</strong>
+<ul>
+<li>The projection-domain arm (#16) runs on a <strong>synthetic XCIST phantom</strong> with a Definition-<em>like</em> configuration from published parameters.</li>
+<li>Real Mayo Siemens raw-data insertion is future work: it needs the TCIA agreement and the vendor geometry, and only Siemens cases may be used for Siemens work.</li>
+</ul>
+</li>
+<li><strong>NAEOTOM Alpha (#17)</strong> is an XCIST approximation, not DukeSim. CdTe crosstalk and covariance are not modelled, and f50 does not match
+Br40 under the pre-registered kernel.</li>
+<li><strong>Missing sources.</strong> Solomon–Samei 2014, Sanders 2016 and Divel–Pelc 2019 are paywalled and not in <code>papers/</code>, so no number is claimed from them.
+F02, F03 and F04 were read as PMC full text.</li>
+<li><strong>Library HU.</strong> The solid HU mean (−22 HU) sits below soft tissue because of partial volume in small nodules on 2.5 mm slices.
+Ground-glass nodules fit the shape-only check poorly (corr 0.42); their realism comes from texture.</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-caveats">Usable with caveats</span>
+<p>Draft rating, not yet confirmed by the chain (the chain has not reached F). The image-domain insert reproduces the
+volume headline (+0.25 ± 1.02 %), and every chain flag exists (<code>render --masks</code> already accepts A's manifest). The
+runner asserts that the hybrid lies on A's host geometry (spacing, origin, direction, size). Two integration hazards
+showed up in the probe: <code>--export</code> writes host-derived PNGs into the git-tracked <code>figures/</code>, and the lesion library
+JSON is outside the commit's code hash.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A's masks never used</td>
+<td>integration</td>
+<td>F-local threshold masks have all lobes = 0; behaviour with lungmask lobes is untested</td>
+<td>honesty notes above</td>
+<td>the chain's <code>render</code> stage with <code>--masks &lt;A&gt;</code></td>
+</tr>
+<tr>
+<td><code>--export</code> into tracked <code>figures/</code></td>
+<td>integration</td>
+<td>each chain run adds host-derived images to the repo</td>
+<td>probe <code>F.render</code>; <code>render.py:114</code></td>
+<td>export into the run dir</td>
+</tr>
+<tr>
+<td>Library outside the commit</td>
+<td>integration</td>
+<td><code>library/lesion_model_library.json</code> can change after the commit</td>
+<td>probe <code>G.commit</code></td>
+<td>hash parameter files into the commit</td>
+</tr>
+<tr>
+<td>#17 NAEOTOM f50 +47 %</td>
+<td>component</td>
+<td>the photon-counting look is an approximation</td>
+<td>#17 row</td>
+<td>DukeSim or a kernel fit</td>
+</tr>
+<tr>
+<td>Solid HU −22 (partial volume)</td>
+<td>data</td>
+<td>solid nodules render too dark</td>
+<td>honesty notes above</td>
+<td>fit on thinner slices / deconvolve</td>
+</tr>
+<tr>
+<td>#16 projection domain synthetic only</td>
+<td>data</td>
+<td>the raw-data path is untested on real scanner data</td>
+<td>#16 row</td>
+<td>Mayo Siemens raw data (TCIA agreement)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Expected yes; the geometry assert lives in the runner, not in F. Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[H01] Hu (label-free liver tumours):</strong> synthetic tumours good enough that segmentation AI trains without
+manual labels.</li>
+<li><strong>[F01] Ambrosini:</strong> fit nodule shape and HU models to real annotations.</li>
+<li><strong>[F05] Peng:</strong> generate realistic, position-dependent CT noise from the scan itself.</li>
+<li><strong>[F02] Robins, [F03] Mayo:</strong> insert nodules in the image domain vs the projection (raw-data) domain, and show both
+agree on volume.</li>
+<li><strong>[F04] McCabe (DukeSim):</strong> simulate the Siemens NAEOTOM Alpha photon-counting CT. <strong>[A06]</strong> Mayo low-dose CT
+images + raw projections.</li>
+</ul>
+<p>Why it matters: a synthetic nodule is only useful if it <strong>looks like it was scanned by that scanner</strong>: the same
+blur, noise and partial-volume edges.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>Image-domain insertion reproduces the volume headline: +0.25 ± 1.02 % (projection arm +1.97 ± 1.32 %, synthetic
+XCIST phantom). <span class="chip evidence">evidence-based</span></li>
+<li>Lesion shape model: 3-D correlation 0.8699 ± 0.0664 against the paper's 0.8897 ± 0.0609. <span class="chip evidence">evidence-based</span></li>
+<li>Noise generator: σ and kurtosis within 2 %. NAEOTOM resolution is approximated but off (f50 +47 %). <span class="chip evidence">evidence-based</span></li>
+<li>A privacy-by-construction library: about 4 KB of fitted scalars leave LIDC, and no patient voxels. <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> synthetic nodules that detectors and readers cannot tell from real ones, <strong>matched to each
+scanner's resolution, noise and dose</strong>, so sensitivity can be measured per scanner model and protocol, with exact
+masks. The upgrade path runs through photon-counting CT [F04]. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Any CT organ.</strong> The insertion and fingerprint code is organ-agnostic. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Other modalities.</strong> MR needs its own physics (signal model, coil noise), which is not built here; the same
+&quot;fit parameters, never copy voxels&quot; rule carries over. <span class="chip speculative">speculative</span></li>
+<li><strong>Dose and protocol studies.</strong> Re-render the same lesion at lower dose to find where detection breaks. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Treatment planning QA.</strong> Lesions with known extent test auto-contouring for radiotherapy. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> F is the twin's <strong>imaging layer</strong>: predict what <em>this</em> patient's lesion would look like on another scanner,
+dose or reconstruction. Path: (1) image-domain insertion with a fitted fingerprint (now) → (2) raw-data insertion
+on vendor geometry [F03, A06] → (3) full scanner simulation [F04] → (4) virtual imaging trials on twin cohorts
+[H04, G02].</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> public LIDC/Mayo data; the XCIST simulator; no proprietary vendor geometry.</p>
+<ul>
+<li>Image-domain volume agreement &lt; 3 % holds (+0.25 %). <span class="chip evidence">evidence-based</span></li>
+<li>Rendering with A's lungmask lobes replaces F-local threshold masks. <span class="chip extrapolation">extrapolation</span></li>
+<li>Solid-nodule HU fitted on thinner slices fixes the −22 HU partial-volume bias. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> access to vendor raw data and geometry (the Mayo Siemens path).</p>
+<ul>
+<li>Projection-domain insertion becomes the default for scanner-specific studies. <span class="chip extrapolation">extrapolation</span></li>
+<li>Photon-counting rendering matches the measured MTF. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant hardware.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> F stays classical: image physics gains nothing from quantum hardware in any scenario this project can
+argue for. The 15-year change is regulatory: rendered lesions accepted as evidence in virtual imaging trials
+[G02, H03].</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain gap</td>
+<td>validation</td>
+<td>readers or detectors may still spot synthetic lesions</td>
+<td>visual Turing test [F10]; train-synthetic/test-real (H)</td>
+</tr>
+<tr>
+<td>Vendor data access</td>
+<td>data</td>
+<td>raw-data insertion needs agreements</td>
+<td>Mayo LDCT [A06]; Siemens-only cases for Siemens work</td>
+</tr>
+<tr>
+<td>Learned refiners memorize patients</td>
+<td>regulatory</td>
+<td>diffusion models can reproduce training data [H07, H08]</td>
+<td>keep parameter-only rendering (privacy by construction)</td>
+</tr>
+<tr>
+<td>#17 not matched</td>
+<td>technical</td>
+<td>photon-counting look is approximate</td>
+<td>DukeSim or kernel fit</td>
+</tr>
+<tr>
+<td><code>--export</code> into tracked folder</td>
+<td>technical</td>
+<td>host-derived images enter git (INT finding)</td>
+<td>export into run dirs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
-<p>[A06], [F01], [F03], [F04], [F05], [H01] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<p>[A06], [F01], [F03], [F04], [F05], [H01] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.
+[F02] Robins 2017 (PMC5693368), [F03] Mayo 2017 (PMC5374359) and [F04] McCabe 2025 (PMC12285274) were read as PMC full text.
+[F06] Lee 2018 supplies the GGO/solid HU thresholds.
+Not available: Solomon–Samei PMB 2014, Sanders Med. Phys. 2016, Divel–Pelc SPIE 2019.</p>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Contract</th>
+<th>Field</th>
+<th>Why</th>
+<th>Local workaround</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CR-F1</td>
+<td><code>scanner_fingerprint</code></td>
+<td>optional <code>local_nps {path, sha256}</code> → NPZ (<code>nps_patches</code> float32 (n, f), <code>patch_centers_zyx</code> int32 (n, 3), <code>freq_cyc_per_mm</code>, <code>spacing_mm_xyz</code>)</td>
+<td>CT noise is non-stationary; [F05] synthesises it patch-wise</td>
+<td><code>local_nps.npz</code> + <code>local_nps.ref.json</code> next to the fingerprint; linked from <code>hybrid_volume.insertion.params.local_nps_ref</code></td>
+</tr>
+<tr>
+<td>CR-F2</td>
+<td><code>scanner_fingerprint</code></td>
+<td>optional <code>ssp {z_mm[], values[]}</code> (slice-sensitivity profile)</td>
+<td>a single σ_z is a Gaussian approximation of the slice profile</td>
+<td>z σ only; method recorded in the run notes</td>
+</tr>
+</tbody>
+</table>
 
 </article>
 <p class="source">Source: <code>F_render/README.md</code></p>

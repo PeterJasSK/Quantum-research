@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#11</span>
   <span class="chip">letter E</span>
   <span class="chip">★★★</span>
@@ -38,30 +37,344 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>Two published cellular automata, rebuilt from the papers and combined:</p>
+<ul>
+<li>
+<p><strong>Kansal–Torquato 2000 [E02]</strong> (idealised glioblastoma). This gives the tumor its <strong>internal structure</strong>. The tumor has three layers:</p>
+<ul>
+<li>a proliferating rim;</li>
+<li>a non-proliferative (G0, &quot;dormant&quot;) shell;</li>
+<li>a necrotic core.</li>
+</ul>
+<p>The layer thicknesses scale with the tumor radius as Rt^(2/3), a surface-to-volume (nutrient-diffusion) law. Four microscopic parameters (p0, a, b, Rmax) reproduce Gompertzian growth over three orders of magnitude in radius. The lattice is a variable-density Voronoi/Delaunay lattice, dense at the centre and coarse at the edge, chosen to avoid cubic-lattice artefacts.</p>
+</li>
+<li>
+<p><strong>Pixel2Cancer 2024 [E01]</strong> (liver, pancreas, kidney tumors in real CT). This gives the tumor its <strong>interaction with the organ</strong>:</p>
+<ul>
+<li>the organ's HU is quantified into tissue levels;</li>
+<li>vessels and the organ boundary are level-0 barriers;</li>
+<li>three generic rules apply: R1 growth, R2 invasion, R3 death.</li>
+</ul>
+<p>Crowded cells exert <em>pressure</em> on barriers, and a barrier gives way only after a threshold number of pushes. That is how tumors are compressed by, and wrap around, vessels and boundaries.</p>
+</li>
+</ul>
+<p>Our lung engine keeps the Kansal–Torquato layer dynamics, uses Pixel2Cancer's barrier pressure and tissue levels for the anatomy, and adds lung-specific barriers:</p>
+<ul>
+<li>the pleura and fissures are hard barriers that are never crossed;</li>
+<li>vessels and airways are soft, pressure-threshold barriers.</li>
+</ul>
+<h2 id="equations">Equations</h2>
+<p>Kansal–Torquato [E02] §3 (eqs. 2–6). One time step = one day:</p>
+<pre><code class="language-text">z(r)  = r^(2/3) / 6            mean site spacing at radius r (mm)                         (2)
+Rt    = Σ r_i / N_P            mean radius of the tumor-edge cells                         (3)
+dn    = a · Rt^(2/3)           dormant cells deeper than dn below the edge → necrotic       (4)
+pd    = p0 · (1 − r / Rmax)    probability that a proliferating cell attempts to divide     (5)
+dp    = b · Rt^(2/3)           a dividing cell takes the nearest free site within dp;       (6)
+                               none found → the cell becomes non-proliferative
+growth fraction   = proliferating / tumor (volume-weighted, weight = z(r)³)
+necrotic fraction = necrotic / tumor
+doubling time     = ln2 · Δt / ln(V(t+Δt/2) / V(t−Δt/2)),  V = 4/3·π·Rt³,  Δt = 10 d
+</code></pre>
+<p>Pixel2Cancer [E01] §2.1–2.2 and reference code (<code>utils.py</code>, <code>cellular.cu</code>):</p>
+<pre><code class="language-text">quantify:  interval = (hi − lo)/3;  level 1: HU &lt; lo+interval;  2: &lt; lo+2·interval;  3: &lt; hi;
+           level 0 (barrier): HU ≥ hi or outside the organ mask
+state s ∈ {−1 dead, 0, 1…10};  kernel 3×3×3
+R1  1 ≤ s &lt; 10                → s + 1
+R2  s ≥ 5: up to 3 random kernel targets, one success
+      barrier &amp; s = 10:  pressure ≥ 3 → barrier becomes level-1 tissue;  else pressure + 1
+      tissue level L:    accepted with probability (1, 0.3, 0.1)[L]; target s &lt; 10 → target + 1
+R3  after the growth loop, if steps &gt; tumor-size steps (liver 50) and a fair coin:
+      start points + random s = 10 cells nearby → −1; −1 spreads into s = 10 neighbours, steps/7 + 1 times
+</code></pre>
+<p>Lung engine (ours, <code>src/engine.py</code>), per day on the cubic lattice:</p>
+<pre><code class="language-text">Rt from the edge voxels about the seed centroid;  dn = a·Rt^(2/3);  dp = max(b·Rt^(2/3), √3·Δ)
+depth(v) = Euclidean distance to the tumor surface;  dormant &amp; depth &gt; dn → necrotic
+every dormant cell pushes one random 26-neighbour; soft barrier with pressure ≥ vessel_threshold → entered
+proliferating cell: with pd = p0(1 − r/Rmax) take the nearest free parenchyma voxel within dp
+   (distances on a jittered lattice: each voxel site offset by U(−0.4, 0.4)·Δ per axis),
+   accepted with rate[level];  none → dormant
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p0 (KT)</td>
+<td>0.192 d⁻¹</td>
+<td>[E02] §4</td>
+</tr>
+<tr>
+<td>a (KT)</td>
+<td>0.42 mm^(1/3)</td>
+<td>[E02] §4</td>
+</tr>
+<tr>
+<td>b (KT)</td>
+<td>0.11 mm^(1/3)</td>
+<td>[E02] §4</td>
+</tr>
+<tr>
+<td>Rmax (KT)</td>
+<td>37.5 mm</td>
+<td>[E02] §4</td>
+</tr>
+<tr>
+<td>initial radius (KT)</td>
+<td>0.1 mm</td>
+<td>[E02] Table 2 footnote</td>
+</tr>
+<tr>
+<td>lattice sites (KT)</td>
+<td>1.5 × 10⁶</td>
+<td>[E02] §2</td>
+</tr>
+<tr>
+<td>Organ_HU liver / pancreas / kidney</td>
+<td>[100, 160] / [100, 160] / [140, 200]</td>
+<td>Pixel2Cancer <code>tumor_synthesis.py</code></td>
+</tr>
+<tr>
+<td>max steps liver / pancreas / kidney</td>
+<td>150 / 80 / 80</td>
+<td>Pixel2Cancer <code>tumor_synthesis.py</code></td>
+</tr>
+<tr>
+<td>death size steps liver / pancreas / kidney</td>
+<td>50 / 30 / 30</td>
+<td>Pixel2Cancer <code>utils.py</code> <code>Tumor_size</code></td>
+</tr>
+<tr>
+<td>threshold (full population)</td>
+<td>10</td>
+<td>Pixel2Cancer <code>tumor_synthesis.py</code></td>
+</tr>
+<tr>
+<td>barrier pressure</td>
+<td>3 pushes, invaded at the 4th</td>
+<td>Pixel2Cancer <code>cellular.cu</code> (<code>&gt; outrange + 2</code>)</td>
+</tr>
+<tr>
+<td>tissue rates per level</td>
+<td>1, 0.3, 0.1</td>
+<td>Pixel2Cancer <code>cellular.cu</code> <code>check_tissue</code></td>
+</tr>
+<tr>
+<td>grow_per_cell / max_try</td>
+<td>1 / 3</td>
+<td>Pixel2Cancer <code>cellular.py</code></td>
+</tr>
+<tr>
+<td>lung p0 solid / part-solid / ground-glass</td>
+<td>0.00947 / 0.00292 / 0.00150 d⁻¹</td>
+<td>calibrated (<code>repro/calibrate_lung.py</code>)</td>
+</tr>
+<tr>
+<td>lung VDT targets</td>
+<td>149 / 457 / 813 d</td>
+<td>Hasegawa et al., Br J Radiol 2000 <em>(verify; PDF not in <code>papers/</code>)</em></td>
+</tr>
+<tr>
+<td>lung a, b, Rmax</td>
+<td>2.2 mm^(1/3), 0.11 mm^(1/3), 50 mm</td>
+<td>a: necrosis only above 20 mm (assumption); b: [E02]; Rmax: assumption</td>
+</tr>
+<tr>
+<td>lung vessel_threshold</td>
+<td>30 pushes</td>
+<td>assumption</td>
+</tr>
+<tr>
+<td>lung parenchyma rates (levels 1–4)</td>
+<td>1, 0.3, 0.1, 0.05</td>
+<td>[E01] levels 1–3; level 4 assumption</td>
+</tr>
+<tr>
+<td>lung HU bounds</td>
+<td>[−950, −600]</td>
+<td>assumption (plan Q5)</td>
+</tr>
+<tr>
+<td>lattice</td>
+<td>0.5 mm isotropic, jitter 0.8 Δ</td>
+<td>plan Q4; jitter: ours</td>
+</tr>
+</tbody>
+</table>
+<p>All lung values live in <a href="../../../E_classical_growth/src/params_lung.json"><code>../src/params_lung.json</code></a>.</p>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<ul>
+<li><strong>[E02] Table 2.</strong> Simulated vs literature values of growth fraction, necrotic fraction, volumetric doubling time and time-to-radius, at the four clinical stages Rt = 0.5 mm (spheroid), 5 mm (detectable lesion), 18.5 mm (diagnosis) and 25 mm (death). Simulated growth fraction 40 / 30 / 19 / 13 %, necrotic fraction 38 / 45 / 57 / 60 %, doubling time 5 / 38 / 72 / 112 d, days 87 / 198 / 405 / 492. <strong>This is the number we reproduce.</strong></li>
+<li><strong>[E01].</strong> No growth number is published. The quantitative results are segmentation scores (liver DSC 59.8 %, pancreas 60.9 %, kidney 73.2 %; Table 2) and a 150-image Visual Turing Test (Table 1). Both need trained U-Nets and radiologists, so they cannot be rerun here. The <em>behaviours</em> the paper describes in §2.2 and Fig. 2 are reproduced instead (plan Q1):
+<ul>
+<li>compression by and wrapping of vessels;</li>
+<li>flattening at the organ boundary;</li>
+<li>death only above the size rule;</li>
+<li>size controlled by the step count.</li>
+</ul>
+</li>
+</ul>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p><strong>Kansal–Torquato Table 2</strong> (<code>python -m E_classical_growth.repro.kt_table2</code>; run <code>20261028-191231-kt-table2</code>). The lattice has 1,851,791 sites (spacing law scaled by k = 0.29 to the paper's reported ~1.5 × 10⁶ sites), 15.2 mean neighbours, out to 30 mm.</p>
+<table>
+<thead>
+<tr>
+<th>Rt (mm)</th>
+<th>day: Sim / ours</th>
+<th>growth fraction: Data / Sim / ours</th>
+<th>necrotic fraction: Data / Sim / ours</th>
+<th>doubling time (d): Data / Sim / ours</th>
+<th>within tolerance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5</td>
+<td>87 / 61</td>
+<td>0.36 / 0.40 / <strong>0.50</strong></td>
+<td>0.46 / 0.38 / <strong>0.08</strong></td>
+<td>6 / 5 / <strong>10.5</strong></td>
+<td>no</td>
+</tr>
+<tr>
+<td>5</td>
+<td>198 / 227</td>
+<td>0.30 / 0.30 / <strong>0.29</strong></td>
+<td>0.49 / 0.45 / <strong>0.36</strong></td>
+<td>45 / 38 / <strong>25.7</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>18.5</td>
+<td>405 / 449</td>
+<td>0.20 / 0.19 / <strong>0.20</strong></td>
+<td>0.55 / 0.57 / <strong>0.54</strong></td>
+<td>70 / 72 / <strong>64.8</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>25</td>
+<td>492 / 555</td>
+<td>0.09 / 0.13 / <strong>0.19</strong></td>
+<td>0.60 / 0.60 / <strong>0.58</strong></td>
+<td>105 / 112 / <strong>105.1</strong></td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Tolerance (plan Q3): fractions ±10 percentage points, doubling time ±35 %, day ±25 %.</p>
+<ul>
+<li><strong>Three of four stages agree.</strong> The Gompertz-like slow-down of the doubling time from tens to about 100 days and the 55–60 % necrotic fraction of a large tumor are reproduced.</li>
+<li><strong>0.5 mm does not agree.</strong> There our tumor is still only ~10³ lattice sites around a 0.1 mm start. The dn = a·Rt^(2/3) rule gives a thin necrotic core by construction, so necrosis is not yet established. The paper's early phase also depends on details of its initial lattice that it does not publish.</li>
+</ul>
+<p>Figures: <a href="../figures/kt_table2.png"><code>kt_table2.png</code></a>, <a href="../figures/kt_growth_curve.png"><code>kt_growth_curve.png</code></a> (Fig. 4 analogue), <a href="../figures/kt_cross_sections.png"><code>kt_cross_sections.png</code></a> (Fig. 3 analogue).</p>
+<p><strong>Lattice resolution matters.</strong> With the literal eq. 2 spacing (k = 1, 47,037 sites to 50 mm; run <code>20261029-052947-kt-table2-k1</code>), every stage fails: day 178 vs 492 at 25 mm, growth fraction 0.45 vs 0.13. Each automaton cell is then too large, so divisions add too much volume and the proliferating rim is many cells thick. The figures are kept as <a href="../figures/kt_table2_k1.png"><code>kt_table2_k1.png</code></a>, <a href="../figures/kt_growth_curve_k1.png"><code>kt_growth_curve_k1.png</code></a> and <a href="../figures/kt_cross_sections_k1.png"><code>kt_cross_sections_k1.png</code></a>. The paper's statement of 1.5 × 10⁶ sites is therefore the operative parameter, and eq. 2 is only the radial shape of the density.</p>
+<p><strong>Pixel2Cancer behaviours</strong> (<code>python -m E_classical_growth.repro.p2c_behaviour</code>; synthetic liver phantom, 96³ mm at 1 mm, liver hyper-parameters; run id in the <a href="../index.html">README</a>):</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 vessel</td>
+<td>PASS: first contact at step 19; vessel voxels are invaded only at ≥ 3 pushes (minimum observed 3 = threshold); 764 of 2180 vessel voxels entered by step 90; tumor present in 12/12 angular sectors around the vessel</td>
+</tr>
+<tr>
+<td>B2 boundary</td>
+<td>PASS: extent toward the boundary 6 mm vs 16 mm away (ratio 0.375); 2400 voxels pushed past the boundary are removed by the organ mask (reference behaviour), 0 remain</td>
+</tr>
+<tr>
+<td>B3 death</td>
+<td>PASS: 0 dead cells in all runs with steps ≤ 50; 2 of 6 runs with steps &gt; 50 have a dead core (the coin flip fired in exactly those 2), dead cells nearer the start than the tumor mean</td>
+</tr>
+<tr>
+<td>B4 sizes</td>
+<td>PASS: equivalent diameter 4.8–57.3 mm over steps 14–149, Spearman ρ = 1.0 (size is a monotone function of steps)</td>
+</tr>
+</tbody>
+</table>
+<p>Figure: <a href="../figures/p2c_behaviour.png"><code>p2c_behaviour.png</code></a>.</p>
+<p>Differences from the reference code, found while reading it:</p>
+<ol>
+<li><code>curand_init(clock64(), …)</code> makes every reference run non-reproducible. We use a seeded <code>numpy.random.Generator</code>.</li>
+<li><code>check_tissue()</code> takes its uniform draw as an <code>int</code> parameter, so the float in [0, 1) is truncated to 0. The reference therefore accepts every tissue level with probability 1, despite the coded 0.3 / 0.1. We apply the coded rates; <code>P2C(faithful_int_cast=True)</code> reproduces the reference behaviour.</li>
+<li>The CUDA kernel updates in place with atomics, so the result depends on thread order. Our step is synchronous: the tries of one round are drawn together and increments go through <code>np.add.at</code>.</li>
+<li>The original cannot be run here (CUDA + torch, no GPU), so there is no differential comparison against it.</li>
+</ol>
+<h2 id="adaptation">Adaptation</h2>
+<p>Lung engine <code>src/</code> (<code>python -m E_classical_growth.src.grow</code>):</p>
+<ul>
+<li><strong>3-D, contract-only I/O.</strong> Reads <code>anatomy_masks</code>, <code>site_candidates</code>, <code>tumor_draw</code>, <code>certificate</code> and <code>seed_shape</code>, each validated first. Writes <code>growth_trajectory</code> (0.5 mm lattice, states 0–3, a baseline when the tumor reaches <code>tumor_draw.size_mm</code> and a follow-up 90 days later).</li>
+<li><strong>Certificate gate.</strong> If the certificate's status is not <code>pass</code>, the draw is rejected and logged, the run exits with code 2, and no trajectory is written.</li>
+<li><strong>Seed chain.</strong> Every random choice comes from <code>shared.seedhash.rng(certificate seed, &quot;E/engine/&lt;draw&gt;/&lt;site&gt;&quot;)</code>. Identical inputs give byte-identical lattices.</li>
+<li><strong>Lung barriers.</strong> The site's lung and lobe are free. Another lobe or outside the lung is a hard barrier, so juxtapleural tumors flatten against the pleura and the fissure. Vessels and airways are soft barriers: a tumor in contact with a vessel wraps around it and enters it only after <code>vessel_threshold</code> pushes from crowded (dormant) cells. Parenchyma HU gives Pixel2Cancer tissue levels.</li>
+<li><strong>Lung parameters per type.</strong> <code>p0</code> is calibrated so the simulated VDT at 8 mm matches 149 / 457 / 813 d for solid / part-solid / ground-glass. Achieved: 147.6 / 465.8 / 825.4 d (run <code>20261029-052808-calibrate-lung</code>, <a href="../figures/lung_calibration.png"><code>lung_calibration.png</code></a>). <code>a</code> keeps necrosis out below 20 mm.</li>
+<li><strong>Isotropy.</strong> On a cubic lattice, nearest-first division favours face neighbours and grows an octahedron, while random order grows a rough Eden cluster. A fixed sub-voxel jitter per voxel (a jittered lattice, the cubic analogue of KT's Voronoi lattice) gives a compact, isotropic tumor: S001 inertia ratio 0.87. Raw sphericity stays ~0.72 because of 0.5 mm surface roughness. After a 0.5 mm Gaussian smooth, which is below CT resolution, it is 0.89.</li>
+</ul>
+<p>Placement classes on the stub phantom (runs <code>20261029-052830-grow-S001</code>, <code>-052837-grow-S002</code>, <code>-052843-grow-S003</code>; <a href="../figures/lung_S001.png"><code>lung_S001.png</code></a>, <a href="../figures/lung_S002.png"><code>lung_S002.png</code></a>, <a href="../figures/lung_S003.png"><code>lung_S003.png</code></a>, <a href="../figures/lung_growth_curves.png"><code>lung_growth_curves.png</code></a>):</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Class</th>
+<th>Baseline / follow-up</th>
+<th>Shape checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S001</td>
+<td>free</td>
+<td>day 428, 8.01 mm → day 518, 9.14 mm</td>
+<td>sphericity 0.89 (smoothed), inertia ratio 0.87</td>
+</tr>
+<tr>
+<td>S002</td>
+<td>juxtavascular</td>
+<td>day 448 → 538, 9.08 mm</td>
+<td>contact from day 253; within 90 d no vessel entry. A 600-day follow-up run (<code>20261029-052850-grow-S002</code>) enters the vessel on day 629, only after the 30-push threshold</td>
+</tr>
+<tr>
+<td>S003</td>
+<td>juxtapleural</td>
+<td>day 540 → 630, 8.80 mm</td>
+<td>0 voxels outside the lung; flattened against the pleura and the LUL/LLL fissure (inertia ratio 0.43)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verdict">Verdict</h2>
+<p><strong>adapted.</strong> Kansal–Torquato is reproduced (Table 2, three of four stages within tolerance at the paper's site count). Pixel2Cancer is reproduced as behaviour (B1–B4 pass). Both are combined into a working, contract-valid, deterministic 3-D lung engine running on stubs. <code>integrated</code> follows in INT with real A / C / D inputs.</p>
+<p>Claim level: classical stage (n/a). The certified seed gives provenance only and does not make growth more realistic.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li>
+<p><strong>F (render):</strong></p>
+<ul>
+<li>read <code>growth_trajectory</code> (states 0–3 on a 0.5 mm lattice placed by <code>origin_mm_lps</code>);</li>
+<li><code>growth_summary.json</code> next to it has per-snapshot diameter, volume and layer fractions;</li>
+<li><code>environment.npz</code> holds the barrier and tissue-level maps.</li>
+</ul>
+<p>Pixel2Cancer's mapping step ([E01] §2.3: population → HU blend, 3-D Gaussian texture) belongs to F (#13/#14). The partial-population field is filed as contract change request 2.</p>
+</li>
+<li>
+<p><strong>H (analysis):</strong> use <code>growth_summary.json</code> <code>per_day</code> for VDT, layer fractions and barrier contacts against LIDC follow-up pairs.</p>
+</li>
+<li>
+<p><strong>INT:</strong> swap the stubs for real A masks (lungs, lobes, vessels, airway on LIDC), C's seed and D's seed shape. Revisit <code>lung_hu_bounds</code> and <code>vessel_threshold</code> on real scans, and add the Hasegawa 2000 PDF to confirm the VDT targets.</p>
+</li>
+<li>
+<p>Code: <code>src/kt.py</code> (KT on any graph, plus the layer laws), <code>src/p2c.py</code> (Pixel2Cancer CPU port, deterministic), <code>src/engine.py</code> (combined lung rule), <code>src/lattice.py</code> (host → lattice resampling and barriers).</p>
+</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>E_classical_growth/dossiers/11-pixel2cancer.md</code></p>

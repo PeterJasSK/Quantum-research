@@ -12,9 +12,8 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
@@ -26,7 +25,7 @@
 here; volumes and arrays follow <a href="VOLUMES.html"><code>VOLUMES.md</code></a>. Validate any file with
 <code>python -m shared.validate &lt;file&gt;</code> (cwd = <code>reverse-engineering/</code>). Changes happen only in INT, from the
 letters' &quot;Contract change requests&quot;.</p>
-<h2>Common rules</h2>
+<h2 id="common-rules">Common rules</h2>
 <ul>
 <li><strong>Envelope</strong> (<a href="../../../shared/contracts/_envelope.schema.json"><code>_envelope.schema.json</code></a> <code>#/$defs/envelope</code>): <code>contract</code>,
 <code>contract_version: &quot;1.0.0&quot;</code>, <code>produced_by {letter, tool, run_id, code_hash}</code>, <code>created_utc</code>, <code>stub</code>,
@@ -41,7 +40,7 @@ The validator checks existence and hash.</li>
 <code>solid | part-solid | ground-glass</code>; margin <code>smooth | lobulated | spiculated</code>; lobes <code>LUL LLL RUL RML RLL</code>;
 cell states 0 host, 1 proliferating, 2 dormant, 3 necrotic (4–15 reserved); claim level <code>L0 | L1 | L1′</code>.</li>
 </ul>
-<h2>Index</h2>
+<h2 id="index">Index</h2>
 <table>
 <thead>
 <tr>
@@ -268,7 +267,7 @@ cell states 0 host, 1 proliferating, 2 dormant, 3 necrotic (4–15 reserved); cl
 </tr>
 </tbody>
 </table>
-<h2>Semantic checks beyond the schema (<code>shared/validate.py</code>)</h2>
+<h2 id="semantic-checks-beyond-the-schema-shared-validate-py">Semantic checks beyond the schema (<code>shared/validate.py</code>)</h2>
 <ul>
 <li>every <code>{path, sha256}</code> exists and matches; NIfTI obey VOLUMES (dtype per field name, LPS identity
 direction, spacing &gt; 0, label values); all NIfTI referenced by one manifest share a grid;</li>

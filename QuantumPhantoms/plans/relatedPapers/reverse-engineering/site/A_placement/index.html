@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/A_placement/dossiers/18-syn-lungs-placement.html">#18 listed</a>
+  <a class="badge state-adapted" href="../../site/A_placement/dossiers/18-syn-lungs-placement.html">#18 adapted</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,16 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/A_placement/index.html</code>.
 Target states live only in <a href="../../A_placement/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
-<p>Choose where a synthetic nodule may sit in a real 3-D chest CT. Lung, lobe, vessel and airway masks (lungmask, TotalSegmentator) on LIDC host scans; SYN-LUNGS-style placement rules with three placement classes (free, juxtavascular, juxtapleural). Each candidate site carries a <strong>context vector</strong> (placement class, lobe, distances to pleura/vessel/airway, local HU) that B conditions the circuit on and E/F use to constrain growth and insertion.</p>
-<h2>Targets and their status</h2>
+<p>A chooses where a synthetic nodule may sit in a real 3-D chest CT.</p>
+<ul>
+<li><strong>Masks:</strong> for an LIDC-IDRI host scan it builds lung, lobe, vessel, airway and body masks on the scan's native grid, using lungmask R231/LTRCLobes and TotalSegmentator <code>lung_vessels</code>.</li>
+<li><strong>Sites:</strong> it then samples candidate sites in the three placement classes of Ambrosini [F01]: free, juxtavascular (at a large-vessel bifurcation) and juxtapleural.</li>
+<li><strong>Context vector:</strong> each site carries the vector that B conditions the circuit on and that E/F use to constrain growth and insertion: placement class, lung, lobe, distances to pleura/vessel/airway, local HU, plus <code>extra</code> = nominal radius, vessel density and distance to a bifurcation.</li>
+<li><strong>Scope:</strong> A emits <strong>candidates only</strong>. B draws the site (B-2) and owns the class prior.</li>
+</ul>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,39 +57,263 @@ Target states live only in <a href="../../A_placement/status.json"><code>status.
 <td><a href="dossiers/18-syn-lungs-placement.html">SYN-LUNGS anatomy-informed placement (+ lungmask, TotalSegmentator on LIDC)</a></td>
 <td>★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted (pipeline validated; reproduction not matched, n=9)</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
-<li>host CT (LIDC-IDRI DICOM, read locally)</li>
+<li><strong>Host CT:</strong> LIDC-IDRI DICOM, downloaded to <code>$LIDC_ROOT</code> (default <code>~/data/LIDC-IDRI</code>, outside the repo).</li>
+<li><strong>Annotations:</strong> LIDC nodule annotations from pylidc's bundled database.</li>
+<li>A has no upstream contract.</li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
-<li><code>anatomy_masks</code> — schema: <a href="../../shared/contracts/anatomy_masks.schema.json"><code>anatomy_masks.schema.json</code></a> · stub example: <a href="../../shared/stubs/anatomy_masks/anatomy_masks.json"><code>shared/stubs/anatomy_masks/anatomy_masks.json</code></a></li>
-<li><code>site_candidates</code> — schema: <a href="../../shared/contracts/site_candidates.schema.json"><code>site_candidates.schema.json</code></a> · stub example: <a href="../../shared/stubs/site_candidates/sites.json"><code>shared/stubs/site_candidates/sites.json</code></a></li>
+<li><code>anatomy_masks</code>:
+<ul>
+<li>schema: <a href="../../shared/contracts/anatomy_masks.schema.json"><code>anatomy_masks.schema.json</code></a>;</li>
+<li>stub example: <a href="../../shared/stubs/anatomy_masks/anatomy_masks.json"><code>shared/stubs/anatomy_masks/anatomy_masks.json</code></a>.</li>
 </ul>
-<h2>How to run (sim commands)</h2>
+</li>
+<li><code>site_candidates</code>:
+<ul>
+<li>schema: <a href="../../shared/contracts/site_candidates.schema.json"><code>site_candidates.schema.json</code></a>;</li>
+<li>stub example: <a href="../../shared/stubs/site_candidates/sites.json"><code>shared/stubs/site_candidates/sites.json</code></a>.</li>
+</ul>
+</li>
+<li><strong>Where they land:</strong> a placement run writes both, plus copies of the six masks and <code>run.json</code>, to <code>A_placement/runs/&lt;run_id&gt;-place/</code>. The run directory is self-contained, so INT hands it over as is.</li>
+<li><strong>Reference run:</strong> <code>runs/20261029-122607-place</code> (host LIDC-IDRI-0004, 1.25 mm slices, seed <code>00…00</code>, r = 4.72 mm, 10/10/10 sites). <code>runs/</code> is gitignored, so regenerate it with the commands below.</li>
+</ul>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to A_placement/runs/ via shared.runrecord. -->
-<p><em>Pending (feature A).</em></p>
-<h2>Reproduced result vs. paper</h2>
+<p>A is classical, so there is no simulator and no quantum numbers. Run everything from <code>reverse-engineering/</code>:</p>
+<pre><code class="language-bash">conda env create -f A_placement/environment.yml &amp;&amp; conda activate qp-re-a   # py3.12, CPU torch
+python -m A_placement.src.lidc_fetch --select 20 --fetch      # subset list + TCIA download + ~/.pylidcrc
+python -m A_placement.src.segment --patient LIDC-IDRI-0004    # masks -&gt; runs/cache/&lt;pid&gt;/ (~25 min CPU)
+python -m A_placement.repro.class_proportions --workers 3     # reproduction (cached scans skipped)
+python -m A_placement.src.place --patient LIDC-IDRI-0004 --per-class 10 [--seed-hex HEX] [--radius-mm R]
+python -m A_placement.src.export_figures --run A_placement/runs/&lt;run_id&gt;-place
+python -m shared.validate A_placement/runs/&lt;run_id&gt;-place/{sites,anatomy_masks,run}.json
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><strong>Cost:</strong> segmentation is CPU-bound: about 25 min per scan alone, and up to 75 min when the machine is shared. Masks are cached per patient (keyed by host sha256 and tool versions).</li>
+<li><strong>Tool versions:</strong> pylidc 0.2.3 needs <code>setuptools&lt;81</code> and a numpy-alias shim (<code>lidc_io.pylidc()</code>). TotalSegmentator 2.18 emits <code>lung_arteries</code>, <code>lung_veins</code>, <code>lung_airways</code> and <code>lung_airways_wall</code> for the <code>lung_vessels</code> task.</li>
+</ul>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
 <!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature A).</em> Planned: Placement-class proportions against LIDC annotations.</p>
-<h2>Claim level and honesty notes</h2>
+<p><strong>#18, placement-class proportions of LIDC consensus nodules vs Kostis (via Ambrosini [F01]).</strong></p>
+<ul>
+<li><strong>Paper:</strong> 0.33 / 0.45 / 0.22 (free / juxtavascular / juxtapleural).</li>
+<li><strong>Ours:</strong> 0.56 / 0.44 / 0.00, n = 9 nodules in 6 scans.</li>
+<li><strong>Verdict:</strong> not matched and inconclusive. Juxtavascular agrees, juxtapleural is undercounted by the pre-registered one-voxel contact rule (4 of 9 nodules sit 0.8–2.5 mm from the wall), and the thresholds were not tuned.</li>
+<li><strong>Details:</strong> <a href="figures/18-class-proportions.png">figure</a> and the <a href="dossiers/18-syn-lungs-placement.html#our-reproduction-number--figure">dossier</a> (diagnostic table, candidate fix).</li>
+</ul>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>Classical stage (claim level n/a). No patient voxels leave this letter except as masks/sites for the host scan itself; privacy-by-construction applies to generators downstream.</p>
-<h2>References (paper codes)</h2>
+<p>Classical stage: no quantum claim.</p>
+<ul>
+<li><strong>Privacy:</strong> no patient voxels leave this letter except the host scan's own masks and sites. Privacy-by-construction applies to the generators downstream.</li>
+<li><strong>Known bias:</strong> on real annotations the class rule <strong>undercounts juxtapleural</strong> nodules.
+<ul>
+<li>The placement of planned spheres uses distances (<code>d_pleura ≤ r</code>), and those sites do abut the wall.</li>
+<li>The measured class proportions are not yet a trustworthy prior for B.</li>
+</ul>
+</li>
+<li><strong>Source gap:</strong> SYN-LUNGS [A01] contains no placement rules. The rule comes from F01.</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-prototype">Prototype</span>
+<p>A has not run inside the chain yet. LIDC-IDRI-0004 has no segmentation cache, so the first <code>place</code> stage costs
+~25–75 min CPU (probe <code>runs/20261029-185947-probe-gaps</code>). The CLI itself is chain-ready: every flag the chain passes exists, and the seed
+descends from the certificate (<code>--seed-hex derive(cert, &quot;A.place&quot;)</code>). The class rule is the real limit: on LIDC it
+undercounts juxtapleural nodules (0.56 / 0.44 / 0.00 vs 0.33 / 0.45 / 0.22, n = 9), so the prior B samples from is biased.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Juxtapleural undercount</td>
+<td>assumption</td>
+<td>the one-voxel contact rule misses nodules 0.8–2.5 mm from the wall; B's class prior inherits the bias</td>
+<td>#18: 0.56 / 0.44 / 0.00 vs 0.33 / 0.45 / 0.22 (n = 9)</td>
+<td>distance rule (<code>d_pleura ≤ r</code>) on the annotations too; rerun the 20-scan repro</td>
+</tr>
+<tr>
+<td>No segmentation cache on the chain host</td>
+<td>integration</td>
+<td>the first chain on a host blocks ~25–75 min; caches in gitignored <code>runs/</code> were lost with the worktrees</td>
+<td>probe <code>A.segment</code></td>
+<td>pre-segment LIDC-IDRI-0004 once; GPU</td>
+</tr>
+<tr>
+<td>Radius fallback</td>
+<td>integration</td>
+<td><code>place</code> without <code>--radius-mm</code> needs an A repro-proportions run (none on disk → <code>SystemExit</code>)</td>
+<td>probe <code>A.place</code>; <code>place.py:33-36</code></td>
+<td>the runner passes <code>--radius-mm 4.72</code>; make the radius explicit (CCR-A1)</td>
+</tr>
+<tr>
+<td>Size vs class re-check deferred</td>
+<td>integration</td>
+<td>a large draw at a juxtapleural site may cross the pleura or change class</td>
+<td>runner check in <code>draw</code> (not reached yet)</td>
+<td>re-classify with the drawn size; reject or re-place</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Yes, with <code>--radius-mm</code> supplied by the runner; not yet exercised on the chain host. Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[A01] SYN-LUNGS / X-Lesions:</strong> insert synthetic nodules into real chest CT at anatomically plausible
+places, so detection models learn from realistic locations rather than random ones.</li>
+<li><strong>[F01] Ambrosini–O'Dell:</strong> a simulated lung-nodule dataset built from published shapes and three placement
+classes (free, juxtavascular, juxtapleural), citing Kostis.</li>
+<li><strong>[A03] lungmask, [A04] TotalSegmentator:</strong> open, robust segmentation of lungs, lobes, vessels and many other
+structures, so anatomy can be measured automatically on any scan.</li>
+<li><strong>[A02] LIDC-IDRI:</strong> a public chest-CT collection with nodules annotated by several radiologists, the reference
+every other letter is checked against.</li>
+</ul>
+<p>Why it matters: where a nodule sits changes how hard it is to see. A nodule touching the chest wall or a vessel
+blends into its neighbour, and a detector trained without such cases never learns them.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>A seeded, replayable <strong>site sampler</strong> on real LIDC hosts: native-grid masks, candidate sites per class, and a
+<strong>context vector</strong> (class, lobe, distances to pleura/vessel/airway, local HU) that B, E and F all consume. <span class="chip evidence">evidence-based</span></li>
+<li>An honest <strong>negative result</strong> with a diagnosis: the pre-registered one-voxel contact rule gives class proportions
+0.56 / 0.44 / 0.00 against Kostis' 0.33 / 0.45 / 0.22 (n = 9). Juxtapleural nodules 0.8–2.5 mm from the wall are
+missed, and the dossier names the fix. <span class="chip evidence">evidence-based</span></li>
+<li>A reusable contract (<code>site_candidates</code>, <code>anatomy_masks</code>): any later organ module can plug into B–H unchanged. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> test sets that deliberately <strong>over-sample the hard locations</strong> (juxtapleural, juxtavascular), each
+with an exact ground-truth mask, so a detector's sensitivity can be measured <em>per location class</em>. The
+placement layer decides which clinical blind spot a cohort probes. It does not make tumours look more real; that
+is F's job. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Other organs.</strong> &quot;Segment, then sample sites with context&quot; works for any organ a segmentation tool covers:
+liver lesions near portal vessels (Pixel2Cancer [E01] already grows liver tumours), kidney, pancreas. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Beyond cancer.</strong> The same site logic can place non-tumour findings in vessel or parenchyma masks, such as
+emboli or emphysema regions, for training and quality control. <span class="chip speculative">speculative</span></li>
+<li><strong>Treatment planning.</strong> Distances to airways and vessels already sit in the context vector. They are the
+quantities that decide biopsy paths, ablation margins and radiotherapy organ-at-risk constraints. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> A is the twin's <strong>anatomy layer</strong> (&quot;where things are&quot;). The logical path from today:
+(1) a generic host scan plus a sampled site (now) →
+(2) the patient's <em>own</em> segmentation, with a lesion at the patient's real nodule position →
+(3) all organs, using multi-structure segmentation [A04] and computational phantoms built from CT
+([A05] XCAT 3.0 digital twins) →
+(4) an anatomy model that updates at each new scan. Steps 2–3 are engineering on existing tools; step 4 needs
+longitudinal data access that does not exist in this project.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>: grounded in what runs today.
+<em>Assumptions:</em> CPU/GPU segmentation as now (lungmask, TotalSegmentator); public LIDC-IDRI data; A stays classical.</p>
+<ul>
+<li>The pipeline places sites on real LIDC hosts, and the reproduction is diagnosed but not matched. <span class="chip evidence">evidence-based</span></li>
+<li>A distance-based class rule (<code>d_pleura ≤ r</code>) applied to annotations as well as planned spheres brings the
+juxtapleural share toward 0.22. <span class="chip extrapolation">extrapolation</span></li>
+<li>Class priors re-estimated over all LIDC nodules replace B's sidecar prior. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>: reasonable extrapolation.
+<em>Assumptions:</em> routine automatic segmentation in clinical archives; validated placement priors per organ.</p>
+<ul>
+<li>Patient-specific &quot;where would a new nodule be hardest to see?&quot; studies on a given patient's anatomy. <span class="chip extrapolation">extrapolation</span></li>
+<li>The same contract carries liver and kidney placement, with organ-specific classes. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>: speculation allowed.
+<em>Assumptions:</em> fault-tolerant quantum hardware exists; anatomy segmentation stays classical.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Fault tolerance unlocks nothing <em>directly</em> for A. The gain is indirect: B could jointly sample over
+thousands of candidate sites with amplitude-estimation-style algorithms (claim level L3), which needs deep
+circuits that only fault-tolerant hardware runs.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Segmentation errors at the pleura</td>
+<td>technical</td>
+<td>wall-contact classes hinge on a few voxels</td>
+<td>check against the readers' annotations; report per-class uncertainty</td>
+</tr>
+<tr>
+<td>25–75 min CPU per host</td>
+<td>technical</td>
+<td>slows any cohort to hours</td>
+<td>cache per host; GPU</td>
+</tr>
+<tr>
+<td>Few juxtapleural examples (n = 9 matched nodules)</td>
+<td>data</td>
+<td>the class prior is statistically weak</td>
+<td>all LIDC nodules; a second public set</td>
+</tr>
+<tr>
+<td>Old scanners in LIDC</td>
+<td>data</td>
+<td>anatomy and noise from 2000s CT</td>
+<td>add newer hosts (Mayo [A06])</td>
+</tr>
+<tr>
+<td>Prior provenance</td>
+<td>regulatory</td>
+<td>a prior without a citation cannot be defended</td>
+<td>every prior cited and versioned in the rulebook</td>
+</tr>
+<tr>
+<td>Reproduction not matched</td>
+<td>validation</td>
+<td>the class rule is not yet trustworthy</td>
+<td>rerun the 20-scan repro after the fix</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
-<p>[A01], [A02], [A03], [A04] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<p><strong>Papers:</strong> [A01] SYN-LUNGS / X-Lesions · [A02] LIDC-IDRI · [A03] lungmask (Hofmanninger) · [A04] TotalSegmentator (Wasserthal) · [F01] Ambrosini (nodule classes, citing Kostis). The PDFs are in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
+<p><strong>Licences:</strong> lungmask Apache-2.0 · TotalSegmentator Apache-2.0 · pylidc MIT · tcia_utils Apache-2.0 · LIDC-IDRI CC BY 3.0 (TCIA).</p>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<ul>
+<li><strong>CCR-A1 (<code>site_candidates</code>, optional):</strong> promote <code>context.extra.nominal_radius_mm</code> to a first-class context field.
+<ul>
+<li><strong>Why:</strong> the placement class depends on lesion size, which B draws later.</li>
+<li><strong>Local workaround:</strong> the radius is carried in <code>extra</code>, and consumers re-check with <code>A_placement.src.classes.classify_site</code>.</li>
+</ul>
+</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>A_placement/README.md</code></p>

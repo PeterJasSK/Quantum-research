@@ -118,6 +118,118 @@ Classical stage (claim level n/a).
 - **Library HU.** The solid HU mean (−22 HU) sits below soft tissue because of partial volume in small nodules on 2.5 mm slices.
   Ground-glass nodules fit the shape-only check poorly (corr 0.42); their realism comes from texture.
 
+
+## Pipeline readiness
+
+<!-- readiness: caveats -->
+
+Draft rating, not yet confirmed by the chain (the chain has not reached F). The image-domain insert reproduces the
+volume headline (+0.25 ± 1.02 %), and every chain flag exists (`render --masks` already accepts A's manifest). The
+runner asserts that the hybrid lies on A's host geometry (spacing, origin, direction, size). Two integration hazards
+showed up in the probe: `--export` writes host-derived PNGs into the git-tracked `figures/`, and the lesion library
+JSON is outside the commit's code hash.
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| A's masks never used | integration | F-local threshold masks have all lobes = 0; behaviour with lungmask lobes is untested | honesty notes above | the chain's `render` stage with `--masks <A>` |
+| `--export` into tracked `figures/` | integration | each chain run adds host-derived images to the repo | probe `F.render`; `render.py:114` | export into the run dir |
+| Library outside the commit | integration | `library/lesion_model_library.json` can change after the commit | probe `G.commit` | hash parameter files into the commit |
+| #17 NAEOTOM f50 +47 % | component | the photon-counting look is an approximation | #17 row | DukeSim or a kernel fit |
+| Solid HU −22 (partial volume) | data | solid nodules render too dark | honesty notes above | fit on thinner slices / deconvolve |
+| #16 projection domain synthetic only | data | the raw-data path is untested on real scanner data | #16 row | Mayo Siemens raw data (TCIA agreement) |
+
+**Used as-is in the chain?** Expected yes; the geometry assert lives in the runner, not in F. Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[H01] Hu (label-free liver tumours):** synthetic tumours good enough that segmentation AI trains without
+  manual labels.
+- **[F01] Ambrosini:** fit nodule shape and HU models to real annotations.
+- **[F05] Peng:** generate realistic, position-dependent CT noise from the scan itself.
+- **[F02] Robins, [F03] Mayo:** insert nodules in the image domain vs the projection (raw-data) domain, and show both
+  agree on volume.
+- **[F04] McCabe (DukeSim):** simulate the Siemens NAEOTOM Alpha photon-counting CT. **[A06]** Mayo low-dose CT
+  images + raw projections.
+
+Why it matters: a synthetic nodule is only useful if it **looks like it was scanned by that scanner**: the same
+blur, noise and partial-volume edges.
+
+### 2. Contribution
+
+- Image-domain insertion reproduces the volume headline: +0.25 ± 1.02 % (projection arm +1.97 ± 1.32 %, synthetic
+  XCIST phantom). <span class="chip evidence">evidence-based</span>
+- Lesion shape model: 3-D correlation 0.8699 ± 0.0664 against the paper's 0.8897 ± 0.0609. <span class="chip evidence">evidence-based</span>
+- Noise generator: σ and kurtosis within 2 %. NAEOTOM resolution is approximated but off (f50 +47 %). <span class="chip evidence">evidence-based</span>
+- A privacy-by-construction library: about 4 KB of fitted scalars leave LIDC, and no patient voxels. <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**End goal:** synthetic nodules that detectors and readers cannot tell from real ones, **matched to each
+scanner's resolution, noise and dose**, so sensitivity can be measured per scanner model and protocol, with exact
+masks. The upgrade path runs through photon-counting CT [F04]. <span class="chip extrapolation">extrapolation</span>
+
+### 4. Beyond lungs
+
+- **Any CT organ.** The insertion and fingerprint code is organ-agnostic. <span class="chip extrapolation">extrapolation</span>
+- **Other modalities.** MR needs its own physics (signal model, coil noise), which is not built here; the same
+  "fit parameters, never copy voxels" rule carries over. <span class="chip speculative">speculative</span>
+- **Dose and protocol studies.** Re-render the same lesion at lower dose to find where detection breaks. <span class="chip extrapolation">extrapolation</span>
+- **Treatment planning QA.** Lesions with known extent test auto-contouring for radiotherapy. <span class="chip extrapolation">extrapolation</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> F is the twin's **imaging layer**: predict what *this* patient's lesion would look like on another scanner,
+dose or reconstruction. Path: (1) image-domain insertion with a fitted fingerprint (now) → (2) raw-data insertion
+on vendor geometry [F03, A06] → (3) full scanner simulation [F04] → (4) virtual imaging trials on twin cohorts
+[H04, G02].
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* public LIDC/Mayo data; the XCIST simulator; no proprietary vendor geometry.
+- Image-domain volume agreement < 3 % holds (+0.25 %). <span class="chip evidence">evidence-based</span>
+- Rendering with A's lungmask lobes replaces F-local threshold masks. <span class="chip extrapolation">extrapolation</span>
+- Solid-nodule HU fitted on thinner slices fixes the −22 HU partial-volume bias. <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* access to vendor raw data and geometry (the Mayo Siemens path).
+- Projection-domain insertion becomes the default for scanner-specific studies. <span class="chip extrapolation">extrapolation</span>
+- Photon-counting rendering matches the measured MTF. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant hardware.
+- <span class="chip speculative">speculative</span> F stays classical: image physics gains nothing from quantum hardware in any scenario this project can
+  argue for. The 15-year change is regulatory: rendered lesions accepted as evidence in virtual imaging trials
+  [G02, H03].
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| Domain gap | validation | readers or detectors may still spot synthetic lesions | visual Turing test [F10]; train-synthetic/test-real (H) |
+| Vendor data access | data | raw-data insertion needs agreements | Mayo LDCT [A06]; Siemens-only cases for Siemens work |
+| Learned refiners memorize patients | regulatory | diffusion models can reproduce training data [H07, H08] | keep parameter-only rendering (privacy by construction) |
+| #17 not matched | technical | photon-counting look is approximate | DukeSim or kernel fit |
+| `--export` into tracked folder | technical | host-derived images enter git (INT finding) | export into run dirs |
+
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->

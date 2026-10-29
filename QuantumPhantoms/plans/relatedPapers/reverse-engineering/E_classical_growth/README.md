@@ -107,6 +107,117 @@ Further honesty notes:
 - `vessel_threshold`, the lung HU bounds, `a` and `Rmax` are stated assumptions (see `src/params_lung.json` `sources`).
 - Sphericity is reported both raw and after a 0.5 mm smooth. The raw value (~0.72) is limited by sub-voxel surface roughness.
 
+
+## Pipeline readiness
+
+<!-- readiness: caveats -->
+
+Draft rating, not yet confirmed by the chain (the chain has not reached E). E's CLI accepts every chain input
+(probe: all flags exist), and its lung adaptation holds on the phantom (VDT 147.6 / 465.8 / 825.4 d vs 149 / 457 / 813 d;
+KT Table 2 matches 3 of 4 stages). But every run so far is on stubs: E has never grown a tumour inside A's real
+masks. The runner now checks `lung_hu_bounds` against the host's lung HU before E runs; `vessel_threshold` is a
+push count, not HU, so the plan's HU check does not apply to it.
+
+**Weak links**
+
+| Weak link | Kind | Why it limits reliability | Evidence | To strengthen |
+|---|---|---|---|---|
+| Stub-only runs | data | behaviour inside real lungmask / TotalSegmentator masks is unknown | honesty notes above (27 runs, all `stub: true`) | the chain's `grow_c` stage |
+| `lung_hu_bounds` unchecked on LIDC | assumption | [−950, −600] may exclude real parenchyma voxels | runner `_pre_grow_c` (not reached yet) | adjust only if outside the measured range (plan AC-10) |
+| Site ≠ draw silently marks stub | integration | `--site-id` different from the draw's site makes the output `stub: true` (`grow.py:74-77`) instead of failing | agent read; runner check `_post_grow_c` | fail loudly |
+| Parameters outside the commit | integration | `src/params_lung.json` is not in the `.py` code hash; it can change after the commit | probe `G.commit` | hash parameter files into the commit |
+| VDT targets *(verify)* | assumption | calibration targets cited from memory | honesty notes above | add Hasegawa 2000 to `../papers/` |
+| Spheroid stage (0.5 mm) mismatch | component | early growth is off (necrotic 0.08 vs 0.38) | KT table | irrelevant at nodule scale; document |
+
+**Used as-is in the chain?** Expected yes (all flags exist); unverified on real masks. Full gap list: [INT](../INT_integration/README.md); whole chain: [index](../index.html).
+
+
+## Future
+
+Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+[whole-pipeline Future](../future.md). This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).
+
+### 1. Aim of the paper(s)
+
+- **[E01] Pixel2Cancer:** grow tumours with a cellular automaton *inside* CT anatomy, to produce synthetic tumours
+  that train segmentation AI (liver, pancreas, kidney).
+- **[E02] Kansal–Torquato:** a cellular automaton that reproduces Gompertz-like growth and the layered tumour
+  structure (proliferating rim, dormant shell, necrotic core).
+- **[E03] Poleszczuk–Enderling:** a fast automaton with growing domains for large cell populations.
+
+Why it matters: real nodules **grow**, and growth between two scans is a key signal when doctors judge a nodule.
+A generator of growth trajectories gives ground-truth follow-ups that real data rarely provides.
+
+### 2. Contribution
+
+- Kansal–Torquato Table 2 matched at 3 of 4 clinical stages (run `20261028-191231-kt-table2`). <span class="chip evidence">evidence-based</span>
+- Pixel2Cancer behaviours B1–B4 pass (vessel, boundary, death, size). <span class="chip evidence">evidence-based</span>
+- Lung calibration: volume-doubling time 147.6 / 465.8 / 825.4 d against targets of 149 / 457 / 813 d
+  (solid / part-solid / ground-glass; targets marked *(verify)*). <span class="chip evidence">evidence-based</span>
+- Lung rules: the pleura and fissures are walls, vessels yield only under pressure, and every trajectory replays
+  byte-identically from its seed. <span class="chip evidence">evidence-based</span>
+
+### 3. Role in cancer detection
+
+**End goal:** **paired baseline and follow-up scans with known growth**, to train and test growth-based
+assessment (volume, doubling time) and to test whether detectors catch small nodules at the moment they first
+become visible. The H #21 protocol measures exactly this on a commercial assistant: reported vs true volume and
+doubling time. <span class="chip extrapolation">extrapolation</span>
+
+### 4. Beyond lungs
+
+- **Other organs.** Pixel2Cancer already grows liver, pancreas and kidney tumours [E01]; the lung rules here add
+anatomy walls and pressure. <span class="chip evidence">evidence-based</span>
+- **Treatment response.** Kill rules for radiotherapy or chemotherapy (proliferating cells removed per dose; a
+  slower rim) would turn E into a response simulator. <span class="chip extrapolation">extrapolation</span>
+- **Drug response and monitoring.** Fitting the proliferation rate per patient from serial scans gives a
+  monitoring quantity ("growing faster than expected"). <span class="chip speculative">speculative</span>
+
+### 5. Long-term vision: toward a digital twin
+
+<div class="callout speculative">
+
+<span class="chip speculative">speculative</span> E is the twin's **dynamics layer**. Path: (1) population-calibrated growth in generic hosts (now) →
+(2) parameters fitted to a patient's own serial CT → (3) forecasts of the next scan, checked retrospectively →
+(4) "what if" branches for treatment options. Each step needs longitudinal data and validation the project does
+not have yet.
+
+</div>
+
+### 6. Predictions
+
+**5 years**
+*Assumptions:* CPU/GPU automata as today; few public longitudinal lung CT pairs.
+- Growth is calibrated on phantoms; the run on real masks is pending (INT). <span class="chip evidence">evidence-based</span>
+- Validation against real follow-up pairs (the doubling-time distribution) on public data. <span class="chip extrapolation">extrapolation</span>
+- Therapy-response rules (radiation kill fraction) are added and tested on phantoms. <span class="chip extrapolation">extrapolation</span>
+
+**10 years**
+*Assumptions:* access to longitudinal imaging datasets; GPU 3-D automata at whole-lung scale [E03].
+- Patient-specific growth fits forecast nodule size at the next scan, evaluated retrospectively. <span class="chip extrapolation">extrapolation</span>
+
+<div class="callout speculative">
+
+**15 years**
+*Assumptions:* fault-tolerant hardware.
+- <span class="chip speculative">speculative</span> Quantum algorithms for nonlinear dissipative differential equations [D21] could integrate continuum growth
+  models (reaction–diffusion) at scales that strain classical solvers (claim level L3). Reading out a full 3-D
+  tumour from a quantum state is costly, so any end-to-end gain is uncertain.
+
+</div>
+
+### 7. Risks and obstacles
+
+| Risk | Kind | Why it matters | Mitigation |
+|---|---|---|---|
+| Calibration targets *(verify)* | data | VDT targets cited from memory | add the source paper |
+| Early stage off (0.5 mm) | technical | spheroid-stage fractions do not match | document; irrelevant at nodule scale |
+| Stub-only runs | validation | never grown in real masks | INT chain stage `grow_c` |
+| Model ≠ prognosis | regulatory | a growth forecast could be misread as clinical advice | research-use labelling; prospective validation |
+| Biological realism | technical | layers + pressure are a caricature of tumour biology | compare with follow-up data in H |
+
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->

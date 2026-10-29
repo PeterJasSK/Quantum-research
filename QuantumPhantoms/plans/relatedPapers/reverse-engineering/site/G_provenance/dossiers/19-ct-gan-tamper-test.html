@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../../index.html">QP · reverse engineering</a>
     <a href="../../../index.html">Index</a>
-    <a href="../../../about.html">About</a>
-    <a href="../../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../../site/future.html">Future</a>
+    <a href="../../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <span class="badge state-listed">listed</span>
+  <span class="badge state-adapted">adapted</span>
   <span class="chip">#19</span>
   <span class="chip">letter G</span>
   <span class="chip">★★</span>
@@ -38,30 +37,154 @@
 <p>Dossier for one reverse-engineering target. Update it in the same change as the target's state in <code>status.json</code>.
 Equations: Unicode inline or fenced <code>text</code> blocks (no MathJax; the site is offline).</p>
 </blockquote>
-<h2>Concept</h2>
-<!-- The method in plain words: what problem it solves, the core idea. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Equations</h2>
-<!-- The equations we re-implement, with symbols defined. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Parameters</h2>
-<!-- Every parameter with its published value/range and source (paper code, section, table). -->
-<p><em>Not yet dissected.</em></p>
-<h2>Paper's claimed result</h2>
-<!-- The single published number or figure we will reproduce, with exact reference. -->
-<p><em>Not yet dissected.</em></p>
-<h2>Our reproduction (number + figure)</h2>
-<!-- Our number vs the paper's, agreement, figure in ../figures/, run id. Quantum: label the sim mode. -->
-<p><em>Not yet reproduced.</em></p>
-<h2>Adaptation</h2>
-<!-- How it is adapted to lungs, 3-D, certification and our contracts. -->
-<p><em>Not yet adapted.</em></p>
-<h2>Verdict</h2>
-<!-- integrated | rejected (with reason). Claim level for quantum targets. -->
-<p><em>Pending.</em></p>
-<h2>What to reuse next</h2>
-<!-- Pointers for downstream letters / INT. -->
-<p><em>Pending.</em></p>
+<h2 id="concept">Concept</h2>
+<p>G01 (Mirsky, Mahler, Shelef, Elovici, <em>CT-GAN: Malicious Tampering of 3D Medical Imagery using Deep Learning</em>, USENIX Security 2019, arXiv 1901.03597) shows that an attacker with access to a hospital's PACS can add or remove lung nodules in a 3-D CT so that radiologists and screening AI accept the result.</p>
+<ul>
+<li><strong>Attack model (§4).</strong> The scan is reached as <em>data-in-motion</em> (PACS traffic is often unencrypted) or <em>data-at-rest</em> (infected workstation or PACS server). The attacker edits pixels and leaves the DICOM header alone.</li>
+<li><strong>Pipeline (§5.3, 14 steps).</strong> 1 capture; 2 localise and cut a cuboid; 3 rescale to 1:1:1 mm (3-D spline); 4 histogram equalisation; 5 normalise to [−1, 1]; 6 zero the central 16³ of a 32³ cube; 7 in-paint with a conditional GAN (pix2pix style, one injector, one remover); 8 denormalise; 9 un-equalise; 10 rescale back to the scan's spacing; 11 touch-up (Gaussian noise plus sigmoid-weighted merge); 12 paste; 13 repeat (removal needs a second pass); 14 return the data in the original format.</li>
+<li><strong>Why G cares.</strong> The paper's own countermeasure (§7.2) is: <em>&quot;The best way to detect this attack is to have the scanner sign each scan with a digital signature.&quot;</em> Our receipt does exactly that, plus a commit-before-draw order and a hash-chained ledger. CT-GAN is therefore the right adversarial test for the receipt: signed pixels must stop verifying the moment a pixel changes.</li>
+</ul>
+<p>Framing: this is a traceability validation (does the data still match what was committed and signed?), not a security product.</p>
+<h2 id="equations">Equations</h2>
+<p>Step 11 merge (G01 eq. 1–2):</p>
+<pre><code class="language-text">W_{α,β}(x) = G(x) / (1 + exp(−(x + α) / β))                 (1)
+merge_{α,β}(x, y) = W_{α,β}(x) · x + (1 − W_{α,β}(x)) · y   (2)
+</code></pre>
+<p><code>x</code> is a cuboid in HU, <code>G</code> a 0–1 normalised Gaussian kernel (a smoothed region mask), <code>α</code> the HU threshold between wanted and unwanted voxels, <code>β</code> the sigmoid slope. With α = 500 the weight is ≈ 0 for air (≤ −900 HU) and ≈ 1 for soft tissue (≥ −300 HU), so generated tissue is copied in and the original lung noise is kept elsewhere.</p>
+<p>Our reading of the argument: the paper's text does not say which cuboid <code>x</code> is taken from. We evaluate <code>W</code> on the voxel-wise maximum of the generated and the original cuboid, so that an injection copies new tissue in and a removal replaces old tissue. This is the one place where we interpret rather than copy.</p>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cuboid</td>
+<td>32³ voxels at 1 mm</td>
+<td>G01 §5.2 / step 3</td>
+</tr>
+<tr>
+<td>mask</td>
+<td>central 16³</td>
+<td>G01 §5.2 / step 6</td>
+</tr>
+<tr>
+<td>resampling</td>
+<td>3-D spline, order 3 (<code>scipy.ndimage.zoom</code>)</td>
+<td>G01 step 3, 10, footnote 14</td>
+</tr>
+<tr>
+<td>equalisation</td>
+<td>histogram equalisation, then [−1, 1]</td>
+<td>G01 steps 4–5</td>
+</tr>
+<tr>
+<td>touch-up noise</td>
+<td>N(0, σ²), σ = std of voxels &lt; −600 HU in the original cuboid</td>
+<td>G01 step 11</td>
+</tr>
+<tr>
+<td>α, β</td>
+<td>500, 70</td>
+<td>G01 step 11 (&quot;worked best&quot;)</td>
+</tr>
+<tr>
+<td>nodule (ours)</td>
+<td>diameter U(10, 16) mm, 0–60 HU, soft edge</td>
+<td>G01's ≥ 10 mm trial nodules; step 7 replaced</td>
+</tr>
+<tr>
+<td>training set (GAN, not run by us)</td>
+<td>11,323 injector samples (LUNA16-style data, augmented ×67: flips, shifts, rotations); 867 remover micro-nodules</td>
+<td>G01 §5.2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paper-s-claimed-result">Paper's claimed result</h2>
+<ul>
+<li>Readers (3 radiologists, §6): <strong>99 %</strong> of injected cases diagnosed as malignant, <strong>94 %</strong> of removals diagnosed as healthy; after being told about the attack, <strong>60 %</strong> (injections) and <strong>87 %</strong> (removals). A lung-cancer screening AI was fooled in <strong>100 %</strong> of tampered cases.</li>
+<li>Countermeasure claim (§7.2, the one we reproduce): scanner-side digital signatures detect the attack; the DICOM standard already allows signatures in the file, but PACS rarely use them. Other options named: watermarking, noise-pattern (PRNU) forensics that they found did not work out of the box on CT.</li>
+</ul>
+<h2 id="our-reproduction-number-figure">Our reproduction (number + figure)</h2>
+<p><code>python -m G_provenance.repro.r19_ctgan_tamper --n 20</code> on the stub phantom (160×128×80 voxels, 2×2×2.5 mm). Run record: <code>G_provenance/runs/&lt;ts&gt;-r19/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>attack</th>
+<th>detected</th>
+<th>failing checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pixel injection (CT-GAN style, ×20)</td>
+<td>20 / 20</td>
+<td><code>voxels</code></td>
+</tr>
+<tr>
+<td>pixel removal (×20)</td>
+<td>20 / 20</td>
+<td><code>voxels</code></td>
+</tr>
+<tr>
+<td>(a) edit <code>seed_hex</code> in the tag</td>
+<td>1 / 1</td>
+<td><code>signature</code>, <code>ledger_entry</code></td>
+</tr>
+<tr>
+<td>(b) (a) + re-sign with a fresh key</td>
+<td>1 / 1</td>
+<td><code>trusted_key</code>, <code>ledger_entry</code></td>
+</tr>
+<tr>
+<td>(c) (b) + rewrite the ledger consistently</td>
+<td>1 / 1</td>
+<td><code>trusted_key</code> only</td>
+</tr>
+<tr>
+<td>(d) delete the commit entry and re-chain</td>
+<td>1 / 1</td>
+<td><code>commit_first</code>, <code>ledger_entry</code></td>
+</tr>
+<tr>
+<td>control: untampered series</td>
+<td>0 flags</td>
+<td>—</td>
+</tr>
+<tr>
+<td>control: re-save with an unbound tag (<code>InstitutionName</code>) edited</td>
+<td>0 flags</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Localisation: for every pixel tamper the verifier's list of failing slices equals the set of slices that actually changed (Jaccard 1.00).</li>
+<li>Stealth (not a gate): inside the cuboid the edit is large (mean |ΔHU| ≈ 560–580 on changed voxels, max ≈ 900, because the phantom has a 1000 HU step between air and tissue); outside the cuboid ΔHU = 0; the plain DICOM header of every tampered file is byte-identical to the original's. Pixel tampering is invisible to anything that does not recompute the voxel hash.</li>
+<li><strong>Honest limit (attack c).</strong> A full re-forge with a <em>stolen or attacker-controlled key</em> and a ledger rewritten end to end is caught only because the verifier pins the public key. Without a pinned key (or an external anchor for the ledger head, e.g. a public randomness-beacon pulse; see C dossier #5, last row of the ledger template) nothing in the file set can distinguish it from the original. This is a property of any self-contained signature chain, not something G fixes.</li>
+<li>Not reproduced: the reader and AI numbers above (need radiologists and the trained GAN; H's reader-style test is the place for that).</li>
+<li>Figures: <a href="../figures/r19-ctgan-tamper.png"><code>r19-ctgan-tamper.png</code></a> (removal and injection on exported slices, |ΔHU| map, per-slice FAIL strip) and <a href="../figures/r19-detection-table.png"><code>r19-detection-table.png</code></a>.</li>
+</ul>
+<h2 id="adaptation">Adaptation</h2>
+<ul>
+<li><strong>No GAN.</strong> This machine has no torch / TensorFlow / GPU, the paper's GAN is trained on patient scans (privacy), and nothing from the paper's code or weights is used. The repository <code>ymirsky/CT-GAN</code> is MIT licensed (checked 2026-10-29), so reading it is not a licence problem, but we did not need it. Step 7 is replaced by a classical in-painter: removal = harmonic (Laplace) fill of the masked 16³ from its boundary (exact discrete solution, sparse LU); injection = that fill plus a soft-edged solid nodule. The signature check does not depend on how realistic the pixels look, only on the fact that they changed.</li>
+<li><strong>3-D only.</strong> All steps run on the 3-D array; 2-D appears only at DICOM export (one file per axial slice).</li>
+<li><strong>Our contract.</strong> The receipt binds the voxels through <code>params_sha256</code> → <code>bound_params.json</code> (canonical voxel hash + one hash per slice + grid), so the verifier names the tampered slices. DICOM carries the receipt in private group <code>0x0011</code> (creator <code>QP-RE G PROVENANCE</code>) in every slice file.</li>
+<li><strong>Stub-input exemption.</strong> Stub inputs predate any commit, so the order and code checks are skipped for them and the exemption is written to <code>fill_report.json</code>. With real upstream files (a C certificate made after the commit) the order check passes; made before the commit it fails; a one-comment edit to C's code after the commit fails the code check (all checked by hand, see the plan §9).</li>
+</ul>
+<h2 id="verdict">Verdict</h2>
+<p><strong>Adapted.</strong> G01's §7.2 countermeasure claim holds in our setting: signed provenance flags 40 / 40 CT-GAN-style pixel edits (injection and removal), localises the tampered slices exactly and gives 0 false positives on the two controls. Claim level: n/a (classical; no quantum claim). The one thing the signature cannot do alone is stop a forger who controls the trusted key.</p>
+<h2 id="what-to-reuse-next">What to reuse next</h2>
+<ul>
+<li><strong>H:</strong> the tamper-detection rate and per-slice localisation as a reportable statistic; the reader numbers (99 % / 94 %) are the part H's in-context visual Turing test would have to supply.</li>
+<li><strong>INT:</strong> put a real receipt at the end of the A→G chain (commit before the draw, fill after F), then run <code>python -m G_provenance.src.verify</code> on the exported series. Decide CCR-G1..G4 (README).</li>
+<li><strong>Upgrade path:</strong> DICOM Digital Signatures Sequence (PS3.15, PS3.3 C.12.1) instead of a private tag block; anchoring the ledger head in a public beacon pulse to close the attack-(c) gap; key management beyond a pinned demo key.</li>
+<li><code>ctgan_tamper.py</code> is reusable as a generic 3-D in-painting / injection test fixture for any pixel-integrity check.</li>
+</ul>
 
 </article>
 <p class="source">Source: <code>G_provenance/dossiers/19-ct-gan-tamper-test.md</code></p>

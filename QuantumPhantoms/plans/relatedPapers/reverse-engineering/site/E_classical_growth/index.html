@@ -12,16 +12,15 @@
   <nav>
     <a class="brand" href="../../index.html">QP · reverse engineering</a>
     <a href="../../index.html">Index</a>
-    <a href="../../about.html">About</a>
-    <a href="../../site/shared/contracts/index.html">Contracts</a>
-    <span class="letters"><a href="../../site/A_placement/index.html" title="Placement: anatomy-informed site + context vector">A</a><a href="../../site/B_mapping/index.html" title="Mapping: rulebook + CT context → circuit">B</a><a href="../../site/C_certificate/index.html" title="Certificate: CHSH → certified bits → seed">C</a><a href="../../site/D_quantum_growth/index.html" title="Quantum growth: certified quantum generations + honest simulability">D</a><a href="../../site/E_classical_growth/index.html" title="Classical growth: lung Pixel2Cancer engine">E</a><a href="../../site/F_render/index.html" title="Render into CT: realistic, scanner-matched insertion">F</a><a href="../../site/G_provenance/index.html" title="Sign / provenance: commit-before-draw receipt + tamper test">G</a><a href="../../site/H_analysis/index.html" title="Analysis / use: VICTRE-shaped validation + black-box target">H</a></span>
+    <a href="../../site/future.html">Future</a>
+    <a href="../../site/INT_integration/index.html">INT</a>
   </nav>
 </header>
 <main>
 
 
 <div class="meta">
-  <a class="badge state-listed" href="../../site/E_classical_growth/dossiers/11-pixel2cancer.html">#11 listed</a><a class="badge state-listed" href="../../site/E_classical_growth/dossiers/12-hpc-cellular-automaton.html">#12 listed</a>
+  <a class="badge state-adapted" href="../../site/E_classical_growth/dossiers/11-pixel2cancer.html">#11 adapted</a><a class="badge state-dissected" href="../../site/E_classical_growth/dossiers/12-hpc-cellular-automaton.html">#12 dissected</a>
 </div>
 
 <article class="md">
@@ -31,10 +30,20 @@
 Markdown is the source of truth; <code>python -m shared.site.build</code> renders it to <code>site/E_classical_growth/index.html</code>.
 Target states live only in <a href="../../E_classical_growth/status.json"><code>status.json</code></a> (lifecycle: listed → dissected → reproduced → adapted → integrated | rejected).</p>
 </blockquote>
-<h2>Purpose</h2>
+<h2 id="purpose">Purpose</h2>
 <!-- What this pipeline stage does, in one paragraph, and what it hands to the next letter. -->
-<p>Rebuild Pixel2Cancer's growth/invasion/death rules standalone and port them to lungs with Kansal–Torquato proliferating/dormant/necrotic layers, constrained by A's masks, seeded from C's extracted seed (shared.seedhash.rng) and started from D's seed shape (stub shape until D exists). Snapshots give baseline/follow-up pairs.</p>
-<h2>Targets and their status</h2>
+<p>Grows one lung tumor in 3-D from a chosen site to a baseline and a follow-up snapshot, using classical cellular automata rebuilt from two papers:</p>
+<ul>
+<li><strong>Kansal–Torquato [E02]</strong> gives the internal structure: a proliferating rim, a dormant shell and a necrotic core, with thicknesses ∝ Rt^(2/3).</li>
+<li><strong>Pixel2Cancer [E01]</strong> gives the interaction with anatomy: tissue levels from HU, and pressure-threshold barriers.</li>
+</ul>
+<p>The lung is constrained by A's masks:</p>
+<ul>
+<li>the pleura and fissures are hard walls;</li>
+<li>vessels and airways give way only under pressure.</li>
+</ul>
+<p>Growth starts from D's seed shape, and every random choice comes from C's extracted seed. The parameters per tumor type (solid / part-solid / ground-glass) are calibrated to published lung doubling times. The output is a <code>growth_trajectory</code>: 0.5 mm 3-D state lattices, states 0 host / 1 proliferating / 2 dormant / 3 necrotic. It goes to F, which turns states into HU and inserts them into CT, and to H, which validates against follow-up pairs.</p>
+<h2 id="targets-and-their-status">Targets and their status</h2>
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 <table>
 <thead>
@@ -52,49 +61,320 @@ Target states live only in <a href="../../E_classical_growth/status.json"><code>
 <td><a href="dossiers/11-pixel2cancer.html">Pixel2Cancer + Kansal–Torquato layers</a></td>
 <td>★★★</td>
 <td>classical</td>
-<td>listed</td>
+<td>adapted</td>
 </tr>
 <tr>
 <td>#12</td>
 <td><a href="dossiers/12-hpc-cellular-automaton.html">High-performance CA (Poleszczuk–Enderling)</a></td>
 <td>★</td>
 <td>classical</td>
-<td>listed</td>
+<td>dissected</td>
 </tr>
 </tbody>
 </table>
-<h2>Inputs (contract files)</h2>
+<h2 id="inputs-contract-files">Inputs (contract files)</h2>
 <!-- Contracts consumed, with the stub to use until the upstream letter exists (shared/stubs/). -->
 <ul>
-<li><code>anatomy_masks</code> — stub: <a href="../../shared/stubs/anatomy_masks/anatomy_masks.json"><code>shared/stubs/anatomy_masks/anatomy_masks.json</code></a> · schema: <a href="../../shared/contracts/anatomy_masks.schema.json"><code>anatomy_masks.schema.json</code></a></li>
-<li><code>site_candidates</code> — stub: <a href="../../shared/stubs/site_candidates/sites.json"><code>shared/stubs/site_candidates/sites.json</code></a> · schema: <a href="../../shared/contracts/site_candidates.schema.json"><code>site_candidates.schema.json</code></a></li>
-<li><code>tumor_draw</code> — stub: <a href="../../shared/stubs/tumor_draw/tumor_draw.json"><code>shared/stubs/tumor_draw/tumor_draw.json</code></a> · schema: <a href="../../shared/contracts/tumor_draw.schema.json"><code>tumor_draw.schema.json</code></a></li>
-<li><code>certificate</code> — extracted seed; stub: <a href="../../shared/stubs/certificate/certificate.json"><code>shared/stubs/certificate/certificate.json</code></a> · schema: <a href="../../shared/contracts/certificate.schema.json"><code>certificate.schema.json</code></a></li>
-<li><code>seed_shape</code> — stub: <a href="../../shared/stubs/seed_shape/seed_shape.json"><code>shared/stubs/seed_shape/seed_shape.json</code></a> · schema: <a href="../../shared/contracts/seed_shape.schema.json"><code>seed_shape.schema.json</code></a></li>
+<li><code>anatomy_masks</code> — <code>lungs</code>, <code>lobes</code>, <code>vessels</code>, <code>airway</code>, <code>host_ct</code> are resampled onto the growth lattice. Stub: <a href="../../shared/stubs/anatomy_masks/anatomy_masks.json"><code>shared/stubs/anatomy_masks/anatomy_masks.json</code></a> · schema: <a href="../../shared/contracts/anatomy_masks.schema.json"><code>anatomy_masks.schema.json</code></a></li>
+<li><code>site_candidates</code> — site centre, lung, lobe and placement class. Stub: <a href="../../shared/stubs/site_candidates/sites.json"><code>shared/stubs/site_candidates/sites.json</code></a> · schema: <a href="../../shared/contracts/site_candidates.schema.json"><code>site_candidates.schema.json</code></a></li>
+<li><code>tumor_draw</code> — <code>site_id</code>, <code>size_mm</code> (baseline size) and <code>type</code> (parameter set); <code>margin</code> is not used by E. Stub: <a href="../../shared/stubs/tumor_draw/tumor_draw.json"><code>shared/stubs/tumor_draw/tumor_draw.json</code></a> · schema: <a href="../../shared/contracts/tumor_draw.schema.json"><code>tumor_draw.schema.json</code></a></li>
+<li><code>certificate</code> — <code>status</code> must be <code>pass</code>; <code>extracted_seed_hex</code> seeds every PRNG. Stub: <a href="../../shared/stubs/certificate/certificate.json"><code>shared/stubs/certificate/certificate.json</code></a> · schema: <a href="../../shared/contracts/certificate.schema.json"><code>certificate.schema.json</code></a></li>
+<li><code>seed_shape</code> — <code>occupancy</code> becomes the initial proliferating cells, centred on the site. Stub: <a href="../../shared/stubs/seed_shape/seed_shape.json"><code>shared/stubs/seed_shape/seed_shape.json</code></a> · schema: <a href="../../shared/contracts/seed_shape.schema.json"><code>seed_shape.schema.json</code></a></li>
 </ul>
-<h2>Outputs (contract files)</h2>
+<h2 id="outputs-contract-files">Outputs (contract files)</h2>
 <!-- Contracts produced; every output must pass `python -m shared.validate <file>`. -->
 <ul>
-<li><code>growth_trajectory</code> — schema: <a href="../../shared/contracts/growth_trajectory.schema.json"><code>growth_trajectory.schema.json</code></a> · stub example: <a href="../../shared/stubs/growth_trajectory/growth_trajectory.json"><code>shared/stubs/growth_trajectory/growth_trajectory.json</code></a></li>
+<li><code>growth_trajectory</code> — <code>E_classical_growth/runs/&lt;run_id&gt;/growth_trajectory/growth_trajectory.json</code> + <code>step_&lt;day&gt;.npz</code> (<code>state</code> uint8 (z, y, x), <code>spacing_mm_xyz</code>). Snapshots: <code>baseline</code> (equivalent diameter reaches <code>size_mm</code>), <code>follow-up</code> (+90 d by default), optional <code>other</code>. Schema: <a href="../../shared/contracts/growth_trajectory.schema.json"><code>growth_trajectory.schema.json</code></a> · stub example: <a href="../../shared/stubs/growth_trajectory/growth_trajectory.json"><code>shared/stubs/growth_trajectory/growth_trajectory.json</code></a></li>
+<li>Sidecars in the same folder (letter-local, <strong>not</strong> contracts): <code>growth_summary.json</code> (per day: Rt, volume, equivalent diameter, layer fractions, VDT, barrier contacts/entries; checks: sphericity, inertia ratio, voxels outside lung, vessel-entry day) and <code>environment.npz</code> (barrier 0/1 hard/2 soft and tissue levels on the lattice).</li>
 </ul>
-<h2>How to run (sim commands)</h2>
+<h2 id="how-to-run-sim-commands">How to run (sim commands)</h2>
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to E_classical_growth/runs/ via shared.runrecord. -->
-<p><em>Pending (feature E).</em></p>
-<h2>Reproduced result vs. paper</h2>
+<p>All classical, no quantum simulation. Run from <code>reverse-engineering/</code>:</p>
+<pre><code class="language-bash"># reproductions
+python -m E_classical_growth.repro.kt_table2                    # [E02] Table 2, ~1.85e6-site lattice (~15 min, ~4 GB)
+python -m E_classical_growth.repro.kt_table2 --spacing-scale 1 --lattice-radius-mm 50   # literal eq. 2 lattice
+python -m E_classical_growth.repro.p2c_behaviour                # [E01] behaviours B1–B4 (~15 s)
+python -m E_classical_growth.repro.calibrate_lung               # p0 per tumor type → src/params_lung.json (~20 s)
+
+# lung engine (all inputs default to shared/stubs)
+python -m E_classical_growth.src.grow                           # exit 0 ok, 1 invalid input, 2 certificate refused, 3 growth failed
+python -m E_classical_growth.src.grow --site-id S002 --follow-up-days 600   # verification override of the draw's site
+python -m E_classical_growth.src.grow --masks … --sites … --draw … --certificate … --seed-shape …
+python -m E_classical_growth.src.figures E_classical_growth/runs/&lt;grow run&gt; [...]   # 2-D slice export + growth curves
+python -m shared.validate E_classical_growth/runs/&lt;grow run&gt;/growth_trajectory/growth_trajectory.json
+</code></pre>
+<p>Lattice caches for the KT repro are written to <code>runs/_cache/</code>. Like everything in <code>runs/</code>, they are gitignored.</p>
+<h2 id="reproduced-result-vs-paper">Reproduced result vs. paper</h2>
 <!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-<p><em>Pending (feature E).</em> Planned: Pixel2Cancer growth behaviour on one of their organs.</p>
-<h2>Claim level and honesty notes</h2>
+<p><strong>#11 Kansal–Torquato [E02] Table 2</strong> (run <code>20261028-191231-kt-table2</code>; 1,851,791 sites; tolerance ±10 percentage points for fractions, ±35 % doubling time, ±25 % day):</p>
+<table>
+<thead>
+<tr>
+<th>Rt (mm)</th>
+<th>day Sim / ours</th>
+<th>growth fraction Sim / ours</th>
+<th>necrotic fraction Sim / ours</th>
+<th>doubling time (d) Sim / ours</th>
+<th>agreement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5</td>
+<td>87 / 61</td>
+<td>0.40 / 0.50</td>
+<td>0.38 / 0.08</td>
+<td>5 / 10.5</td>
+<td>no</td>
+</tr>
+<tr>
+<td>5</td>
+<td>198 / 227</td>
+<td>0.30 / 0.29</td>
+<td>0.45 / 0.36</td>
+<td>38 / 25.7</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>18.5</td>
+<td>405 / 449</td>
+<td>0.19 / 0.20</td>
+<td>0.57 / 0.54</td>
+<td>72 / 64.8</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>25</td>
+<td>492 / 555</td>
+<td>0.13 / 0.19</td>
+<td>0.60 / 0.58</td>
+<td>112 / 105.1</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Three of the four clinical stages agree. The spheroid stage (0.5 mm) does not, and the reason is in the dossier. The literal eq. 2 lattice (47,037 sites; run <code>20261029-052947-kt-table2-k1</code>) fails at every stage, so the paper's reported site count is the operative parameter. Figures: <a href="figures/kt_table2.png"><code>kt_table2.png</code></a>, <a href="figures/kt_growth_curve.png"><code>kt_growth_curve.png</code></a>, <a href="figures/kt_cross_sections.png"><code>kt_cross_sections.png</code></a> (<code>*_k1.png</code> = literal lattice).</p>
+<p><strong>#11 Pixel2Cancer [E01] behaviours.</strong> The paper publishes no growth number; plan Q1 accepts behaviour as the reproduction. Run <code>20261029-053311-p2c-behaviour</code>, synthetic liver phantom, liver hyper-parameters:</p>
+<ul>
+<li><strong>B1 vessel: PASS.</strong> Vessel voxels are invaded only at the 3-push threshold, and the tumor wraps the vessel (12/12 sectors).</li>
+<li><strong>B2 boundary: PASS.</strong> Extent toward the boundary vs away from it is 6 / 16 mm, and 0 voxels survive outside the organ.</li>
+<li><strong>B3 death: PASS.</strong> There are no dead cells at ≤ 50 steps, and dead cores appear in exactly the 2 of 6 runs with &gt; 50 steps where the coin flip fired.</li>
+<li><strong>B4 sizes: PASS.</strong> Diameter is 4.8–57.3 mm over 14–149 steps, with Spearman ρ = 1.0.</li>
+</ul>
+<p>Figure: <a href="figures/p2c_behaviour.png"><code>p2c_behaviour.png</code></a>.</p>
+<p><strong>Lung adaptation:</strong></p>
+<ul>
+<li><strong>Calibration</strong> (run <code>20261029-052808-calibrate-lung</code>): the VDT at 8 mm is 147.6 / 465.8 / 825.4 d against targets of 149 / 457 / 813 d for solid / part-solid / ground-glass. Figure: <a href="figures/lung_calibration.png"><code>lung_calibration.png</code></a>.</li>
+<li><strong>S001 free</strong> (runs <code>20261029-052830-grow-S001</code>, <code>-052837-grow-S002</code>, <code>-052843-grow-S003</code>): smoothed sphericity 0.89, inertia ratio 0.87.</li>
+<li><strong>S002 juxtavascular:</strong> in contact with the vessel from day 253. In a 600-day follow-up (<code>20261029-052850-grow-S002</code>) the vessel is entered on day 629, only after 30 pushes.</li>
+<li><strong>S003 juxtapleural:</strong> 0 voxels outside the lung, flattened against the pleura and fissure (inertia ratio 0.43).</li>
+</ul>
+<p>Figures: <a href="figures/lung_S001.png"><code>lung_S001.png</code></a>, <a href="figures/lung_S002.png"><code>lung_S002.png</code></a>, <a href="figures/lung_S003.png"><code>lung_S003.png</code></a>, <a href="figures/lung_growth_curves.png"><code>lung_growth_curves.png</code></a>.</p>
+<p><strong>#12</strong> is dissected only: it is ★ read-only, and a reproduction is not needed at nodule scale.</p>
+<h2 id="claim-level-and-honesty-notes">Claim level and honesty notes</h2>
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-<p>Classical stage (n/a). The certified seed gives provenance only; never claim &quot;more realistic because quantum&quot;.</p>
-<h2>References (paper codes)</h2>
+<p>Classical stage, so no claim level applies. The certified seed gives <strong>provenance only</strong>: it makes every trajectory replayable from the receipt (identical inputs give byte-identical lattices). It does <strong>not</strong> make growth more realistic. Never write &quot;more realistic because quantum&quot;.</p>
+<p>Further honesty notes:</p>
+<ul>
+<li>All runs so far use <strong>stub inputs</strong>: a synthetic phantom, a stub certificate and a stub seed shape. Every output is <code>stub: true</code> until INT.</li>
+<li>The lung VDT targets (Hasegawa et al. 2000) are cited from memory, marked <em>(verify)</em>, and their PDF is not in <code>papers/</code>.</li>
+<li><code>vessel_threshold</code>, the lung HU bounds, <code>a</code> and <code>Rmax</code> are stated assumptions (see <code>src/params_lung.json</code> <code>sources</code>).</li>
+<li>Sphericity is reported both raw and after a 0.5 mm smooth. The raw value (~0.72) is limited by sub-voxel surface roughness.</li>
+</ul>
+<h2 id="pipeline-readiness">Pipeline readiness</h2>
+<span class="badge ready-caveats">Usable with caveats</span>
+<p>Draft rating, not yet confirmed by the chain (the chain has not reached E). E's CLI accepts every chain input
+(probe: all flags exist), and its lung adaptation holds on the phantom (VDT 147.6 / 465.8 / 825.4 d vs 149 / 457 / 813 d;
+KT Table 2 matches 3 of 4 stages). But every run so far is on stubs: E has never grown a tumour inside A's real
+masks. The runner now checks <code>lung_hu_bounds</code> against the host's lung HU before E runs; <code>vessel_threshold</code> is a
+push count, not HU, so the plan's HU check does not apply to it.</p>
+<p><strong>Weak links</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak link</th>
+<th>Kind</th>
+<th>Why it limits reliability</th>
+<th>Evidence</th>
+<th>To strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stub-only runs</td>
+<td>data</td>
+<td>behaviour inside real lungmask / TotalSegmentator masks is unknown</td>
+<td>honesty notes above (27 runs, all <code>stub: true</code>)</td>
+<td>the chain's <code>grow_c</code> stage</td>
+</tr>
+<tr>
+<td><code>lung_hu_bounds</code> unchecked on LIDC</td>
+<td>assumption</td>
+<td>[−950, −600] may exclude real parenchyma voxels</td>
+<td>runner <code>_pre_grow_c</code> (not reached yet)</td>
+<td>adjust only if outside the measured range (plan AC-10)</td>
+</tr>
+<tr>
+<td>Site ≠ draw silently marks stub</td>
+<td>integration</td>
+<td><code>--site-id</code> different from the draw's site makes the output <code>stub: true</code> (<code>grow.py:74-77</code>) instead of failing</td>
+<td>agent read; runner check <code>_post_grow_c</code></td>
+<td>fail loudly</td>
+</tr>
+<tr>
+<td>Parameters outside the commit</td>
+<td>integration</td>
+<td><code>src/params_lung.json</code> is not in the <code>.py</code> code hash; it can change after the commit</td>
+<td>probe <code>G.commit</code></td>
+<td>hash parameter files into the commit</td>
+</tr>
+<tr>
+<td>VDT targets <em>(verify)</em></td>
+<td>assumption</td>
+<td>calibration targets cited from memory</td>
+<td>honesty notes above</td>
+<td>add Hasegawa 2000 to <code>../papers/</code></td>
+</tr>
+<tr>
+<td>Spheroid stage (0.5 mm) mismatch</td>
+<td>component</td>
+<td>early growth is off (necrotic 0.08 vs 0.38)</td>
+<td>KT table</td>
+<td>irrelevant at nodule scale; document</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Used as-is in the chain?</strong> Expected yes (all flags exist); unverified on real masks. Full gap list: <a href="../INT_integration/index.html">INT</a>; whole chain: <a href="../../index.html">index</a>.</p>
+<h2 id="future">Future</h2>
+<p>Shared, pipeline-wide context (end goal, digital-twin path, cross-letter risks) lives once in the
+<a href="../future.html">whole-pipeline Future</a>. This section covers only what this letter adds. Every claim carries a label:
+<span class="chip evidence">evidence-based</span> (a number in this repo or a cited paper), <span class="chip extrapolation">extrapolation</span> (a reasoned step beyond the evidence),
+<span class="chip speculative">speculative</span> (possible, not supported yet).</p>
+<h3 id="1-aim-of-the-paper-s">1. Aim of the paper(s)</h3>
+<ul>
+<li><strong>[E01] Pixel2Cancer:</strong> grow tumours with a cellular automaton <em>inside</em> CT anatomy, to produce synthetic tumours
+that train segmentation AI (liver, pancreas, kidney).</li>
+<li><strong>[E02] Kansal–Torquato:</strong> a cellular automaton that reproduces Gompertz-like growth and the layered tumour
+structure (proliferating rim, dormant shell, necrotic core).</li>
+<li><strong>[E03] Poleszczuk–Enderling:</strong> a fast automaton with growing domains for large cell populations.</li>
+</ul>
+<p>Why it matters: real nodules <strong>grow</strong>, and growth between two scans is a key signal when doctors judge a nodule.
+A generator of growth trajectories gives ground-truth follow-ups that real data rarely provides.</p>
+<h3 id="2-contribution">2. Contribution</h3>
+<ul>
+<li>Kansal–Torquato Table 2 matched at 3 of 4 clinical stages (run <code>20261028-191231-kt-table2</code>). <span class="chip evidence">evidence-based</span></li>
+<li>Pixel2Cancer behaviours B1–B4 pass (vessel, boundary, death, size). <span class="chip evidence">evidence-based</span></li>
+<li>Lung calibration: volume-doubling time 147.6 / 465.8 / 825.4 d against targets of 149 / 457 / 813 d
+(solid / part-solid / ground-glass; targets marked <em>(verify)</em>). <span class="chip evidence">evidence-based</span></li>
+<li>Lung rules: the pleura and fissures are walls, vessels yield only under pressure, and every trajectory replays
+byte-identically from its seed. <span class="chip evidence">evidence-based</span></li>
+</ul>
+<h3 id="3-role-in-cancer-detection">3. Role in cancer detection</h3>
+<p><strong>End goal:</strong> <strong>paired baseline and follow-up scans with known growth</strong>, to train and test growth-based
+assessment (volume, doubling time) and to test whether detectors catch small nodules at the moment they first
+become visible. The H #21 protocol measures exactly this on a commercial assistant: reported vs true volume and
+doubling time. <span class="chip extrapolation">extrapolation</span></p>
+<h3 id="4-beyond-lungs">4. Beyond lungs</h3>
+<ul>
+<li><strong>Other organs.</strong> Pixel2Cancer already grows liver, pancreas and kidney tumours [E01]; the lung rules here add
+anatomy walls and pressure. <span class="chip evidence">evidence-based</span></li>
+<li><strong>Treatment response.</strong> Kill rules for radiotherapy or chemotherapy (proliferating cells removed per dose; a
+slower rim) would turn E into a response simulator. <span class="chip extrapolation">extrapolation</span></li>
+<li><strong>Drug response and monitoring.</strong> Fitting the proliferation rate per patient from serial scans gives a
+monitoring quantity (&quot;growing faster than expected&quot;). <span class="chip speculative">speculative</span></li>
+</ul>
+<h3 id="5-long-term-vision-toward-a-digital-twin">5. Long-term vision: toward a digital twin</h3>
+<div class="callout speculative">
+<p><span class="chip speculative">speculative</span> E is the twin's <strong>dynamics layer</strong>. Path: (1) population-calibrated growth in generic hosts (now) →
+(2) parameters fitted to a patient's own serial CT → (3) forecasts of the next scan, checked retrospectively →
+(4) &quot;what if&quot; branches for treatment options. Each step needs longitudinal data and validation the project does
+not have yet.</p>
+</div>
+<h3 id="6-predictions">6. Predictions</h3>
+<p><strong>5 years</strong>
+<em>Assumptions:</em> CPU/GPU automata as today; few public longitudinal lung CT pairs.</p>
+<ul>
+<li>Growth is calibrated on phantoms; the run on real masks is pending (INT). <span class="chip evidence">evidence-based</span></li>
+<li>Validation against real follow-up pairs (the doubling-time distribution) on public data. <span class="chip extrapolation">extrapolation</span></li>
+<li>Therapy-response rules (radiation kill fraction) are added and tested on phantoms. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<p><strong>10 years</strong>
+<em>Assumptions:</em> access to longitudinal imaging datasets; GPU 3-D automata at whole-lung scale [E03].</p>
+<ul>
+<li>Patient-specific growth fits forecast nodule size at the next scan, evaluated retrospectively. <span class="chip extrapolation">extrapolation</span></li>
+</ul>
+<div class="callout speculative">
+<p><strong>15 years</strong>
+<em>Assumptions:</em> fault-tolerant hardware.</p>
+<ul>
+<li><span class="chip speculative">speculative</span> Quantum algorithms for nonlinear dissipative differential equations [D21] could integrate continuum growth
+models (reaction–diffusion) at scales that strain classical solvers (claim level L3). Reading out a full 3-D
+tumour from a quantum state is costly, so any end-to-end gain is uncertain.</li>
+</ul>
+</div>
+<h3 id="7-risks-and-obstacles">7. Risks and obstacles</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Kind</th>
+<th>Why it matters</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calibration targets <em>(verify)</em></td>
+<td>data</td>
+<td>VDT targets cited from memory</td>
+<td>add the source paper</td>
+</tr>
+<tr>
+<td>Early stage off (0.5 mm)</td>
+<td>technical</td>
+<td>spheroid-stage fractions do not match</td>
+<td>document; irrelevant at nodule scale</td>
+</tr>
+<tr>
+<td>Stub-only runs</td>
+<td>validation</td>
+<td>never grown in real masks</td>
+<td>INT chain stage <code>grow_c</code></td>
+</tr>
+<tr>
+<td>Model ≠ prognosis</td>
+<td>regulatory</td>
+<td>a growth forecast could be misread as clinical advice</td>
+<td>research-use labelling; prospective validation</td>
+</tr>
+<tr>
+<td>Biological realism</td>
+<td>technical</td>
+<td>layers + pressure are a caricature of tumour biology</td>
+<td>compare with follow-up data in H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-paper-codes">References (paper codes)</h2>
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
-<p>[E01], [E02], [E03] — PDFs in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
-<h2>Contract change requests</h2>
+<ul>
+<li>[E01] Lai et al., <em>From Pixel to Cancer: Cellular Automata in Computed Tomography</em>, MICCAI 2024 (arXiv:2403.06459). Code: github.com/MrGiovanni/Pixel2Cancer (Apache-2.0; read only, not vendored).</li>
+<li>[E02] Kansal, Torquato et al., <em>Cellular automaton of idealized brain tumor growth dynamics</em>, BioSystems 55 (2000) 119–127.</li>
+<li>[E03] Poleszczuk &amp; Enderling, <em>A high-performance cellular automaton model of tumor growth with dynamically growing domains</em>, Appl. Math. 2014 (arXiv:1309.6015).</li>
+<li>Hasegawa et al., <em>Growth rate of small lung cancers detected on mass CT screening</em>, Br J Radiol 2000 <em>(verify; not in <code>papers/</code>)</em>.</li>
+</ul>
+<p>The PDFs are in <code>../../papers/</code> (local only). Full context: <a href="../../reverse-engineering-targets.md"><code>../reverse-engineering-targets.md</code></a>.</p>
+<h2 id="contract-change-requests">Contract change requests</h2>
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-<p><em>None yet.</em></p>
+<ol>
+<li><strong><code>growth_trajectory.snapshots[]</code></strong>: optional <code>summary {eq_diameter_mm, volume_mm3, f_prolif, f_dormant, f_necrotic}</code>. <em>Why:</em> F and H need size and layer fractions per snapshot without recomputing them. <em>Workaround:</em> the <code>growth_summary.json</code> sidecar next to the manifest.</li>
+<li><strong><code>step_NNNN.npz</code></strong>: optional <code>population</code> uint8 (0–10) key carrying Pixel2Cancer's partial-population field. <em>Why:</em> F could use it for the blurry tumor boundary ([E01] §2.3 mapping). <em>Workaround:</em> not written in v1 (plan Q10). The engine is layer-based, so this would need a population field to be added in E.</li>
+<li><strong><code>growth_trajectory</code></strong>: optional <code>draw_id</code>. <em>Why:</em> today the draw is only reachable through <code>upstream[]</code>. <em>Workaround:</em> <code>growth_summary.json</code> carries <code>draw_id</code>.</li>
+<li><strong><code>growth_trajectory</code></strong> (note, not a schema change): the lattice placement convention is <code>origin_mm_lps</code> = LPS centre of voxel (0, 0, 0), with axes aligned to LPS. This is already implied by VOLUMES.md and is stated here for F.</li>
+</ol>
 
 </article>
 <p class="source">Source: <code>E_classical_growth/README.md</code></p>

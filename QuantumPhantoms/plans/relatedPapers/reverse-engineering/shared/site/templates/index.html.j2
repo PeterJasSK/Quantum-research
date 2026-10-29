@@ -1,24 +1,88 @@
 {% extends "base.html.j2" %}
 {% block main %}
-<h1>Quantum Phantoms: reverse engineering</h1>
-<p class="lede">21 published methods rebuilt standalone, one folder per pipeline letter A–H. Every target goes
-<em>dissect → reproduce → adapt → integrate</em>, or is rejected with a reason. New here? Read the
-<a href="{{ root }}about.html">explainer</a>.</p>
+<h1>Quantum Phantoms <span class="live" title="This page is regenerated as the work progresses; states, ratings and numbers change.">(live document)</span></h1>
+<p class="live-note">Live document: it tracks the progress of the reverse-engineering work and is rebuilt from the
+letter READMEs and <code>status.json</code> as targets move. States, ratings and numbers will change.</p>
+<p class="lede"><strong>What we aim to achieve:</strong> synthetic lung tumours inside real 3-D chest CT that are
+realistic enough to train cancer-detection AI, controlled enough to test it on exactly the cases it misses, and
+traceable enough that a clinician or regulator can trust the result.</p>
 
-<p class="totals">{% for s in states %}{% if totals[s] %}<span class="badge state-{{ s }}">{{ totals[s] }} {{ s }}</span>{% endif %}{% endfor %}</p>
+<p><strong>Why it matters.</strong> Detection models fail most on the cases real data has least of: tiny,
+ground-glass, and wall- or vessel-touching nodules, usually without exact ground truth, follow-up scans or the right
+to share them. Synthetic tumours with exact masks, chosen difficulty and a baseline and follow-up scan can fill that
+gap without using any patient voxels. They are only trustworthy if every step rests on a published, reproduced method
+and every case can be traced back to how it was made. If the pipeline reaches clinical validation, it can bring
+better-trained and better-tested lung-cancer detection forward by a few years.
+<span class="chip extrapolation">extrapolation</span></p>
 
-<section class="cards">
-{% for c in cards %}
-  <a class="card" href="{{ root }}site/{{ c.folder }}/index.html">
-    <span class="card-letter">{{ c.letter }}</span>
-    <span class="card-title">{{ c.title }}</span>
-    <span class="card-folder"><code>{{ c.folder }}/</code> · {{ c.n }} target{{ "s" if c.n != 1 }}</span>
-    <span class="card-states">{% for s in states %}{% if c.counts[s] %}<span class="badge state-{{ s }}">{{ c.counts[s] }} {{ s }}</span>{% endif %}{% endfor %}</span>
-  </a>
+<p><strong>Why quantum.</strong> The plan is to build one large quantum circuit that maps how a tumour starts growing:
+in D the first cell lineage and tissue patch grow through entangled quantum dynamics on IBM's heavy-hex chip. It runs
+at 21 qubits in simulation today; the planned 108-qubit version aims beyond classical simulation (claim level L2,
+<a href="{{ root }}site/future.html#planned-l2-in-d-at-108-qubits">plan and conditions</a>).
+<span class="chip speculative">speculative</span>
+C certifies every tumour draw with a Bell test, and B draws site and tumour type together in one quantum circuit.
+<span class="chip evidence">evidence-based</span></p>
+
+<p><strong>Disclaimer.</strong> At today's sizes the quantum stages can still be simulated classically, on laptops or
+supercomputers, so this work builds a quantum pipeline that is ready when hardware outgrows them. See the
+<a href="{{ root }}site/future.html">Future</a> and its
+<a href="{{ root }}site/future.html#disclaimer-what-quantum-is-allowed-to-mean-here">claim ladder</a>.</p>
+
+<h2 id="pipeline">Pipeline readiness</h2>
+{% set box = {"C": [20, 20, "certify"], "A": [270, 20, "place"],
+              "B": [520, 20, "draw"], "D": [770, 20, "grow_q"],
+              "E": [20, 230, "grow_c"], "F": [270, 230, "render"],
+              "G": [520, 230, "commit/sign"], "H": [770, 230, "validate"]} %}
+{% set edges = [["C>A", "M190,70 L268,70", 196, 62, "seed"], ["A>B", "M440,70 L518,70", 448, 62, "sites"],
+                ["B>D", "M690,70 L768,70", 698, 62, "draw"], ["D>E", "M855,120 L855,170 L105,170 L105,228", 560, 164, "seed_shape (+ draw, cert)"],
+                ["E>F", "M190,280 L268,280", 194, 272, "trajectory"], ["F>G", "M440,280 L518,280", 450, 272, "hybrid"],
+                ["G>H", "M690,280 L768,280", 696, 272, "receipt"], ["A>F", "M355,120 L355,228", 361, 205, "anatomy_masks"],
+                ["B>G", "M605,120 L605,228", 611, 205, "job records (B, C, D)"]] %}
+<div class="figure">
+<svg class="pipe" viewBox="0 0 960 350" role="img" aria-labelledby="pipe-title">
+  <title id="pipe-title">Chain order with each letter coloured by pipeline readiness; dashed red edges are the weakest links</title>
+  <defs><marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="head-weak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  {% for e in edges %}<path class="arrow{% if e[0] in weak_edges %} edge-weak{% endif %}" d="{{ e[1] }}"/>
+  <text class="lbl{% if e[0] in weak_edges %} edge-weak{% endif %}" x="{{ e[2] }}" y="{{ e[3] }}">{{ e[4] }}</text>
+  {% endfor %}
+  {% for L, b in box.items() %}<a href="{{ root }}site/{{ (letters | selectattr("letter", "equalto", L) | first).folder }}/index.html">
+  {% set c = cards | selectattr("letter", "equalto", L) | first %}
+  <g class="node ready-{{ ready[L] }}"><title>{{ L }} · {{ c.step }} · {{ c.folder }}/ · {{ c.n }} target{{ "s" if c.n != 1 }} · {{ ready_labels.get(ready[L], "unrated") }}</title><rect x="{{ b[0] }}" y="{{ b[1] }}" width="170" height="100" rx="10"/>
+    <text class="letter" x="{{ b[0] + 14 }}" y="{{ b[1] + 32 }}">{{ L }}</text><text class="out" x="{{ b[0] + 42 }}" y="{{ b[1] + 28 }}">stage: {{ b[2] }}</text>
+    <text class="name" x="{{ b[0] + 14 }}" y="{{ b[1] + 60 }}">{{ (letters | selectattr("letter", "equalto", L) | first).step }}</text>
+    <text class="rating" x="{{ b[0] + 14 }}" y="{{ b[1] + 84 }}">{{ ready_labels.get(ready[L], "unrated") }}</text></g></a>
+  {% endfor %}
+</svg>
+</div>
+<ul class="key">
+  {% for r in ["not-ready", "prototype", "caveats", "production"] %}<li><span class="swatch ready-{{ r }}-box"></span>{{ ready_labels[r] }}</li>
+  {% endfor %}<li><span class="line"></span>contract file passed on</li>
+  <li><span class="line weak"></span>weakest link</li>
+</ul>
+
+
+<h2 id="see">See each step</h2>
+<p class="legend">Images already produced by each step. <span class="chip kind-ct">real CT</span> shows real LIDC
+chest-CT pixels; <span class="chip kind-phantom">phantom</span> is a synthetic or stub volume;
+<span class="chip kind-plot">plot</span> is a chart of the measured result. Click an image for full size.</p>
+<div class="gallery">
+{% for g in gallery %}
+  <section class="g-step">
+    <h3><span class="g-letter">{{ g.letter }}</span> {{ g.step }} <a class="g-more" href="{{ root }}site/{{ g.folder }}/index.html">details →</a></h3>
+    <div class="g-items">
+    {% for it in g["items"] %}
+      <a class="g-item g-{{ it.kind }}" href="{{ root }}{{ it.href }}"><img src="{{ root }}{{ it.href }}" alt="{{ it.caption }}" loading="lazy">
+        <span class="g-cap"><span class="chip kind-{{ it.kind }}">{{ it.kind_label }}</span> {{ it.caption }}</span></a>
+    {% endfor %}
+    </div>
+  </section>
 {% endfor %}
-</section>
+</div>
 
-<h2>All targets</h2>
+{% include "explainer.html.j2" %}
+
+<h2 id="targets">All targets</h2>
 <div class="table-wrap">
 <table class="targets">
   <thead><tr><th>#</th><th>Letter</th><th>Target</th><th>Priority</th><th>Kind</th><th>State</th><th>Claim</th><th>Sim</th><th>Reproduced</th><th>Papers</th></tr></thead>
@@ -42,4 +106,13 @@
 </div>
 <p class="legend">States: listed → dissected → reproduced (published number matched) → adapted → integrated | rejected (reason recorded).
 Claim levels: L0 provenance · L1 entangled generative state · L1′ quantum memory advantage. Every quantum number is simulated.</p>
+
+<h2 id="next">Where to go next</h2>
+<ul>
+  <li><a href="{{ root }}site/future.html">Future</a>: where the whole pipeline leads (cancer detection, other organs, digital twin, 5 / 10 / 15 years).</li>
+  <li><a href="{{ root }}site/INT_integration/index.html">INT</a>: the chain runner, the gap probe and every weak link found.</li>
+  <li><a href="{{ root }}README.md">README.md</a>: conventions, ownership rules and commands, written for agents.</li>
+  <li><a href="{{ root }}site/shared/contracts/index.html">Contracts</a> and <a href="{{ root }}site/shared/contracts/VOLUMES.html">volume conventions</a>.</li>
+  <li><a href="{{ root }}epic-reverse-engineering.md">Epic plan</a> and <a href="{{ root }}reverse-engineering-targets.md">targets list</a>.</li>
+</ul>
 {% endblock %}
