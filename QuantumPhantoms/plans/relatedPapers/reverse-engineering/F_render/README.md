@@ -14,11 +14,11 @@ Cell states → HU from an LIDC-fitted lesion library; supersampled partial volu
 <!-- One row per target; the state column mirrors status.json (status.json wins on conflict). -->
 | # | Target | Priority | Kind | State |
 |---|---|---|---|---|
-| #13 | [SyntheticTumors / Label-free pipeline](dossiers/13-synthetic-tumors.md) | ★★★ | classical | listed |
-| #14 | [Lesion-model fitting (Ambrosini; Solomon–Samei PMB 2014)](dossiers/14-lesion-model-fitting.md) | ★★★ | classical | listed |
-| #15 | [Scanner fingerprint estimator (Sanders MTF 2016; Divel–Pelc 2019; Peng)](dossiers/15-scanner-fingerprint.md) | ★★★ | classical | listed |
-| #16 | [Projection-domain insertion rebuilt on XCIST (Mayo; Mayo LDCT raw data)](dossiers/16-xcist-projection-insertion.md) | ★★ | classical | listed |
-| #17 | [DukeSim NAEOTOM Alpha parameters (McCabe)](dossiers/17-naeotom-alpha-params.md) | ★★ | classical | listed |
+| #13 | [SyntheticTumors / Label-free pipeline](dossiers/13-synthetic-tumors.md) | ★★★ | classical | adapted |
+| #14 | [Lesion-model fitting (Ambrosini; Solomon–Samei PMB 2014)](dossiers/14-lesion-model-fitting.md) | ★★★ | classical | adapted |
+| #15 | [Scanner fingerprint estimator (Sanders MTF 2016; Divel–Pelc 2019; Peng)](dossiers/15-scanner-fingerprint.md) | ★★★ | classical | adapted |
+| #16 | [Projection-domain insertion rebuilt on XCIST (Mayo; Mayo LDCT raw data)](dossiers/16-xcist-projection-insertion.md) | ★★ | classical | adapted |
+| #17 | [DukeSim NAEOTOM Alpha parameters (McCabe)](dossiers/17-naeotom-alpha-params.md) | ★★ | classical | dissected |
 
 ## Inputs (contract files)
 
@@ -40,26 +40,97 @@ Cell states → HU from an LIDC-fitted lesion library; supersampled partial volu
 
 <!-- Exact commands, cwd = reverse-engineering/. Label every quantum number "simulated: ideal" or
      "simulated: Heron-class noise (FakeMarrakesh)". Runs go to F_render/runs/ via shared.runrecord. -->
-_Pending (feature F)._
+F is classical, so no quantum labels apply. All commands run with cwd = `reverse-engineering/` and conda-base `python`.
+Extra dependencies are in [`requirements.txt`](requirements.txt). Every run writes `F_render/runs/<ts>-<tag>/run.json` (gitignored).
+
+```bash
+# render: growth snapshot → hybrid_volume (defaults: shared/stubs/ + the fitted library)
+python -m F_render.src.render                         # follow-up snapshot (last step)
+python -m F_render.src.render --step 0 --tag baseline # baseline of the longitudinal pair
+python -m F_render.src.render --export                # + final 2-D PNG slices in figures/
+python -m F_render.src.export_slices <hybrid_volume.json> --tag NAME
+
+# real LIDC host (F-local masks + one free site, plan Q8; patient voxels stay in runs/)
+python -m F_render.src.lidc download --n 20           # once; ~4.3 GB to ~/data/LIDC-IDRI
+python -m F_render.src.host_masks --lidc LIDC-IDRI-0001
+python -m F_render.src.fingerprint --masks F_render/runs/<ts>-host-LIDC-IDRI-0001/anatomy_masks.json --slice-thickness 2.5
+python -m F_render.src.render --masks <…/anatomy_masks.json> --sites <…/sites.json> \
+       --fingerprint <…-fingerprint/scanner_fingerprint.json> --tag lidc0001 --export
+
+# #14 library (parameters only) → F_render/library/lesion_model_library.json
+python -m F_render.src.lesion_fit --lidc 20           # ~1 h CPU
+
+# reproductions (each updates status.json and writes its figure)
+python -m F_render.repro.r13_synthetic_tumors
+python -m F_render.repro.r14_lesion_fit
+python -m F_render.repro.r15_fingerprint [--selfcheck]
+python -m F_render.repro.r16_projection_vs_image      # ~45 min, XCIST
+python -m F_render.repro.r17_naeotom_spectrum         # ~25 min, XCIST
+```
+
+**Seeds.**
+- Appearance (HU, texture, residual noise) comes from `rng(certificate.extracted_seed_hex, "F.<label>")`.
+- Geometry (edge σ, lobulation, deformation, spicules) comes from `rng(tumor_draw.shape_seed_hex, "F.<label>")`.
+- A `fail` certificate rejects the draw: exit code 2, nothing written.
+- The same inputs give a byte-identical `hybrid_ct.nii.gz`.
 
 ## Reproduced result vs. paper
 
 <!-- Per target: the published number/figure, our number/figure, agreement, sim mode. -->
-_Pending (feature F)._ Planned: Robins/Duke volume agreement (< 3 %) on one case.
+F is classical, so `sim_mode` is n/a. "Simulated" below means a software phantom or simulator, never a scanner.
+
+| # | Paper's number | Ours | Agreement | Figure |
+|---|---|---|---|---|
+| 13 | [H01] generation pipeline, Table 1/6 (qualitative, Fig. 3) | recipe reproduced on a synthetic liver; core HU = sampled µt | qualitative + parameter match; DSC 59.81 % **not** reproduced (needs LiTS training) | [r13](figures/r13-synthetic-tumors-liver.png) |
+| 14 | [F01] SH(l≤3) 3-D correlation 0.8897 ± 0.0609 (17 metastases, 8–20 mm) | 0.8699 ± 0.0664 (11 solid LIDC nodules, 8–20 mm); all types 0.714 ± 0.242 | agree (Δ −0.020, z −0.79) | [r14](figures/r14-lesion-library.png) |
+| 15 | [F05] patch-NPS noise moments within 2 % | σ +1.53 / +0.19 %, kurtosis −1.27 / +0.35 %; self-check PSF/σ within 10 % (PASS) | agree (synthetic ground truth) | [r15](figures/r15-peng-patch-noise.png), [self-check](figures/r15-selfcheck.png) |
+| 16 | [F02] Table 4 volume PD: image −0.28…+0.57 %, projection −2.24…−1.01 % | image **+0.25 ± 1.02 %**, projection +1.97 ± 1.32 % (6 nodules, XCIST phantom) | agree, \|PD\| < 3 % (simulated) | [r16](figures/r16-projection-vs-image.png) |
+| 17 | [F04] Table 1 real f50 0.39 mm⁻¹ (Br40) | 0.573 mm⁻¹ (pre-registered XCIST 'standard'); noise ∝ mAs^−0.501 | **disagree** (+47 %); approximation only | [r17](figures/r17-naeotom.png) |
+
+The epic's F-row headline was Robins/Duke volume agreement < 3 %. The image-domain insert reproduces it (+0.25 ± 1.02 %).
+Real-host render: [`figures/render-lidc0001-lung.png`](figures/render-lidc0001-lung.png).
+- Volume 263 mm³ vs 264 mm³ in the lattice.
+- σ inside/outside the lesion is 1.10.
+- Every changed voxel lies within 8.1 mm of the lesion centre.
 
 ## Claim level and honesty notes
 
 <!-- L0 provenance / L1 entangled generative state / L1′ memory advantage; never L2/L3.
      Classical baseline + belief-propagation simulability number for every quantum deliverable. -->
-Classical stage (n/a). Privacy-by-construction: only fitted parameters leave LIDC; learned refiners (DiffTumor, MAISI) are ablation only. Mayo raw data: Siemens cases only for Siemens work.
+Classical stage (claim level n/a).
+
+- **Privacy-by-construction.**
+  - Only fitted parameters leave LIDC: [`library/lesion_model_library.json`](library/lesion_model_library.json), about 4 KB of scalars.
+  - LIDC pixel data live outside the repo (`~/data/LIDC-IDRI`). Hybrids of LIDC hosts stay in gitignored `runs/`.
+  - The committed `figures/render-lidc0001-*.png` show a cropped slice of the public LIDC-IDRI scan 0001 (CC BY 3.0). That is a display export, not generator input.
+  - Learned refiners (DiffTumor, MAISI) are ablation only and are not built.
+- **F-local substitutes, replaced in INT.**
+  - Masks and the single site on LIDC hosts come from `src/host_masks.py`: thresholds + connected components, lobes not
+    derivable (all 0), lobe label by z-half.
+  - These are not A's lungmask/TotalSegmentator masks.
+- **Image domain is the main path.**
+  - The projection-domain arm (#16) runs on a **synthetic XCIST phantom** with a Definition-*like* configuration from published parameters.
+  - Real Mayo Siemens raw-data insertion is future work: it needs the TCIA agreement and the vendor geometry, and only Siemens cases may be used for Siemens work.
+- **NAEOTOM Alpha (#17)** is an XCIST approximation, not DukeSim. CdTe crosstalk and covariance are not modelled, and f50 does not match
+  Br40 under the pre-registered kernel.
+- **Missing sources.** Solomon–Samei 2014, Sanders 2016 and Divel–Pelc 2019 are paywalled and not in `papers/`, so no number is claimed from them.
+  F02, F03 and F04 were read as PMC full text.
+- **Library HU.** The solid HU mean (−22 HU) sits below soft tissue because of partial volume in small nodules on 2.5 mm slices.
+  Ground-glass nodules fit the shape-only check poorly (corr 0.42); their realism comes from texture.
 
 ## References (paper codes)
 
 <!-- Codes refer to ../../papers/<code>_*.pdf (gitignored, local only). -->
 [A06], [F01], [F03], [F04], [F05], [H01] — PDFs in `../../papers/` (local only). Full context: [`../reverse-engineering-targets.md`](../reverse-engineering-targets.md).
+[F02] Robins 2017 (PMC5693368), [F03] Mayo 2017 (PMC5374359) and [F04] McCabe 2025 (PMC12285274) were read as PMC full text.
+[F06] Lee 2018 supplies the GGO/solid HU thresholds.
+Not available: Solomon–Samei PMB 2014, Sanders Med. Phys. 2016, Divel–Pelc SPIE 2019.
 
 ## Contract change requests
 
 <!-- Never edit shared/. Record needed contract changes here (contract, field, why, local workaround);
      INT applies them in one place. -->
-_None yet._
+| ID | Contract | Field | Why | Local workaround |
+|---|---|---|---|---|
+| CR-F1 | `scanner_fingerprint` | optional `local_nps {path, sha256}` → NPZ (`nps_patches` float32 (n, f), `patch_centers_zyx` int32 (n, 3), `freq_cyc_per_mm`, `spacing_mm_xyz`) | CT noise is non-stationary; [F05] synthesises it patch-wise | `local_nps.npz` + `local_nps.ref.json` next to the fingerprint; linked from `hybrid_volume.insertion.params.local_nps_ref` |
+| CR-F2 | `scanner_fingerprint` | optional `ssp {z_mm[], values[]}` (slice-sensitivity profile) | a single σ_z is a Gaussian approximation of the slice profile | z σ only; method recorded in the run notes |
