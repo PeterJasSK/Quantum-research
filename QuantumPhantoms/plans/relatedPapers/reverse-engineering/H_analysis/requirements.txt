@@ -1,0 +1,12 @@
+# H_analysis dependencies. Base conda Python 3.13 runs everything with the radiomics-lite engine;
+# env `qp-re-h` (Python 3.12) is only needed for PyRadiomics (not installed here, plan Q1).
+pyradiomics==3.1.0     # optional, not used by the lite engine
+SimpleITK==2.5.6
+pydicom==3.0.2
+pylidc==0.2.3
+numpy
+scipy
+scikit-learn
+scikit-image
+matplotlib
+jsonschema
