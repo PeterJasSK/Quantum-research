@@ -14,14 +14,32 @@
         "E01",
         "E02"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
+      "reproduced": {
+        "quantity": "Kansal–Torquato [E02] Table 2 at Rt = 0.5 / 5 / 18.5 / 25 mm: growth fraction, necrotic fraction, doubling time (Pixel2Cancer [E01]: behaviours B1–B4, no published growth number)",
+        "paper_value": "GF 0.40/0.30/0.19/0.13 · NF 0.38/0.45/0.57/0.60 · VDT 5/38/72/112 d",
+        "our_value": "GF 0.50/0.29/0.20/0.19 · NF 0.08/0.36/0.54/0.58 · VDT 10.5/25.7/64.8/105.1 d (1.85e6 sites); P2C B1–B4 PASS",
+        "unit": "fraction, days",
+        "agreement": "3 of 4 stages within tolerance (±10 pp fractions, ±35 % VDT, ±25 % day); 0.5 mm spheroid stage off",
+        "sim_mode": "n/a",
+        "figure": "figures/kt_table2.png"
+      },
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/11-pixel2cancer.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/kt_table2.png",
+        "figures/kt_growth_curve.png",
+        "figures/kt_cross_sections.png",
+        "figures/p2c_behaviour.png",
+        "figures/lung_calibration.png",
+        "figures/lung_S001.png",
+        "figures/lung_S002.png",
+        "figures/lung_S003.png",
+        "figures/lung_growth_curves.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 12,
@@ -32,14 +50,14 @@
       "papers": [
         "E03"
       ],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
       "reproduced": null,
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/12-hpc-cellular-automaton.md",
       "figures": [],
-      "updated": "2026-10-28"
+      "updated": "2026-10-29"
     }
   ]
 }
