@@ -14,16 +14,28 @@
         "A01",
         "A02",
         "A03",
-        "A04"
+        "A04",
+        "F01"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
+      "reproduced": {
+        "quantity": "placement-class proportions free / juxtavascular / juxtapleural of LIDC consensus nodules",
+        "paper_value": "0.33 / 0.45 / 0.22 (Kostis, 200 nodules, via Ambrosini F01)",
+        "our_value": "0.56 / 0.44 / 0.00 (n=9 nodules, 6 LIDC scans; 95% CI 0.27-0.81 / 0.19-0.73 / 0.00-0.30)",
+        "unit": "fraction",
+        "agreement": "NOT MATCHED (inconclusive at n=9): juxtavascular within 10 pp, free and juxtapleural outside; ordering fails. Juxtapleural undercounted: 4/9 nodules lie 0.8-2.5 mm from the wall but fail the pre-registered 1-voxel-contact rule. Thresholds not tuned.",
+        "sim_mode": "n/a",
+        "figure": "figures/18-class-proportions.png"
+      },
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/18-syn-lungs-placement.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/18-class-proportions.png",
+        "figures/18-host-sites.png"
+      ],
+      "updated": "2026-10-29"
     }
   ]
 }
