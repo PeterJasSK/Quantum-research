@@ -4,7 +4,7 @@
 **Feature ID:** A (target #18)
 **Author:** Claude (Opus)
 **Date:** 2026-10-28
-**Status:** Approved (by developer, 2026-10-28)
+**Status:** Approved (by developer, 2026-10-28) — IN PROGRESS, paused 2026-10-29 (see §9 checkpoint; Q2 amended: 20 scans, parallel)
 
 > **Constraints.**
 > - Python 3 + NumPy/SciPy/scikit-image + SimpleITK, with lungmask, TotalSegmentator and pylidc on LIDC-IDRI.
@@ -278,6 +278,12 @@ All commands run from `RE/` in env `qp-re-a`.
 
 - [x] **Q1 — Environment:** create a separate conda env `qp-re-a` (Python 3.11, CPU torch), or install into base (3.13)? *Resolved (accepted default):* separate env. Base 3.13 + numpy 2.4 likely breaks pylidc/torch wheels, and an env file keeps it reproducible.
 - [x] **Q2 — LIDC subset size and location:** how many scans, and where? *Resolved (accepted default):* 40 scans (≈ 80–120 consensus nodules, ≈ 4–8 GB, ~6 h of CPU segmentation). Location `~/data/LIDC-IDRI`, outside the repo. Download via `tcia_utils`; fallback is a manual NBIA Data Retriever download with the same list.
+  - **AMENDED by developer 2026-10-29: 20 scans, run in parallel, target ≤ 6 h wall clock.**
+    - Measured cost is ~25 min per scan on CPU (TotalSegmentator ≈ 20 min, lungmask ≈ 5 min, using ~3 of 8 cores), so 40 sequential scans ≈ 16 h.
+    - New scope: the **first 20 patients** of the deterministic list. `repro/lidc_subset.txt` is trimmed to its first 20 lines, so the order and selection rule are unchanged. All 40 are already downloaded; the extra 20 stay on disk unused.
+    - New behaviour: `class_proportions.py --workers 3` segments scans in a `ProcessPoolExecutor`, with torch threads per worker set to `max(1, cpu_count // workers)`. The aggregation stays sequential afterwards.
+    - Estimate: 17 uncached scans × ~25–30 min ÷ 3 ≈ 2.5–3.5 h.
+    - No per-scan method speed-ups (skipping the separate R231 call, TotalSegmentator `robust_crop=False`). They would make the 3 already-cached scans methodologically different from the rest.
 - [x] **Q3 — Reproduction reference and pass criterion:** Kostis via Ambrosini [F01] gives only qualitative fractions ("almost half / around one-third / approaching one-quarter"). *Resolved (accepted default):* reference 0.45 / 0.33 / 0.22. Pass = each class within ±10 pp **and** the same ordering. Report Wilson CIs. A miss is recorded as is, not tuned.
 - [x] **Q4 — Vessel source:** TotalSegmentator `lung_vessels` is the planned source. *Resolved (accepted default):* use it if its licence is free for this task (check in the dissect step). Fallback: Frangi vesselness (`skimage.filters.frangi`) on lung-masked HU, thresholded. Whichever is used is recorded in the dossier.
 - [x] **Q5 — Fixed thresholds (decided before reproduction):** *Resolved (accepted default):*
@@ -296,4 +302,46 @@ All commands run from `RE/` in env `qp-re-a`.
 
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+### Progress checkpoint — PAUSED 2026-10-29 (developer stopped the run; resume with `/implement-feature` on this file in worktree `../qp-re-A`, branch `re-A`)
+
+**Done and verified by hand**
+- **AC-1:** env `qp-re-a` exists. `A_placement/environment.yml` was changed from the plan in three ways:
+  - **Python 3.12, not 3.11:** frozen `shared/runrecord.py` uses `Path.relative_to(walk_up=True)`, which needs ≥ 3.12.
+  - **Added `cryptography`:** `shared.validate --stubs` verifies receipt signatures.
+  - **Added `setuptools<81`:** pylidc 0.2.3 imports `pkg_resources`.
+
+  `python -m shared.validate --stubs` passes in it.
+- **pylidc shim:** pylidc 0.2.3 uses `np.int/np.float/np.bool`. `lidc_io.pylidc()` re-adds the aliases before import, so there is no numpy downgrade, because torch/TotalSegmentator need numpy 2.
+- **AC-2:**
+  - `lidc_fetch --select 40` wrote `repro/lidc_subset.txt` (40 patients).
+  - `--fetch` downloaded all 40 series to `~/data/LIDC-IDRI` (5.0 GB).
+  - `~/.pylidcrc` was written.
+- **AC-3 (verified on LIDC-IDRI-0001):**
+  - Host CT is 133×512×512 at 0.703/0.703/2.5 mm, LPS identity.
+  - The consensus nodule contour lands exactly on the nodule (overlay checked by eye).
+  - Right lung (label 1) sits at low x, which is correct for LPS.
+- **AC-4:** `anatomy_masks.json` validates OK.
+  - **Deviation:** TotalSegmentator 2.18 splits task `lung_vessels` into `lung_arteries`, `lung_veins`, `lung_airways` and `lung_airways_wall`. So `vessels` = arteries ∪ veins, and `airway` = airway lumen ∪ wall. Existing TotalSegmentator outputs are reused.
+- **AC-5:** zero vessel voxels inside the nodule (61 before removal).
+- **AC-10/AC-11 smoke run (`--radius-mm 5`, run `20261029-055342-place`):**
+  - 10/10/10 sites, no shortfall.
+  - `sites.json`, `anatomy_masks.json` and `run.json` all validate OK.
+  - This is a test only. The final run must use the median radius from the reproduction.
+- **Rule sanity:** the LIDC-0001 nodule (32.8 mm) classifies as juxtavascular (56 vessel contact voxels, pleura_frac 0.0). The lung mask shows ~1.4–3.5 mm of parenchyma between the nodule and the chest wall, so "not juxtapleural" is correct under the pre-registered 1-voxel-contact rule. **Thresholds were NOT changed.**
+- **Licences:** lungmask Apache-2.0, TotalSegmentator Apache-2.0 (`lung_vessels` ran with no licence key), pylidc MIT, tcia_utils Apache-2.0.
+
+**Segmentation cache** (in `A_placement/runs/cache/`, gitignored): LIDC-IDRI-0001, 0003 and 0004 are complete. 0005 is partial (killed mid-run, no `meta.json`, so it is recomputed automatically).
+
+**Code written** (all in `A_placement/`): `environment.yml`, `src/{classes,lidc_fetch,lidc_io,segment,context,bifurcation,place,export_figures}.py`, `repro/class_proportions.py`, `repro/lidc_subset.txt`.
+
+**Remaining on resume, in order**
+1. Trim `repro/lidc_subset.txt` to its first 20 patients (Q2 amendment).
+2. Add `--workers N` (default 3) to `repro/class_proportions.py`:
+   - parallel `segment(pid)` via `ProcessPoolExecutor`;
+   - `torch.set_num_threads(max(1, os.cpu_count() // N))` in each worker;
+   - classification and aggregation stay as they are.
+3. Run `python -m A_placement.repro.class_proportions --workers 3` in the background (≤ 6 h; cached scans are skipped). This gives `proportions.json` and `figures/18-class-proportions.png`. Record the result honestly, pass or miss (AC-9).
+4. Run the final `place` for the Q6 host: the first patient in the subset with slice thickness ≤ 1.25 mm, `--per-class 10`, radius taken from `proportions.json`. Validate the outputs (AC-10/11).
+5. Run `export_figures --run <place run>` to produce `figures/18-host-sites.png` (AC-12).
+6. Write the dossier (8 sections: A01 has no rules, F01/Kostis rule, the TotalSegmentator 2.18 class split, airway = lumen ∪ wall, licences, the lungmask nodule-exclusion note), the README and `status.json` → `adapted`, `papers` + F01. Then run `python -m shared.validate --status` (AC-13).
+7. Do the §6 sanity sweep, tick the ACs with file:line evidence, set Status Complete, commit on `re-A`, and merge to `main`.
