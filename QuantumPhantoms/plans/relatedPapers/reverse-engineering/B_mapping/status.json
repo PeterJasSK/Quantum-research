@@ -15,14 +15,25 @@
         "B09",
         "B10"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "Borujeni oil-stock BN, RMSPE of marginals (simulator)",
+        "paper_value": "0.1 %",
+        "our_value": "0.36 % (mcry), 0.18 % (ancilla); marginals within ±0.01 of Netica",
+        "agreement": "match (criterion: marginals ±0.01, RMSPE ≤ 0.5 %)",
+        "unit": "%",
+        "sim_mode": "ideal",
+        "figure": "figures/borujeni_rmspe_vs_level.png"
+      },
+      "claim_level": "L0",
+      "sim_mode": "both",
       "dossier": "dossiers/01-bn-circuit-compiler.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/borujeni_rmspe_vs_level.png",
+        "figures/drift_b1_b2.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 2,
@@ -34,14 +45,24 @@
         "B11",
         "B12"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
+      "reproduced": {
+        "quantity": "spectral-gap exponent k_quantum (gap ∝ 2^(-kn))",
+        "paper_value": "0.264(4); local 0.94(4); uniform 0.948(7)",
+        "our_value": "0.250; local 1.017; uniform 0.939",
+        "agreement": "match within ±0.08 (quantum) / ±0.15 (baselines); speedup is ideal-simulation only",
+        "unit": "k",
+        "sim_mode": "ideal",
+        "figure": "figures/layden_gap_scaling.png"
+      },
       "claim_level": null,
-      "sim_mode": null,
+      "sim_mode": "both",
       "dossier": "dossiers/02-quantum-enhanced-mcmc.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/layden_gap_scaling.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 3,
@@ -53,14 +74,16 @@
         "B04",
         "B05"
       ],
-      "state": "listed",
-      "rejection_reason": null,
+      "state": "rejected",
+      "rejection_reason": "Classical Gaussian blur is equivalent where the quantum blur acts as a spatial blur (r = 0.97 2-D, 0.99 3-D at θ = 0.1π); at larger θ it scrambles coordinate bits non-locally. No advantage.",
       "reproduced": null,
       "claim_level": null,
-      "sim_mode": null,
+      "sim_mode": "ideal",
       "dossier": "dossiers/03-quantum-blur.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/quantum_blur_vs_gaussian.png"
+      ],
+      "updated": "2026-10-29"
     }
   ]
 }

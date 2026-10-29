@@ -1,0 +1,9 @@
+{
+  "prior": {
+    "free": 0.33,
+    "juxtavascular": 0.45,
+    "juxtapleural": 0.22
+  },
+  "source": "Ambrosini / Kostis [F01] (verify)",
+  "note": "rulebook contract has no params/extra slot: sidecar, see CCR-B1"
+}

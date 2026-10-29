@@ -4,7 +4,7 @@
 **Feature ID:** B
 **Author:** Claude (Opus)
 **Date:** 2026-10-29
-**Status:** Approved (by developer, 2026-10-29; all Q1–Q12 defaults accepted)
+**Status:** Complete (approved 2026-10-29; implemented 2026-10-29 on branch `re-B`)
 
 > **Technical constraints.**
 > - Stack: Python 3.13 (conda `base`), qiskit 2.3.1, qiskit-aer 0.17.2, qiskit-ibm-runtime 0.47.0 (`FakeMarrakesh`), numpy 2.4.6, scipy 1.15.3, matplotlib 3.10.0, jsonschema 4.23.0, SimpleITK 2.5.6, pylidc. Same environment C used.
@@ -38,15 +38,15 @@
 
 ## 2. Acceptance Criteria
 
-- [ ] **AC-1** (B.1): *Lung rulebook, contract-valid and cited.*
+- [x] **AC-1** (B.1): *Lung rulebook, contract-valid and cited.* ✅ *Evidence:* `B_mapping/src/rulebook.py:53` (build), `B_mapping/src/lidc_stats.py:31,39,74`; `data/rulebook_lung.json` validates; class prior in sidecar `data/class_prior.json` (contract has no params/extra → CCR-B1); 2567 LIDC nodules in `data/lidc_counts.json`.
   → `B_mapping/src/rulebook.py` builds `rulebook.json` (contract `rulebook` v1.0.0): nodes `tumor_type` (solid | part-solid | ground-glass), `size_bin` (4 bins, edges 3 / 6 / 10 / 20 / 30 mm), `margin` (smooth | lobulated | spiculated). Edges: `tumor_type → size_bin`, `tumor_type, size_bin → margin`. `tumor_type` and `margin` carry `context_keys: ["placement_class"]` and use `cpt_by_context` (keys `free`, `juxtavascular`, `juxtapleural`); `size_bin` uses `cpt`. Every node lists `sources` (paper code or citation + table/figure). The placement-class prior (used by B-2 site weights) is stored in the rulebook's `params`/`extra` if the contract allows, otherwise as a CCR (Q2).
   → LIDC aggregate counts come from `B_mapping/src/lidc_stats.py` (pylidc, radiologist ratings median per nodule) and are committed as `B_mapping/data/lidc_counts.json` (counts only, no voxels).
   → `rulebook_hash = hash_json(doc, exclude=['rulebook_hash','created_utc','produced_by'])`; `python -m shared.validate B_mapping/data/rulebook_lung.json` passes (rows sum to 1).
 
-- [ ] **AC-2** (B.2): *Exact classical reference and baseline sampler.*
+- [x] **AC-2** (B.2): *Exact classical reference and baseline sampler.* ✅ *Evidence:* `B_mapping/src/rulebook.py:120` (`joint_table`), `:140` (`ancestral_sample`); ancestral TVD 0.0048 at 1e5 shots.
   → `rulebook.py` provides `joint_table(rulebook, context) -> dict[tuple, float]` (exact enumeration over all node states, numpy) and `ancestral_sample(rulebook, context, shots, rng)`. pyAgrum is not installed; this enumeration is the reference (Q1). The ancestral sampler is the **classical baseline** for every B quantum number.
 
-- [ ] **AC-3** (B.3): *General BN → circuit compiler.*
+- [x] **AC-3** (B.3): *General BN → circuit compiler.* ✅ *Evidence:* `B_mapping/src/compiler.py:37` (Ry tree), `:62` (emit mcry/ancilla), `:90` (node_ops), `:146` (statevector_joint), `:170,180` (`--check`); max|Δp| ≤ 3.6e-14 for stub, Borujeni, lung rulebooks, every context, both modes; 5-state edge case passes.
   → `B_mapping/src/compiler.py`: `compile_rulebook(rulebook, context, *, multi_control="mcry"|"ancilla") -> Compiled` (a `QuantumCircuit` + logical qubit map + clbit order).
   - Node with n states → ⌈log₂n⌉ qubits. The categorical distribution is loaded as a binary tree of Ry rotations, θ = 2·atan(√(P₁/P₀)) at each split [B01, B09]. Unused codes get probability 0.
   - Children: one Ry tree per parent-state combination, controlled on the parent qubits with `ctrl_state` (`mcry` = qiskit `RYGate().control(k, ctrl_state=…)`), or Borujeni-style ancilla + Toffoli (`ancilla`, ancillas shared across nodes).
@@ -54,30 +54,30 @@
   - Works for any contract-valid rulebook (any node count, any state count ≥ 2, any parent set in topological order).
   → Correctness check (`python -m B_mapping.src.compiler --check <rulebook>`): statevector probabilities equal `joint_table` to within 1e-9 for the W stub, the Borujeni network and the lung rulebook, every context, both control modes.
 
-- [ ] **AC-4** (B.4): *Reproduction, ideal: Borujeni 4-node network.*
+- [x] **AC-4** (B.4): *Reproduction, ideal: Borujeni 4-node network.* ✅ *Evidence:* `B_mapping/repro/borujeni.py:20,48,65`; simulated: ideal RMSPE 0.36 % (mcry) / 0.18 % (ancilla), marginals within ±0.01 of Netica.
   → `B_mapping/repro/borujeni.py` builds the oil-stock network (IR, OI, SM|IR, SP|OI,SM) from the CPTs in [B09] (P(IR=1)=0.25; P(OI=1)=0.4; P(SM=1|IR)=0.7/0.2; P(SP=1|OI,SM)=0.1/0.6/0.5/0.8) as a contract-valid rulebook, compiles it, and runs 10 runs × 8192 shots on Aer ideal (paper protocol).
   → **Published number:** simulator RMSPE 0.1 % over the 4 marginals; Netica marginals P(IR=0)=0.750, P(OI=0)=0.600, P(SM=0)=0.425, P(SP=0)=0.499.
   → **Match criterion:** every marginal within ±0.01 of Netica and RMSPE ≤ 0.5 %. Also report joint TVD to `joint_table`.
 
-- [ ] **AC-5** (B.5): *Reproduction, Heron-class noise: drift vs transpiler level.*
+- [x] **AC-5** (B.5): *Reproduction, Heron-class noise: drift vs transpiler level.* ✅ *Evidence:* `B_mapping/repro/borujeni.py:65` (`--mode heron`); table in dossier #1; `B_mapping/figures/borujeni_rmspe_vs_level.png`.
   → Same script, `--mode heron`: optimization levels 0–3 × {`mcry`, `ancilla`}, 10 × 8192 shots each, via `transpile_heron(…, optimization_level=k)` and `make_simulator("heron", seed=…)`.
   → Reports RMSPE, joint TVD, depth and CZ count per cell, set against the paper's hardware range (Level 0: 4.9 % Yorktown … 36.3 % Burlington; Level 3: 9.1–24 %). This is a comparison, not a pass criterion: a 2025 Heron noise model on 2020 devices' protocol.
   → Figure `B_mapping/figures/borujeni_rmspe_vs_level.png`.
 
-- [ ] **AC-6** (B.6): *B-1 end-to-end: context-conditioned draw, contract-valid.*
+- [x] **AC-6** (B.6): *B-1 end-to-end: context-conditioned draw, contract-valid.* ✅ *Evidence:* `B_mapping/src/map.py:62` (`run_variant`), `:49` (`physical_map`), `:66` (certificate fail → exit 2), `:96` (`B.sim`), `:144` (validate outputs); all four contracts pass `shared.validate`; fail certificate → no draw, exit 2; unknown site → clear error, no run dir.
   → `python -m B_mapping.src.map --variant b1 --mode ideal|heron --site S001 [--sites <sites.json>] [--certificate <certificate.json>] [--shots 4096]`. Defaults: `shared/stubs/` sites and certificate.
   - Reads the site's `context.placement_class`, compiles the lung rulebook for it, runs it, writes into the run directory: `rulebook.json`, `compiled_circuit.json` + `.qasm` (transpiled for FakeMarrakesh), `quantum_job_record.json`, `tumor_draw.json`, `drift.json`.
   - Every output has the envelope (`produced_by{letter:"B", tool, run_id, code_hash}`, `upstream[]` with sha256 of sites, certificate, rulebook), and the quantum outputs carry `sim_label(mode)` and `hardware: null`.
   - `start_run(LETTER_DIR, "b1-<mode>", sim_mode=mode, tool="B_mapping.src.map")` → `add_input` / `add_output` / `add_job` / `finish`; outputs pass `shared.validate.validate_file`.
   - Certificate `status: fail` → no draw, logged, exit non-zero (epic decision 6: no retry, no fallback).
 
-- [ ] **AC-7** (B.7): *B-2 joint site × phenotype draw.*
+- [x] **AC-7** (B.7): *B-2 joint site × phenotype draw.* ✅ *Evidence:* `B_mapping/src/joint.py:9,24,31,56,65`; statevector = classical joint < 1e-9 (map asserts). Deviation: stub has only 3 sites, so K=8 (9 logical qubits + 7 ancillas) was verified on a synthetic 8-site file (simulated: ideal); one controlled tree per site code instead of per class; B-2 defaults to `ancilla` control mode (8-control mcry transpiles to ~10^5 CZ). README states L0.
   → `--variant b2 [--k-sites 8]`. `B_mapping/src/joint.py` picks K sites from `sites.json` (seeded, `rng(seed,"B.site_pick")`, every class represented when available), puts them on a ⌈log₂K⌉-qubit site register with amplitudes √w, w_site = P(class) / n_class-in-subset (class prior from the rulebook), then controls `tumor_type` and `margin` on the site register's class (one controlled tree per class, `ctrl_state` over the codes of that class's sites).
   → Default K=8: 3 site + 2 type + 2 size + 2 margin = 9 qubits (inside the 9–14 q budget). Statevector check vs the classical joint (site × phenotype) to 1e-9, as in AC-3.
   → Same outputs as AC-6; `compiled_circuit.context` = `{"variant":"b2","sites":"<comma-joined site ids>"}`; decoded `site_id` comes from the shot.
   → README and dossier state claim level **L0**: the joint is a lookup table classically; no interference claim (single-qubit phase-dial lesson, epic §3).
 
-- [ ] **AC-8** (B.8): *Shot decoding and seed chain.*
+- [x] **AC-8** (B.8): *Shot decoding and seed chain.* ✅ *Evidence:* `B_mapping/src/decode.py:8,17,28,33,37`; `map.py:96`; two ideal runs gave identical draws; Heron runs report invalid fraction (33–59 %) in `drift.json`.
   → `B_mapping/src/decode.py`: bitstring (clbit order from the compiler) → states → `TumorDraw`.
   - Draw selection: `shot_index = derive_seed(cert_seed, "B.shot_select") % shots` over the job's memory order (Q6).
   - `size_mm` = uniform inside the drawn size bin via `rng(cert_seed, "B.size")`.
@@ -85,34 +85,34 @@
   - `sim_seed` in the job record = `derive_seed(cert_seed, "B.sim")`. Re-running with the same certificate reproduces the same draw bit-for-bit in ideal mode.
   - Codes with probability 0 (e.g. the unused 4th code of a 3-state node) that appear under noise are counted as **invalid shots** in `drift.json`, and the selected shot skips forward to the next valid one.
 
-- [ ] **AC-9** (B.9): *Drift report.*
+- [x] **AC-9** (B.9): *Drift report.* ✅ *Evidence:* `B_mapping/src/drift.py:7,11,32`; `B_mapping/src/drift_report.py`; `B_mapping/figures/drift_b1_b2.png`. Deviation: B-2 Heron case ran 256 shots (11.5k CZ circuit, noisy trajectories too slow at 4096).
   → `B_mapping/src/drift.py`: `tvd(p, q)`, `rmspe(marginals_measured, marginals_exact)`. `drift.json` (run directory, not a contract) holds per variant and mode: phenotype TVD vs `joint_table`, per-node marginal TVD, invalid-shot fraction, the classical ancestral sampler's TVD at the same shot count (baseline), and gate counts / depth / CZ count.
   → `python -m B_mapping.src.drift_report` runs B-1 (all three classes) and B-2, ideal and heron, and writes `B_mapping/figures/drift_b1_b2.png`.
 
-- [ ] **AC-10** (B.10): *Reproduction: Layden QeMCMC spectral-gap scaling (ideal).*
+- [x] **AC-10** (B.10): *Reproduction: Layden QeMCMC spectral-gap scaling (ideal).* ✅ *Evidence:* `B_mapping/src/qemcmc.py:24-84`; `B_mapping/repro/layden.py:25`; k_quantum 0.250, k_local 1.017, k_uniform 0.939 (simulated: ideal), all within tolerance; `B_mapping/figures/layden_gap_scaling.png`.
   → `B_mapping/src/qemcmc.py`: Ising energy E = −Σ J s s − Σ h s; quantum proposal U = exp(−iHt), H = (1−γ)αH_prob + γH_mix, α = √n / √(ΣJ² + Σh²), γ ~ U[0.25, 0.6], t ~ U[2, 20] [B11]. Proposal matrix Q = mean over M (γ, t) draws of |⟨s'|U|s⟩|² (exact, scipy `expm`). Metropolis–Hastings transition matrix P; spectral gap δ = 1 − |λ₂|. Baselines: local (single spin flip) and uniform proposals.
   → `B_mapping/repro/layden.py`: random SK instances, n = 3…8, T = 1; fit ⟨δ⟩ ∝ 2^(−kn).
   → **Published number:** k_quantum = 0.264(4), k_local = 0.94(4), k_uniform = 0.948(7). **Match criterion:** k_quantum within ±0.08 of 0.264 and k_local, k_uniform within ±0.15 of theirs (fewer instances and smaller n than the paper). Figure `B_mapping/figures/layden_gap_scaling.png`.
 
-- [ ] **AC-11** (B.11): *Adaptation: tumor-in-anatomy energy, quantum vs classical mixing.*
+- [x] **AC-11** (B.11): *Adaptation: tumor-in-anatomy energy, quantum vs classical mixing.* ✅ *Evidence:* `B_mapping/src/tumor_energy.py:24`, `B_mapping/src/qemcmc.py:98,128,147`; ideal 8 and 6 spins, Heron 6 spins (the plan's Q8 fallback: the 8-spin Heron run exceeded 1 h and was stopped); noisy-Q asymmetry 0.135; `B_mapping/figures/qemcmc_tumor_gap.png`.
   → `B_mapping/src/tumor_energy.py`: a 2×2×2 voxel patch (8 spins, s = tumor/no tumor) at the site, at a coarse spacing set from the drawn size. h_i from the masks of `anatomy_masks` (stub by default): vessel proximity attracts (h > 0), pleura proximity repels (h < 0), plus a size term; J > 0 nearest-neighbour compactness. Every coefficient is a named parameter recorded in the run.
   → `python -m B_mapping.src.qemcmc --tumor --mode ideal|heron`:
   - ideal: exact δ for quantum, local and uniform proposals;
   - heron: the proposal matrix is estimated by transpiling the second-order Trotter circuit of U for a fixed grid of (γ, t) values (Q8) and every basis input state, running on Aer Heron-class noise, then building P and δ from the noisy Q. MH acceptance keeps the target distribution correct only up to the asymmetry of the noisy Q; that asymmetry is reported.
   → Result table (δ quantum / local / uniform, both modes) in the dossier. Claim: "correct sampler with quantum proposals; any speedup is ideal-simulation only". No claim level (Q8).
 
-- [ ] **AC-12** (B.12): *Quantum blur (#3), dissected with baseline.*
+- [x] **AC-12** (B.12): *Quantum blur (#3), dissected with baseline.* ✅ *Evidence:* `B_mapping/src/blur.py:22,31,46`; `B_mapping/repro/wootton_blur.py:25`; verdict rejected (r 0.97–0.99 vs Gaussian at small θ); `B_mapping/figures/quantum_blur_vs_gaussian.png`.
   → `B_mapping/src/blur.py`: re-implementation of Wootton's quantum blur from [B04, B05]: an image or height map loaded as amplitudes (√ normalised) on n qubits with the paper's coordinate-to-bitstring mapping, Rx(θ) on every qubit, probabilities read back (statevector, ideal) as the blurred map. Baseline: `scipy.ndimage.gaussian_filter`.
   → `B_mapping/repro/wootton_blur.py`: a 2-D height map as in the paper's figure (paper figure reproduced qualitatively; there is no published number). Adaptation: one 8×8×8 3-D shape seed (9 qubits, W stub `SeedShape` or a sphere) blurred at three θ, with the Gaussian baseline at matched σ and the voxel-wise correlation between the two. Figure `B_mapping/figures/quantum_blur_vs_gaussian.png`.
   → Verdict recorded in the dossier from the comparison (integrate as shape-variation option, or reject because the classical blur is equivalent). Q9.
 
-- [ ] **AC-13** (B.13): *Documentation and status.*
+- [x] **AC-13** (B.13): *Documentation and status.* ✅ *Evidence:* `B_mapping/README.md` (run commands, results table, CCR-B1/B2), `B_mapping/dossiers/01..03`, `B_mapping/status.json` (#1 adapted L0, #2 adapted, #3 rejected); `shared.validate --status` OK; `shared.site.build` rendered B's pages (build output reverted, not committed).
   → `B_mapping/README.md`: every fixed section filled. How to run lists every command above. "Reproduced result vs paper" is a table with a Sim mode column carrying the literal labels. Claim levels: B-1 L0, B-2 L0, QeMCMC no claim, blur none. Inputs now also list `certificate`. "Contract change requests" uses the `**CCR-B<n>: \`contract\`, topic.**` format with *Need / Request / Local workaround*.
   → Dossiers `01-bn-circuit-compiler.md`, `02-quantum-enhanced-mcmc.md`, `03-quantum-blur.md`: all sections filled (Unicode or fenced `text` equations, no MathJax).
   → `status.json` transitions, each with `reproduced{quantity, paper_value, our_value, agreement, unit, sim_mode, figure}` where reproduced: #1 → `adapted` (claim L0), #2 → `adapted` if AC-11 ran, else `reproduced` (claim `null`), #3 → `reproduced` or `rejected` with reason.
   → `python -m shared.validate --status` passes; `python -m shared.site.build` renders B's pages locally (not committed).
 
-- [ ] **AC-14** (B.14): *Isolation and honesty.*
+- [x] **AC-14** (B.14): *Isolation and honesty.* ✅ *Evidence:* Only `B_mapping/` and this file changed (site build output reverted); isolation grep empty; every quantum number in README/dossiers carries a sim label.
   → `git diff --stat main...re-B` touches only `B_mapping/` and `feature-B-mapping.md`. No `import` of `QuantumPhantoms/code`, `A_placement`, `C_certificate`, `D_…`, `E_…`, `F_render` etc. (B reads their *files* only through contracts). Every quantum number in the README, dossiers and figures carries a sim label. No "quantum because more realistic" wording.
 
 ---
@@ -273,4 +273,9 @@ Run from `reverse-engineering/` in conda `base`.
 
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+Built in worktree `../qp-re-B` (branch `re-B`). All numbers labelled `simulated: ideal` or `simulated: Heron-class noise (FakeMarrakesh)`; no hardware.
+
+- **Deviations (all noted in the ACs):** the rulebook and compiled_circuit contracts have no `params`/`extra`, so the class prior is a sidecar (CCR-B1) and layout/ancilla info is carried in `qubit_map` (CCR-B2). The stub has 3 sites, so the K=8 B-2 circuit was verified on a synthetic 8-site file. B-2 uses one controlled tree per site code and defaults to Toffoli-chain controls. The QeMCMC Heron arm ran on a 2×3×1 patch (plan fallback). The B-2 Heron drift case used 256 shots.
+- **Results worth knowing:** Borujeni reproduced (RMSPE 0.36 % vs 0.1 % paper; within the plan's match criterion). Layden k_quantum 0.250 vs 0.264. The lung rulebook compiles to depth ~5900 / 2000 CZ (B-1) and ~32 000 / 11 500 CZ (B-2, 3 sites), so Heron-class noise dominates (TVD 0.57–0.74, 33–59 % invalid shots) while the ideal circuits match the classical sampler to shot noise. The noisy QeMCMC proposal is asymmetric (0.135). The quantum blur is equivalent to a Gaussian → rejected.
+- **Follow-ups:** the placement-class prior and context tilts are marked *(verify)*; A's real masks are needed for a non-flat tumor energy; the BP-simulability number is pending D #9; reduce circuit depth (class register) before any hardware discussion.
+- **Housekeeping:** LIDC median-texture mapping gives 84 % solid nodules (2162 of 2567).

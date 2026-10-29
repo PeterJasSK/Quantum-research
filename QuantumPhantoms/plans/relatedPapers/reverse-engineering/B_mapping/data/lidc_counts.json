@@ -1,0 +1,217 @@
+{
+  "source": "LIDC-IDRI via pylidc 0.2.3, radiologist ratings, median per nodule cluster",
+  "mapping": {
+    "type": "median texture 1-2 ground-glass, 3 part-solid, 4-5 solid",
+    "margin": "median spiculation>=3 spiculated, else median lobulation>=3 lobulated, else smooth",
+    "size": "median annotation diameter; <3 mm or >30 mm dropped"
+  },
+  "n_nodules_clustered": 2651,
+  "n_dropped_size": 84,
+  "n_used": 2567,
+  "size_bins": [
+    "3-6",
+    "6-10",
+    "10-20",
+    "20-30"
+  ],
+  "counts": [
+    {
+      "type": "ground-glass",
+      "size_bin": "10-20",
+      "margin": "lobulated",
+      "n": 11
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "10-20",
+      "margin": "smooth",
+      "n": 68
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "10-20",
+      "margin": "spiculated",
+      "n": 9
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "20-30",
+      "margin": "lobulated",
+      "n": 3
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "20-30",
+      "margin": "smooth",
+      "n": 9
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "20-30",
+      "margin": "spiculated",
+      "n": 1
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "3-6",
+      "margin": "lobulated",
+      "n": 1
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "3-6",
+      "margin": "smooth",
+      "n": 43
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "3-6",
+      "margin": "spiculated",
+      "n": 2
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "6-10",
+      "margin": "lobulated",
+      "n": 14
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "6-10",
+      "margin": "smooth",
+      "n": 105
+    },
+    {
+      "type": "ground-glass",
+      "size_bin": "6-10",
+      "margin": "spiculated",
+      "n": 9
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "10-20",
+      "margin": "lobulated",
+      "n": 7
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "10-20",
+      "margin": "smooth",
+      "n": 14
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "10-20",
+      "margin": "spiculated",
+      "n": 9
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "20-30",
+      "margin": "smooth",
+      "n": 3
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "3-6",
+      "margin": "lobulated",
+      "n": 1
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "3-6",
+      "margin": "smooth",
+      "n": 25
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "3-6",
+      "margin": "spiculated",
+      "n": 6
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "6-10",
+      "margin": "smooth",
+      "n": 57
+    },
+    {
+      "type": "part-solid",
+      "size_bin": "6-10",
+      "margin": "spiculated",
+      "n": 8
+    },
+    {
+      "type": "solid",
+      "size_bin": "10-20",
+      "margin": "lobulated",
+      "n": 40
+    },
+    {
+      "type": "solid",
+      "size_bin": "10-20",
+      "margin": "smooth",
+      "n": 354
+    },
+    {
+      "type": "solid",
+      "size_bin": "10-20",
+      "margin": "spiculated",
+      "n": 64
+    },
+    {
+      "type": "solid",
+      "size_bin": "20-30",
+      "margin": "lobulated",
+      "n": 27
+    },
+    {
+      "type": "solid",
+      "size_bin": "20-30",
+      "margin": "smooth",
+      "n": 59
+    },
+    {
+      "type": "solid",
+      "size_bin": "20-30",
+      "margin": "spiculated",
+      "n": 50
+    },
+    {
+      "type": "solid",
+      "size_bin": "3-6",
+      "margin": "lobulated",
+      "n": 6
+    },
+    {
+      "type": "solid",
+      "size_bin": "3-6",
+      "margin": "smooth",
+      "n": 506
+    },
+    {
+      "type": "solid",
+      "size_bin": "3-6",
+      "margin": "spiculated",
+      "n": 12
+    },
+    {
+      "type": "solid",
+      "size_bin": "6-10",
+      "margin": "lobulated",
+      "n": 30
+    },
+    {
+      "type": "solid",
+      "size_bin": "6-10",
+      "margin": "smooth",
+      "n": 968
+    },
+    {
+      "type": "solid",
+      "size_bin": "6-10",
+      "margin": "spiculated",
+      "n": 46
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "2d": [
+    {
+      "theta_over_pi": 0.1,
+      "best_sigma": 0.375,
+      "corr_quantum_vs_gaussian": 0.9671117781930935,
+      "corr_quantum_vs_input": 0.9665679835849333
+    },
+    {
+      "theta_over_pi": 0.25,
+      "best_sigma": 6.0,
+      "corr_quantum_vs_gaussian": 0.12315573167065694,
+      "corr_quantum_vs_input": -0.020212172621634637
+    },
+    {
+      "theta_over_pi": 0.5,
+      "best_sigma": 0.25,
+      "corr_quantum_vs_gaussian": -0.4375625224038552,
+      "corr_quantum_vs_input": -0.43747132240474884
+    }
+  ],
+  "3d": [
+    {
+      "theta_over_pi": 0.1,
+      "best_sigma": 0.875,
+      "corr_quantum_vs_gaussian": 0.9930642914959399,
+      "corr_quantum_vs_input": 0.8868613612265217
+    },
+    {
+      "theta_over_pi": 0.25,
+      "best_sigma": 1.75,
+      "corr_quantum_vs_gaussian": -0.1599288739298574,
+      "corr_quantum_vs_input": -0.4738646116413086
+    },
+    {
+      "theta_over_pi": 0.5,
+      "best_sigma": 0.25,
+      "corr_quantum_vs_gaussian": -0.26167568121158513,
+      "corr_quantum_vs_input": -0.26160434470080507
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "contract": "rulebook",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "B",
+    "tool": "B_mapping.src.rulebook",
+    "run_id": null,
+    "code_hash": "a97a416713930daf500ba077912580cd072f8e742d957538128549c5d09c02fb"
+  },
+  "created_utc": "2026-10-29T10:22:19Z",
+  "stub": false,
+  "upstream": [],
+  "rulebook_id": "lung-v1",
+  "nodes": [
+    {
+      "name": "tumor_type",
+      "states": [
+        "solid",
+        "part-solid",
+        "ground-glass"
+      ],
+      "parents": [],
+      "context_keys": [
+        "placement_class"
+      ],
+      "cpt_by_context": {
+        "free": [
+          0.794701,
+          0.058826,
+          0.146473
+        ],
+        "juxtavascular": [
+          0.841634,
+          0.050973,
+          0.107393
+        ],
+        "juxtapleural": [
+          0.912273,
+          0.034001,
+          0.053726
+        ]
+      },
+      "sources": [
+        "LIDC-IDRI aggregate radiologist ratings via pylidc, n=2567 nodules (B_mapping/data/lidc_counts.json), Laplace alpha=1; texture 1-2 GGN, 3 part-solid, 4-5 solid",
+        "context tilt (verify): Ahn 2010, de Hoop 2012 (perifissural / juxtapleural nodules mostly solid)"
+      ]
+    },
+    {
+      "name": "size_bin",
+      "states": [
+        "3-6",
+        "6-10",
+        "10-20",
+        "20-30"
+      ],
+      "parents": [
+        "tumor_type"
+      ],
+      "context_keys": [],
+      "cpt": [
+        [
+          0.242382,
+          0.482457,
+          0.211911,
+          0.06325
+        ],
+        [
+          0.246269,
+          0.492537,
+          0.231343,
+          0.029851
+        ],
+        [
+          0.168459,
+          0.462366,
+          0.318996,
+          0.050179
+        ]
+      ],
+      "sources": [
+        "LIDC-IDRI aggregate radiologist ratings via pylidc, n=2567 nodules (B_mapping/data/lidc_counts.json), diameter bins 3/6/10/20/30 mm"
+      ]
+    },
+    {
+      "name": "margin",
+      "states": [
+        "smooth",
+        "lobulated",
+        "spiculated"
+      ],
+      "parents": [
+        "tumor_type",
+        "size_bin"
+      ],
+      "context_keys": [
+        "placement_class"
+      ],
+      "cpt_by_context": {
+        "free": [
+          [
+            [
+              0.956414,
+              0.0139,
+              0.029686
+            ],
+            [
+              0.915424,
+              0.030827,
+              0.053749
+            ],
+            [
+              0.744481,
+              0.090508,
+              0.165011
+            ],
+            [
+              0.396798,
+              0.194918,
+              0.408284
+            ]
+          ],
+          [
+            [
+              0.710791,
+              0.057554,
+              0.231655
+            ],
+            [
+              0.829195,
+              0.015049,
+              0.155756
+            ],
+            [
+              0.422222,
+              0.237037,
+              0.340741
+            ],
+            [
+              0.638656,
+              0.168067,
+              0.193277
+            ]
+          ],
+          [
+            [
+              0.884656,
+              0.042328,
+              0.073016
+            ],
+            [
+              0.791666,
+              0.117925,
+              0.090409
+            ],
+            [
+              0.736103,
+              0.134756,
+              0.129141
+            ],
+            [
+              0.601265,
+              0.253165,
+              0.14557
+            ]
+          ]
+        ],
+        "juxtavascular": [
+          [
+            [
+              0.962049,
+              0.013283,
+              0.024668
+            ],
+            [
+              0.925502,
+              0.029608,
+              0.04489
+            ],
+            [
+              0.770065,
+              0.088937,
+              0.140998
+            ],
+            [
+              0.431655,
+              0.201439,
+              0.366906
+            ]
+          ],
+          [
+            [
+              0.742857,
+              0.057143,
+              0.2
+            ],
+            [
+              0.852941,
+              0.014706,
+              0.132353
+            ],
+            [
+              0.454546,
+              0.242424,
+              0.30303
+            ],
+            [
+              0.666666,
+              0.166667,
+              0.166667
+            ]
+          ],
+          [
+            [
+              0.89796,
+              0.040816,
+              0.061224
+            ],
+            [
+              0.80916,
+              0.114504,
+              0.076336
+            ],
+            [
+              0.758242,
+              0.131868,
+              0.10989
+            ],
+            [
+              0.625,
+              0.25,
+              0.125
+            ]
+          ]
+        ],
+        "juxtapleural": [
+          [
+            [
+              0.981797,
+              0.008133,
+              0.01007
+            ],
+            [
+              0.962838,
+              0.018482,
+              0.01868
+            ],
+            [
+              0.875246,
+              0.060651,
+              0.064103
+            ],
+            [
+              0.617283,
+              0.17284,
+              0.209877
+            ]
+          ],
+          [
+            [
+              0.866667,
+              0.04,
+              0.093333
+            ],
+            [
+              0.932476,
+              0.009646,
+              0.057878
+            ],
+            [
+              0.630252,
+              0.201681,
+              0.168067
+            ],
+            [
+              0.8,
+              0.12,
+              0.08
+            ]
+          ],
+          [
+            [
+              0.948276,
+              0.025862,
+              0.025862
+            ],
+            [
+              0.890757,
+              0.07563,
+              0.033613
+            ],
+            [
+              0.860349,
+              0.089776,
+              0.049875
+            ],
+            [
+              0.757576,
+              0.181818,
+              0.060606
+            ]
+          ]
+        ]
+      },
+      "sources": [
+        "LIDC-IDRI aggregate radiologist ratings via pylidc, n=2567 nodules (B_mapping/data/lidc_counts.json), spiculation>=3 spiculated else lobulation>=3 lobulated",
+        "context tilt (verify): Ahn 2010, de Hoop 2012 (juxtapleural more often smooth)"
+      ]
+    }
+  ],
+  "rulebook_hash": "e11bf81ee694a0bdc7fd12c771fa6c1f6e2a7c4988a05f6cfe13243b97329bdd"
+}

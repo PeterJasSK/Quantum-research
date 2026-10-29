@@ -1,0 +1,42 @@
+{
+  "sim_label": "simulated: ideal",
+  "hardware": null,
+  "netica": {
+    "IR": 0.75,
+    "OI": 0.6,
+    "SM": 0.425,
+    "SP": 0.499
+  },
+  "results": [
+    {
+      "control": "mcry",
+      "level": 1,
+      "rmspe_pct": 0.3585087629222166,
+      "tvd": 0.004099609374999966,
+      "marginals": {
+        "IR": 0.75,
+        "OI": 0.5992431640625,
+        "SM": 0.4220458984375,
+        "SP": 0.49788818359375
+      },
+      "depth": 208,
+      "cz": 57,
+      "n_qubits_logical": 4
+    },
+    {
+      "control": "ancilla",
+      "level": 1,
+      "rmspe_pct": 0.17672539833261128,
+      "tvd": 0.004164062500000024,
+      "marginals": {
+        "IR": 0.74805908203125,
+        "OI": 0.59891357421875,
+        "SM": 0.42457275390625,
+        "SP": 0.49788818359375003
+      },
+      "depth": 370,
+      "cz": 105,
+      "n_qubits_logical": 5
+    }
+  ]
+}

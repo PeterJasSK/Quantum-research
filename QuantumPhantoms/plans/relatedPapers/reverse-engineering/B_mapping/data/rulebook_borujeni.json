@@ -1,0 +1,110 @@
+{
+  "contract": "rulebook",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "B",
+    "tool": "B_mapping.repro.borujeni",
+    "run_id": null,
+    "code_hash": "f821fb118600bb02a27be5be8b16ffc3284f1437389b81ca8700241ff9fa2df0"
+  },
+  "created_utc": "2026-10-29T10:19:49Z",
+  "stub": false,
+  "upstream": [],
+  "rulebook_id": "borujeni-oilstock",
+  "nodes": [
+    {
+      "name": "IR",
+      "states": [
+        "0",
+        "1"
+      ],
+      "parents": [],
+      "context_keys": [],
+      "cpt": [
+        0.75,
+        0.25
+      ],
+      "sources": [
+        "Borujeni et al. 2021 [B09], oil-stock network, Table of CPTs"
+      ]
+    },
+    {
+      "name": "OI",
+      "states": [
+        "0",
+        "1"
+      ],
+      "parents": [],
+      "context_keys": [],
+      "cpt": [
+        0.6,
+        0.4
+      ],
+      "sources": [
+        "Borujeni et al. 2021 [B09], oil-stock network, Table of CPTs"
+      ]
+    },
+    {
+      "name": "SM",
+      "states": [
+        "0",
+        "1"
+      ],
+      "parents": [
+        "IR"
+      ],
+      "context_keys": [],
+      "cpt": [
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.8,
+          0.2
+        ]
+      ],
+      "sources": [
+        "Borujeni et al. 2021 [B09], oil-stock network, Table of CPTs"
+      ]
+    },
+    {
+      "name": "SP",
+      "states": [
+        "0",
+        "1"
+      ],
+      "parents": [
+        "OI",
+        "SM"
+      ],
+      "context_keys": [],
+      "cpt": [
+        [
+          [
+            0.9,
+            0.1
+          ],
+          [
+            0.4,
+            0.6
+          ]
+        ],
+        [
+          [
+            0.5,
+            0.5
+          ],
+          [
+            0.2,
+            0.8
+          ]
+        ]
+      ],
+      "sources": [
+        "Borujeni et al. 2021 [B09], oil-stock network, Table of CPTs"
+      ]
+    }
+  ],
+  "rulebook_hash": "ffe49577087ee8c2b46404de7c8143ac86b6cba054326fa52063fc66d5dcc6b1"
+}
