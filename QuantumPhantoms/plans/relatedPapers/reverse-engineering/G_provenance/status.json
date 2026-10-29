@@ -13,14 +13,25 @@
       "papers": [
         "G01"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
+      "reproduced": {
+        "quantity": "G01 §7.2: detection of CT-GAN-style tampering by a scanner-side signature (classical in-painter, GAN-free; reader-study numbers not reproduced)",
+        "paper_value": "countermeasure claim (qualitative): signing each scan detects the attack; readers 99% injected / 94% removed misdiagnosed",
+        "our_value": "40/40 pixel injections+removals detected, slice Jaccard 1.00; forgeries a-d: 4/4 caught by the expected check; controls: 0 false positives",
+        "unit": "detection rate",
+        "agreement": "claim reproduced qualitatively; (c) full re-forge with a stolen key is detected only by the pinned-key check (needs an external anchor); reader numbers not reproduced (H)",
+        "sim_mode": "n/a",
+        "figure": "figures/r19-ctgan-tamper.png"
+      },
       "claim_level": null,
       "sim_mode": null,
       "dossier": "dossiers/19-ct-gan-tamper-test.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r19-ctgan-tamper.png",
+        "figures/r19-detection-table.png"
+      ],
+      "updated": "2026-10-29"
     }
   ]
 }
