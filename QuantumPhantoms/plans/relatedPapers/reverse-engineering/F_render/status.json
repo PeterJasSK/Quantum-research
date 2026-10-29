@@ -13,14 +13,24 @@
       "papers": [
         "H01"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "H01 generation pipeline (Table 1 + Table 6 hyper-parameters, eqs. 1–8)",
+        "paper_value": "Fig. 3 / Appendix Figs 8–10 (qualitative); tumour mean HU = µt ~ U(30, µp − 10)",
+        "our_value": "small: core mean 101.4 HU (µt 98.9), σ 5.2; medium: core mean 43.2 HU (µt 41.9), σ 5.5; edits confined to γmax: True",
+        "unit": "HU",
+        "agreement": "qualitative + parameter match; DSC 59.81 % (LiTS training) not reproduced — needs data + training",
+        "sim_mode": "n/a",
+        "figure": "figures/r13-synthetic-tumors-liver.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/13-synthetic-tumors.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r13-synthetic-tumors-liver.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 14,
@@ -31,14 +41,24 @@
       "papers": [
         "F01"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "3-D correlation of SH(l≤3) simulated vs real solid nodules, 8–20 mm ([F01] §3, Table 1)",
+        "paper_value": "0.8897 ± 0.0609 (n = 17 metastases)",
+        "our_value": "0.8699 ± 0.0664 (n = 11 solid LIDC nodules); all types 0.7141 ± 0.2422 (n = 22)",
+        "unit": "",
+        "agreement": "agree (difference -0.0198, within one paper sd: True)",
+        "sim_mode": "n/a",
+        "figure": "figures/r14-lesion-library.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/14-lesion-model-fitting.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r14-lesion-library.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 15,
@@ -49,14 +69,25 @@
       "papers": [
         "F05"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "moments (σ, kurtosis) of patch-NPS-synthesised vs real non-stationary noise ([F05] Fig. 2i)",
+        "paper_value": "differences within 2 % (up to 4th moment)",
+        "our_value": "left (σ 20, soft NPS): σ +1.53 %, kurtosis -1.27 %; right (σ 35, sharp NPS): σ +0.19 %, kurtosis +0.35 %; self-check PSF/σ within 10 %",
+        "unit": "%",
+        "agreement": "agree (worst 1.53 %); synthetic ground-truth noise, not the orange-man phantom",
+        "sim_mode": "n/a",
+        "figure": "figures/r15-peng-patch-noise.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/15-scanner-fingerprint.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r15-peng-patch-noise.png",
+        "figures/r15-selfcheck.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 16,
@@ -68,14 +99,24 @@
         "F03",
         "A06"
       ],
-      "state": "listed",
+      "state": "adapted",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "volume percent difference of inserted vs physically present nodules (F02 Table 4)",
+        "paper_value": "Technique B −0.28 … +0.57 % (one protocol −2.28 %); Technique A −2.24 … −1.01 %",
+        "our_value": "B +0.25 ± 1.02 %; A +1.97 ± 1.32 % (6 nodules, XCIST synthetic phantom)",
+        "unit": "%",
+        "agreement": "agree (|PD| < 3 %); simulated XCIST phantom, not the physical KYOTO phantom",
+        "sim_mode": "n/a",
+        "figure": "figures/r16-projection-vs-image.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/16-xcist-projection-insertion.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r16-projection-vs-image.png"
+      ],
+      "updated": "2026-10-29"
     },
     {
       "number": 17,
@@ -86,14 +127,24 @@
       "papers": [
         "F04"
       ],
-      "state": "listed",
+      "state": "dissected",
       "rejection_reason": null,
-      "reproduced": null,
-      "claim_level": null,
-      "sim_mode": null,
+      "reproduced": {
+        "quantity": "MTF f50 of the 120 kV, 0.4 mm, 20/65 keV photon-counting configuration ([F04] Table 1, Br40)",
+        "paper_value": "0.39 mm⁻¹ (real NAEOTOM Alpha, Br40, QIR-3); DukeSim 0.39",
+        "our_value": "0.573 mm⁻¹ (XCIST FBP 'standard'); noise ∝ mAs^-0.50",
+        "unit": "mm⁻¹",
+        "agreement": "outside 25 % (+47 %); approximation — XCIST kernel ≠ Br40, CZT response ≠ CdTe",
+        "sim_mode": "n/a",
+        "figure": "figures/r17-naeotom.png"
+      },
+      "claim_level": "n/a",
+      "sim_mode": "n/a",
       "dossier": "dossiers/17-naeotom-alpha-params.md",
-      "figures": [],
-      "updated": "2026-10-28"
+      "figures": [
+        "figures/r17-naeotom.png"
+      ],
+      "updated": "2026-10-29"
     }
   ]
 }

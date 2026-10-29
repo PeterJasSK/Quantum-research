@@ -1,0 +1,15 @@
+# F_render dependencies (conda base, Python 3.13). shared/requirements.txt is frozen and covers the rest.
+# Installed for feature F (plan Q2):
+pydicom==3.0.2
+pylidc==0.2.3        # needs the numpy-2 / Python-3.12 aliases set in F_render/src/lidc.py:_numpy2_compat
+gecatsim==1.6.9      # XCIST; the PyPI sdist's clib_build scripts have CRLF line endings: unpack, `sed -i 's/\r$//'`
+                     # on clib_build/Build* and Makefile*, then `pip install .`
+# Already present:
+numpy==2.4.6
+scipy==1.15.3
+scikit-image==0.25.0
+matplotlib==3.10.0
+SimpleITK==2.5.6
+SQLAlchemy==2.0.39   # pylidc's annotation database
+# Data (outside the repo, plan Q1): 20 LIDC-IDRI series in $LIDC_ROOT (default ~/data/LIDC-IDRI),
+# fetched with `python -m F_render.src.lidc download --n 20`; ~/.pylidcrc points there.
