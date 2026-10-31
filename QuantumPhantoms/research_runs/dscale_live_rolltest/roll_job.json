@@ -1,0 +1,12 @@
+{
+ "job_id": "7c7b760c-534b-4c36-9cfa-d026e3f4d29f",
+ "backend": "fake_marrakesh",
+ "circuits": [
+  "tumor",
+  "pairs",
+  "chsh_a0_b0",
+  "chsh_a0_b1",
+  "chsh_a1_b0",
+  "chsh_a1_b1"
+ ]
+}

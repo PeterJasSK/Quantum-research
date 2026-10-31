@@ -96,41 +96,103 @@ a population of synthetic patients, not yet one specific person. That is where s
 
 ## 6. Predictions
 
-**5 years**: grounded in current results and technology.
+The predictions follow a twin ladder with three rungs. Each rung reuses the A–H pipeline and changes what the
+pipeline is fitted to:
+
+1. **Population twin:** synthetic patients, nobody in particular.
+2. **Calibrated twin:** one real patient's serial scans.
+3. **Predictive twin:** "what if we treat it this way?".
+
+The quantum role grows one claim level per rung, and only when the hardware earns it. The steps refer to the
+twin table in §5.
+
+### Population twin: now to 3 years
+
+**What it is:** synthetic cohorts. Generic patients built from public data, used to train and stress-test detection
+AI. **Quantum role:** L0 provenance and small L1′ blocks.
+
 *Assumptions:* Heron-class noisy quantum hardware (error mitigation, no error correction); public LIDC and Mayo
 data; classical compute as today; no clinical partner data.
-- The INT chain runs end to end in simulation after the known fixes (`fill --job`, founder from draw, beacon
-  freshness). <span class="chip extrapolation">extrapolation</span>
-- The quantum contribution stays **provenance (L0)** plus small-block L1/L1′ results. Large circuits are
-  noise-dominated (B: TVD 0.57–0.74) or BP-simulable (D: lineage χ = 2). <span class="chip evidence">evidence-based</span>
-- A pilot cohort (20 hosts × 3 placement classes) gives the first powered realism and train-synthetic/test-real
-  numbers. <span class="chip extrapolation">extrapolation</span>
-- One hardware CHSH run turns "certification-ready" into a real (not loophole-free) certificate. <span class="chip extrapolation">extrapolation</span>
 
-**10 years**: reasonable extrapolation.
+- **INT.** The chain runs end to end in simulation after the three known fixes: `fill --job` binds every job,
+  D grows from B's draw instead of a fixed founder, and C takes the first beacon pulse after the commit and never
+  reuses one. One tumour travels A→H with a verifying receipt. <span class="chip extrapolation">extrapolation</span>
+- **A, E, F (classical core).** These carry the value at this rung:
+  - A: anatomy-informed placement in three classes. Its juxtapleural rule still needs fixing; it undercounts at n = 9.
+  - E: lung Pixel2Cancer growth, with baseline and follow-up +90 days.
+  - F: scanner-matched 3-D insertion (fingerprint within 2 %, XCIST projection insertion within 3 %).
+
+  <span class="chip evidence">evidence-based</span>
+- **H.** A pilot cohort (20 hosts × 3 placement classes) gives the first powered numbers: realism (HU, edge, NPS
+  vs LIDC), train-synthetic/test-real and a small visual Turing test. <span class="chip extrapolation">extrapolation</span>
+- **B, C (L0).** B's context-conditioned draw (B-1) is fixed before the run. One hardware CHSH run turns C's
+  "certification-ready" into a real, accounted certificate (H_min → certified bits → seed), though not a
+  loophole-free one. <span class="chip extrapolation">extrapolation</span>
+- **D (small L1′ blocks).** Quantum stays small:
+  - the D-5 causal-state growth model on 1–4 qubits, re-tuned so the C_q < C_μ gap sits clearly above the sampling
+    floor (today it does not);
+  - the D-2 lineage witness on a short dynamic circuit.
+
+  Large circuits are noise-dominated (B: TVD 0.57–0.74) or BP-simulable (D: lineage χ = 2).
+  <span class="chip evidence">evidence-based</span>
+- **G.** Every case can be replayed from its signed record. The cohort is a documented, auditable test set.
+  <span class="chip evidence">evidence-based</span>
+
+### Calibrated twin: 3 to 7 years
+
+**What it is:** growth fitted to one patient's serial scans. The model forecasts the next scan and is checked against
+it. **Quantum role:** L1/L1′ on hardware.
+
 *Assumptions:* devices running 10⁴–10⁵ two-qubit gates with mitigation [H11]; access to multi-centre and
-longitudinal CT; accepted methods for virtual imaging trials [G02].
-- Synthetic, certified cohorts are used as **supporting evidence** for validating a nodule-detection product, in
-  the style of VICTRE [H03]. <span class="chip extrapolation">extrapolation</span>
-- Growth models fitted to individual patients forecast the next scan and are evaluated retrospectively. <span class="chip extrapolation">extrapolation</span>
-- The same pipeline produces liver and kidney cohorts. <span class="chip extrapolation">extrapolation</span>
-- Certified randomness from device-independent sources is a routine provenance stamp [C06, C07]. <span class="chip extrapolation">extrapolation</span>
+longitudinal CT under agreement; accepted methods for virtual imaging trials [G02].
+
+- **A.** The generic LIDC host is replaced by the patient's own segmentation: lungs first, then all organs with
+  TotalSegmentator [A04, A05]. <span class="chip extrapolation">extrapolation</span>
+- **B.** The tumour rulebook becomes a patient-level network: risk factors and prior findings select the
+  conditional tables. <span class="chip extrapolation">extrapolation</span>
+- **E.** Growth parameters are fitted to the patient's baseline and follow-up instead of population VDTs. Forecasts
+  of the next scan are evaluated retrospectively. <span class="chip extrapolation">extrapolation</span>
+- **F.** Insertion moves to projection domain on Siemens raw data (Mayo-style, XCIST) and to a closer NAEOTOM Alpha
+  model. Today's f50 mismatch (0.57 vs 0.39 mm⁻¹) is closed with vendor parameters. <span class="chip extrapolation">extrapolation</span>
+- **H.** The AI-Rad Companion protocol (#21) measures reported vs true volume and doubling time on known-truth
+  longitudinal pairs. Certified cohorts serve as **supporting evidence** for validating a nodule-detection product,
+  in the style of VICTRE [H03]. <span class="chip extrapolation">extrapolation</span>
+- **D (L1/L1′ on hardware).** The entangled lineage (D-2) and the quantum growth-process model (D-5) run on real
+  hardware with a witness that survives noise. The quantum model compresses the memory of patient-level growth
+  processes. Every circuit keeps its BP simulability number. The D-3 QCA patch must first pass its witness above
+  12 qubits, which it fails today under Heron-class noise. <span class="chip extrapolation">extrapolation</span>
+- **C, G.** Certified randomness from device-independent sources becomes a routine provenance stamp [C06, C07].
+  The receipt binds every hardware job. <span class="chip extrapolation">extrapolation</span>
+- **Beyond lungs.** The same pipeline produces liver and kidney cohorts (E's automaton already covers these organs
+  [E01]). <span class="chip extrapolation">extrapolation</span>
 
 <div class="callout speculative">
 
-**15 years**: speculation allowed.
+### Predictive twin: 10 to 15 years
+
+**What it is:** "what if we treat it this way?". The calibrated twin is run forward under candidate therapies.
+**Quantum role:** L2/L3; this needs fault-tolerant hardware.
+
 *Assumptions:* **fault-tolerant quantum hardware** is available (deep, error-corrected circuits); twin-style
-patient models are in research use.
-- <span class="chip speculative">speculative</span> **What fault tolerance would unlock (L2/L3).**
+patient models are in research use and accepted as decision support.
+
+- <span class="chip speculative">speculative</span> **E, B.** Therapy-response rules are added to the growth engine.
+  These are proliferation and death rates under treatment, fitted to trial data, and connect to radiation-therapy
+  planning. B's network carries treatment as a variable.
+- <span class="chip speculative">speculative</span> **A, F.** Whole-body anatomy and other modalities (MR) use the
+  same A–H recipe. Only F's physics model changes.
+- <span class="chip speculative">speculative</span> **D, B (what fault tolerance would unlock, L2/L3):**
   - Amplitude-amplified sampling of very large patient-level networks [B01], for rare-event probabilities.
   - Quantum solvers for nonlinear growth equations [D21].
-  - Simulation of large stochastic tissue models beyond classical tensor methods (D).
+  - Simulation of large stochastic tissue models beyond classical tensor methods (D; the 108-qubit L2 plan below
+    is the first measured step toward this).
   - Certified randomness whose guarantee rests on classical hardness [C02].
 
   None of this is shown today, and the end-to-end gain (including readout) is unproven.
-- <span class="chip speculative">speculative</span> **What fault tolerance would break:** today's Ed25519 receipts. Provenance must move to post-quantum
-  signatures first (G).
-- <span class="chip speculative">speculative</span> Twin cohorts become a standard arm of regulatory evidence, with every simulated patient traceable to
+- <span class="chip speculative">speculative</span> **G (what fault tolerance would break):** today's Ed25519
+  receipts. Provenance must move to post-quantum signatures first.
+- <span class="chip speculative">speculative</span> **H.** Each forecast is checked against the patient's next real
+  scan. Twin cohorts become a standard arm of regulatory evidence, with every simulated patient traceable to
   certified inputs.
 
 </div>

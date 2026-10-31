@@ -1,0 +1,58 @@
+{
+ "budget": 40,
+ "target": "ibm_kingston",
+ "mode": "hardware",
+ "sim_label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0",
+ "recipe": "composite",
+ "claims": [
+  {
+   "family": "ghz-spine",
+   "claim_level": "L0",
+   "witness": "DFE GHZ fidelity (GME)",
+   "value": 0.16109374999999998,
+   "sigma": 0.08522086768545895,
+   "k": 2,
+   "passed": false,
+   "label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0",
+   "note": "N=14, kept 1.000; ghz2=0.976; stabilizer state (BP chi = 2): survives, not hard"
+  },
+  {
+   "family": "ch-qca",
+   "claim_level": "L1",
+   "witness": "QCA pair negativity (Bonferroni)",
+   "value": 0.030567038040340538,
+   "sigma": 0.008976147740966445,
+   "k": 2,
+   "passed": true,
+   "label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0",
+   "note": "12 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+  },
+  {
+   "family": "pmd-bank",
+   "claim_level": "L0",
+   "witness": "PMD memory gap / floor",
+   "value": -1.7361485836014448,
+   "sigma": null,
+   "k": 3,
+   "passed": false,
+   "label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0",
+   "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2"
+  }
+ ],
+ "goldilocks": {
+  "cells": [],
+  "empty": null,
+  "ref_kinds": [],
+  "note": "live proof of concept: the survive-vs-simulable map is a simulation product (python -m dscale.survival)"
+ },
+ "seed_shapes": "seed_shapes.npz",
+ "allocation_ref": "allocation.json",
+ "param_grid_sha256": "",
+ "shots": 2000,
+ "repeats": 1,
+ "truncated": false,
+ "run_key": "dscale_live_40_20261031-161801",
+ "target_label": "ibm_kingston (156 q heavy-hex)",
+ "job_id": "dbj0ddd6p51s73cjqak0",
+ "honest_label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0; proof of concept (one job, n = 1, ~1 QPU-minute); the seed shape is a quantum snapshot measured on the device; growth and image are classical; no classical-hardness claim"
+}

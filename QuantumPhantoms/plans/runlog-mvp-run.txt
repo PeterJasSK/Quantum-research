@@ -39,11 +39,13 @@ ONE-TIME SETUP
 
    RUN=$(ls -dt ../research_runs/qrng_ibm_heron_*/ | head -1)     # capture newest hardware run
 
- STEP 2 — F2: render params into CT tiles
-   # Real CT background (the honest demo): point at a dir of LUNA16 .mhd/.raw (or .npy/.png).
-   python -m f2_imaging.build_tiles --run "$RUN" --ct-source /path/to/luna16
+ STEP 2 — imaging (F2/F5): render params into CT tiles
+   # Real CT background (the honest demo): F5 grown renderer in a public Siemens-scanner LIDC case.
+   python -m imaging.lidc_fetch LIDC-IDRI-0481     # once (public Siemens-scanner LIDC case)
+   python -m imaging.build_tiles --run "$RUN"                # grown (F5 default)
+   #   python -m imaging.build_tiles --run "$RUN" --renderer procedural --ct-source /path/to/luna16
    # If you have no CT data yet, the pipeline still runs with a labeled synthetic background:
-   #   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+   #   python -m imaging.build_tiles --run "$RUN" --renderer procedural --ct-source synthetic
 
  STEP 3 — F3: bake the self-contained page
    python -m f3_web.build_web --run "$RUN"
@@ -68,7 +70,7 @@ ONE-TIME SETUP
      RUN=$(ls -dt ../research_runs/prng_prng_*/ | head -1)
 
  STEP 2 — F2: render (synthetic background is fine for a test)
-   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+   python -m imaging.build_tiles --run "$RUN" --renderer procedural --ct-source synthetic
 
  STEP 3 — F3: bake the page (use a separate --out so you don't clobber the live page)
    python -m f3_web.build_web --run "$RUN" --out ../web/index_prng.html
@@ -85,7 +87,7 @@ ONE-TIME SETUP
 ===============================================================================
    python -m f1_quantum.run --backend aer --tiles 12 --pairs 2
    RUN=$(ls -dt ../research_runs/qrng_aer_*/ | head -1)
-   python -m f2_imaging.build_tiles --run "$RUN" --ct-source synthetic
+   python -m imaging.build_tiles --run "$RUN" --renderer procedural --ct-source synthetic
    python -m f3_web.build_web --run "$RUN" --out ../web/index_sim.html
    # CHSH ~2.83 but labeled "simulator (noiseless)" — dev only, not the public value.
 

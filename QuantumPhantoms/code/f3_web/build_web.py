@@ -1,10 +1,10 @@
-"""F3 entrypoint — bake one F2 run into a single self-contained web page (the MVP).
+"""F3 entrypoint — bake one imaging run into a single self-contained web page (the MVP).
 
-Usage:
-    python QuantumPhantoms/code/build_web.py --run research_runs/<f2_run>
-    python QuantumPhantoms/code/build_web.py --run <dir> --out ../web/index.html
+Usage (run from code/):
+    python -m f3_web.build_web --run research_runs/<run>
+    python -m f3_web.build_web --run <dir> --out ../web/index.html
 
-Reads <run>/tiles.json + <run>/tiles/*.png, base64-embeds every PNG, embeds the cohort data
+Reads <run>/tiles.json + <run>/tiles/*.png (incl. F5 growth frames), base64-embeds every PNG, embeds the cohort data
 and the published rulebook reference, injects them into code/web_template.html, and writes a
 single standalone index.html (no backend, no external requests). Sampler-blind — renders
 whatever tiles.json carries; never recomputes anything quantum (epic §3).
@@ -117,6 +117,13 @@ def main():
                 raise FileNotFoundError(f"missing full-slice PNG: {full_abs}")
             full_images[full_rel] = _png_data_uri_resized(full_abs, max_dim=512)
 
+        # F5 grown renderer: embed each growth frame (de-duplicated by path).
+        for g in t.get("growth", []):
+            frame_abs = os.path.join(run_dir, g["png_path"])
+            if not os.path.isfile(frame_abs):
+                raise FileNotFoundError(f"missing growth-frame PNG: {frame_abs}")
+            g["png"] = _png_data_uri(frame_abs)
+
     cohort = {
         "tiles": data["tiles"],
         "quantum_run": data["quantum_run"],
@@ -125,6 +132,16 @@ def main():
         "ct_attribution": data.get("ct_attribution", ""),
         "full_images": full_images,
     }
+    for k in ("renderer_version", "provenance"):   # F5 only; absent on procedural runs
+        if k in data:
+            cohort[k] = data[k]
+    if "dscale" in data:                            # D-SCALE only: claims, Goldilocks verdict, embedded map
+        ds = dict(data["dscale"])
+        png = (ds.get("goldilocks") or {}).get("map_png")
+        png_abs = os.path.join(run_dir, "dscale", png) if png else ""
+        if png and os.path.isfile(png_abs):
+            ds["map_png_data"] = _png_data_uri_resized(png_abs, max_dim=900)
+        cohort["dscale"] = ds
     blob = json.dumps(_sanitize(cohort), allow_nan=False)
 
     with open(TEMPLATE) as f:

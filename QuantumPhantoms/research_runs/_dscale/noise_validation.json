@@ -1,0 +1,88 @@
+{
+ "target": "marrakesh",
+ "full_model": "AerSimulator.from_backend(FakeMarrakesh)",
+ "pauli_vs_full": [
+  {
+   "circuit": "ghz-spine N=6",
+   "observable": "<X^N>",
+   "pauli": 0.935,
+   "full": 0.9275,
+   "delta": 0.007500000000000062,
+   "tol": 0.03,
+   "ok": true
+  },
+  {
+   "circuit": "ghz-spine N=6",
+   "observable": "mean <ZZ>",
+   "pauli": 0.9763999999999999,
+   "full": 0.9753999999999999,
+   "delta": 0.0010000000000000009,
+   "tol": 0.03,
+   "ok": true
+  },
+  {
+   "circuit": "ghz-spine N=12",
+   "observable": "<X^N>",
+   "pauli": 0.7835,
+   "full": 0.7675,
+   "delta": 0.016000000000000014,
+   "tol": 0.03,
+   "ok": true
+  },
+  {
+   "circuit": "ghz-spine N=12",
+   "observable": "mean <ZZ>",
+   "pauli": 0.9532272727272729,
+   "full": 0.9570454545454544,
+   "delta": -0.0038181818181814986,
+   "tol": 0.03,
+   "ok": true
+  },
+  {
+   "circuit": "ghz-spine N=20",
+   "observable": "<X^N>",
+   "pauli": 0.687,
+   "full": 0.658,
+   "delta": 0.029000000000000026,
+   "tol": 0.03309593381684225,
+   "ok": true
+  },
+  {
+   "circuit": "ghz-spine N=20",
+   "observable": "mean <ZZ>",
+   "pauli": 0.9584473684210524,
+   "full": 0.960473684210526,
+   "delta": -0.002026315789473654,
+   "tol": 0.03,
+   "ok": true
+  },
+  {
+   "circuit": "ch-qca twin 12 sites t=2 echo",
+   "observable": "echo F",
+   "pauli": 0.5825,
+   "full": 0.56475,
+   "delta": 0.017750000000000044,
+   "tol": 0.03,
+   "ok": true
+  }
+ ],
+ "twin_vs_real": [
+  {
+   "sites": 12,
+   "twin_pauli_F": 0.5825,
+   "real_full_F": 0.54,
+   "twin_alive": true,
+   "real_alive": true,
+   "class_match": true,
+   "real_shots": 4000,
+   "isa_cz_real": 88,
+   "isa_cz_twin": 88
+  }
+ ],
+ "passed": false,
+ "verdict": "unvalidated (Pauli / twin verdicts above 24 q are labelled so)",
+ "truncated": true,
+ "skipped": [
+  "pauli qca sites=20"
+ ]
+}

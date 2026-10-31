@@ -1,0 +1,47 @@
+{
+ "budget": 100,
+ "target": "ibm_marrakesh",
+ "mode": "hardware",
+ "sim_label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+ "recipe": "composite",
+ "claims": [
+  {
+   "family": "ghz-spine",
+   "claim_level": "L0",
+   "witness": "DFE GHZ fidelity (GME)",
+   "value": 0.0471017605168426,
+   "sigma": 0.027614845749318426,
+   "k": 2,
+   "passed": false,
+   "label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+   "note": "N=48, kept 0.788; ghz2=0.945; stabilizer state (BP chi = 2): survives, not hard"
+  },
+  {
+   "family": "ch-qca",
+   "claim_level": "L1",
+   "witness": "QCA pair negativity (Bonferroni)",
+   "value": 0.028186960010257986,
+   "sigma": 0.00860842180458586,
+   "k": 2,
+   "passed": true,
+   "label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+   "note": "30 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+  }
+ ],
+ "goldilocks": {
+  "cells": [],
+  "empty": null,
+  "ref_kinds": [],
+  "note": "live proof of concept: the survive-vs-simulable map is a simulation product (python -m dscale.survival)"
+ },
+ "seed_shapes": "seed_shapes.npz",
+ "allocation_ref": "allocation.json",
+ "param_grid_sha256": "",
+ "shots": 2000,
+ "repeats": 1,
+ "truncated": false,
+ "run_key": "dscale_live_100_20261031-162809",
+ "target_label": "ibm_marrakesh (156 q heavy-hex)",
+ "job_id": "dbj0i556p51s73cjqmgg",
+ "honest_label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg; proof of concept (one job, n = 1, ~1 QPU-minute); the seed shape is a quantum snapshot measured on the device; growth and image are classical; no classical-hardness claim"
+}

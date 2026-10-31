@@ -1,0 +1,651 @@
+{
+ "budget": 100,
+ "target": "boston",
+ "target_label": "Boston (FakeBoston, Heron r3, 156 q heavy-hex)",
+ "families": [
+  "ghz-spine",
+  "ch-qca",
+  "pmd-bank",
+  "kicked-ising"
+ ],
+ "param_grid_sha256": "b033d0e13f96fce6e87ca4c414dae8b0325e3d773287ed88d7599a841096ed60",
+ "shots": 4000,
+ "repeats": 2,
+ "cells": [
+  {
+   "family": "ghz-spine",
+   "n_qubits": 6,
+   "depth_or_t": 2,
+   "alpha": null,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "F_dfe (GME)",
+   "value": 0.95468125,
+   "sigma": 0.01655001031862139,
+   "k": 2,
+   "alive": true,
+   "bp": {
+    "chi_max": 2,
+    "fidelity_vs_ref": 1.0,
+    "ref_kind": "stabilizer-exact",
+    "chi_gap": null,
+    "per_chi": [
+     {
+      "chi": 2,
+      "runtime_s": 0.007,
+      "trunc_err": 0.0,
+      "fidelity": 1.0
+     }
+    ],
+    "easy": true,
+    "hard": false
+   },
+   "kept_fraction": 1.0,
+   "validated": "n/a (<= 24 q)",
+   "hashes": [
+    "90789b56b5a9d0dde33dfa28698fda97337b85df8e0163e84e4343985a7fb261",
+    "6aef18e4e43eef18274ae86bb41af38a462a7934232f02846e1924abd96254d9",
+    "a4a4b8e665e8ac6e5d5efec64c31dfe085c67bc46250403e7761b495d4180da6"
+   ],
+   "regime": "alive_bp_easy",
+   "runtime_s": 203.4
+  },
+  {
+   "family": "ch-qca",
+   "n_qubits": 12,
+   "depth_or_t": 1,
+   "alpha": 1.5707963267948966,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "echo fidelity",
+   "value": 0.87175,
+   "sigma": 0.005286821765011564,
+   "k": 2,
+   "alive": true,
+   "random_band": 0.000244140625,
+   "negativity": [
+    {
+     "i": 68,
+     "j": 69,
+     "N": 0.20919823675199606,
+     "sigma": 0.005797634816927836,
+     "p": 2.067218456941476e-285,
+     "p_bonf": 8.268873827765904e-285,
+     "passed": true
+    },
+    {
+     "i": 69,
+     "j": 70,
+     "N": -0.0,
+     "sigma": 0.00014950643741048125,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 69,
+     "j": 78,
+     "N": 0.0002620511456834846,
+     "sigma": 0.0002643458963623348,
+     "p": 0.1607648858215626,
+     "p_bonf": 0.6430595432862504,
+     "passed": false
+    },
+    {
+     "i": 67,
+     "j": 68,
+     "N": 0.22084796777088495,
+     "sigma": 0.005503068571182009,
+     "p": 0.0,
+     "p_bonf": 0.0,
+     "passed": true
+    }
+   ],
+   "bp": {
+    "chi_max": 16,
+    "fidelity_vs_ref": 0.9999999999999997,
+    "ref_kind": "light-cone-exact (12 q)",
+    "chi_gap": 0.0,
+    "per_chi": [
+     {
+      "chi": 2,
+      "runtime_s": 0.017,
+      "trunc_err": 6.933347799794049e-33,
+      "fidelity": 0.9999999999999997
+     },
+     {
+      "chi": 4,
+      "runtime_s": 0.017,
+      "trunc_err": 6.933347799794049e-33,
+      "fidelity": 0.9999999999999997,
+      "chi_gap": 0.0
+     },
+     {
+      "chi": 8,
+      "runtime_s": 0.017,
+      "trunc_err": 6.933347799794049e-33,
+      "fidelity": 0.9999999999999997,
+      "chi_gap": 0.0
+     },
+     {
+      "chi": 16,
+      "runtime_s": 0.017,
+      "trunc_err": 6.933347799794049e-33,
+      "fidelity": 0.9999999999999997,
+      "chi_gap": 0.0
+     }
+    ],
+    "easy": true,
+    "hard": false
+   },
+   "validated": "n/a (<= 24 q)",
+   "hashes": [
+    "cd0a5d55effd97b92c523569e7c3e1aad7a8230a3e2e7bad331b7f4332b93d44",
+    "fd1c99e6ead696848dde50f63699539dfe2b549e3081fc7b402f71335e9aeac9"
+   ],
+   "regime": "alive_bp_easy",
+   "runtime_s": 97.6
+  },
+  {
+   "family": "pmd-bank",
+   "n_qubits": 72,
+   "depth_or_t": 8,
+   "alpha": null,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "PMD gap / floor (AC-11 rule)",
+   "value": -0.6226974522922186,
+   "sigma": null,
+   "k": 3,
+   "alive": false,
+   "machines": [
+    {
+     "k": "pmd0",
+     "path": [
+      14,
+      15,
+      19,
+      35,
+      34,
+      33,
+      32,
+      31,
+      18
+     ],
+     "d_kl_q": 0.002834431774676148,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.7277189967295263,
+     "passed": false
+    },
+    {
+     "k": "pmd1",
+     "path": [
+      4,
+      3,
+      16,
+      23,
+      22,
+      21,
+      36,
+      41,
+      40
+     ],
+     "d_kl_q": 0.0028542171578224175,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.7346029785556019,
+     "passed": false
+    },
+    {
+     "k": "pmd2",
+     "path": [
+      52,
+      51,
+      58,
+      71,
+      70,
+      69,
+      68,
+      67,
+      57
+     ],
+     "d_kl_q": 0.0034908981115726414,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.9561251033597103,
+     "passed": false
+    },
+    {
+     "k": "pmd3",
+     "path": [
+      44,
+      43,
+      56,
+      63,
+      62,
+      61,
+      76,
+      81,
+      80
+     ],
+     "d_kl_q": 0.0032098383036632517,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.858335204858132,
+     "passed": false
+    },
+    {
+     "k": "pmd4",
+     "path": [
+      133,
+      132,
+      131,
+      138,
+      151,
+      152,
+      153,
+      154,
+      155
+     ],
+     "d_kl_q": 0.00280464739755488,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.717356037908461,
+     "passed": false
+    },
+    {
+     "k": "pmd5",
+     "path": [
+      109,
+      108,
+      107,
+      106,
+      105,
+      117,
+      125,
+      126,
+      127
+     ],
+     "d_kl_q": 0.0025325873555880076,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.6226974522922186,
+     "passed": false
+    },
+    {
+     "k": "pmd6",
+     "path": [
+      54,
+      55,
+      59,
+      75,
+      74,
+      73,
+      79,
+      93,
+      94
+     ],
+     "d_kl_q": 0.003181800781823617,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.8485800341159048,
+     "passed": false
+    },
+    {
+     "k": "pmd7",
+     "path": [
+      120,
+      121,
+      122,
+      123,
+      136,
+      143,
+      142,
+      141,
+      140
+     ],
+     "d_kl_q": 0.002977588604009332,
+     "n_words": 8000,
+     "floor": 0.002874119026770982,
+     "d_kl_classical": {
+      "1": 0.007929458781536756,
+      "2": 0.0007428807600331261
+     },
+     "gap_over_floor": -0.777527939226253,
+     "passed": false
+    }
+   ],
+   "process": {
+    "V": 0.4,
+    "Gamma": 0.7,
+    "N": 8,
+    "L": 8
+   },
+   "bp": {
+    "chi_max": 2,
+    "fidelity_vs_ref": 1.0,
+    "ref_kind": "structure: 2-qubit blocks on a path (exact)",
+    "chi_gap": 0.0,
+    "easy": true,
+    "hard": false
+   },
+   "validated": "n/a (<= 24 q per machine)",
+   "regime": "dead",
+   "runtime_s": 91.3
+  },
+  {
+   "family": "ghz-spine",
+   "n_qubits": 12,
+   "depth_or_t": 3,
+   "alpha": null,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "F_dfe (GME)",
+   "value": 0.9020124999999999,
+   "sigma": 0.01660746249421611,
+   "k": 2,
+   "alive": true,
+   "bp": {
+    "chi_max": 2,
+    "fidelity_vs_ref": 1.0,
+    "ref_kind": "stabilizer-exact",
+    "chi_gap": null,
+    "per_chi": [
+     {
+      "chi": 2,
+      "runtime_s": 0.01,
+      "trunc_err": 0.0,
+      "fidelity": 1.0
+     }
+    ],
+    "easy": true,
+    "hard": false
+   },
+   "kept_fraction": 1.0,
+   "validated": "n/a (<= 24 q)",
+   "hashes": [
+    "0a3e8575788386304a9faf6f8d4b242cd9f96873ebc7ae102947529cd3da45e9",
+    "f144baca1184a08dacd3f4c8f715fe57212157172f90bef4faae1b9a484c2baa",
+    "f144baca1184a08dacd3f4c8f715fe57212157172f90bef4faae1b9a484c2baa"
+   ],
+   "regime": "alive_bp_easy",
+   "runtime_s": 351.2
+  },
+  {
+   "family": "ch-qca",
+   "n_qubits": 12,
+   "depth_or_t": 1,
+   "alpha": 1.1780972450961724,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "echo fidelity",
+   "value": 0.7955,
+   "sigma": 0.006377298605208949,
+   "k": 2,
+   "alive": true,
+   "random_band": 0.000244140625,
+   "negativity": [
+    {
+     "i": 68,
+     "j": 69,
+     "N": 0.03132051711490182,
+     "sigma": 0.006745331181816731,
+     "p": 1.7145369517050003e-06,
+     "p_bonf": 6.858147806820001e-06,
+     "passed": true
+    },
+    {
+     "i": 69,
+     "j": 70,
+     "N": -0.0,
+     "sigma": 0.0011298356433939337,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 69,
+     "j": 78,
+     "N": -0.0,
+     "sigma": 0.0028825316273073855,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 67,
+     "j": 68,
+     "N": 0.21187726114773892,
+     "sigma": 0.006152890534116984,
+     "p": 3.7239743855149416e-260,
+     "p_bonf": 1.4895897542059767e-259,
+     "passed": true
+    }
+   ],
+   "bp": {
+    "chi_max": 16,
+    "fidelity_vs_ref": 0.9999999999999998,
+    "ref_kind": "light-cone-exact (12 q)",
+    "chi_gap": 0.0,
+    "per_chi": [
+     {
+      "chi": 2,
+      "runtime_s": 0.023,
+      "trunc_err": 9.830753022646086e-33,
+      "fidelity": 0.9999999999999998
+     },
+     {
+      "chi": 4,
+      "runtime_s": 0.021,
+      "trunc_err": 9.830753022646086e-33,
+      "fidelity": 0.9999999999999998,
+      "chi_gap": 0.0
+     },
+     {
+      "chi": 8,
+      "runtime_s": 0.02,
+      "trunc_err": 9.830753022646086e-33,
+      "fidelity": 0.9999999999999998,
+      "chi_gap": 0.0
+     },
+     {
+      "chi": 16,
+      "runtime_s": 0.02,
+      "trunc_err": 9.830753022646086e-33,
+      "fidelity": 0.9999999999999998,
+      "chi_gap": 0.0
+     }
+    ],
+    "easy": true,
+    "hard": false
+   },
+   "validated": "n/a (<= 24 q)",
+   "hashes": [
+    "0f2efc476238308831a8088ce33917104afad107fa666f6ae0b98857c4d6bced",
+    "49be4ed3764ad46f1642b7bddac8e05bf81ed0b963a5a7f79c2d08174a716eb0"
+   ],
+   "regime": "alive_bp_easy",
+   "runtime_s": 203.5
+  },
+  {
+   "family": "kicked-ising",
+   "n_qubits": 100,
+   "depth_or_t": 5,
+   "alpha": 0.0,
+   "sim_label": "simulated: Pauli-twirled Boston noise (stabilizer)",
+   "metric": "magnetisation (noisy vs exact)",
+   "value": 0.94226,
+   "value_exact": 1.0,
+   "sigma": 0.0015811388300841895,
+   "k": 2,
+   "alive": true,
+   "bp": {
+    "chi_max": 2,
+    "fidelity_vs_ref": 1.0,
+    "ref_kind": "stabilizer-exact",
+    "chi_gap": null,
+    "per_chi": [
+     {
+      "chi": 2,
+      "runtime_s": 0.348,
+      "trunc_err": 0.0,
+      "fidelity": 1.0
+     }
+    ],
+    "easy": true,
+    "hard": false
+   },
+   "validated": "unvalidated (no noise_validation.json)",
+   "regime": "alive_bp_easy",
+   "runtime_s": 235.4
+  }
+ ],
+ "goldilocks_zone": [],
+ "goldilocks_empty": true,
+ "truncated": true,
+ "skipped": [
+  "pauli:boston circuit 3/42 (dfe_00)",
+  "ch-qca (12, 1, 0.7853981633974483)",
+  "kicked-ising (0.39269908169872414, 5)",
+  "ghz-spine (36,)",
+  "ch-qca (12, 1, 0.39269908169872414)",
+  "kicked-ising (0.7853981633974483, 5)",
+  "ghz-spine (48,)",
+  "ch-qca (12, 2, 1.5707963267948966)",
+  "kicked-ising (1.1780972450961724, 5)",
+  "ghz-spine (64,)",
+  "ch-qca (12, 2, 1.1780972450961724)",
+  "kicked-ising (1.5707963267948966, 5)",
+  "ghz-spine (84,)",
+  "kicked-ising (0.0, 20)",
+  "ch-qca (12, 2, 0.7853981633974483)",
+  "kicked-ising (0.39269908169872414, 20)",
+  "ch-qca (12, 2, 0.39269908169872414)",
+  "kicked-ising (0.7853981633974483, 20)",
+  "ch-qca (12, 3, 1.5707963267948966)",
+  "kicked-ising (1.1780972450961724, 20)",
+  "ch-qca (12, 3, 1.1780972450961724)",
+  "kicked-ising (1.5707963267948966, 20)",
+  "ch-qca (12, 3, 0.7853981633974483)",
+  "ch-qca (12, 3, 0.39269908169872414)",
+  "ch-qca (12, 4, 1.5707963267948966)",
+  "ch-qca (12, 4, 1.1780972450961724)",
+  "ch-qca (12, 4, 0.7853981633974483)",
+  "ch-qca (12, 4, 0.39269908169872414)",
+  "ch-qca (12, 6, 1.5707963267948966)",
+  "ch-qca (12, 6, 1.1780972450961724)",
+  "ch-qca (12, 6, 0.7853981633974483)",
+  "ch-qca (12, 6, 0.39269908169872414)",
+  "ch-qca (21, 1, 1.5707963267948966)",
+  "ch-qca (21, 1, 1.1780972450961724)",
+  "ch-qca (21, 1, 0.7853981633974483)",
+  "ch-qca (21, 1, 0.39269908169872414)",
+  "ch-qca (21, 2, 1.5707963267948966)",
+  "ch-qca (21, 2, 1.1780972450961724)",
+  "ch-qca (21, 2, 0.7853981633974483)",
+  "ch-qca (21, 2, 0.39269908169872414)",
+  "ch-qca (21, 3, 1.5707963267948966)",
+  "ch-qca (21, 3, 1.1780972450961724)",
+  "ch-qca (21, 3, 0.7853981633974483)",
+  "ch-qca (21, 3, 0.39269908169872414)",
+  "ch-qca (21, 4, 1.5707963267948966)",
+  "ch-qca (21, 4, 1.1780972450961724)",
+  "ch-qca (21, 4, 0.7853981633974483)",
+  "ch-qca (21, 4, 0.39269908169872414)",
+  "ch-qca (21, 6, 1.5707963267948966)",
+  "ch-qca (21, 6, 1.1780972450961724)",
+  "ch-qca (21, 6, 0.7853981633974483)",
+  "ch-qca (21, 6, 0.39269908169872414)",
+  "ch-qca (24, 1, 1.5707963267948966)",
+  "ch-qca (24, 1, 1.1780972450961724)",
+  "ch-qca (24, 1, 0.7853981633974483)",
+  "ch-qca (24, 1, 0.39269908169872414)",
+  "ch-qca (24, 2, 1.5707963267948966)",
+  "ch-qca (24, 2, 1.1780972450961724)",
+  "ch-qca (24, 2, 0.7853981633974483)",
+  "ch-qca (24, 2, 0.39269908169872414)",
+  "ch-qca (24, 3, 1.5707963267948966)",
+  "ch-qca (24, 3, 1.1780972450961724)",
+  "ch-qca (24, 3, 0.7853981633974483)",
+  "ch-qca (24, 3, 0.39269908169872414)",
+  "ch-qca (24, 4, 1.5707963267948966)",
+  "ch-qca (24, 4, 1.1780972450961724)",
+  "ch-qca (24, 4, 0.7853981633974483)",
+  "ch-qca (24, 4, 0.39269908169872414)",
+  "ch-qca (24, 6, 1.5707963267948966)",
+  "ch-qca (24, 6, 1.1780972450961724)",
+  "ch-qca (24, 6, 0.7853981633974483)",
+  "ch-qca (24, 6, 0.39269908169872414)",
+  "ch-qca (40, 1, 1.5707963267948966)",
+  "ch-qca (40, 1, 1.1780972450961724)",
+  "ch-qca (40, 1, 0.7853981633974483)",
+  "ch-qca (40, 1, 0.39269908169872414)",
+  "ch-qca (40, 2, 1.5707963267948966)",
+  "ch-qca (40, 2, 1.1780972450961724)",
+  "ch-qca (40, 2, 0.7853981633974483)",
+  "ch-qca (40, 2, 0.39269908169872414)",
+  "ch-qca (40, 3, 1.5707963267948966)",
+  "ch-qca (40, 3, 1.1780972450961724)",
+  "ch-qca (40, 3, 0.7853981633974483)",
+  "ch-qca (40, 3, 0.39269908169872414)",
+  "ch-qca (40, 4, 1.5707963267948966)",
+  "ch-qca (40, 4, 1.1780972450961724)",
+  "ch-qca (40, 4, 0.7853981633974483)",
+  "ch-qca (40, 4, 0.39269908169872414)",
+  "ch-qca (40, 6, 1.5707963267948966)",
+  "ch-qca (40, 6, 1.1780972450961724)",
+  "ch-qca (40, 6, 0.7853981633974483)",
+  "ch-qca (40, 6, 0.39269908169872414)",
+  "ch-qca (100, 1, 1.5707963267948966)",
+  "ch-qca (100, 1, 1.1780972450961724)",
+  "ch-qca (100, 1, 0.7853981633974483)",
+  "ch-qca (100, 1, 0.39269908169872414)",
+  "ch-qca (100, 2, 1.5707963267948966)",
+  "ch-qca (100, 2, 1.1780972450961724)",
+  "ch-qca (100, 2, 0.7853981633974483)",
+  "ch-qca (100, 2, 0.39269908169872414)",
+  "ch-qca (100, 3, 1.5707963267948966)",
+  "ch-qca (100, 3, 1.1780972450961724)",
+  "ch-qca (100, 3, 0.7853981633974483)",
+  "ch-qca (100, 3, 0.39269908169872414)",
+  "ch-qca (100, 4, 1.5707963267948966)",
+  "ch-qca (100, 4, 1.1780972450961724)",
+  "ch-qca (100, 4, 0.7853981633974483)",
+  "ch-qca (100, 4, 0.39269908169872414)",
+  "ch-qca (100, 6, 1.5707963267948966)",
+  "ch-qca (100, 6, 1.1780972450961724)",
+  "ch-qca (100, 6, 0.7853981633974483)",
+  "ch-qca (100, 6, 0.39269908169872414)"
+ ],
+ "noisy_real_max": 12,
+ "calibration": {
+  "fake_backend": "FakeBoston",
+  "qiskit_ibm_runtime_version": "0.47.0",
+  "props_sha256": "7b01268dcd423c94bbed2b6d5550ee40a96122603974cde3c46d1aedb28c481d",
+  "last_update_date": "2026-04-17T12:19:24+02:00"
+ }
+}

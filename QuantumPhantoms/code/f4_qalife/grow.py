@@ -37,9 +37,9 @@ from scipy.ndimage import binary_fill_holes, distance_transform_edt, label, unif
 from f1_quantum.backend import get_backend
 from f1_quantum.lineage import DEFAULT_THETA_MUT
 from f1_quantum.rulebook import Rulebook
-from f2_imaging.ctsource import load_background
-from f2_imaging.insert import crop, insert_lesion, lung_field_mask, window_to_uint8
-from f2_imaging.lesion import build_lesion, central_slice
+from imaging.ctsource import load_background
+from imaging.insert import crop, insert_lesion, lung_field_mask, window_to_uint8
+from imaging.lesion import build_lesion, central_slice
 from f4_qalife.progression import coherent_core_qubits, grow_lineage
 
 print = functools.partial(print, flush=True)

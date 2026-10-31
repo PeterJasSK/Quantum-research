@@ -57,6 +57,18 @@
     font-family:var(--mono);font-size:10px;padding:3px 7px;border-radius:999px;letter-spacing:.04em}
   .srcwarn{position:absolute;top:8px;right:8px;background:#fff7e6;color:var(--amber);
     font-size:10px;padding:3px 7px;border-radius:999px;border:1px solid #f0d08a}
+  .rchip{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:10px;padding:2px 7px;
+    border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--petrol)}
+  .rchip.fb{color:var(--amber);border-color:#f0d08a;background:#fff7e6}
+
+  /* F5 pixel-growth player */
+  .player{float:right;width:140px;margin:0 0 8px 12px;text-align:center}
+  .player img{width:140px;height:140px;object-fit:cover;border-radius:6px;background:var(--inset);display:block}
+  .player .ctl{display:flex;align-items:center;gap:6px;margin-top:5px}
+  .player button{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--panel);
+    color:var(--deep);border-radius:6px;padding:1px 7px;cursor:pointer}
+  .player input{flex:1;min-width:0;accent-color:var(--petrol)}
+  .player .glab{font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:3px;line-height:1.35}
 
   /* modal */
   .modal{position:fixed;inset:0;background:rgba(0,0,40,.55);display:none;align-items:center;
@@ -88,6 +100,23 @@
   .marked img{display:block;width:100%;height:auto}
   .marked svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
+  /* D-SCALE panel (optional) */
+  .dscale{margin:28px 0 0;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+  .dscale h3{margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol)}
+  .dscale .sub{font-family:var(--mono);font-size:12px;color:var(--mut);margin-bottom:12px}
+  .dscale table{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0 12px}
+  .dscale th,.dscale td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  .dscale th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .dscale td.num{font-family:var(--mono)}
+  .dscale .ok{color:var(--petrol);font-weight:700}
+  .dscale .no{color:var(--amber);font-weight:700}
+  .dscale .gold{margin:8px 0 12px;font-weight:700;color:var(--deep)}
+  .dscale img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
+  .dscale .honest{margin-top:10px;font-size:12px;color:var(--mut)}
+  .dscale .wrapx{overflow-x:auto}
+  .badge{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:999px;background:var(--deep);color:var(--green)}
+  .badge.ball{background:var(--panel2);color:var(--mut)}
+
   footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--mut);font-size:13px;line-height:1.6}
   footer b{color:var(--deep)}
   footer .credit{display:block;margin-top:8px;color:var(--dim);font-size:12px}
@@ -116,6 +145,8 @@
 
   <section class="grid" id="grid"></section>
 
+  <section class="dscale" id="dscale"></section>
+
   <footer id="honest"></footer>
 </div>
 
@@ -128,6 +159,9 @@
 const COHORT = __COHORT_DATA__;
 
 const TYPE_ABBR = {"solid":"sol","part-solid":"ps","ground-glass":"GGO","calcified":"calc"};
+const RENDERER_LABEL = {"grown+fitted":"grown + fitted","procedural-3d":"procedural 3-D",
+  "procedural-fallback":"procedural fallback","procedural":"procedural"};
+let growthTimer = null;
 
 function chshLabel(run){
   const b = (run.backend_name||"");
@@ -243,6 +277,8 @@ function renderGrid(){
     const stamp = lab.value!==null
       ? `<span class="dot"></span>CHSH ${lab.value.toFixed(2)} · shot #${t.shot_index}`
       : `<span class="dot" style="background:#e08a00;box-shadow:none"></span>shot #${t.shot_index}`;
+    const rchip = t.renderer
+      ? `<div class="rchip${t.renderer==="procedural-fallback"?' fb':''}">${RENDERER_LABEL[t.renderer]||t.renderer}</div>` : "";
     html += `<div class="card" data-i="${i}">
       ${badge}${warn}
       <div class="img"><img src="${t.png}" alt="synthetic CT tile ${t.tile_id}"></div>
@@ -250,6 +286,7 @@ function renderGrid(){
         <span class="sz">${t.size_mm} mm</span><span class="ty">${TYPE_ABBR[t.type]||t.type}</span>
         <div class="lobe">${t.lobe}</div>
         <div class="chsh">${stamp}</div>
+        ${rchip}
       </div></div>`;
   });
   grid.innerHTML=html;
@@ -275,8 +312,23 @@ function openModal(i){
   const bigView = full
     ? markedHTML(full, t.bbox, "nodule")
     : `<img src="${t.png}" alt="synthetic CT tile ${t.tile_id}">`;
-  const zoomThumb = `<img src="${t.png}" alt="zoom ${t.tile_id}" `
+  const hasGrowth = Array.isArray(t.growth) && t.growth.length>0;
+  const zoomThumb = hasGrowth ? `
+    <div class="player">
+      <img id="gimg" src="${t.growth[0].png}" alt="growth frame">
+      <div class="ctl"><button id="gplay" type="button">▶</button>
+        <input id="gslide" type="range" min="0" max="${t.growth.length-1}" step="1" value="0" aria-label="growth frame"></div>
+      <div class="glab" id="glab"></div>
+    </div>`
+    : `<img src="${t.png}" alt="zoom ${t.tile_id}" `
     + `style="width:110px;height:110px;object-fit:cover;border-radius:6px;background:var(--inset);float:right;margin:0 0 8px 12px">`;
+  const d = t.diag || {};
+  const f5rows = t.renderer ? `<br>
+        <span class="k">render</span>${RENDERER_LABEL[t.renderer]||t.renderer}<br>
+        <span class="k">host</span>${t.host_id||"—"}${t.slice_z!=null?(' · z '+t.slice_z):''}`
+    + (d.vdt_d ? `<br><span class="k">VDT</span>${d.vdt_d} d (simulated)` : "")
+    + (d.fallback_reason ? `<br><span class="k">note</span>${d.fallback_reason}` : "")
+    + (t.seed_source ? `<br><span class="k">seed</span>${seedBadge(t)}` : "") : "";
   document.getElementById("sheet").innerHTML = `
     <div class="big">${bigView}</div>
     <div class="panel">
@@ -288,13 +340,66 @@ function openModal(i){
         <span class="k">type</span>${t.type}<br>
         <span class="k">margin</span>${t.margin}<br>
         <span class="k">lobe</span>${t.lobe}<br>
-        <span class="k">shot</span>#${t.shot_index}${t.generation?(' · gen '+t.generation):''}
+        <span class="k">shot</span>#${t.shot_index}${t.generation?(' · gen '+t.generation):''}${f5rows}
       </div>
       ${certBar}
     </div>`;
+  if(hasGrowth) setupGrowth(t.growth);
   document.getElementById("modal").classList.add("open");
 }
-function closeModal(){document.getElementById("modal").classList.remove("open");}
+
+function setupGrowth(frames){
+  const img=document.getElementById("gimg"), slide=document.getElementById("gslide"),
+        lab=document.getElementById("glab"), btn=document.getElementById("gplay");
+  const show=k=>{
+    const f=frames[k]; img.src=f.png; slide.value=k;
+    lab.innerHTML=`day ${f.day} · Ø ${f.diameter_mm.toFixed(1)} mm<br>${f.role==="growth"?"growing":f.role}`;
+  };
+  const stop=()=>{ if(growthTimer){clearInterval(growthTimer); growthTimer=null;} btn.textContent="▶"; };
+  slide.addEventListener("input",()=>{stop(); show(+slide.value);});
+  btn.addEventListener("click",()=>{
+    if(growthTimer){ stop(); return; }
+    btn.textContent="❚❚";
+    growthTimer=setInterval(()=>show((+slide.value+1)%frames.length), 700);
+  });
+  show(0);
+}
+function closeModal(){
+  if(growthTimer){clearInterval(growthTimer); growthTimer=null;}
+  document.getElementById("modal").classList.remove("open");
+}
+
+function seedBadge(t){
+  if(!t.seed_source) return "";
+  if(t.seed_source==="ball") return `<span class="badge ball">2 mm ball</span>`;
+  const ds=t.dscale||{};
+  return `<span class="badge">quantum seed · ${ds.claim_level||"L0"}</span>`
+    + ` <span style="font-size:11px;color:var(--mut)">${t.seed_source}${t.diag&&t.diag.seed_cells?(' · '+t.diag.seed_cells+' vox'):''}</span>`;
+}
+
+function renderDScale(){
+  const el=document.getElementById("dscale"), ds=COHORT.dscale;
+  if(!ds){ el.style.display="none"; return; }
+  const fmt=v=>(v===null||v===undefined)?"—":(typeof v==="number"?(Math.abs(v)<1e-3&&v!==0?v.toExponential(2):v.toFixed(3)):v);
+  const rows=(ds.claims||[]).map(c=>`<tr><td>${c.family}</td><td>${c.witness}</td>`
+    + `<td class="num">${fmt(c.value)}${c.sigma?(' ± '+fmt(c.sigma)):''}</td>`
+    + `<td class="${c.passed?'ok':'no'}">${c.claim_level}${c.passed?'':' (not passed)'}</td>`
+    + `<td style="font-size:12px;color:var(--mut)">${c.label||""}<br>${c.note||""}</td></tr>`).join("");
+  const g=ds.goldilocks||{};
+  const gold = g.empty===true ? "Goldilocks zone (alive and BP-hard): empty for this budget and target."
+    : g.empty===false ? `Goldilocks zone (alive and BP-hard): ${g.cells.length} cell(s) — `
+        + g.cells.map(c=>`${c.family} ${c.n_qubits} q, t=${c.depth_or_t}`).join("; ")
+        + ". A frontier candidate for hardware, not an advantage claim."
+    : "Goldilocks zone: no survival map computed for this budget yet.";
+  el.innerHTML = `<h3>Quantum growth (D-SCALE)</h3>
+    <div class="sub">budget ${ds.budget} q · ${ds.target_label||ds.target} · ${ds.sim_label}${ds.truncated?' · truncated (20-min cap)':''}</div>
+    <div class="wrapx"><table><thead><tr><th>family</th><th>witness</th><th>value</th><th>claim</th><th>label</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <div class="gold">${gold}</div>
+    ${ds.map_png_data?`<img src="${ds.map_png_data}" alt="survive-vs-simulable map">`:''}
+    <div class="honest"><b>Honest label.</b> ${ds.honest_label||"simulated; the seed shape is a quantum snapshot; growth and image are classical; no classical-hardness claim"}.
+    Survives (L1 / L1′) and BP-hard (frontier) are separate columns: GHZ and PMD never count as frontier.</div>`;
+}
 
 function renderHonest(){
   const credit = COHORT.ct_attribution
@@ -307,5 +412,5 @@ document.getElementById("close").addEventListener("click",closeModal);
 document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 
-renderHero(); renderMeta(); renderHist(); renderTypeMix(); renderGrid(); renderHonest();
+renderHero(); renderMeta(); renderHist(); renderTypeMix(); renderGrid(); renderDScale(); renderHonest();
 </script>

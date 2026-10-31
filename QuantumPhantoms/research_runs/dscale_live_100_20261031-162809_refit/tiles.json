@@ -1,0 +1,1525 @@
+{
+  "honest_label": "Tumour parameters (size, type, margin, lobe) come from a certified-quantum roll (job-level CHSH; simulator runs are labelled as such). Growth is a classical cellular automaton (Kansal\u2013Torquato layers + Pixel2Cancer pleura wall, calibrated to published volume-doubling times (verify)). The image is a classical 3-D insertion into a public LIDC-IDRI CT scanned on a Siemens scanner, with that scan's own measured blur and noise; lesion shape and HU come from a parameter-only library fitted to LIDC nodules (no patient voxels in the generator). The quantum bits seed growth and appearance: replayable provenance, not realism. All nodules sit in one host scan (one patient background).",
+  "ct_attribution": "Host CT: LIDC-IDRI-0481 (public LIDC-IDRI collection, TCIA, CC BY 3.0, https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX), scanned on a Siemens Definition (kernel B45f, 1 mm). Public case; no Siemens involvement.",
+  "quantum_run": {
+    "backend_name": "AerSimulator",
+    "job_id": "",
+    "chsh_value": 2.83349609375,
+    "chsh_settings": {
+      "a0": 0.0,
+      "a1": 1.5707963267948966,
+      "b0": 0.7853981633974483,
+      "b1": -0.7853981633974483
+    },
+    "raw_bits": [
+      "100000110",
+      "001010010",
+      "110010010",
+      "110101101",
+      "010000000",
+      "100000000",
+      "110101010",
+      "000000000",
+      "110010011110010011",
+      "001100010000100010"
+    ],
+    "shot_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+    ]
+  },
+  "tiles": [
+    {
+      "tile_id": "tile_0_0",
+      "png_path": "tiles/zoom_0_0.png",
+      "size_mm": 7.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "RML",
+      "lineage_id": "tile0",
+      "generation": 0,
+      "shot_index": 0,
+      "insert_xy": [
+        117,
+        267
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_157.png",
+      "bbox": [
+        0.20939,
+        0.50236,
+        0.03824,
+        0.03824
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 157,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 2.82,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 358,
+          "diameter_mm": 3.29,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 724,
+          "diameter_mm": 3.82,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 1089,
+          "diameter_mm": 4.45,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 1491,
+          "diameter_mm": 5.17,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 1918,
+          "diameter_mm": 6.02,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 2427,
+          "diameter_mm": 7.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_0_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 2517,
+          "diameter_mm": 7.17,
+          "role": "follow-up",
+          "png_path": "tiles/grow_0_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "dd6b1d7908d49cff7b423f32848354bfa7c9a479078243d908c454024ea947d1",
+      "seed_hex_appearance": "dec6e4108578fee6c261286e47eb981cd1facdcbc659f3264ddb73ea064fa781",
+      "diag": {
+        "day_baseline": 2427,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.002,
+        "diameter_follow_up_mm": 7.1716,
+        "vdt_d": 621.7,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 41\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 2.821,
+        "params_type": "ground-glass",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 94,
+        "hu_source": "library",
+        "hu_core": -497.0,
+        "sigma_edge_mm": 1.158,
+        "filled_holes_vox": 6,
+        "volume_pd_pct": -0.01,
+        "sigma_ratio_in_out": 0.912,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_1_0",
+      "png_path": "tiles/zoom_1_0.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "LLL",
+      "lineage_id": "tile1",
+      "generation": 0,
+      "shot_index": 1,
+      "insert_xy": [
+        374,
+        358
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_120.png",
+      "bbox": [
+        0.71133,
+        0.68008,
+        0.03827,
+        0.03827
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 120,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.19,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 76,
+          "diameter_mm": 1.63,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 158,
+          "diameter_mm": 2.16,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 243,
+          "diameter_mm": 2.9,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 361,
+          "diameter_mm": 3.88,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 500,
+          "diameter_mm": 5.21,
+          "role": "growth",
+          "png_path": "tiles/grow_1_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 687,
+          "diameter_mm": 7.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_1_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 777,
+          "diameter_mm": 7.99,
+          "role": "follow-up",
+          "png_path": "tiles/grow_1_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "ff1545d0c188dd8e707f12e13d446ea85e0777141385431aa1249ad4c06d84b0",
+      "seed_hex_appearance": "4f23ac051a63d79d339d1658a0fc96307234918d5a4717b07e967c25ef2fc7b2",
+      "diag": {
+        "day_baseline": 687,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.0134,
+        "diameter_follow_up_mm": 7.9917,
+        "vdt_d": 158.9,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 918 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.187,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 7,
+        "hu_source": "f2.1-constant",
+        "hu_core": -7.3,
+        "sigma_edge_mm": 0.717,
+        "filled_holes_vox": 5,
+        "volume_pd_pct": 1.98,
+        "sigma_ratio_in_out": 0.983,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_2_0",
+      "png_path": "tiles/zoom_2_0.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "LUL",
+      "lineage_id": "tile2",
+      "generation": 0,
+      "shot_index": 2,
+      "insert_xy": [
+        333,
+        354
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_178.png",
+      "bbox": [
+        0.63127,
+        0.67228,
+        0.03825,
+        0.03825
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 178,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.31,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 45,
+          "diameter_mm": 3.76,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 104,
+          "diameter_mm": 4.26,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 151,
+          "diameter_mm": 4.82,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 199,
+          "diameter_mm": 5.46,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 262,
+          "diameter_mm": 6.18,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 328,
+          "diameter_mm": 7.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_2_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 418,
+          "diameter_mm": 8.09,
+          "role": "follow-up",
+          "png_path": "tiles/grow_2_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "4d38fcb664520bed5cd3e18487e52c0d8fcfac3ea7416ffe14f6acbfa72bd2ed",
+      "seed_hex_appearance": "dbd7063d0f3841d96ac973db8b0e5205693f7f31176f327d3a1fc6bc940e11cf",
+      "diag": {
+        "day_baseline": 328,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.0004,
+        "diameter_follow_up_mm": 8.0914,
+        "vdt_d": 153.1,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 11742 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.311,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 152,
+        "seed_scaled": 0.976,
+        "hu_source": "f2.1-constant",
+        "hu_core": 51.8,
+        "sigma_edge_mm": 0.05,
+        "filled_holes_vox": 8,
+        "volume_pd_pct": 2.58,
+        "sigma_ratio_in_out": 1.02,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_3_0",
+      "png_path": "tiles/zoom_3_0.png",
+      "size_mm": 13.0,
+      "type": "calcified",
+      "margin": "lobulated",
+      "lobe": "LUL",
+      "lineage_id": "tile3",
+      "generation": 0,
+      "shot_index": 3,
+      "insert_xy": [
+        361,
+        210
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_162.png",
+      "bbox": [
+        0.67607,
+        0.38115,
+        0.05802,
+        0.05802
+      ],
+      "morphology_source": "quantum",
+      "renderer": "procedural-3d",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 162,
+      "seed_hex_geometry": "98dca0980ffda96fe1813228bebc0830abf5f2fcb40e40ebbe7b00b3a7928b17",
+      "seed_hex_appearance": "01310f602a6dd13b5dff95b71473b48bb1bb2bda61bb95ae58997784fdf71f2c",
+      "diag": {
+        "hu_source": "procedural-f2.1",
+        "sigma_ratio_in_out": 1.399,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      }
+    },
+    {
+      "tile_id": "tile_4_0",
+      "png_path": "tiles/zoom_4_0.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "smooth",
+      "lobe": "RLL",
+      "lineage_id": "tile4",
+      "generation": 0,
+      "shot_index": 4,
+      "insert_xy": [
+        214,
+        371
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_97.png",
+      "bbox": [
+        0.4037,
+        0.71034,
+        0.02854,
+        0.02854
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 97,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.79,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 49,
+          "diameter_mm": 2.05,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 104,
+          "diameter_mm": 2.36,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 152,
+          "diameter_mm": 2.68,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 201,
+          "diameter_mm": 3.06,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 251,
+          "diameter_mm": 3.5,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 311,
+          "diameter_mm": 4.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_4_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 401,
+          "diameter_mm": 4.8,
+          "role": "follow-up",
+          "png_path": "tiles/grow_4_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "5c3dc744a9f62a99b9ecd55f7494d7ae4c9c626329fed3283f2a6f5f67075cd2",
+      "seed_hex_appearance": "433bb62e19a238bf3d235bcd3e050eeacc7fae6acda0cfeea1d691b2d2e559e4",
+      "diag": {
+        "day_baseline": 311,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0046,
+        "diameter_follow_up_mm": 4.8026,
+        "vdt_d": 124.0,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 3117 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.789,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 24,
+        "seed_scaled": 0.763,
+        "hu_source": "f2.1-constant",
+        "hu_core": -30.0,
+        "sigma_edge_mm": 1.679,
+        "filled_holes_vox": 0,
+        "volume_pd_pct": 0.02,
+        "sigma_ratio_in_out": null,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_5_0",
+      "png_path": "tiles/zoom_5_0.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "smooth",
+      "lobe": "RML",
+      "lineage_id": "tile5",
+      "generation": 0,
+      "shot_index": 5,
+      "insert_xy": [
+        88,
+        382
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_101.png",
+      "bbox": [
+        0.15759,
+        0.73181,
+        0.02857,
+        0.02857
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 101,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.68,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 49,
+          "diameter_mm": 1.95,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 93,
+          "diameter_mm": 2.27,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 151,
+          "diameter_mm": 2.6,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 201,
+          "diameter_mm": 3.01,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 262,
+          "diameter_mm": 3.46,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 316,
+          "diameter_mm": 4.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_5_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 406,
+          "diameter_mm": 5.03,
+          "role": "follow-up",
+          "png_path": "tiles/grow_5_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "49e11ecafd303591b0c9d9d86e217a81fa3fc9de004082f3ef65c681f4895514",
+      "seed_hex_appearance": "03940f89804ba8f8ceb03491e2704a50795d3b2f82c5bd36e0c08ed1464d009b",
+      "diag": {
+        "day_baseline": 316,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0095,
+        "diameter_follow_up_mm": 5.0297,
+        "vdt_d": 69.9,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 1940 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.684,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 20,
+        "seed_scaled": 0.543,
+        "hu_source": "f2.1-constant",
+        "hu_core": 20.9,
+        "sigma_edge_mm": 0.835,
+        "filled_holes_vox": 1,
+        "volume_pd_pct": 0.0,
+        "sigma_ratio_in_out": 0.953,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_6_0",
+      "png_path": "tiles/zoom_6_0.png",
+      "size_mm": 7.0,
+      "type": "part-solid",
+      "margin": "lobulated",
+      "lobe": "LUL",
+      "lineage_id": "tile6",
+      "generation": 0,
+      "shot_index": 6,
+      "insert_xy": [
+        392,
+        340
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_149.png",
+      "bbox": [
+        0.74651,
+        0.64495,
+        0.03822,
+        0.03822
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 149,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.42,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 139,
+          "diameter_mm": 3.86,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 286,
+          "diameter_mm": 4.36,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 449,
+          "diameter_mm": 4.9,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 614,
+          "diameter_mm": 5.52,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 816,
+          "diameter_mm": 6.22,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 1036,
+          "diameter_mm": 7.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_6_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 1126,
+          "diameter_mm": 7.32,
+          "role": "follow-up",
+          "png_path": "tiles/grow_6_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "e916e194aeb60550dcbbec8a3711f9f956f637f492edd36efcd7a57b950e3c95",
+      "seed_hex_appearance": "4e1d290e11dc2db83d4ea891a62c20bac8eb0162f7de5aea0cd23a1ea10d5aa3",
+      "diag": {
+        "day_baseline": 1036,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.0004,
+        "diameter_follow_up_mm": 7.3231,
+        "vdt_d": 382.6,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 41\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.423,
+        "params_type": "part-solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 168,
+        "seed_scaled": 0.891,
+        "hu_source": "f2.1-constant core + library rim",
+        "hu_core": -6.2,
+        "sigma_edge_mm": 1.677,
+        "filled_holes_vox": 3,
+        "volume_pd_pct": -0.0,
+        "sigma_ratio_in_out": 0.843,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_7_0",
+      "png_path": "tiles/zoom_7_0.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "smooth",
+      "lobe": "RUL",
+      "lineage_id": "tile7",
+      "generation": 0,
+      "shot_index": 7,
+      "insert_xy": [
+        190,
+        222
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_134.png",
+      "bbox": [
+        0.35682,
+        0.41932,
+        0.02854,
+        0.02854
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 134,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.79,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 58,
+          "diameter_mm": 2.05,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 96,
+          "diameter_mm": 2.34,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 141,
+          "diameter_mm": 2.7,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 175,
+          "diameter_mm": 3.07,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 229,
+          "diameter_mm": 3.5,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 274,
+          "diameter_mm": 4.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_7_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 364,
+          "diameter_mm": 4.9,
+          "role": "follow-up",
+          "png_path": "tiles/grow_7_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "ecba1ffa7fbcd3de340d224eaa304343b3b856aa1b8f153cf8e936f11dca7453",
+      "seed_hex_appearance": "5b1c066291a22b5174648c819851fdd6417794de10d1f75a11e985542de1d5c0",
+      "diag": {
+        "day_baseline": 274,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0046,
+        "diameter_follow_up_mm": 4.8973,
+        "vdt_d": 168.5,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 4 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.789,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 24,
+        "seed_scaled": 0.786,
+        "hu_source": "f2.1-constant",
+        "hu_core": 22.4,
+        "sigma_edge_mm": 0.958,
+        "filled_holes_vox": 0,
+        "volume_pd_pct": -0.02,
+        "sigma_ratio_in_out": null,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_8_0",
+      "png_path": "tiles/zoom_8_0.png",
+      "size_mm": 26.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "LUL",
+      "lineage_id": "pair8",
+      "generation": 0,
+      "shot_index": 8,
+      "insert_xy": [
+        385,
+        249
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_158.png",
+      "bbox": [
+        0.70213,
+        0.4365,
+        0.09965,
+        0.09965
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 158,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 5.32,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 118,
+          "diameter_mm": 6.95,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 278,
+          "diameter_mm": 9.04,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 492,
+          "diameter_mm": 11.77,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 778,
+          "diameter_mm": 15.33,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 1158,
+          "diameter_mm": 19.96,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 1665,
+          "diameter_mm": 26.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_8_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 1755,
+          "diameter_mm": 27.01,
+          "role": "follow-up",
+          "png_path": "tiles/grow_8_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "f7187973ac5ef75f6f175d325c0d32dc4bea025c9be1363b9242fc0f316f1281",
+      "seed_hex_appearance": "9d0d9baa21725633b18e214e675da7ab20c40cd8b330d7ef9a6c1767c1ccc3fb",
+      "diag": {
+        "day_baseline": 1665,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 26.0067,
+        "diameter_follow_up_mm": 27.0083,
+        "vdt_d": 547.9,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 99\u00b3 at 0.5 mm; hard (outside lung) 23268 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 5.324,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 632,
+        "hu_source": "f2.1-constant",
+        "hu_core": 0.5,
+        "sigma_edge_mm": 0.672,
+        "filled_holes_vox": 344,
+        "volume_pd_pct": 0.01,
+        "sigma_ratio_in_out": 1.001,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_8_1",
+      "png_path": "tiles/zoom_8_1.png",
+      "size_mm": 26.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "LUL",
+      "lineage_id": "pair8",
+      "generation": 1,
+      "shot_index": 8,
+      "insert_xy": [
+        419,
+        228
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_155.png",
+      "bbox": [
+        0.76858,
+        0.39553,
+        0.09956,
+        0.09956
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 155,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.98,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_0.png"
+        },
+        {
+          "k": 1,
+          "day": 136,
+          "diameter_mm": 5.45,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_1.png"
+        },
+        {
+          "k": 2,
+          "day": 321,
+          "diameter_mm": 7.45,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_2.png"
+        },
+        {
+          "k": 3,
+          "day": 589,
+          "diameter_mm": 10.19,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_3.png"
+        },
+        {
+          "k": 4,
+          "day": 956,
+          "diameter_mm": 13.91,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_4.png"
+        },
+        {
+          "k": 5,
+          "day": 1491,
+          "diameter_mm": 19.03,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_5.png"
+        },
+        {
+          "k": 6,
+          "day": 2285,
+          "diameter_mm": 26.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_8_1_6.png"
+        },
+        {
+          "k": 7,
+          "day": 2375,
+          "diameter_mm": 26.72,
+          "role": "follow-up",
+          "png_path": "tiles/grow_8_1_7.png"
+        }
+      ],
+      "seed_hex_geometry": "11e89783eb7986543a5d4478ddb62c9c9850c4606020f2ef1d039645252c9365",
+      "seed_hex_appearance": "ea7552bbab9a92131e5f248c2b2a7bfff6229f0f815a736a128d225e460baeaa",
+      "diag": {
+        "day_baseline": 2285,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 26.0066,
+        "diameter_follow_up_mm": 26.719,
+        "vdt_d": 775.9,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 4447,
+        "touches_box_edge": false,
+        "lattice": "lattice 99\u00b3 at 0.5 mm; hard (outside lung) 517036 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.985,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 265,
+        "hu_source": "f2.1-constant",
+        "hu_core": 80.8,
+        "sigma_edge_mm": 1.48,
+        "filled_holes_vox": 109,
+        "volume_pd_pct": 0.03,
+        "sigma_ratio_in_out": 0.944,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_9_0",
+      "png_path": "tiles/zoom_9_0.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "lobulated",
+      "lobe": "RUL",
+      "lineage_id": "pair9",
+      "generation": 0,
+      "shot_index": 9,
+      "insert_xy": [
+        229,
+        311
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_198.png",
+      "bbox": [
+        0.42815,
+        0.58831,
+        0.03823,
+        0.03823
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 198,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.48,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 49,
+          "diameter_mm": 3.91,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 100,
+          "diameter_mm": 4.39,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 152,
+          "diameter_mm": 4.93,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 206,
+          "diameter_mm": 5.55,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 264,
+          "diameter_mm": 6.23,
+          "role": "growth",
+          "png_path": "tiles/grow_9_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 335,
+          "diameter_mm": 7.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_9_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 425,
+          "diameter_mm": 8.05,
+          "role": "follow-up",
+          "png_path": "tiles/grow_9_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "a792f57974d407b72a6df019b1a979579e5fefa8f84bb57b8c0b673206eef6f8",
+      "seed_hex_appearance": "8edb044440d68abd69b69fd4e2b08931686f1e5ab00ffa92087ea9e677949b6b",
+      "diag": {
+        "day_baseline": 335,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.0053,
+        "diameter_follow_up_mm": 8.0498,
+        "vdt_d": 187.8,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 8625 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.477,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 176,
+        "seed_scaled": 0.978,
+        "hu_source": "f2.1-constant",
+        "hu_core": 70.1,
+        "sigma_edge_mm": 1.741,
+        "filled_holes_vox": 1,
+        "volume_pd_pct": 0.0,
+        "sigma_ratio_in_out": 0.65,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_9_1",
+      "png_path": "tiles/zoom_9_1.png",
+      "size_mm": 7.0,
+      "type": "solid",
+      "margin": "lobulated",
+      "lobe": "LLL",
+      "lineage_id": "pair9",
+      "generation": 1,
+      "shot_index": 9,
+      "insert_xy": [
+        216,
+        300
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "AerSimulator",
+      "job_id": "",
+      "chsh_value": 2.83349609375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_198.png",
+      "bbox": [
+        0.40275,
+        0.56681,
+        0.03825,
+        0.03825
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 198,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 2.79,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_0.png"
+        },
+        {
+          "k": 1,
+          "day": 46,
+          "diameter_mm": 3.27,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_1.png"
+        },
+        {
+          "k": 2,
+          "day": 102,
+          "diameter_mm": 3.8,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_2.png"
+        },
+        {
+          "k": 3,
+          "day": 152,
+          "diameter_mm": 4.43,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_3.png"
+        },
+        {
+          "k": 4,
+          "day": 212,
+          "diameter_mm": 5.16,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_4.png"
+        },
+        {
+          "k": 5,
+          "day": 280,
+          "diameter_mm": 6.01,
+          "role": "growth",
+          "png_path": "tiles/grow_9_1_5.png"
+        },
+        {
+          "k": 6,
+          "day": 364,
+          "diameter_mm": 7.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_9_1_6.png"
+        },
+        {
+          "k": 7,
+          "day": 454,
+          "diameter_mm": 8.06,
+          "role": "follow-up",
+          "png_path": "tiles/grow_9_1_7.png"
+        }
+      ],
+      "seed_hex_geometry": "d97388b73011585272fe2c644792383e790095967edf87408281ef57021d51da",
+      "seed_hex_appearance": "f4d4c8a770696368acfd199a4e8550e0ce3e84c612e7c683b90369b4696cced8",
+      "diag": {
+        "day_baseline": 364,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 7.0069,
+        "diameter_follow_up_mm": 8.0584,
+        "vdt_d": 127.8,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 2518 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 2.79,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+        "seed_cells": 91,
+        "hu_source": "f2.1-constant",
+        "hu_core": -6.6,
+        "sigma_edge_mm": 1.031,
+        "filled_holes_vox": 5,
+        "volume_pd_pct": -0.0,
+        "sigma_ratio_in_out": 1.041,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:30",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    }
+  ],
+  "renderer_version": "imaging-grown@RE-2609cbe",
+  "provenance": {
+    "library_sha256": "81155a4b4f4b2e301de74be67d6ccd97722ffc914927c50ad8e6a8d1793ee50f",
+    "params_lung_sha256": "3704e61f20bb69521ec4d56e1c5b87c2d769b68bff447743f660d8a7bf94947a",
+    "ported_from": "QuantumPhantoms/plans/relatedPapers/reverse-engineering @ 2609cbe (E, F)",
+    "hosts": [
+      {
+        "host_id": "LIDC-IDRI-0481",
+        "manufacturer": "SIEMENS",
+        "model": "Definition",
+        "kernel": "B45f",
+        "slice_thickness": "1",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.107351566259572521472765997306",
+        "fingerprint": {
+          "psf_sigma_mm_zyx": [
+            0.6142,
+            0.5965,
+            0.5965
+          ],
+          "noise_sigma_hu": 56.23,
+          "f50_cyc_per_mm": 0.3401,
+          "plausibility": {
+            "checks": {
+              "sigma_xy_mm_in_0.4_1.5": true,
+              "sigma_z_mm_in_0.3t_1.0t": true,
+              "noise_sigma_hu_in_5_60": true
+            },
+            "verdict": "PASS"
+          },
+          "source": "cached"
+        }
+      }
+    ]
+  },
+  "dscale": {
+    "budget": 100,
+    "target": "ibm_marrakesh",
+    "mode": "hardware",
+    "sim_label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+    "recipe": "composite",
+    "claims": [
+      {
+        "family": "ghz-spine",
+        "claim_level": "L0",
+        "witness": "DFE GHZ fidelity (GME)",
+        "value": 0.0471017605168426,
+        "sigma": 0.027614845749318426,
+        "k": 2,
+        "passed": false,
+        "label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+        "note": "N=48, kept 0.788; ghz2=0.945; stabilizer state (BP chi = 2): survives, not hard"
+      },
+      {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness": "QCA pair negativity (Bonferroni)",
+        "value": 0.028186960010257986,
+        "sigma": 0.00860842180458586,
+        "k": 2,
+        "passed": true,
+        "label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+        "note": "30 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+      }
+    ],
+    "goldilocks": {
+      "cells": [],
+      "empty": null,
+      "ref_kinds": [],
+      "note": "live proof of concept: the survive-vs-simulable map is a simulation product (python -m dscale.survival)"
+    },
+    "seed_shapes": "seed_shapes.npz",
+    "allocation_ref": "allocation.json",
+    "param_grid_sha256": "",
+    "shots": 2000,
+    "repeats": 1,
+    "truncated": false,
+    "run_key": "dscale_live_100_20261031-162809",
+    "target_label": "ibm_marrakesh (156 q heavy-hex)",
+    "job_id": "dbj0i556p51s73cjqmgg",
+    "honest_label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg; proof of concept (one job, n = 1, ~1 QPU-minute); the seed shape is a quantum snapshot measured on the device; growth and image are classical; no classical-hardness claim"
+  }
+}

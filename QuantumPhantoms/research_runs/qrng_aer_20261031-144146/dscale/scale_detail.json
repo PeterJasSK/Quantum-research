@@ -1,0 +1,1176 @@
+{
+ "param_grid": {
+  "ghz-spine": {
+   "N": [
+    6,
+    12,
+    24,
+    36,
+    48,
+    64,
+    92,
+    112
+   ],
+   "dd": [
+    true
+   ]
+  },
+  "ch-qca": {
+   "sites": [
+    12,
+    21,
+    24,
+    40,
+    100,
+    120
+   ],
+   "t": [
+    1,
+    2,
+    3,
+    4,
+    6
+   ],
+   "alpha": [
+    0.39269908169872414,
+    0.7853981633974483,
+    1.1780972450961724,
+    1.5707963267948966
+   ]
+  },
+  "pmd-bank": {
+   "process": {
+    "V": [
+     0.4,
+     0.6,
+     0.8,
+     0.95
+    ],
+    "Gamma": [
+     0.5,
+     0.7,
+     0.85
+    ],
+    "N": [
+     8,
+     16,
+     32
+    ],
+    "L": [
+     6,
+     8,
+     10
+    ]
+   },
+   "K": [
+    3,
+    8,
+    10
+   ]
+  },
+  "kicked-ising": {
+   "theta_h": [
+    0.0,
+    0.39269908169872414,
+    0.7853981633974483,
+    1.1780972450961724,
+    1.5707963267948966
+   ],
+   "steps": [
+    5,
+    20
+   ],
+   "chi": [
+    2,
+    4,
+    8
+   ]
+  }
+ },
+ "param_grid_sha256": "b033d0e13f96fce6e87ca4c414dae8b0325e3d773287ed88d7599a841096ed60",
+ "circuits": {
+  "ghz_spine_00.qasm": "b0ab6c845913da4302b535b0387bf8e3cc1e5570d65245fe21fd9c44e306e937",
+  "ghz_spine_01.qasm": "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+  "ghz_spine_02.qasm": "a465902c29acb0a64b64cb556789316affd70a2c7b86a3227b339689a1112c92",
+  "pmd_bank_00.qasm": "77edf31305fcc76f7ae5fe66c5f1bb9ac9fab302cb73853d6f5657429b4479f8",
+  "pmd_bank_01.qasm": "646325a72d2a92a16e98720422586d4c43217e78166c8b79c647b516636ed4a1",
+  "pmd_bank_02.qasm": "4605caf7c26c8eeb9aae856a97687f78b22516de80b6f4440f5a632d97435945",
+  "ch_qca_region_00.qasm": "67393e015c302356bea62a6b012592f35d75444e2b2fb282b54846bf1a689d2b",
+  "ch_qca_region_01.qasm": "1e7eeb705daaa4579c048ce75bde33ac3f9402ae88ffac3fc1635ad5eaf2f810"
+ },
+ "references": [],
+ "run_key": "qrng_aer_20261031-144146",
+ "draw_tile": "tile_0_0",
+ "ghz_spine": {
+  "N": 14,
+  "depth": 4,
+  "n_checks": 0,
+  "isa_depth": 22,
+  "isa_2q": 13,
+  "soma": {
+   "theta_fate": 0.6435011087932844,
+   "p_fate": 0.1,
+   "fates": [],
+   "claim_level": "L0",
+   "classical_surrogate": "Bernoulli(sin^2(theta/2)) coin per soma cell",
+   "source": "illustrative type x margin table; ordering after the Brock model risk factors (McWilliams et al., NEJM 2013); not fitted"
+  },
+  "hashes": [
+   "b0ab6c845913da4302b535b0387bf8e3cc1e5570d65245fe21fd9c44e306e937",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "a465902c29acb0a64b64cb556789316affd70a2c7b86a3227b339689a1112c92",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "3310c24fa5583b0966156c04495a9cf20f72c8c7f488d6f03c7f2b1784c0c460",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "fd0cecee7f6ec5677b790121e7d4c675068c9c5bd16ac2f5668e66f0d3c39ace",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "43b983bdec7335047806495075f6464a2aac231091d16c03766132ce32e94410",
+   "11314f4703b0759a185599a815963deb1ef24777f62b3c8189a4efaebd82c65f",
+   "42b6aea074aa2aac9fa35315f8afc268251ee18a101e9a5878c1e66d43e13a1c",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "10aa577f38ba81078f16472fa738af584386f28ad16e80a8af68d4a7a20b798a",
+   "3fb64f40887798ac95489641f01fcdfeb25b4e0f3d4f8c08020de3c2cdb701f0",
+   "a77628837eb14ec78ca947f9a7c13072df7cc86e8c365294abf448c810cc6c78",
+   "79e2d93e01515af863e7173915977e65fffd22bb31b1b6740110a0657c21dd4a",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "dc55fb7be874f3798baf1e4eaa50c1c35a21c8b4b7c17d8d365cb746cb7cf0d6",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "7d96d445925de4d5b42940c677231abd88dd763247b38d8f2fc27509d316cc04",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "b8465eeea5f6c83a326610af78085dbe2e903d4ca7fa983d1a500419be64eaf2",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "e06c48cf3cc1b69ceb9d18f3f70ea579c694ea903e4a5895c164277d8e9ebe4a",
+   "efa33c3d41c0a5f28c20bd1f951d8cb7810cc51e9fb6c5027e24c1c81af05a02",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "423622c8020ecc4b7e2e9e07e59d57a7f3eb7fb5f1dd861fdb3585444e446693",
+   "eaf0b8b67e97ce8e3e78f06e9df2db18a04ea12c2a874d95665eafa5a288f396",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "004d29bb4018bddea0dd5a11cfc885276779e725ab3b430db36b4aed00d3b4ce",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "dacd3d58277c8ade93552e6e0cd7f2eb155069daa9c54123aca545eab4958391",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be",
+   "44948a44b6c6d9817acb58e9e3355143c8aed2d64c9977aaecc8b6e4dd9691be"
+  ],
+  "sim_label": "simulated: ideal",
+  "trex": false,
+  "kept_fraction": 1.0,
+  "F_dfe": 1.0,
+  "F_sigma": 0.015811388300841896,
+  "gme": true,
+  "gme_k3": true,
+  "ghz2": 2.0,
+  "ghz2_sigma": 0.015811388300841896,
+  "ghz2_alive": true,
+  "repeats": 2
+ },
+ "pmd_bank": {
+  "process": {
+   "V": 0.4,
+   "Gamma": 0.7,
+   "N": 8,
+   "L": 8
+  },
+  "machines": [
+   {
+    "k": "pmd0",
+    "path": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     17
+    ],
+    "d_kl_q": 0.003202090910037577,
+    "n_words": 8000,
+    "floor": 0.002874119026770982,
+    "d_kl_classical": {
+     "1": 0.007929340550948771,
+     "2": 0.0007429217906410452
+    },
+    "gap_over_floor": -0.8556253573671098,
+    "passed": false
+   }
+  ],
+  "hashes": [
+   "77edf31305fcc76f7ae5fe66c5f1bb9ac9fab302cb73853d6f5657429b4479f8",
+   "646325a72d2a92a16e98720422586d4c43217e78166c8b79c647b516636ed4a1",
+   "4605caf7c26c8eeb9aae856a97687f78b22516de80b6f4440f5a632d97435945",
+   "77edf31305fcc76f7ae5fe66c5f1bb9ac9fab302cb73853d6f5657429b4479f8",
+   "646325a72d2a92a16e98720422586d4c43217e78166c8b79c647b516636ed4a1",
+   "4605caf7c26c8eeb9aae856a97687f78b22516de80b6f4440f5a632d97435945"
+  ],
+  "sim_label": "simulated: ideal",
+  "passed_all": false,
+  "control_arm": {
+   "kind": "mid-circuit (RE D-5 builder, measure + reset per step)",
+   "sim_label": "simulated: ideal",
+   "d_kl_q": 0.004925685922646653,
+   "n_words": 4000,
+   "floor": 0.005748238053541964,
+   "d_kl_classical": {
+    "1": 0.007929340550948771,
+    "2": 0.0007429217906410452
+   },
+   "gap_over_floor": -0.7276602139725686,
+   "passed": false
+  },
+  "floor": 0.002874119026770982
+ },
+ "ch_qca_region": {
+  "sites": 12,
+  "rule": "parity",
+  "alpha": 1.5707963267948966,
+  "init": [
+   62,
+   77,
+   85
+  ],
+  "echo": [
+   {
+    "t": 1,
+    "F": 1.0,
+    "sigma": 0.00025,
+    "alive": true
+   },
+   {
+    "t": 2,
+    "F": 1.0,
+    "sigma": 0.00025,
+    "alive": true
+   },
+   {
+    "t": 3,
+    "F": 1.0,
+    "sigma": 0.00025,
+    "alive": true
+   }
+  ],
+  "random_band": 0.000244140625,
+  "sim_label": "simulated: ideal",
+  "swaps": 0
+ },
+ "seed_tiles": {
+  "tile_0_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    7,
+    11,
+    30
+   ],
+   "active": [
+    10,
+    12,
+    18,
+    27,
+    29,
+    30
+   ],
+   "seed_cells": 91,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.011139175785861075,
+     "sigma": 0.006510580049360472,
+     "p": 0.043546605816023244,
+     "p_bonf": 0.17418642326409298,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": 0.05653590870018137,
+     "sigma": 0.006174608217273774,
+     "p": 2.6880063449325805e-20,
+     "p_bonf": 1.0752025379730322e-19,
+     "passed": true
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "545dfe156a59063abaa7a0eafe6e2ef4e6cd6d52b93d11572841c3bcf64e8331",
+    "694aeda631061497c966a7858230b07f6987098e10a66e4dd644a56cc12a26d9",
+    "4011660fc3be2461a90415a4895c56178b01a8d8534e647b90c356ac84b0224d",
+    "d6450f6f6b414b7c430197ec7a375ecf9258bf4e3fceddd1c0a800cbe7c5c427",
+    "19f053ec5fa4a25bc598cf89efebc286e0471129e5e4878b0ee57f3ad73bd872",
+    "56e4d6902722fcb2ffc65df6c37559e3845bd66843fe546d192d12806403924e",
+    "b45d338b30794d9cc36734f1649febabf6d9e2c042cb0100d95872c000124e23",
+    "9a9253338e7c3fb5dfed9c5206578e425b47722ec1d9287fb9aa775734b50faf",
+    "353a567609eecfd9338b82dd89757b75aca38a042d3abdffbd9269ae30f9b8e6",
+    "545dfe156a59063abaa7a0eafe6e2ef4e6cd6d52b93d11572841c3bcf64e8331"
+   ],
+   "type": "ground-glass",
+   "size_mm": 7.0
+  },
+  "tile_1_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    14,
+    28
+   ],
+   "active": [
+    9,
+    10,
+    11,
+    14,
+    15,
+    17,
+    18,
+    19,
+    27,
+    28,
+    29,
+    31
+   ],
+   "seed_cells": 241,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 9.662476898325227e-05,
+     "sigma": 0.0039127152529083555,
+     "p": 0.4901490945497818,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": 0.15741766171592234,
+     "sigma": 0.006200886557865295,
+     "p": 1.7858325814814457e-142,
+     "p_bonf": 7.143330325925783e-142,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.00010053203005319496,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.03801801457461641,
+     "sigma": 0.005386750383685254,
+     "p": 8.464657290674628e-13,
+     "p_bonf": 3.3858629162698513e-12,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "9a16ce389e4dd8bcb7145848c27ba243f836266929c18ef762af2371205aecdf",
+    "9c6115aaf312af338f08c7350a175905f40d7e0907fbc8e621290679434fb4c1",
+    "8d867174fdfee1622d343798d359d764860daf89777f1b9b020edb69f711f76e",
+    "aebfae085b7fd9f3e0ada1ad1d9a7b0a3c150f6ee034de0b338c1f263ec06acf",
+    "09962b2701817e329212215fbd1066279a192e9c949f42d8b0e926e9906615a3",
+    "03d5659f89b51f760000919e6f7356f33761096c62df202f2e2f6df1879fb56d",
+    "964b3fdcfba855d21c2399f89c1d0712abea47293d56b1752cd05c39c6334253",
+    "d184167bf87c163d8f470c1cb53f2d8d9c1539ecc46997c5454b64118a3e11bc",
+    "4a6b8e92db5a4d1ad2cb252571d5f016f198408ec58597c6fbe0eb0596285315",
+    "9a16ce389e4dd8bcb7145848c27ba243f836266929c18ef762af2371205aecdf"
+   ],
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_2_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    17,
+    27
+   ],
+   "active": [
+    7,
+    8,
+    10,
+    17,
+    27,
+    28,
+    29
+   ],
+   "seed_cells": 111,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": -0.0,
+     "sigma": 0.002132719170829481,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": 0.01388852475073493,
+     "sigma": 0.006182565720697726,
+     "p": 0.012339151991353926,
+     "p_bonf": 0.0493566079654157,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.001957124956558251,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 5.4149994302597254e-05,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "bd3e75a40b336f6d6d21e88d6b4c8e0afcc84858b453a083d4f8ec27df58ac99",
+    "fd92c801ecc6c942a08716d68c4cd2e28445bf14919fd6b33d433d343b53f812",
+    "914a3719977b4ee2536c9a4ee5af16aae1e14f69f127569b344020d523b40770",
+    "f9d0cb91fbbd3e7d171c5daae992887a2e884448936994d1c80dc551c875c0d1",
+    "75ab124b738c02a9d48a78f94b20aba35bb61b6a8ee17b42f72da8358e1a91f3",
+    "d74d02abf9bd337bbd6f6fd46b71fe78419ede5fa464358f9ddb8f6bcbbba6a1",
+    "b3dce1361053e897012dc33950530c89bc0f8423edd8ff29bdb700026e91ffa0",
+    "7a158d89f67e2731c3d8276e89053a3da969c9dc5b47a559050404fd2351fc02",
+    "05bdc1381fd97cfd6343f340dadfa4565cdea5335f8f6b846036792e68801440",
+    "bd3e75a40b336f6d6d21e88d6b4c8e0afcc84858b453a083d4f8ec27df58ac99"
+   ],
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_3_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    18,
+    31,
+    35
+   ],
+   "active": [
+    11,
+    18,
+    19,
+    29,
+    30,
+    32,
+    34,
+    35
+   ],
+   "seed_cells": 203,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.019651068563777675,
+     "sigma": 0.007004769427893575,
+     "p": 0.002512832820723225,
+     "p_bonf": 0.0100513312828929,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": 0.016659505327835757,
+     "sigma": 0.005617639393106773,
+     "p": 0.0015106107467592197,
+     "p_bonf": 0.006042442987036879,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.05779299545163202,
+     "sigma": 0.0053501824231168985,
+     "p": 1.6828187641974514e-27,
+     "p_bonf": 6.731275056789806e-27,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "38d4b82e50a8106ebbffff4f48e4d2c31f366edb256c274640b995a552f3a80e",
+    "a2cb280ca90241f946b82053d3163cb41b8c93ccaa6ea142704333c1ec78a82d",
+    "d013efe231e8962e5698cc63b5ea39960e2d57cc7b4c3d07f0929769852a278e",
+    "32e8588b99113f06245279ee77c4334e8bf87de916d85d8a06ef653e43832630",
+    "7d875d1e3bff5c5d6a20372e48639e8c26597462e4b86d3324c1a1e098198c0b",
+    "bf7e2b28837fe93a3573a3d46154c3a91f10123623167f222ce398005ce19950",
+    "d73e4df58fa558c3cb43482474cb53b2f82e9000437738e3db8e51817228602a",
+    "798a4cf92b4cb96221dcf943bc4bb37ef4cd8950c945bf2d788f33dd8076a079",
+    "c0a55c4ca3e831bb883f81b490f867309bd2b4a1a20b53221f348f2396e3e1aa",
+    "38d4b82e50a8106ebbffff4f48e4d2c31f366edb256c274640b995a552f3a80e"
+   ],
+   "type": "calcified",
+   "size_mm": 13.0
+  },
+  "tile_4_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    13
+   ],
+   "active": [
+    7,
+    8,
+    9,
+    10,
+    14,
+    15
+   ],
+   "seed_cells": 73,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.009529745483334913,
+     "sigma": 0.005365306329128537,
+     "p": 0.037851693035052446,
+     "p_bonf": 0.15140677214020978,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": 0.05636231670352527,
+     "sigma": 0.005921787476326505,
+     "p": 8.84523485592654e-22,
+     "p_bonf": 3.538093942370616e-21,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": 0.01699742956584476,
+     "sigma": 0.006476661272778584,
+     "p": 0.004339932019911172,
+     "p_bonf": 0.017359728079644688,
+     "passed": true
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.028751411318077694,
+     "sigma": 0.006050536675029312,
+     "p": 1.0076804932671916e-06,
+     "p_bonf": 4.0307219730687666e-06,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "6b8f5f8b853bf20fe164f5c596fe9d126c530513e269769ed7fd18081b298a8f",
+    "4bbcabadc147398a873b281859f8d1a94bb53c1bbcc88aee01b2c714090b4f8b",
+    "7e0ba4e292cdce5060ae80b3db33ab3384508d690eea8c6a2dd4257e02ce3fa4",
+    "73f7c10e7e5ddee08a6240af0cd2420f3fbbebfd34a694df51e8064063708564",
+    "0684477dd309a027d0efde6d109c9ecd1802019ac157c3a8d6adfaebd7d725d0",
+    "004974cfdfb5b1fc2905ec2d8a872791bfe187ef77d2d6bb8d88baeb86bd923a",
+    "7a9956049ff76ca0a57aa65e444055d338aa4cb85c6be9f2882d38e75b3d75c5",
+    "153268d9c78a074de2a20cd51cfc7b86bf32ebba682f1b9ecfa10778d3a0ca3a",
+    "c339facd9d26ff116ddfdce038df8022d1e24948decb40af5b6f2107562ebe62",
+    "6b8f5f8b853bf20fe164f5c596fe9d126c530513e269769ed7fd18081b298a8f"
+   ],
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_5_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    10,
+    11
+   ],
+   "active": [
+    9,
+    10,
+    12,
+    13,
+    18,
+    31
+   ],
+   "seed_cells": 89,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.03657682770186647,
+     "sigma": 0.006182100659565058,
+     "p": 1.643628844183046e-09,
+     "p_bonf": 6.574515376732184e-09,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.00014540753035836054,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 0.003396270077525132,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "7f0bce82ca6ed9220f1257d01b06be5ae7bad4d59fa5141160c368f6f51f9bdc",
+    "8dae4a710695ecd350b9489df74513abf102ddbea59d269b80e05c55dbe92800",
+    "24134c5c7653f028182066eecfdbe3dab7f84db5d55f02534d314c8c49a7da79",
+    "5c218f253bf7701c2626763424954d21f01edb218ab051ef333d44844238ab5c",
+    "f9a494c04d958db8bd6af809d09d51f8cd377298d16047828b3bb7318fba124a",
+    "3322df5fb34592a6362c9415020adabfb7973df6974d5c9e7fce49e109d822d9",
+    "47b5b6d6cd40b9f861df74db71fe643d3815ef919f510980d669d841b0442114",
+    "84d1d0bec9cc95bd1a35ccd7e2225f7799b6433a53908d446815c08a5466b0e3",
+    "66502eaff437e3f4ab70e799dd7b16d2a239d91b68de25ca0cf259110ffec19a",
+    "7f0bce82ca6ed9220f1257d01b06be5ae7bad4d59fa5141160c368f6f51f9bdc"
+   ],
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_6_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    9,
+    11,
+    18
+   ],
+   "active": [
+    7,
+    8,
+    11,
+    12,
+    13,
+    18,
+    30,
+    31,
+    32
+   ],
+   "seed_cells": 207,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": -0.0,
+     "sigma": 0.0018305173293968846,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0012765124418560522,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": 0.09294947309589885,
+     "sigma": 0.006390934042846829,
+     "p": 3.189765909368901e-48,
+     "p_bonf": 1.2759063637475605e-47,
+     "passed": true
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.022017021634682877,
+     "sigma": 0.0058462595318312435,
+     "p": 8.294142774429606e-05,
+     "p_bonf": 0.0003317657109771842,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "8bd7f44e291dd514a459d464321f68d1c6c3107a0ab52dfa54ba0de5fd19b0f2",
+    "efbfddbd6431049729ba1f1e2a4f4f80a7d010ec33aa4f28c295e4504d19eb69",
+    "671ad08154c6265d2615870de9b84511f46f97c19dfe7eb552b51b6c6cc89af4",
+    "a6c2d930762d948bfb2e86b14e06dbc01539a1825f48ad708bb5b3b22602b897",
+    "d92f0c55324356f0ee502177fd73d2cf427d4b6c8523ef2b97e0540f695584dc",
+    "69e38b28a3a54e0a5bbd44e8598bfdb48c018085bf191ee9f8345afab170521a",
+    "acd560443d6bd1add29625d7c7deb07b3b931b3b7f69b57a3bccbf95a2f2e60a",
+    "2051da92937ad10d57246cd57c4cdaeef87070f771bb402ac88d03b5c9330f21",
+    "5bc75d4da1dcccb7930b22c0b5af580a018debc9d24272aa9c5d35bce7adb6ca",
+    "8bd7f44e291dd514a459d464321f68d1c6c3107a0ab52dfa54ba0de5fd19b0f2"
+   ],
+   "type": "part-solid",
+   "size_mm": 7.0
+  },
+  "tile_7_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    34
+   ],
+   "active": [
+    9,
+    10,
+    12,
+    13,
+    19,
+    31,
+    33,
+    34,
+    35
+   ],
+   "seed_cells": 133,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.008076946344522473,
+     "sigma": 0.005899607295213303,
+     "p": 0.08548946603138345,
+     "p_bonf": 0.3419578641255338,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": 0.007478296380578848,
+     "sigma": 0.00533373335666226,
+     "p": 0.08044636465177579,
+     "p_bonf": 0.32178545860710317,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.0021458928691843525,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.02458471219373084,
+     "sigma": 0.005677880536387232,
+     "p": 7.458511876995528e-06,
+     "p_bonf": 2.9834047507982112e-05,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "1f0a5f6c46c2d0f1653bc9da7442fe145f2af89d9c2c913ae57e227345bdafa4",
+    "158892b7ba00f7d0d357e4ed3d4b0d525147b6b84b83b80c2e32fe508f7c07ad",
+    "30959098b7418d37cd4af2e173a3469f2eb0d73ef565c441f4af01d425b902c9",
+    "6e27ed6265e2d7bc235964b18baa62c432889ff41076e87513c5a987a73d9c33",
+    "8a3bb8961cdb322f360a170de0375953b1e04a06e6586c5ec0eb646af0726d0d",
+    "1a40c656bf513c09e88bcb06dbb13277d3d12e6818122672f28c91cbfbfdb5f1",
+    "3afcb341a7dd06d096ab0149406e427b069f92a2482fd9958d46efc837307bc2",
+    "e8f345b37632bd07cad1a18a610f3a139a08f1bfb463faf6b51803b077a5c78d",
+    "b9caba12217d01afe9771efde40e12fee66893b509e116e27b265d0140f6b6c1",
+    "1f0a5f6c46c2d0f1653bc9da7442fe145f2af89d9c2c913ae57e227345bdafa4"
+   ],
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_8_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    8,
+    11,
+    13,
+    18,
+    29,
+    31,
+    34
+   ],
+   "active": [
+    7,
+    8,
+    10,
+    11,
+    14,
+    15,
+    18,
+    27,
+    28,
+    33,
+    34,
+    35
+   ],
+   "seed_cells": 301,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.04625132756615522,
+     "sigma": 0.006552791203795977,
+     "p": 8.429801282642752e-13,
+     "p_bonf": 3.371920513057101e-12,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0013683046224288833,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "ee0d3a0af327063d997014028fdfa5e2faf9d83ab697a40bfc12e1cc1564bd83",
+    "b2cafaccd86d06296b1ea28678f86d7c855dc8e600c321cfc91ab7bc05fce459",
+    "7f2e31ae13217fddb23f2b5e921c41e5e24cb54c8134259454fab9a2930b4596",
+    "e36351a08577c803ad792be14618f7e7c56aa85683a0422a442e1c027463f6fe",
+    "91b21470d36b778bdbfd59b68f642f24d4e0022fae0d1344d32f0303b096fcea",
+    "8095bca44e6fa98001c9c43312d5afa03c884e47e0c02f1e6ad99c1a0a305d63",
+    "dea27059176febdc98e11fc220c2f624c12b81e4257d7e14d8d84779ac3ce371",
+    "b0d478f63b04b4ca422bec2fbd1041104a5c4050f0e389204fbd172b5e250361",
+    "82e2e6590fa39f6d4b1abbc06f4a4c9f926b1989828b77afcc7e356c2609a397",
+    "ee0d3a0af327063d997014028fdfa5e2faf9d83ab697a40bfc12e1cc1564bd83"
+   ],
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_8_1": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    15,
+    18,
+    19,
+    27,
+    28,
+    29
+   ],
+   "active": [
+    7,
+    12,
+    13,
+    14,
+    17,
+    18,
+    27,
+    28,
+    29,
+    30
+   ],
+   "seed_cells": 129,
+   "t": 2,
+   "claim_level": "L0",
+   "witness_passed": false,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "12c3f9c33f954e144ac4cfbd19570e0988cf8ea1dd441e90d941178e88fec594",
+    "0fd77c48d4f0964c7718088b68f3967ac41527d5b6a7033ecdf2d772f948f5e5",
+    "c23107e2a5bd708e1f77967696ed59ac0a2aa35cf0add402fe91e04dcb9c4fca",
+    "0cceb044e7d4f6d93a127dbc772d296cced199a3b1b532a6ab6dca0a3714fa10",
+    "0c67f5025ac6d2bf94ae2bab864b722073a305a4f2bec073f167f2aa4c3d7687",
+    "95cc1eeab0b79f1caec197f63155f1d8cdebbb7cdf2c73bc27422cfc67187593",
+    "ba3f358a74dcfa70d2fba33636d968ab5b696d4755503499b379ef596bfd01f5",
+    "affb4e907bd0cf5349b2c3342adc617ed30b78bed1d2f3cf0c3e8c2b3c59ec25",
+    "2093710ced75a2fcdf85b507b454e50065acd3ab3983ebf9ad762e2f9b840c76",
+    "12c3f9c33f954e144ac4cfbd19570e0988cf8ea1dd441e90d941178e88fec594"
+   ],
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_9_0": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    9,
+    11,
+    19
+   ],
+   "active": [
+    7,
+    8,
+    11,
+    12,
+    13,
+    15,
+    18
+   ],
+   "seed_cells": 73,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": 0.06434618174726253,
+     "sigma": 0.006325314416312429,
+     "p": 1.3112467465113583e-24,
+     "p_bonf": 5.244986986045433e-24,
+     "passed": true
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.0034040975141140686,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": 0.010954158738837512,
+     "sigma": 0.006083583055513385,
+     "p": 0.0358822085930017,
+     "p_bonf": 0.1435288343720068,
+     "passed": false
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": -0.0,
+     "sigma": 0.00045967296643950823,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "hashes": [
+    "22aaa6c25499b0beef87d001e48f94dccfce49f9f71ca5c21b9fa9c497bc66bd",
+    "d2904b58bc9554515f6ed1b3f0dbb4564a5ba552064ed72d6619836acdbcd5b5",
+    "1206ea5816dbf5517a9b6fd493f2f1f9743cdd3955c2c9c165ca1774c21504b5",
+    "64f7d146399aff1cfeb356229c553186b155adf7c520ffae40038270df180824",
+    "5e4ee3849912c09ebc1ac3f6e6f6d50ec80265a2617ff13913d2d4c929b8e810",
+    "3efe5dffbdb8daa702d29685220165e74da676bb64f1f345d9977044fd0e7cea",
+    "2ce293bb2b0d84ba7d9663e020f4508406444d3d7b85238a3a688a9f9d49fa1d",
+    "cf18c139c50072870e41fd610283a5dd186926cf348c98bc6a959bf7f87c45d2",
+    "e8969c5f56276553cbd535d8af2bc9d17f1c59339ea5f14f56dcd1c418a065f1",
+    "22aaa6c25499b0beef87d001e48f94dccfce49f9f71ca5c21b9fa9c497bc66bd"
+   ],
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_9_1": {
+   "region": "full",
+   "sites": 21,
+   "init": [
+    11,
+    33,
+    35
+   ],
+   "active": [
+    9,
+    10,
+    12,
+    18,
+    19,
+    32
+   ],
+   "seed_cells": 120,
+   "t": 2,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "negativity_edges": [
+    {
+     "i": 10,
+     "j": 11,
+     "N": -0.0,
+     "sigma": 0.000541824323914883,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 12,
+     "N": -0.0,
+     "sigma": 0.002183750543563761,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 11,
+     "j": 18,
+     "N": 0.03015968261313475,
+     "sigma": 0.00658001497183924,
+     "p": 2.2859785649175937e-06,
+     "p_bonf": 9.143914259670375e-06,
+     "passed": true
+    },
+    {
+     "i": 9,
+     "j": 10,
+     "N": 0.021915843963242865,
+     "sigma": 0.005983130049771484,
+     "p": 0.00012466867569689907,
+     "p_bonf": 0.0004986747027875963,
+     "passed": true
+    }
+   ],
+   "hashes": [
+    "9c556715e7f9524442465f9e208075f00ba557ee5c828ec7be5d0e1af99c49bf",
+    "befb475581aa6cb3bdaf2e5638312a30307c9ccf51786e282b757d8fff81031e",
+    "74a44ec73e300f65eccb93c2bfd98bd1fc9ec4ca45b167ac20ed0cb5be94799e",
+    "623944daf824dd4d457639acd282a85fbab041bae9c8b45c2abf24169f39b4e7",
+    "cf20c7efffeca35150f862ac6b0aa78e410cce96be7e3fadcc08078ef895a937",
+    "6dea92b1eb7d2b38fec48f901b7b18e1a640a11736744d4032ad386d75c3bb34",
+    "c9c82f4ff6db3ef0a4249ff2caf68ba5c300b58ae3838c77dc4eeca70d42a25e",
+    "30a3030b9eb84f355eba828ec19fe481dca4fe0a604e303b333608087309bd90",
+    "dde7507aee36b0168a750aa231c42d8f9468618c77db9d83244e22e8faf93040",
+    "9c556715e7f9524442465f9e208075f00ba557ee5c828ec7be5d0e1af99c49bf"
+   ],
+   "type": "solid",
+   "size_mm": 7.0
+  }
+ },
+ "created_utc": "2026-10-31T13:48:39+00:00",
+ "skipped": []
+}

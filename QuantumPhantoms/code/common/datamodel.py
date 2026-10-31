@@ -93,13 +93,33 @@ class CohortTile:
     full_png_path: str = ""      # whole-slice view (F3.1); shared across tiles of one run
     bbox: list[float] = None     # nodule box in full-slice NORMALISED coords [fx, fy, fw, fh]
     morphology_source: str = "classical"  # "quantum" when shape/texture seeded from raw_bits (F2.1)
+    # F5 (grown renderer) — all optional; omitted from JSON when unset so procedural output is unchanged.
+    renderer: str = None              # None/"procedural" | "grown+fitted" | "procedural-3d" | "procedural-fallback"
+    host_id: str = None               # e.g. "LIDC-IDRI-0481"
+    slice_z: int = None               # axial index of the exported slice in the host volume
+    growth: list[dict] = field(default_factory=list)  # [{k, day, diameter_mm, role, png_path}]
+    seed_hex_geometry: str = None
+    seed_hex_appearance: str = None
+    diag: dict = field(default_factory=dict)  # {volume_pd_pct, vdt_d, day_baseline, sigma_ratio_in_out, hu_source, ...}
+    # D-SCALE (quantum seed shape for the grower) — optional, omitted when unset like the F5 fields.
+    seed_source: str = None           # "ball" | "dscale:ch-qca:<region>"
+    dscale: dict = field(default_factory=dict)  # {family, claim_level, witness_passed}
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        d = asdict(self)
+        for k in _F5_OPTIONAL:
+            if d[k] in (None, [], {}):
+                del d[k]
+        return d
 
     @classmethod
     def from_dict(cls, d: dict) -> "CohortTile":
-        return cls(**d)
+        return cls(**{k: v for k, v in d.items() if k in _COHORT_FIELDS})
+
+
+_F5_OPTIONAL = ("renderer", "host_id", "slice_z", "growth", "seed_hex_geometry", "seed_hex_appearance", "diag",
+                "seed_source", "dscale")
+_COHORT_FIELDS = set(CohortTile.__dataclass_fields__)
 
 
 @dataclass
@@ -128,3 +148,35 @@ class GenerationRecord:
     @classmethod
     def from_dict(cls, d: dict) -> "GenerationRecord":
         return cls(**d)
+
+
+@dataclass
+class DScaleRun:
+    """D-SCALE stage record, research_runs/<run>/dscale/dscale_run.json (D-SCALE plan §5).
+
+    Simulation only. `claims` carry one entry per family: {family, claim_level, witness, value, sigma, k, passed,
+    label}; `goldilocks` = {cells, empty, ref_kinds} from the survive-vs-simulable map. F2/F5 consume it as an
+    optional file (sampler-blind); F3 shows it as an optional panel.
+    """
+
+    budget: int                 # 40 | 100 | 120
+    target: str                 # marrakesh | kingston | boston | nighthawk | helios-class
+    mode: str                   # ideal | heron | pauli:<t> | twin:<t>
+    sim_label: str
+    recipe: str                 # composite | ghz-spine | ch-qca | pmd-bank | kicked-ising
+    claims: list[dict] = field(default_factory=list)
+    goldilocks: dict = field(default_factory=dict)
+    seed_shapes: str = ""       # "seed_shapes.npz" (keys = tile_id) | ""
+    allocation_ref: str = "allocation.json"
+    param_grid_sha256: str = ""
+    shots: int = 4000
+    repeats: int = 15
+    truncated: bool = False     # deadline hit (20-min cap)
+    run_key: str = ""           # same run key F5 uses for tile_seeds
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "DScaleRun":
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})

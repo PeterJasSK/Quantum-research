@@ -1,0 +1,58 @@
+{
+ "budget": 40,
+ "target": "fake_marrakesh",
+ "mode": "local-fake",
+ "sim_label": "local test: FakeMarrakesh noise via SamplerV2 local mode (not hardware)",
+ "recipe": "composite",
+ "claims": [
+  {
+   "family": "ghz-spine",
+   "claim_level": "L1",
+   "witness": "DFE GHZ fidelity (GME)",
+   "value": 0.855625,
+   "sigma": 0.06064981355502471,
+   "k": 2,
+   "passed": true,
+   "label": "local test: FakeMarrakesh noise via SamplerV2 local mode (not hardware)",
+   "note": "N=14, kept 1.000; ghz2=1.665; stabilizer state (BP chi = 2): survives, not hard"
+  },
+  {
+   "family": "ch-qca",
+   "claim_level": "L0",
+   "witness": "QCA pair negativity (Bonferroni)",
+   "value": -0.0,
+   "sigma": 0.014244294276251077,
+   "k": 2,
+   "passed": false,
+   "label": "local test: FakeMarrakesh noise via SamplerV2 local mode (not hardware)",
+   "note": "12 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+  },
+  {
+   "family": "pmd-bank",
+   "claim_level": "L0",
+   "witness": "PMD memory gap / floor",
+   "value": -1.014482164456644,
+   "sigma": null,
+   "k": 3,
+   "passed": false,
+   "label": "local test: FakeMarrakesh noise via SamplerV2 local mode (not hardware)",
+   "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2"
+  }
+ ],
+ "goldilocks": {
+  "cells": [],
+  "empty": null,
+  "ref_kinds": [],
+  "note": "live proof of concept: the survive-vs-simulable map is a simulation product (python -m dscale.survival)"
+ },
+ "seed_shapes": "seed_shapes.npz",
+ "allocation_ref": "allocation.json",
+ "param_grid_sha256": "",
+ "shots": 300,
+ "repeats": 1,
+ "truncated": false,
+ "run_key": "dscale_live_test",
+ "target_label": "fake_marrakesh (fake, 156 q heavy-hex)",
+ "job_id": "3d9a3e8f-127c-4997-9662-bb2631535583",
+ "honest_label": "local test: FakeMarrakesh noise via SamplerV2 local mode (not hardware); proof of concept (one job, n = 1, ~1 QPU-minute); the seed shape is a quantum snapshot measured on the device; growth and image are classical; no classical-hardness claim"
+}

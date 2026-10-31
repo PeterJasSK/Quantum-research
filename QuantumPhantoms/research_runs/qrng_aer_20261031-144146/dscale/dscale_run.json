@@ -1,0 +1,58 @@
+{
+ "budget": 40,
+ "target": "marrakesh",
+ "mode": "ideal",
+ "sim_label": "simulated: ideal",
+ "recipe": "composite",
+ "claims": [
+  {
+   "family": "ghz-spine",
+   "claim_level": "L1",
+   "witness": "DFE GHZ fidelity (GME)",
+   "value": 1.0,
+   "sigma": 0.015811388300841896,
+   "k": 2,
+   "passed": true,
+   "label": "simulated: ideal",
+   "note": "N=14, kept 1.000; ghz2=2.000; stabilizer state (BP chi = 2): survives, not hard"
+  },
+  {
+   "family": "pmd-bank",
+   "claim_level": "L0",
+   "witness": "PMD memory gap / floor",
+   "value": -0.8556253573671098,
+   "sigma": null,
+   "k": 3,
+   "passed": false,
+   "label": "simulated: ideal",
+   "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2"
+  },
+  {
+   "family": "ch-qca",
+   "claim_level": "L1 (some tiles)",
+   "witness": "QCA seed-region pair negativity (Bonferroni), per tile",
+   "value": 0.9166666666666666,
+   "sigma": null,
+   "k": 2,
+   "passed": false,
+   "label": "simulated: ideal",
+   "note": "11/12 tiles pass on the full seed region; non-Clifford (frontier family); the seed shape is a quantum snapshot, growth is classical"
+  }
+ ],
+ "goldilocks": {
+  "cells": [],
+  "empty": null,
+  "ref_kinds": [],
+  "note": "no survival map yet: python -m dscale.survival --budget 40 --target marrakesh --smoke"
+ },
+ "seed_shapes": "seed_shapes.npz",
+ "allocation_ref": "allocation.json",
+ "param_grid_sha256": "b033d0e13f96fce6e87ca4c414dae8b0325e3d773287ed88d7599a841096ed60",
+ "shots": 4000,
+ "repeats": 2,
+ "truncated": false,
+ "run_key": "qrng_aer_20261031-144146",
+ "honest_label": "simulated; the seed shape is a quantum snapshot; growth and image are classical; no classical-hardness claim",
+ "target_label": "Marrakesh (FakeMarrakesh, Heron r2, 156 q heavy-hex)",
+ "qca_region": "marrakesh:12"
+}

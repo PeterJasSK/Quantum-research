@@ -1,0 +1,354 @@
+{
+ "job_id": "dbj0ddd6p51s73cjqak0",
+ "backend": "ibm_kingston",
+ "fake": null,
+ "budget": 40,
+ "shots": 2000,
+ "qpu_seconds_estimate": 11.238127999999993,
+ "submitted_utc": "2026-10-31T15:18:13+00:00",
+ "n_components": {
+  "ghz-spine": 18,
+  "ch-qca": 22,
+  "pmd-bank": 3
+ },
+ "alloc": {
+  "target": "ibm_kingston",
+  "target_label": "ibm_kingston (156 q heavy-hex)",
+  "calibration_snapshot": {
+   "backend": "ibm_kingston",
+   "last_update_date": "2026-10-31 15:50:56+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  },
+  "pruned": {
+   "qubits": [
+    12,
+    51,
+    92,
+    99,
+    112,
+    113,
+    121,
+    125,
+    127,
+    131,
+    146
+   ],
+   "edges": [
+    [
+     84,
+     85
+    ],
+    [
+     85,
+     86
+    ],
+    [
+     86,
+     87
+    ],
+    [
+     111,
+     112
+    ],
+    [
+     112,
+     113
+    ],
+    [
+     116,
+     121
+    ],
+    [
+     119,
+     133
+    ],
+    [
+     120,
+     121
+    ],
+    [
+     121,
+     122
+    ],
+    [
+     123,
+     124
+    ],
+    [
+     124,
+     125
+    ],
+    [
+     130,
+     131
+    ],
+    [
+     145,
+     146
+    ],
+    [
+     146,
+     147
+    ]
+   ],
+   "thresholds": {
+    "readout_gt": 0.06,
+    "sx_ge": 0.5,
+    "e2q_gt": 0.02,
+    "source": "Nighthawk-RCS rule, arXiv 2609.28657"
+   },
+   "kept_qubits": 145,
+   "kept_edges": 144
+  },
+  "regions": {
+   "spine": {
+    "name": "spine",
+    "family": "ghz-spine",
+    "role": "certified",
+    "qubits": [
+     48,
+     49,
+     47,
+     38,
+     57,
+     46,
+     67,
+     45,
+     29,
+     30,
+     37,
+     66,
+     28,
+     44
+    ],
+    "edges": [
+     [
+      48,
+      49
+     ],
+     [
+      48,
+      47
+     ],
+     [
+      49,
+      38
+     ],
+     [
+      47,
+      57
+     ],
+     [
+      47,
+      46
+     ],
+     [
+      57,
+      67
+     ],
+     [
+      46,
+      45
+     ],
+     [
+      38,
+      29
+     ],
+     [
+      29,
+      30
+     ],
+     [
+      45,
+      37
+     ],
+     [
+      67,
+      66
+     ],
+     [
+      29,
+      28
+     ],
+     [
+      45,
+      44
+     ]
+    ],
+    "root": 48,
+    "depth": 4,
+    "group": "spine"
+   },
+   "spine_checks": {
+    "name": "spine_checks",
+    "family": "ghz-spine",
+    "role": "check",
+    "qubits": [],
+    "edges": [],
+    "checks": [],
+    "group": "spine"
+   },
+   "qca": {
+    "name": "qca",
+    "family": "ch-qca",
+    "role": "active",
+    "qubits": [
+     58,
+     69,
+     70,
+     71,
+     72,
+     73,
+     78,
+     87,
+     88,
+     89,
+     90,
+     91
+    ],
+    "edges": [
+     [
+      69,
+      70
+     ],
+     [
+      69,
+      78
+     ],
+     [
+      70,
+      71
+     ],
+     [
+      58,
+      71
+     ],
+     [
+      71,
+      72
+     ],
+     [
+      89,
+      90
+     ],
+     [
+      90,
+      91
+     ],
+     [
+      72,
+      73
+     ],
+     [
+      78,
+      89
+     ],
+     [
+      87,
+      88
+     ],
+     [
+      88,
+      89
+     ]
+    ],
+    "centre": 69
+   },
+   "pmd0": {
+    "name": "pmd0",
+    "family": "pmd-bank",
+    "role": "active",
+    "qubits": [
+     117,
+     105,
+     106,
+     107,
+     108,
+     109,
+     118,
+     129,
+     128
+    ],
+    "edges": [
+     [
+      117,
+      105
+     ],
+     [
+      105,
+      106
+     ],
+     [
+      106,
+      107
+     ],
+     [
+      107,
+      108
+     ],
+     [
+      108,
+      109
+     ],
+     [
+      109,
+      118
+     ],
+     [
+      118,
+      129
+     ],
+     [
+      129,
+      128
+     ]
+    ]
+   },
+   "buffer": {
+    "name": "buffer",
+    "family": "-",
+    "role": "buffer",
+    "qubits": [
+     25,
+     27,
+     31,
+     43,
+     50,
+     51,
+     65,
+     68,
+     74,
+     79,
+     86,
+     92,
+     97,
+     98,
+     104,
+     110,
+     125,
+     127,
+     130
+    ],
+    "edges": []
+   }
+  },
+  "n_used": 35,
+  "fitted": [
+   {
+    "region": "spine:checks",
+    "requested": 2,
+    "got": 0
+   }
+  ],
+  "min_region_distance": 2,
+  "budget": 40,
+  "recipe": "composite"
+ },
+ "calibration": {
+  "backend": "ibm_kingston",
+  "last_update_date": "2026-10-31 15:50:56+01:00",
+  "fake": false,
+  "qiskit_ibm_runtime_version": "0.47.0"
+ }
+}

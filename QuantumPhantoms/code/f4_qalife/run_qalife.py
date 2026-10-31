@@ -4,7 +4,7 @@ Usage (run from QuantumPhantoms/code/, `python -m`, like the F1/F2/F3 entrypoint
     python -m f4_qalife.run_qalife --backend aer --founders 4 --generations 3 --survivors 1
 
 The output dir is a drop-in replacement for an F1 run dir — feed it straight to F2/F3:
-    python -m f2_imaging.build_tiles --run research_runs/qalife_aer_<ts>
+    python -m imaging.build_tiles --run research_runs/qalife_aer_<ts>
     python -m f3_web.build_web       --run research_runs/qalife_aer_<ts>
 
 HARD RULE (plan header): the implementer never runs hardware. `--backend ibm`/`auto` is

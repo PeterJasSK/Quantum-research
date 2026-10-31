@@ -1,0 +1,469 @@
+{
+ "label": "hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg",
+ "plan": {
+  "job_id": "dbj0i556p51s73cjqmgg",
+  "backend": "ibm_marrakesh",
+  "fake": null,
+  "budget": 100,
+  "shots": 2000,
+  "qpu_seconds_estimate": 11.178095999999996,
+  "submitted_utc": "2026-10-31T15:28:20+00:00",
+  "n_components": {
+   "ghz-spine": 18,
+   "ch-qca": 22
+  },
+  "calibration": {
+   "backend": "ibm_marrakesh",
+   "last_update_date": "2026-10-31 15:57:26+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "usage_s": 16,
+ "ghz_spine": {
+  "N": 48,
+  "depth": 10,
+  "n_checks": 1,
+  "kept_fraction": 0.7881527777777777,
+  "m": 16,
+  "F_dfe": 0.0471017605168426,
+  "F_sigma": 0.027614845749318426,
+  "gme": false,
+  "gme_k3": false,
+  "F_dfe_trex": 0.12680773037686638,
+  "ghz2": 0.9454449922031458,
+  "ghz2_sigma": 0.01782035820389158,
+  "ghz2_X": 0.06696286893049826,
+  "ghz2_ZZ": 0.8784821232726475
+ },
+ "ch_qca": {
+  "sites": 30,
+  "rule": "parity",
+  "alpha": 1.5707963267948966,
+  "t_w": 2,
+  "init": [
+   10,
+   11,
+   54
+  ],
+  "negativity_edges": [
+   {
+    "i": 9,
+    "j": 10,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 10,
+    "j": 11,
+    "N": 0.028186960010257986,
+    "sigma": 0.00860842180458586,
+    "p": 0.0005295323869815501,
+    "p_bonf": 0.0021181295479262004,
+    "passed": true
+   },
+   {
+    "i": 8,
+    "j": 9,
+    "N": -0.0,
+    "sigma": 0.00040272166012791173,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 11,
+    "j": 12,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   }
+  ],
+  "echo": [
+   {
+    "t": 2,
+    "F": 0.1395,
+    "sigma": 0.007747249511923571,
+    "alive": true
+   }
+  ],
+  "random_band": 9.313225746154785e-10,
+  "witness_passed": true
+ },
+ "seed_tiles": {
+  "tile_0_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    10,
+    11,
+    54
+   ],
+   "active": [
+    9,
+    10,
+    11,
+    12,
+    18,
+    31,
+    39,
+    52,
+    53
+   ],
+   "seed_cells": 94,
+   "shot": 1943,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "ground-glass",
+   "size_mm": 7.0
+  },
+  "tile_1_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    4,
+    5,
+    10
+   ],
+   "active": [
+    2,
+    3,
+    16,
+    27
+   ],
+   "seed_cells": 7,
+   "shot": 479,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_2_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    9,
+    10,
+    34
+   ],
+   "active": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    17,
+    31,
+    32,
+    33,
+    34,
+    54
+   ],
+   "seed_cells": 214,
+   "shot": 1798,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_3_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    4,
+    5,
+    10,
+    54
+   ],
+   "active": [
+    2,
+    3,
+    7,
+    8,
+    11,
+    12,
+    16,
+    18,
+    28
+   ],
+   "seed_cells": 307,
+   "shot": 1842,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "calcified",
+   "size_mm": 13.0
+  },
+  "tile_4_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    10,
+    32
+   ],
+   "active": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    18,
+    19,
+    34
+   ],
+   "seed_cells": 77,
+   "shot": 335,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_5_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    10,
+    15
+   ],
+   "active": [
+    4,
+    6,
+    10,
+    11,
+    12,
+    14,
+    15,
+    18,
+    29,
+    52
+   ],
+   "seed_cells": 384,
+   "shot": 1436,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_6_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    3,
+    10,
+    15
+   ],
+   "active": [
+    2,
+    3,
+    4,
+    8,
+    9,
+    12,
+    15,
+    16,
+    18,
+    31,
+    32,
+    34,
+    35
+   ],
+   "seed_cells": 342,
+   "shot": 715,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "part-solid",
+   "size_mm": 7.0
+  },
+  "tile_7_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    8,
+    10
+   ],
+   "active": [
+    6,
+    7,
+    11,
+    12,
+    18,
+    19,
+    29
+   ],
+   "seed_cells": 174,
+   "shot": 245,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_8_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    3,
+    10,
+    14,
+    28,
+    33,
+    34,
+    53
+   ],
+   "active": [
+    2,
+    3,
+    4,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    27,
+    28,
+    34,
+    35,
+    39,
+    52,
+    53,
+    54
+   ],
+   "seed_cells": 632,
+   "shot": 1973,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_8_1": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    3,
+    4,
+    7,
+    10,
+    28,
+    33,
+    52
+   ],
+   "active": [
+    3,
+    6,
+    7,
+    9,
+    10,
+    12,
+    17,
+    18,
+    28,
+    32,
+    33,
+    34,
+    39,
+    52,
+    54
+   ],
+   "seed_cells": 396,
+   "shot": 267,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_9_0": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    10,
+    33,
+    52
+   ],
+   "active": [
+    8,
+    9,
+    10,
+    12,
+    18,
+    35,
+    53,
+    54
+   ],
+   "seed_cells": 234,
+   "shot": 446,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_9_1": {
+   "region": "ibm_marrakesh:30",
+   "sites": 30,
+   "init": [
+    10,
+    18,
+    39
+   ],
+   "active": [
+    8,
+    9,
+    31,
+    33,
+    39,
+    52,
+    53,
+    54
+   ],
+   "seed_cells": 91,
+   "shot": 1504,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  }
+ },
+ "circuits": {
+  "live_00.qasm": "2ae2726bd600133a50e07dcc2ee5bc6959fb351f8e28b33d684b0247378eabe4",
+  "live_01.qasm": "e74948b774bf24a04786c71b3884817eea47fc02719812396331d9f4271c3f3d",
+  "live_02.qasm": "354eb7bda206dcd8ba31c1225bfb2e084cfab54ad2a83ec677ae146a7e1f9311",
+  "live_03.qasm": "43710ac7627eeed9767dce2038f36248ff612116abe476425586905c05337670",
+  "live_04.qasm": "165d62717d929b4e2d50a1bcd6f787faba038d2c27dbbe9766c2deaefc687d20",
+  "live_05.qasm": "7f735b6118e1ed74988002537bb41a0c6714d99fb578a686dc74d69300c711b5",
+  "live_06.qasm": "173fa520361d0d96e3804d05ad9a4d93731f2805e5364a9328995fcb4950ad75",
+  "live_07.qasm": "7f6401a297d7a11c99d2d9af23d24e19c6460b69bb21c0687665e17b8f5c82ab",
+  "live_08.qasm": "8f50cb0a80c359fce94dc5de73b048062563bb8dcd2bf1eaeef40f5433563d99",
+  "live_09.qasm": "7f81d8b346a4f01dc7e737815e1138a3e9966a692f30f318a93b19c3d5bbdb6d",
+  "live_10.qasm": "e1f8a0cf6c870fc5a80713313da53a418a319f157005bc98e0a95311fd0458e1",
+  "live_11.qasm": "4cc09fcefa501e18bf02cf4fcf18ac85150a8553f6963362a7f3c94f7aa8c8ba",
+  "live_12.qasm": "88a4496d8241ac7dd3e9bad46365f06033514038fb59549f88ccaa728d569813",
+  "live_13.qasm": "578dcb9a93a30f40d0aac472c609276b4038e28f3273cfde7617f4c594b36dd6",
+  "live_14.qasm": "9ebcec96d8fc1c631eb753bf081f66ba6de35627ea86ae4b545b124325d18b52",
+  "live_15.qasm": "ffbc551c3fb9507e0556c066430e89119298c32576ff4955756aae4c61ef6e7f",
+  "live_16.qasm": "6c855e9f3b89b34db895f4dc118fdca0c7e50b2861dd41b3ebc69b867370648a",
+  "live_17.qasm": "2db0cd657065ca5790edac8f7803783c2d03fea5065f759a32a7b2ececc01cda",
+  "live_18.qasm": "4c62c55c3d94b862e00634368edb5f9f8e905940780254bff637a8677380ca8f",
+  "live_19.qasm": "25a3806e2b9c418639ace867bc93d40db7b34cea762354f33833034d35de3537",
+  "live_20.qasm": "00764cf9b91cccd98b20b99f745393e4e7d63eee9f32fe7fe5398f8604b0ec58",
+  "live_21.qasm": "686ecbdd007c232cb21af7f0f236cd89a4921850b4bc5d36675f375fe46d95a2"
+ },
+ "created_utc": "2026-10-31T15:29:27+00:00"
+}

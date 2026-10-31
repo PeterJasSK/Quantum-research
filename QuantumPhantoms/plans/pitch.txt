@@ -1,102 +1,20 @@
-========================================================================
-PITCHE PRE STRETNUTIE — Jan Majoros (Head of Offensive Security, Siemens)
-========================================================================
+Čo? Cieľom mojej štúdie Quantum Virtual Tumors je vytvárať syntetické CT snímky,
+teda virtuálne nádory pľúc vložené do skutočných CT skenov. Nádor umiestnim podľa anatómie,
+nechám ho rásť podľa overených modelov a vykreslím ho tak, akoby ho naozaj
+nasnímal ten istý CT prístroj. Pri každom prípade presne viem, kde nádor je a aký je veľký.
+Prípad neobsahuje žiadneho reálneho pacienta a viem ho kedykoľvek presne zopakovať.
 
-Spoločná niť všetkých troch: "zmeraný certifikát, ktorý klasický počítač
-nedokáže sfalšovať." Jeden pre náhodnosť, jeden ako ambiciózny výstrel,
-jeden ako ponuka pracovať pre nich.
+Prečo. AI na detekciu rakoviny pľúc, napríklad AI-Rad Companion,
+potrebuje realistické a presne označené prípady bez osobných údajov pacientov.
+Reálne dáta to naraz nesplnia, ja také prípady viem vytvoriť. Lepšie otestovaná AI nájde nádor skôr a presnejšie
+zmeria, ako rýchlo rastie, a práve to rozhoduje o liečbe.
+Neskôr chcem ten istý model rastu nastaviť na konkrétneho pacienta a predpovedať, ako nádor zareaguje na liečbu.
 
+Ako. Staviam pipeline z ôsmich častí, od umiestnenia nádoru cez jeho rast a vykreslenie v CT až po overenie realistickosti.
+Pre každú časť som vybral publikované vedecké metódy, spolu 21 článkov. Zopakoval som ich výpočty a svoje čísla som porovnal s
+pôvodnými. Kvantové výpočty používam len tam, kde majú skutočnú úlohu, a s každou generáciou hardvéru meriam, kam až siahajú.
 
-------------------------------------------------------------------------
-1. CERTIFIKOVANÉ NÁHODNÉ ČÍSLA  (pevný, hotový projekt)
-------------------------------------------------------------------------
-
-(CHSH = Clauser–Horne–Shimony–Holt —  Bellov test. )
-
-
-SKRÁTENÝ PITCH (15 sek):
-"Postavil som entropy službu, kde náhodnosti nemusíte veriť — overíte si ju.
-CHSH Bellov test na reálnom kvantovom hardvéri vráti jedno číslo; klasický
-stroj ho nedokáže sfalšovať. Kvantový počítač dá malý, pomalý, ale
-certifikovaný seed; zložitá klasická infraštruktúra ho vyčistí, rozšíri a
-doručí ako post-kvantové kľúče. QC je overený koreň dôvery, nie továreň na
-bajty. Infraštruktúru už mám hotovú, CHSH test robí kvantovú časť
-nenahraditeľnou."
-
-
-------------------------------------------------------------------------
-2. KVANTOVÝ ŽIVOT umely kvantovy zivot
-------------------------------------------------------------------------
-
-PITCH:
-"Toto je dlhý výstrel a tak to aj podávam. Na kvantovom počítači staviam
-umelý život — malé organizmy, ktoré sa rozmnožujú, kŕmia, starnú, umierajú
-a pohybujú sa priestorom. Ale chcem byť jasný: nerobím to pre biológiu a
-netvrdím, že som vytvoril život. Robím to preto, aby som sám seba vyzval
-postaviť naozaj ťažké kvantové obvody — obvody, ktoré reprezentujú
-priestor, pohyb a dedičnosť, a ktoré vyprodukujú niečo, čo normálny počítač
-nedokáže zopakovať. A práve to je ten pointa: na systém dávam certifikát,
-číslo, na ktoré klasický hardvér nedosiahne — klasika má strop 1, ja meriam
-približne 1.96 na IBM hardvéri. Takže je to demonštrácia toho, čo kvantové
-počítanie naozaj dokáže inak, oblečená do niečoho živého. Je to prieskumné,
-nemusí to priamo nikam viesť — ale je to spôsob, ako tlačím svoje stavanie
-obvodov na hranicu, a čestne hlásim, keď nejaký smer zlyhá."
-
-
-
-------------------------------------------------------------------------
-3. PRÁCA PRE VÁS  (povedzte mi, čo potrebujete)
-------------------------------------------------------------------------
-
-PITCH:
-"Pri treťom budem úprimný: povedzte mi, čo potrebujete, a ja to spravím.
-Nechcem byť len financovaný — chcem si vybrať smer, ktorý je pre vás naozaj
-užitočný, a ísť doň. Pre mňa je pointa dostať sa do technológií a princípov,
-na ktorých vášmu tímu záleží, tak ako to chcete robiť vy — aby som z toho
-vyšiel naozaj pripravený robiť pre vás výskum. Takže ma nasmerujte na niečo
-reálne na vašej strane. Pracujem samostatne, pri realizácii nepotrebujem
-držať za ruku — len potrebujem, aby smer prišiel od vás. Dajte mi problém a
-nástroje, v ktorých ma chcete mať, a ja sa ich poriadne naučím a postavím s
-nimi niečo užitočné."
-
-
-
-1. Stiahnem živú kalibráciu stroja (zadarmo, metadáta, žiadny QPU čas). Mení sa denne, preto vždy pred behom.
-2. Nájdem najlepšie prepojenie qubitov podľa toho, aký obvod robím a koľko bitov potrebujem — best_chain grafovým
-3. Postavím kvantovú logiku — obvod v Qiskite, transpilácia na vybraný layout.
-4. Spracujem výsledok separátne — z counts klasicky spočítam veličinu projektu (bias/entropia, korelácia, witness). Spracovanie je oddelené od behu.
-
-
-  Technológie, ktoré používam
-
-  Kvantové — SDK a hardvér
-
-  - Qiskit — stavba obvodov, transpilácia.
-  - IBM Quantum hardvér — Heron r2, 156 qubitov (ibm_marrakesh, ibm_kingston, ibm_fez).
-  - statevector simulátor — overenie pred hardvérom.
-
-  Kvantové techniky (pokročilé, nie len základ)
-
-  - Dynamical decoupling (PadDynamicalDecoupling, X2/XY4) — potlačenie dephasingu, error mitigation.
-  - Dynamické obvody — mid-circuit measurement + feed-forward (teleportácia, reset).
-  - (SWAP-free mapovanie).
-  - Certifikácia kvantovosti — entanglement witness, CHSH, klasický surrogate.
-
-  Kryptografia / bezpečnosť — najrelevantnejšie pre neho
-
-  - ML-KEM-768 — post-kvantová enkapsulácia kľúčov (kyber-py).
-  - HMAC-DRBG (NIST SP 800-90A) — deterministické rozširovanie entropie.
-  - NIST SP 800-22 / 800-90B — štatistická validácia náhodnosti a entropie (nist_pure.py, health testy).
-  - AES-256-GCM — šifrovanie entropy poolu v pokoji.
-  - HKDF — derivácia kľúčov z master key.
-  - Ed25519 — podpisy provenance receiptov (overiteľnosť pôvodu).
-
-  Backend / infraštruktúra
-
-  - Python — všetko jadro.
-  - FastAPI + Pydantic — QRNG-EaaS API, serverless-safe.
-  - PostgreSQL (Neon) — šifrovaný entropy store + audit ledger.
-  - Redis (Upstash) — atomický DRBG counter, rate-limiting, kvóty.
-  - Django — pôvodná QRNG web app (BC).
-  - MCP agent-first integrácia (nástroje pre AI agentov).
-  - Vercel — serverless deploy.
+Ďalej. Výsledky chcem publikovať a prezentovať na konferenciách ako spoločnú prácu so Siemensom.
+Chcem spolupracovať s univerzitami a klinikami, ktoré už so Siemensom pracujú, napríklad Duke a Mayo Clinic,
+a spolu s nimi ísť smerom k digitálnemu dvojčaťu
+pacienta. To je cieľ celej práce: každá časť pipelinu je jednou vrstvou tohto dvojčaťa.

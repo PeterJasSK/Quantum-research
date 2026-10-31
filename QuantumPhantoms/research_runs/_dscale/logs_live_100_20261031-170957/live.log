@@ -1,0 +1,33 @@
+[17:09:58] budget 100: picking a backend (live, auto)
+[17:10:05] candidates (pending jobs): ibm_marrakesh (1), ibm_kingston (6), ibm_fez (1537)
+[17:10:06] picked ibm_marrakesh: 1 pending jobs, 156 q, used 60 after pruning 32 qubits
+[17:10:07] cohort roll SUBMITTED job dbj15npffo6c73b8mls0 on ibm_marrakesh (6 circuits, ~2.1 QPU-s); resume with --roll-job dbj15npffo6c73b8mls0
+[17:10:08] job dbj15npffo6c73b8mls0: QUEUED (waited 0 s)
+[17:10:38] job dbj15npffo6c73b8mls0: DONE (waited 30 s)
+[17:10:38] cohort rolled on ibm_marrakesh, job dbj15npffo6c73b8mls0: CHSH S = 2.733 (> 2), 12 tumours: groun 13mm RLL, calci 26mm RUL, solid 13mm RUL, groun 13mm RUL, solid 26mm LUL, solid 13mm RLL, part- 4mm RLL, part- 13mm RUL, solid 4mm RML, solid 4mm RML, calci 4mm RLL, calci 13mm RUL
+[17:10:38] lint ok: ghz-spine 26 circuits, ch-qca 22 circuits, pmd-bank 3 circuits
+[17:10:38] transpiling 26 composite circuits for ibm_marrakesh
+[17:10:39] spend: 26 circuits x 4000 shots ~ 26.6 QPU-s (cap left 43 s); 2q gates per circuit up to 227
+[17:10:41] SUBMITTED job dbj16056p51s73cjs7q0 on ibm_marrakesh (QPU); resume with --job dbj16056p51s73cjs7q0
+[17:10:41] job dbj16056p51s73cjs7q0: QUEUED (waited 0 s)
+[17:11:11] job dbj16056p51s73cjs7q0: RUNNING (waited 30 s)
+[17:11:42] job dbj16056p51s73cjs7q0: RUNNING (waited 61 s)
+[17:12:12] job dbj16056p51s73cjs7q0: DONE (waited 91 s)
+[17:12:14] result in; analysing (hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0)
+[17:12:16] ghz-spine N=28: F_dfe 0.055 +- 0.019 (m=24, TREX-lite 0.121), GME False; ghz2 0.946; kept 1.00
+[17:12:17] ch-qca 23 sites: witness True; echo F t2=0.056
+[17:12:17]   seed tile_0_0   ground-glass  13.0 mm: 16/23 active -> 414 vox
+[17:12:17]   seed tile_1_0   calcified     26.0 mm: 10/23 active -> 173 vox
+[17:12:17]   seed tile_2_0   solid         13.0 mm: 9/23 active -> 132 vox
+[17:12:17]   seed tile_3_0   ground-glass  13.0 mm: 8/23 active -> 197 vox
+[17:12:17]   seed tile_4_0   solid         26.0 mm: 13/23 active -> 256 vox
+[17:12:17]   seed tile_5_0   solid         13.0 mm: 11/23 active -> 212 vox
+[17:12:17]   seed tile_6_0   part-solid     4.0 mm: 10/23 active -> 172 vox
+[17:12:17]   seed tile_7_0   part-solid    13.0 mm: 7/23 active -> 109 vox
+[17:12:17]   seed tile_8_0   solid          4.0 mm: 11/23 active -> 164 vox
+[17:12:17]   seed tile_8_1   solid          4.0 mm: 10/23 active -> 154 vox
+[17:12:17]   seed tile_9_0   calcified      4.0 mm: 10/23 active -> 137 vox
+[17:12:17]   seed tile_9_1   calcified     13.0 mm: 9/23 active -> 100 vox
+[17:12:20] pmd-bank: d_KL(q) 2.58e-03 (n=36000, floor 6.39e-04), gap/floor -2.88, passed False
+[17:12:22] claims: ghz-spine L0 (passed False); ch-qca L1 (passed True); pmd-bank L0 (passed False)
+[17:12:22] wrote /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/research_runs/dscale_live_100_20261031-170957/dscale (label: hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0)

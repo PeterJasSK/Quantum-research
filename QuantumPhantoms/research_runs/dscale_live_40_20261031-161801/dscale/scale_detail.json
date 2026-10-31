@@ -1,0 +1,446 @@
+{
+ "label": "hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0",
+ "plan": {
+  "job_id": "dbj0ddd6p51s73cjqak0",
+  "backend": "ibm_kingston",
+  "fake": null,
+  "budget": 40,
+  "shots": 2000,
+  "qpu_seconds_estimate": 11.238127999999993,
+  "submitted_utc": "2026-10-31T15:18:13+00:00",
+  "n_components": {
+   "ghz-spine": 18,
+   "ch-qca": 22,
+   "pmd-bank": 3
+  },
+  "calibration": {
+   "backend": "ibm_kingston",
+   "last_update_date": "2026-10-31 15:50:56+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "usage_s": 15,
+ "ghz_spine": {
+  "N": 14,
+  "depth": 4,
+  "n_checks": 0,
+  "kept_fraction": 1.0,
+  "m": 16,
+  "F_dfe": 0.16109374999999998,
+  "F_sigma": 0.08522086768545895,
+  "gme": false,
+  "gme_k3": false,
+  "F_dfe_trex": 0.1827647655200525,
+  "ghz2": 0.9756538461538461,
+  "ghz2_sigma": 0.015775545448328435,
+  "ghz2_X": 0.1485,
+  "ghz2_ZZ": 0.8271538461538461
+ },
+ "ch_qca": {
+  "sites": 12,
+  "rule": "parity",
+  "alpha": 1.5707963267948966,
+  "t_w": 2,
+  "init": [
+   69,
+   88,
+   89
+  ],
+  "negativity_edges": [
+   {
+    "i": 69,
+    "j": 70,
+    "N": 0.022251093230007162,
+    "sigma": 0.008632206280510464,
+    "p": 0.004973256849895975,
+    "p_bonf": 0.0198930273995839,
+    "passed": true
+   },
+   {
+    "i": 69,
+    "j": 78,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 70,
+    "j": 71,
+    "N": 0.030567038040340538,
+    "sigma": 0.008976147740966445,
+    "p": 0.00033038124316651213,
+    "p_bonf": 0.0013215249726660485,
+    "passed": true
+   },
+   {
+    "i": 78,
+    "j": 89,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   }
+  ],
+  "echo": [
+   {
+    "t": 2,
+    "F": 0.4645,
+    "sigma": 0.011152124237112856,
+    "alive": true
+   }
+  ],
+  "random_band": 0.000244140625,
+  "witness_passed": true
+ },
+ "pmd_bank": {
+  "process": {
+   "V": 0.4,
+   "Gamma": 0.7,
+   "N": 8,
+   "L": 8
+  },
+  "machines": [
+   {
+    "k": "pmd0",
+    "path": [
+     117,
+     105,
+     106,
+     107,
+     108,
+     109,
+     118,
+     129,
+     128
+    ],
+    "d_kl_q": 0.0038655662126274746,
+    "n_words": 16000,
+    "floor": 0.001437059513385491,
+    "d_kl_classical": {
+     "1": 0.007929553859890703,
+     "2": 0.0013706173739122726
+    },
+    "gap_over_floor": -1.7361485836014448,
+    "passed": false
+   }
+  ],
+  "passed_all": false
+ },
+ "seed_tiles": {
+  "tile_0_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    88,
+    89
+   ],
+   "active": [
+    69,
+    70,
+    71,
+    72,
+    90,
+    91
+   ],
+   "seed_cells": 52,
+   "shot": 382,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "ground-glass",
+   "size_mm": 7.0
+  },
+  "tile_1_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    78,
+    89
+   ],
+   "active": [
+    78,
+    87,
+    88,
+    90,
+    91
+   ],
+   "seed_cells": 65,
+   "shot": 644,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_2_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    72,
+    88
+   ],
+   "active": [
+    69,
+    72,
+    73,
+    88
+   ],
+   "seed_cells": 79,
+   "shot": 1219,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_3_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    78,
+    87,
+    89
+   ],
+   "active": [
+    69,
+    70,
+    71,
+    78,
+    87,
+    89,
+    90,
+    91
+   ],
+   "seed_cells": 87,
+   "shot": 1806,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "calcified",
+   "size_mm": 13.0
+  },
+  "tile_4_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    90
+   ],
+   "active": [
+    69,
+    87,
+    88
+   ],
+   "seed_cells": 26,
+   "shot": 1356,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_5_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    78
+   ],
+   "active": [
+    69,
+    70,
+    78,
+    88,
+    89
+   ],
+   "seed_cells": 34,
+   "shot": 1321,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_6_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    70,
+    91
+   ],
+   "active": [
+    78,
+    90
+   ],
+   "seed_cells": 25,
+   "shot": 1859,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "part-solid",
+   "size_mm": 7.0
+  },
+  "tile_7_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    88
+   ],
+   "active": [
+    69,
+    70,
+    71,
+    78,
+    87
+   ],
+   "seed_cells": 56,
+   "shot": 1131,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_8_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    70,
+    71,
+    78,
+    87,
+    89,
+    90
+   ],
+   "active": [
+    58,
+    70,
+    72,
+    73,
+    78,
+    87,
+    89
+   ],
+   "seed_cells": 115,
+   "shot": 796,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_8_1": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    70,
+    73,
+    87,
+    88,
+    90,
+    91
+   ],
+   "active": [
+    58,
+    71,
+    72,
+    73,
+    78,
+    87,
+    89,
+    91
+   ],
+   "seed_cells": 136,
+   "shot": 648,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_9_0": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    58,
+    69,
+    78
+   ],
+   "active": [
+    58,
+    69,
+    71,
+    78,
+    89
+   ],
+   "seed_cells": 43,
+   "shot": 163,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  },
+  "tile_9_1": {
+   "region": "ibm_kingston:12",
+   "sites": 12,
+   "init": [
+    69,
+    87,
+    89
+   ],
+   "active": [
+    58,
+    69,
+    70,
+    71,
+    87,
+    89
+   ],
+   "seed_cells": 60,
+   "shot": 415,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 7.0
+  }
+ },
+ "circuits": {
+  "live_00.qasm": "79e00b8b1691d2117d335af148c045fccf273c07e6066f3adef6c1c7b9c67c93",
+  "live_01.qasm": "e5fab908e2863fab15eaa611b83af88f9cc9a39d765ca84696f2405406f31d2c",
+  "live_02.qasm": "604f106e60f9353f8e41a99928d693e0154ce5bc4c141e5e443c8c02b149c84f",
+  "live_03.qasm": "d0565388043fd2fc39d64ab991eb3db918aa4f25bd76aa47290794068ee5d5cf",
+  "live_04.qasm": "2ddfa671a31cf90c8737962702724048c7e31704286ca1c1a464938e94c2cfa2",
+  "live_05.qasm": "612905ef3d9aa357c2f6c5a0f01523e66b6b05f2cd0d06c1543e888d2e407e3a",
+  "live_06.qasm": "ee995f93598a997df04a6a37c8e7199a56a19b67360dcca641f92a20f9634213",
+  "live_07.qasm": "8dfd524099f82b5909bf2394a5192d723280e0b0b614103dcfce5f4bbdee3117",
+  "live_08.qasm": "f07a5ad3b151060ad4d6a3cc214e2d366e0f64ec41a9f98359f75e361ebc8241",
+  "live_09.qasm": "9f96d9006799fdf4942c243c3ea3a9964665703bf8762ad9590a0298dbcdd242",
+  "live_10.qasm": "bacce6271b0805b7eacfc8bd8de7e5a9d42fc3213aa5bf2080c4908ad98ba922",
+  "live_11.qasm": "d6b8fe55dbafa4d06ce58f2081e46663bb869741400a89f33349211f70e8bffc",
+  "live_12.qasm": "f63189887a43e0bc15b62e882606fdb52800a4a52d70cfee51ec4211e962aa07",
+  "live_13.qasm": "658615ea723d53b6c460457ed324dd98f826f8d6ff0345430cb6281f7f46562b",
+  "live_14.qasm": "b852e60ae7ef055e7470e0d1801a4016297206a3cc7c581f5f3d4d46c36ed997",
+  "live_15.qasm": "d03e51915768c143d91475d9c37305db55fa81c311255c3cf9874bd32804ff59",
+  "live_16.qasm": "069dfe40bcc349e3fb554764bea09c6d545c165bd1971f84182b15006e792d45",
+  "live_17.qasm": "fd4734cdcb107842432534ca9860c485681af4a2574f695ceae31a04d183236a",
+  "live_18.qasm": "42bf81b796a99f1133199481461141be6e3d564d81195ef0f9c90fea5d4cd376",
+  "live_19.qasm": "327b70ca25b17680eb8bc45820d27022fdf4cda50011e8b3b4acdf21cfc72dde",
+  "live_20.qasm": "64a52cf01f7022508c31891aa6de6537b8ff171e4611e00a3f8baa3d3308d7d0",
+  "live_21.qasm": "6c4ac162953ed358f063efe5ce46bab9035501c1f4f20aafbe1ef2aa7cb3a0ad"
+ },
+ "created_utc": "2026-10-31T15:18:50+00:00"
+}

@@ -1,0 +1,12 @@
+{
+ "job_id": "dbj15npffo6c73b8mls0",
+ "backend": "ibm_marrakesh",
+ "circuits": [
+  "tumor",
+  "pairs",
+  "chsh_a0_b0",
+  "chsh_a0_b1",
+  "chsh_a1_b0",
+  "chsh_a1_b1"
+ ]
+}

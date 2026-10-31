@@ -1,0 +1,19 @@
+  host LIDC-IDRI-0481: SIEMENS Definition, kernel B45f, thickness 1 mm, shape (259, 512, 512), spacing (1.0, 0.60546875, 0.60546875), lungs 9069342 vox
+  fingerprint (cached): PSF σ zyx [0.6142, 0.5965, 0.5965] mm, noise σ 56.23 HU, plausibility PASS
+  D-SCALE seed shapes: 12 tiles from /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/research_runs/dscale_live_100_20261031-162809/dscale (hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg)
+    tile 0_0: ground-glass smooth       7.0 mm RML -> grown+fitted         z=157   12.9 s
+    tile 1_0: solid        spiculated   7.0 mm LLL -> grown+fitted         z=120   25.3 s
+    tile 2_0: solid        spiculated   7.0 mm LUL -> grown+fitted         z=178   28.9 s
+    tile 3_0: calcified    lobulated   13.0 mm LUL -> procedural-3d        z=162    0.5 s
+    tile 4_0: solid        smooth       4.0 mm RLL -> grown+fitted         z= 97    6.6 s
+    tile 5_0: solid        smooth       4.0 mm RML -> grown+fitted         z=101    3.1 s
+    tile 6_0: part-solid   lobulated    7.0 mm LUL -> grown+fitted         z=149   16.1 s
+    tile 7_0: solid        smooth       4.0 mm RUL -> grown+fitted         z=134    3.8 s
+    tile 8_0: solid        spiculated  26.0 mm LUL -> grown+fitted         z=158  150.0 s
+    tile 8_1: solid        spiculated  26.0 mm LUL -> grown+fitted         z=155  162.6 s
+    tile 9_0: solid        lobulated    7.0 mm RUL -> grown+fitted         z=198   14.0 s
+    tile 9_1: solid        lobulated    7.0 mm LLL -> grown+fitted         z=198   12.1 s
+  rendered 12 tiles ({'grown+fitted': 11, 'procedural-3d': 1}), 83 growth frames, 11 full slices
+  time: host+fingerprint 1.4 s, tiles 440.7 s
+  CHSH stamp carried: 2.83349609375  backend: AerSimulator
+  wrote      -> /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/research_runs/dscale_live_100_20261031-162809/tiles.json

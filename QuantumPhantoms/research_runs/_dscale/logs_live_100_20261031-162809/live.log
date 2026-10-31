@@ -1,0 +1,27 @@
+[16:28:10] budget 100: picking a backend (live, auto)
+[16:28:16] candidates (pending jobs): ibm_marrakesh (0), ibm_kingston (3), ibm_fez (1090)
+[16:28:17] picked ibm_marrakesh: 0 pending jobs, 156 q, used 86 after pruning 23 qubits
+[16:28:17] lint ok: ghz-spine 18 circuits, ch-qca 22 circuits
+[16:28:17] transpiling 22 composite circuits for ibm_marrakesh
+[16:28:18] spend: 22 circuits x 2000 shots ~ 11.2 QPU-s (cap 50 s); 2q gates per circuit up to 289
+[16:28:20] SUBMITTED job dbj0i556p51s73cjqmgg on ibm_marrakesh (QPU); resume with --job dbj0i556p51s73cjqmgg
+[16:28:20] job dbj0i556p51s73cjqmgg: QUEUED (waited 0 s)
+[16:28:50] job dbj0i556p51s73cjqmgg: RUNNING (waited 30 s)
+[16:29:21] job dbj0i556p51s73cjqmgg: DONE (waited 60 s)
+[16:29:22] result in; analysing (hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg)
+[16:29:23] ghz-spine N=48: F_dfe 0.047 +- 0.028 (m=16, TREX-lite 0.127), GME False; ghz2 0.945; kept 0.79
+[16:29:25] ch-qca 30 sites: witness True; echo F t2=0.140
+[16:29:25]   seed tile_0_0   ground-glass   7.0 mm: 9/30 active -> 94 vox
+[16:29:25]   seed tile_1_0   solid          7.0 mm: 4/30 active -> 7 vox
+[16:29:25]   seed tile_2_0   solid          7.0 mm: 11/30 active -> 214 vox
+[16:29:25]   seed tile_3_0   calcified     13.0 mm: 9/30 active -> 307 vox
+[16:29:25]   seed tile_4_0   solid          4.0 mm: 8/30 active -> 77 vox
+[16:29:25]   seed tile_5_0   solid          4.0 mm: 10/30 active -> 384 vox
+[16:29:25]   seed tile_6_0   part-solid     7.0 mm: 13/30 active -> 342 vox
+[16:29:25]   seed tile_7_0   solid          4.0 mm: 7/30 active -> 174 vox
+[16:29:25]   seed tile_8_0   solid         26.0 mm: 20/30 active -> 632 vox
+[16:29:25]   seed tile_8_1   solid         26.0 mm: 15/30 active -> 396 vox
+[16:29:25]   seed tile_9_0   solid          7.0 mm: 8/30 active -> 234 vox
+[16:29:25]   seed tile_9_1   solid          7.0 mm: 8/30 active -> 91 vox
+[16:29:27] claims: ghz-spine L0 (passed False); ch-qca L1 (passed True)
+[16:29:27] wrote /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/research_runs/dscale_live_100_20261031-162809/dscale (label: hardware: ibm_marrakesh, job dbj0i556p51s73cjqmgg)

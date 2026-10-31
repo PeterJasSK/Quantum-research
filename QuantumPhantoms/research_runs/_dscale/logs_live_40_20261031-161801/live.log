@@ -1,0 +1,27 @@
+[16:18:02] budget 40: picking a backend (live, auto)
+[16:18:10] candidates (pending jobs): ibm_kingston (0), ibm_marrakesh (0), ibm_fez (10)
+[16:18:11] picked ibm_kingston: 0 pending jobs, 156 q, used 35 after pruning 11 qubits
+[16:18:11] lint ok: ghz-spine 18 circuits, ch-qca 22 circuits, pmd-bank 3 circuits
+[16:18:11] transpiling 22 composite circuits for ibm_kingston
+[16:18:11] spend: 22 circuits x 2000 shots ~ 11.2 QPU-s (cap 50 s); 2q gates per circuit up to 125
+[16:18:13] SUBMITTED job dbj0ddd6p51s73cjqak0 on ibm_kingston (QPU); resume with --job dbj0ddd6p51s73cjqak0
+[16:18:13] job dbj0ddd6p51s73cjqak0: QUEUED (waited 0 s)
+[16:18:44] job dbj0ddd6p51s73cjqak0: DONE (waited 30 s)
+[16:18:44] result in; analysing (hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0)
+[16:18:45] ghz-spine N=14: F_dfe 0.161 +- 0.085 (m=16, TREX-lite 0.183), GME False; ghz2 0.976; kept 1.00
+[16:18:46] ch-qca 12 sites: witness True; echo F t2=0.465
+[16:18:46]   seed tile_0_0   ground-glass   7.0 mm: 6/12 active -> 52 vox
+[16:18:46]   seed tile_1_0   solid          7.0 mm: 5/12 active -> 65 vox
+[16:18:46]   seed tile_2_0   solid          7.0 mm: 4/12 active -> 79 vox
+[16:18:46]   seed tile_3_0   calcified     13.0 mm: 8/12 active -> 87 vox
+[16:18:46]   seed tile_4_0   solid          4.0 mm: 3/12 active -> 26 vox
+[16:18:46]   seed tile_5_0   solid          4.0 mm: 5/12 active -> 34 vox
+[16:18:46]   seed tile_6_0   part-solid     7.0 mm: 2/12 active -> 25 vox
+[16:18:46]   seed tile_7_0   solid          4.0 mm: 5/12 active -> 56 vox
+[16:18:46]   seed tile_8_0   solid         26.0 mm: 7/12 active -> 115 vox
+[16:18:46]   seed tile_8_1   solid         26.0 mm: 8/12 active -> 136 vox
+[16:18:46]   seed tile_9_0   solid          7.0 mm: 5/12 active -> 43 vox
+[16:18:46]   seed tile_9_1   solid          7.0 mm: 6/12 active -> 60 vox
+[16:18:49] pmd-bank: d_KL(q) 3.87e-03 (n=16000, floor 1.44e-03), gap/floor -1.74, passed False
+[16:18:50] claims: ghz-spine L0 (passed False); ch-qca L1 (passed True); pmd-bank L0 (passed False)
+[16:18:50] wrote /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/research_runs/dscale_live_40_20261031-161801/dscale (label: hardware: ibm_kingston, job dbj0ddd6p51s73cjqak0)

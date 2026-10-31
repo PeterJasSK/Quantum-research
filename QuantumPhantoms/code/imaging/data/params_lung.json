@@ -1,0 +1,82 @@
+{
+  "_source": {
+    "path": "QuantumPhantoms/plans/relatedPapers/reverse-engineering/E_classical_growth/src/params_lung.json",
+    "commit": "2609cbe",
+    "sha256": "a83346a27cfe95804043b48202541967e6def58ff69c1562ca46dbf95085d9ca",
+    "note": "verbatim copy for the MVP grown renderer (F5); edit the RE original, then re-copy"
+  },
+  "version": "1.0.0",
+  "lattice_mm": 0.5,
+  "lung_hu_bounds": [
+    -950,
+    -600
+  ],
+  "lung_hu_bounds_source": "assumption (feature plan Q5): aerated parenchyma split in 3 levels; HU > -600 non-vessel = level 4",
+  "calibration_reference_diameter_mm": 8.0,
+  "types": {
+    "solid": {
+      "p0": 0.009468,
+      "a_mm13": 2.2,
+      "b_mm13": 0.11,
+      "Rmax_mm": 50.0,
+      "vessel_threshold": 30,
+      "parenchyma_rates": [
+        1.0,
+        0.3,
+        0.1,
+        0.05
+      ],
+      "vdt_target_days": 149,
+      "vdt_achieved_days": 147.63,
+      "sources": [
+        "p0: calibrated by repro/calibrate_lung.py to vdt_target_days at the reference diameter",
+        "vdt_target_days: Hasegawa et al., Br J Radiol 2000, mean VDT of solid nodules (verify; PDF not in papers/)",
+        "a_mm13: assumption: necrosis negligible below 20 mm diameter (dn >= Rt at Rt = 10 mm), matching the Pixel2Cancer 2 cm death rule [E01]",
+        "b_mm13: Kansal-Torquato [E02] base proliferative thickness, unchanged",
+        "Rmax_mm: assumption: thoracic confinement scale (KT [E02] used 37.5 mm for the skull)",
+        "vessel_threshold: assumption: pushes before a lung vessel/airway is engulfed (Pixel2Cancer [E01] pressure rule; liver reference = 3)",
+        "parenchyma_rates: levels 1-3 = Pixel2Cancer [E01] check_tissue rates (1, 0.3, 0.1); level 4 = assumption 0.05"
+      ]
+    },
+    "part-solid": {
+      "p0": 0.002922,
+      "a_mm13": 2.2,
+      "b_mm13": 0.11,
+      "Rmax_mm": 50.0,
+      "vessel_threshold": 30,
+      "parenchyma_rates": [
+        1.0,
+        0.3,
+        0.1,
+        0.05
+      ],
+      "vdt_target_days": 457,
+      "vdt_achieved_days": 465.76,
+      "sources": [
+        "p0: calibrated by repro/calibrate_lung.py to vdt_target_days at the reference diameter",
+        "vdt_target_days: Hasegawa et al., Br J Radiol 2000, mean VDT of part-solid (mixed) nodules (verify; PDF not in papers/)",
+        "other parameters: as for solid"
+      ]
+    },
+    "ground-glass": {
+      "p0": 0.001498,
+      "a_mm13": 2.2,
+      "b_mm13": 0.11,
+      "Rmax_mm": 50.0,
+      "vessel_threshold": 30,
+      "parenchyma_rates": [
+        1.0,
+        0.3,
+        0.1,
+        0.05
+      ],
+      "vdt_target_days": 813,
+      "vdt_achieved_days": 825.39,
+      "sources": [
+        "p0: calibrated by repro/calibrate_lung.py to vdt_target_days at the reference diameter",
+        "vdt_target_days: Hasegawa et al., Br J Radiol 2000, mean VDT of pure ground-glass nodules (verify; PDF not in papers/)",
+        "other parameters: as for solid"
+      ]
+    }
+  }
+}

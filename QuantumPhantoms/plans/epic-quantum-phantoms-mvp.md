@@ -35,6 +35,7 @@ Two names (both honest, see full plan header): **Quantum Synthetic Cultures (QSC
 | F2 | Lesion → CT image | Decode params → 3D lesion → insert into real CT | open | Decode each param set → 3D lesion blob; image-domain insertion into a real LIDC/LUNA16 lung-CT slice with matched noise. Sibling-pair tiles (from the division) placed as related lesions. Output: labeled synthetic CT tiles. No phantom, no CT-physics sim. |
 | F3 | Web demo | Cohort grid web render | open | Self-contained web page: cohort grid of CT tiles, per-tile decoded parameters, per-tile CHSH stamp, sibling-pair lineage badge ("gen 1 of ∞"), cohort-vs-rulebook strip (a histogram). **This is the MVP.** |
 | F4 | *(optional)* QALife loop | Mode-A living-process arm | open | Turn the one-division hint into a real evolutionary loop: 2→4 cells over 2–3 generations, division + fate quantum, fitness/selection classical, **within-generation entanglement witness** per generation. Feeds an evolved lineage into F2/F3. The first honest living-process deliverable (full plan §5.2.5). |
+| F5 | *(post-MVP)* RE realism | Siemens LIDC host + E growth + F render | open | Added 2026-10-31. Fold `f2_imaging` into a general `imaging` package and add a `grown` renderer copied (frozen, not imported) from the reverse-engineering letters E and F. Each nodule is grown by the Kansal–Torquato/Pixel2Cancer automaton to the rolled size, rendered with the LIDC-fitted lesion library, and inserted in 3-D into a public Siemens LIDC CT with that scan's blur and noise. An 8-frame "pixel growth" player (seed → baseline → +90 d) is added to the F3 page. Plan: `feature-F5-re-realism.md`. |
 
 ---
 
@@ -71,6 +72,8 @@ F2 and F3 must be **blind** to which sampler produced the params. This is what m
 | `Lesion` | F2 | F2, F3 | 3D blob derived from `TumorParams`. |
 | `CohortTile` | F2 | F3 | Real CT slice + inserted lesion + label + provenance stamp; one grid cell. |
 | `Generation` / `Lineage` | F4 | F4, F2, F3 | Evolutionary trace: clones per generation with survival/fitness; extends `lineage_id`/`generation` beyond the single division. |
+| `Host` / `Fingerprint` | F5 | F5 | A 3-D HU host CT (public Siemens LIDC case) with threshold lung masks and the scan's measured PSF and NPS. Cached in gitignored `research_runs/_hosts/`. |
+| `CohortTile.growth` (+ `renderer`, `diag`) | F5 | F3 | Optional fields holding the growth frames (day, Ø, role, PNG) and the renderer/provenance diagnostics. Old tiles load unchanged. |
 
 ---
 
@@ -98,7 +101,11 @@ F2 and F3 must be **blind** to which sampler produced the params. This is what m
 F1 ─► F2 ─► F3  (the MVP)
  │
  └─► F4 (optional) ──► re-feeds F2/F3 render
+
+F2 + F3 ─► F5 (post-MVP: F2 folded into `imaging`, grown renderer, F3 growth player)
 ```
+
+- **F5** depends on F2 (which it folds into `imaging/`) and F3 (which gains the player). It takes F1 and F4 runs unchanged through the `Sampler` seam.
 
 - **F1 → F2 → F3** strictly sequential; each is a testable deliverable. F3 is the shippable MVP.
 - **F4** depends only on F1 (the quantum core + `Sampler` seam) and reuses F2/F3 unchanged. Build it after F3 ships, only if the MVP lands and time allows. It is the bridge to the full living-process arm in the parent plan (§5.2.5).

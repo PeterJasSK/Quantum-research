@@ -1,0 +1,1371 @@
+{
+  "honest_label": "Tumour parameters (size, type, margin, lobe) come from a certified-quantum roll (job-level CHSH; simulator runs are labelled as such). Growth is a classical cellular automaton (Kansal\u2013Torquato layers + Pixel2Cancer pleura wall, calibrated to published volume-doubling times (verify)). The image is a classical 3-D insertion into a public LIDC-IDRI CT scanned on a Siemens scanner, with that scan's own measured blur and noise; lesion shape and HU come from a parameter-only library fitted to LIDC nodules (no patient voxels in the generator). The quantum bits seed growth and appearance: replayable provenance, not realism. All nodules sit in one host scan (one patient background).",
+  "ct_attribution": "Host CT: LIDC-IDRI-0481 (public LIDC-IDRI collection, TCIA, CC BY 3.0, https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX), scanned on a Siemens Definition (kernel B45f, 1 mm). Public case; no Siemens involvement.",
+  "quantum_run": {
+    "backend_name": "ibm_marrakesh",
+    "job_id": "dbj15npffo6c73b8mls0",
+    "chsh_value": 2.7333984375,
+    "chsh_settings": {
+      "a0": 0.0,
+      "a1": 1.5707963267948966,
+      "b0": 0.7853981633974483,
+      "b1": -0.7853981633974483
+    },
+    "raw_bits": [
+      "010000101",
+      "000101111",
+      "000100001",
+      "111010101",
+      "110010011",
+      "010010001",
+      "010101000",
+      "000001001",
+      "100010000100010000",
+      "011001101010001100"
+    ],
+    "shot_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+    ]
+  },
+  "tiles": [
+    {
+      "tile_id": "tile_0_0",
+      "png_path": "tiles/zoom_0_0.png",
+      "size_mm": 13.0,
+      "type": "ground-glass",
+      "margin": "smooth",
+      "lobe": "RLL",
+      "lineage_id": "tile0",
+      "generation": 0,
+      "shot_index": 0,
+      "insert_xy": [
+        160,
+        432
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_125.png",
+      "bbox": [
+        0.28369,
+        0.81494,
+        0.05761,
+        0.05761
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 125,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 4.62,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 364,
+          "diameter_mm": 5.5,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 835,
+          "diameter_mm": 6.53,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 1408,
+          "diameter_mm": 7.75,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 2127,
+          "diameter_mm": 9.21,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 2967,
+          "diameter_mm": 10.94,
+          "role": "growth",
+          "png_path": "tiles/grow_0_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 3999,
+          "diameter_mm": 13.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_0_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 4089,
+          "diameter_mm": 13.16,
+          "role": "follow-up",
+          "png_path": "tiles/grow_0_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "302eae788d267c11d78d746b987f06c419446197a38b65d6d5f99435862f3161",
+      "seed_hex_appearance": "cd678f2fca8620df2e0595938dcea0ae82707a67090b0db6c10ffa5e1e7746f8",
+      "diag": {
+        "day_baseline": 3999,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 13.001,
+        "diameter_follow_up_mm": 13.1615,
+        "vdt_d": 1226.5,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 292 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 4.623,
+        "params_type": "ground-glass",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 414,
+        "hu_source": "library",
+        "hu_core": -580.6,
+        "sigma_edge_mm": 0.494,
+        "filled_holes_vox": 31,
+        "volume_pd_pct": 0.01,
+        "sigma_ratio_in_out": 1.003,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_1_0",
+      "png_path": "tiles/zoom_1_0.png",
+      "size_mm": 26.0,
+      "type": "calcified",
+      "margin": "lobulated",
+      "lobe": "RUL",
+      "lineage_id": "tile1",
+      "generation": 0,
+      "shot_index": 1,
+      "insert_xy": [
+        186,
+        197
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_183.png",
+      "bbox": [
+        0.31348,
+        0.33496,
+        0.0996,
+        0.0996
+      ],
+      "morphology_source": "quantum",
+      "renderer": "procedural-3d",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 183,
+      "seed_hex_geometry": "27ee7192b8f67e7fc1cef80032289fb23cfcc61e5a1b50ad8408002d11e71f2b",
+      "seed_hex_appearance": "83749be9534d9d614c196f29d399105231fa9de349a3a5e23d81f553682f8bac",
+      "diag": {
+        "hu_source": "procedural-f2.1",
+        "sigma_ratio_in_out": 1.001,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      }
+    },
+    {
+      "tile_id": "tile_2_0",
+      "png_path": "tiles/zoom_2_0.png",
+      "size_mm": 13.0,
+      "type": "solid",
+      "margin": "lobulated",
+      "lobe": "RUL",
+      "lineage_id": "tile2",
+      "generation": 0,
+      "shot_index": 2,
+      "insert_xy": [
+        192,
+        371
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_170.png",
+      "bbox": [
+        0.34619,
+        0.6958,
+        0.05762,
+        0.05762
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 170,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.16,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 68,
+          "diameter_mm": 4.0,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 166,
+          "diameter_mm": 5.06,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 283,
+          "diameter_mm": 6.42,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 428,
+          "diameter_mm": 8.13,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 609,
+          "diameter_mm": 10.28,
+          "role": "growth",
+          "png_path": "tiles/grow_2_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 829,
+          "diameter_mm": 13.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_2_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 919,
+          "diameter_mm": 14.15,
+          "role": "follow-up",
+          "png_path": "tiles/grow_2_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "ad786ae3208f968d2c4f9b7f120657e2145acf1f9638aa9d4a86989185fed414",
+      "seed_hex_appearance": "0d9e073f204f02006fdeb7601b5bf2ea2a9939bf97b925c981ad84cb024fb4cc",
+      "diag": {
+        "day_baseline": 829,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 13.001,
+        "diameter_follow_up_mm": 14.1462,
+        "vdt_d": 231.5,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 61\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.159,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 132,
+        "hu_source": "f2.1-constant",
+        "hu_core": 26.8,
+        "sigma_edge_mm": 1.03,
+        "filled_holes_vox": 40,
+        "volume_pd_pct": 0.0,
+        "sigma_ratio_in_out": 0.97,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_3_0",
+      "png_path": "tiles/zoom_3_0.png",
+      "size_mm": 13.0,
+      "type": "ground-glass",
+      "margin": "spiculated",
+      "lobe": "RUL",
+      "lineage_id": "tile3",
+      "generation": 0,
+      "shot_index": 3,
+      "insert_xy": [
+        81,
+        328
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_151.png",
+      "bbox": [
+        0.12941,
+        0.61183,
+        0.05759,
+        0.05759
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 151,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.61,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 545,
+          "diameter_mm": 4.47,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 1156,
+          "diameter_mm": 5.54,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 1895,
+          "diameter_mm": 6.85,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 2886,
+          "diameter_mm": 8.48,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 4145,
+          "diameter_mm": 10.5,
+          "role": "growth",
+          "png_path": "tiles/grow_3_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 5771,
+          "diameter_mm": 13.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_3_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 5861,
+          "diameter_mm": 13.14,
+          "role": "follow-up",
+          "png_path": "tiles/grow_3_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "ada92d7cd901da78d31102532d852cbc0bc97b60335bf38e6611dd2dd5846832",
+      "seed_hex_appearance": "3990fe31b250deac250d7778ec2cbbc81ce9a4b2c245f804abdbd9e5aba77efe",
+      "diag": {
+        "day_baseline": 5771,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 13.0015,
+        "diameter_follow_up_mm": 13.138,
+        "vdt_d": 1823.5,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 825,
+        "touches_box_edge": false,
+        "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 60636 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.61,
+        "params_type": "ground-glass",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 197,
+        "hu_source": "library",
+        "hu_core": -775.0,
+        "sigma_edge_mm": 1.205,
+        "filled_holes_vox": 15,
+        "volume_pd_pct": 0.28,
+        "sigma_ratio_in_out": 0.909,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_4_0",
+      "png_path": "tiles/zoom_4_0.png",
+      "size_mm": 26.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "LUL",
+      "lineage_id": "tile4",
+      "generation": 0,
+      "shot_index": 4,
+      "insert_xy": [
+        336,
+        408
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_164.png",
+      "bbox": [
+        0.6064,
+        0.74702,
+        0.09971,
+        0.09971
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 164,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.94,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 120,
+          "diameter_mm": 5.41,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 296,
+          "diameter_mm": 7.4,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 517,
+          "diameter_mm": 10.13,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 820,
+          "diameter_mm": 13.87,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 1251,
+          "diameter_mm": 18.98,
+          "role": "growth",
+          "png_path": "tiles/grow_4_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 1896,
+          "diameter_mm": 26.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_4_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 1986,
+          "diameter_mm": 26.93,
+          "role": "follow-up",
+          "png_path": "tiles/grow_4_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "1037b5caa432dcacc7464d7dab8eedc4dd9d10a1502f43087d5575b323177d11",
+      "seed_hex_appearance": "91f34ca3f13445e756da4d075dd0ee9ec29e7ecc6f5c03f1c041cf88e35ba9c2",
+      "diag": {
+        "day_baseline": 1896,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 26.0021,
+        "diameter_follow_up_mm": 26.9281,
+        "vdt_d": 569.6,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 99\u00b3 at 0.5 mm; hard (outside lung) 292139 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.939,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 256,
+        "hu_source": "f2.1-constant",
+        "hu_core": 74.5,
+        "sigma_edge_mm": 0.93,
+        "filled_holes_vox": 536,
+        "volume_pd_pct": 0.01,
+        "sigma_ratio_in_out": 0.985,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_5_0",
+      "png_path": "tiles/zoom_5_0.png",
+      "size_mm": 13.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "RLL",
+      "lineage_id": "tile5",
+      "generation": 0,
+      "shot_index": 5,
+      "insert_xy": [
+        208,
+        381
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_72.png",
+      "bbox": [
+        0.37742,
+        0.71531,
+        0.05766,
+        0.05766
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 72,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 3.7,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 78,
+          "diameter_mm": 4.57,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 170,
+          "diameter_mm": 5.63,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 271,
+          "diameter_mm": 6.93,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 403,
+          "diameter_mm": 8.56,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 571,
+          "diameter_mm": 10.55,
+          "role": "growth",
+          "png_path": "tiles/grow_5_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 778,
+          "diameter_mm": 13.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_5_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 868,
+          "diameter_mm": 13.98,
+          "role": "follow-up",
+          "png_path": "tiles/grow_5_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "fd220a1ab7a58e253073559e7e3e10d4a6dc35ee7143a513a9310f4138354c85",
+      "seed_hex_appearance": "77e0fdc429427116444307026d9ea761e4b63bfd292088c7b3f1c8b3de5c9f56",
+      "diag": {
+        "day_baseline": 778,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 13.0029,
+        "diameter_follow_up_mm": 13.9845,
+        "vdt_d": 283.5,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 244,
+        "touches_box_edge": false,
+        "lattice": "lattice 61\u00b3 at 0.5 mm; hard (outside lung) 95374 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 3.699,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 212,
+        "hu_source": "f2.1-constant",
+        "hu_core": 8.2,
+        "sigma_edge_mm": 1.689,
+        "filled_holes_vox": 57,
+        "volume_pd_pct": 0.33,
+        "sigma_ratio_in_out": 0.865,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_6_0",
+      "png_path": "tiles/zoom_6_0.png",
+      "size_mm": 4.0,
+      "type": "part-solid",
+      "margin": "lobulated",
+      "lobe": "RLL",
+      "lineage_id": "tile6",
+      "generation": 0,
+      "shot_index": 6,
+      "insert_xy": [
+        186,
+        164
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_79.png",
+      "bbox": [
+        0.34901,
+        0.30604,
+        0.02854,
+        0.02854
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 79,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.79,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 102,
+          "diameter_mm": 2.05,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 221,
+          "diameter_mm": 2.34,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 350,
+          "diameter_mm": 2.68,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 491,
+          "diameter_mm": 3.06,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 613,
+          "diameter_mm": 3.5,
+          "role": "growth",
+          "png_path": "tiles/grow_6_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 773,
+          "diameter_mm": 4.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_6_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 863,
+          "diameter_mm": 4.23,
+          "role": "follow-up",
+          "png_path": "tiles/grow_6_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "d5f55f6402515ee006cdb671f03c94b7c828e516eb1ddb81ddfd1a2b1dbcdbc5",
+      "seed_hex_appearance": "9114818ec1b85ca25ecd34c85d795c7791bef6a65d79d5fc3e6ff44a2718aa32",
+      "diag": {
+        "day_baseline": 773,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0046,
+        "diameter_follow_up_mm": 4.2343,
+        "vdt_d": 266.8,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 1453 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.789,
+        "params_type": "part-solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 24,
+        "seed_scaled": 0.54,
+        "hu_source": "f2.1-constant core + library rim",
+        "hu_core": 16.2,
+        "sigma_edge_mm": 1.483,
+        "filled_holes_vox": 0,
+        "volume_pd_pct": 0.03,
+        "sigma_ratio_in_out": null,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_7_0",
+      "png_path": "tiles/zoom_7_0.png",
+      "size_mm": 13.0,
+      "type": "part-solid",
+      "margin": "smooth",
+      "lobe": "RUL",
+      "lineage_id": "tile7",
+      "generation": 0,
+      "shot_index": 7,
+      "insert_xy": [
+        197,
+        208
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_134.png",
+      "bbox": [
+        0.35596,
+        0.37745,
+        0.05761,
+        0.05761
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 134,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 2.96,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 300,
+          "diameter_mm": 3.8,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 596,
+          "diameter_mm": 4.85,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 986,
+          "diameter_mm": 6.21,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 1486,
+          "diameter_mm": 7.94,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 2055,
+          "diameter_mm": 10.16,
+          "role": "growth",
+          "png_path": "tiles/grow_7_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 2787,
+          "diameter_mm": 13.0,
+          "role": "baseline",
+          "png_path": "tiles/grow_7_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 2877,
+          "diameter_mm": 13.34,
+          "role": "follow-up",
+          "png_path": "tiles/grow_7_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "cbb38c53b84d16169a92ba2f1a865b44f1e622cdcb1d8407041c1e6a653f07ce",
+      "seed_hex_appearance": "2d425fdbb139a289bca98d634fe318f0fae5d02016d5e03240d40523997b0119",
+      "diag": {
+        "day_baseline": 2787,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 13.0025,
+        "diameter_follow_up_mm": 13.3436,
+        "vdt_d": 862.4,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 15078 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 2.963,
+        "params_type": "part-solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 109,
+        "hu_source": "f2.1-constant core + library rim",
+        "hu_core": 13.1,
+        "sigma_edge_mm": 1.808,
+        "filled_holes_vox": 26,
+        "volume_pd_pct": 0.0,
+        "sigma_ratio_in_out": 1.045,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_8_0",
+      "png_path": "tiles/zoom_8_0.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "RML",
+      "lineage_id": "pair8",
+      "generation": 0,
+      "shot_index": 8,
+      "insert_xy": [
+        117,
+        408
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_109.png",
+      "bbox": [
+        0.21424,
+        0.7826,
+        0.02856,
+        0.02856
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 109,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.99,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_0.png"
+        },
+        {
+          "k": 1,
+          "day": 32,
+          "diameter_mm": 2.24,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_1.png"
+        },
+        {
+          "k": 2,
+          "day": 63,
+          "diameter_mm": 2.52,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_2.png"
+        },
+        {
+          "k": 3,
+          "day": 118,
+          "diameter_mm": 2.84,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_3.png"
+        },
+        {
+          "k": 4,
+          "day": 160,
+          "diameter_mm": 3.18,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_4.png"
+        },
+        {
+          "k": 5,
+          "day": 206,
+          "diameter_mm": 3.57,
+          "role": "growth",
+          "png_path": "tiles/grow_8_0_5.png"
+        },
+        {
+          "k": 6,
+          "day": 249,
+          "diameter_mm": 4.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_8_0_6.png"
+        },
+        {
+          "k": 7,
+          "day": 339,
+          "diameter_mm": 4.97,
+          "role": "follow-up",
+          "png_path": "tiles/grow_8_0_7.png"
+        }
+      ],
+      "seed_hex_geometry": "5a31a4d9ac79f6045ba3db01f94eb2c167efaf75b4e650f57f013872178c3749",
+      "seed_hex_appearance": "03ab894cc439561ff4ce10fece2b8a0023258172cb493c9e91e2b188fa3210a7",
+      "diag": {
+        "day_baseline": 249,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0095,
+        "diameter_follow_up_mm": 4.9725,
+        "vdt_d": 72.7,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.99,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 33,
+        "seed_scaled": 0.643,
+        "hu_source": "f2.1-constant",
+        "hu_core": 3.7,
+        "sigma_edge_mm": 0.05,
+        "filled_holes_vox": 0,
+        "volume_pd_pct": 14.46,
+        "sigma_ratio_in_out": 1.143,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_8_1",
+      "png_path": "tiles/zoom_8_1.png",
+      "size_mm": 4.0,
+      "type": "solid",
+      "margin": "spiculated",
+      "lobe": "RML",
+      "lineage_id": "pair8",
+      "generation": 1,
+      "shot_index": 8,
+      "insert_xy": [
+        122,
+        402
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_109.png",
+      "bbox": [
+        0.22399,
+        0.77087,
+        0.02857,
+        0.02857
+      ],
+      "morphology_source": "quantum",
+      "renderer": "grown+fitted",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 109,
+      "growth": [
+        {
+          "k": 0,
+          "day": 0,
+          "diameter_mm": 1.79,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_0.png"
+        },
+        {
+          "k": 1,
+          "day": 46,
+          "diameter_mm": 2.05,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_1.png"
+        },
+        {
+          "k": 2,
+          "day": 94,
+          "diameter_mm": 2.34,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_2.png"
+        },
+        {
+          "k": 3,
+          "day": 139,
+          "diameter_mm": 2.68,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_3.png"
+        },
+        {
+          "k": 4,
+          "day": 180,
+          "diameter_mm": 3.07,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_4.png"
+        },
+        {
+          "k": 5,
+          "day": 231,
+          "diameter_mm": 3.5,
+          "role": "growth",
+          "png_path": "tiles/grow_8_1_5.png"
+        },
+        {
+          "k": 6,
+          "day": 285,
+          "diameter_mm": 4.01,
+          "role": "baseline",
+          "png_path": "tiles/grow_8_1_6.png"
+        },
+        {
+          "k": 7,
+          "day": 375,
+          "diameter_mm": 4.99,
+          "role": "follow-up",
+          "png_path": "tiles/grow_8_1_7.png"
+        }
+      ],
+      "seed_hex_geometry": "e967cc1af824c2bf43a765a1a462581d4faf23c9cd8c9a611f25c42e74780825",
+      "seed_hex_appearance": "4028bfe77649c758bac902012776d01e9fc164ccbd40c0eab9b99946f65c4a98",
+      "diag": {
+        "day_baseline": 285,
+        "follow_up_days": 90,
+        "diameter_baseline_mm": 4.0095,
+        "diameter_follow_up_mm": 4.9885,
+        "vdt_d": 64.4,
+        "f_necrotic_baseline": 0.0,
+        "wall_contacts_baseline": 0,
+        "touches_box_edge": false,
+        "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+        "seed_diameter_mm": 1.789,
+        "params_type": "solid",
+        "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+        "seed_cells": 24,
+        "seed_scaled": 0.63,
+        "hu_source": "f2.1-constant",
+        "hu_core": 11.7,
+        "sigma_edge_mm": 1.613,
+        "filled_holes_vox": 1,
+        "volume_pd_pct": 14.89,
+        "sigma_ratio_in_out": null,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      },
+      "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+      "dscale": {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness_passed": true
+      }
+    },
+    {
+      "tile_id": "tile_9_0",
+      "png_path": "tiles/zoom_9_0.png",
+      "size_mm": 4.0,
+      "type": "calcified",
+      "margin": "smooth",
+      "lobe": "RLL",
+      "lineage_id": "pair9",
+      "generation": 0,
+      "shot_index": 9,
+      "insert_xy": [
+        185,
+        311
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_123.png",
+      "bbox": [
+        0.34701,
+        0.59311,
+        0.02863,
+        0.02863
+      ],
+      "morphology_source": "quantum",
+      "renderer": "procedural-3d",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 123,
+      "seed_hex_geometry": "d69db8beab8158d94b74f68b31ba2dde93957b0aca701b38e835ec1cc1cf6782",
+      "seed_hex_appearance": "2db00602fa254439ad62ce3ce7e580964bf91a3e66b052c89c56b026f978786c",
+      "diag": {
+        "hu_source": "procedural-f2.1",
+        "sigma_ratio_in_out": 1.245,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      }
+    },
+    {
+      "tile_id": "tile_9_1",
+      "png_path": "tiles/zoom_9_1.png",
+      "size_mm": 13.0,
+      "type": "calcified",
+      "margin": "smooth",
+      "lobe": "RUL",
+      "lineage_id": "pair9",
+      "generation": 1,
+      "shot_index": 9,
+      "insert_xy": [
+        160,
+        291
+      ],
+      "spacing_mm": 0.60546875,
+      "background_source": "lidc_real",
+      "backend_name": "ibm_marrakesh",
+      "job_id": "dbj15npffo6c73b8mls0",
+      "chsh_value": 2.7333984375,
+      "full_png_path": "tiles/full_LIDC-IDRI-0481_123.png",
+      "bbox": [
+        0.2837,
+        0.53956,
+        0.05759,
+        0.05759
+      ],
+      "morphology_source": "quantum",
+      "renderer": "procedural-3d",
+      "host_id": "LIDC-IDRI-0481",
+      "slice_z": 123,
+      "seed_hex_geometry": "6dcf5f11df94a4280f763fb2f6d7796cf860cb6e8652bf685fce3b7443cfcc65",
+      "seed_hex_appearance": "0d9336566bf1232f6db45bde0fc61f5137f72081d38fa2f41328c3248c55dc76",
+      "diag": {
+        "hu_source": "procedural-f2.1",
+        "sigma_ratio_in_out": 1.189,
+        "psf_sigma_mm_zyx": [
+          0.6142,
+          0.5965,
+          0.5965
+        ]
+      }
+    }
+  ],
+  "renderer_version": "imaging-grown@RE-2609cbe",
+  "provenance": {
+    "library_sha256": "81155a4b4f4b2e301de74be67d6ccd97722ffc914927c50ad8e6a8d1793ee50f",
+    "params_lung_sha256": "3704e61f20bb69521ec4d56e1c5b87c2d769b68bff447743f660d8a7bf94947a",
+    "ported_from": "QuantumPhantoms/plans/relatedPapers/reverse-engineering @ 2609cbe (E, F)",
+    "hosts": [
+      {
+        "host_id": "LIDC-IDRI-0481",
+        "manufacturer": "SIEMENS",
+        "model": "Definition",
+        "kernel": "B45f",
+        "slice_thickness": "1",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.107351566259572521472765997306",
+        "fingerprint": {
+          "psf_sigma_mm_zyx": [
+            0.6142,
+            0.5965,
+            0.5965
+          ],
+          "noise_sigma_hu": 56.23,
+          "f50_cyc_per_mm": 0.3401,
+          "plausibility": {
+            "checks": {
+              "sigma_xy_mm_in_0.4_1.5": true,
+              "sigma_z_mm_in_0.3t_1.0t": true,
+              "noise_sigma_hu_in_5_60": true
+            },
+            "verdict": "PASS"
+          },
+          "source": "cached"
+        }
+      }
+    ]
+  },
+  "dscale": {
+    "budget": 100,
+    "target": "ibm_marrakesh",
+    "mode": "hardware",
+    "sim_label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+    "recipe": "composite",
+    "claims": [
+      {
+        "family": "ghz-spine",
+        "claim_level": "L0",
+        "witness": "DFE GHZ fidelity (GME)",
+        "value": 0.05479166666666666,
+        "sigma": 0.019256513970966022,
+        "k": 2,
+        "passed": false,
+        "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+        "note": "N=28, kept 1.000; ghz2=0.946; stabilizer state (BP chi = 2): survives, not hard"
+      },
+      {
+        "family": "ch-qca",
+        "claim_level": "L1",
+        "witness": "QCA pair negativity (Bonferroni)",
+        "value": 0.014017819084372971,
+        "sigma": 0.006171665689290047,
+        "k": 2,
+        "passed": true,
+        "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+        "note": "23 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+      },
+      {
+        "family": "pmd-bank",
+        "claim_level": "L0",
+        "witness": "PMD memory gap / floor",
+        "value": -2.877465152432127,
+        "sigma": null,
+        "k": 3,
+        "passed": false,
+        "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+        "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2"
+      }
+    ],
+    "goldilocks": {
+      "cells": [],
+      "empty": null,
+      "ref_kinds": [],
+      "note": "live proof of concept: the survive-vs-simulable map is a simulation product (python -m dscale.survival)"
+    },
+    "seed_shapes": "seed_shapes.npz",
+    "allocation_ref": "allocation.json",
+    "param_grid_sha256": "",
+    "shots": 4000,
+    "repeats": 1,
+    "truncated": false,
+    "run_key": "dbj15npffo6c73b8mls0",
+    "target_label": "ibm_marrakesh (156 q heavy-hex)",
+    "job_id": "dbj16056p51s73cjs7q0",
+    "honest_label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0; proof of concept (one job, n = 1, ~1 QPU-minute); the seed shape is a quantum snapshot measured on the device; growth and image are classical; no classical-hardness claim"
+  }
+}

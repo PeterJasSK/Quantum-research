@@ -1,0 +1,121 @@
+{
+  "_source": {
+    "path": "QuantumPhantoms/plans/relatedPapers/reverse-engineering/F_render/library/lesion_model_library.json",
+    "commit": "2609cbe",
+    "sha256": "a23e21042a945994abd540a74e4dc0c2da9deea2b2938cfe982caf15ef31d47e",
+    "note": "verbatim copy for the MVP grown renderer (F5); edit the RE original, then re-copy"
+  },
+  "contract": "lesion_model_library",
+  "contract_version": "1.0.0",
+  "produced_by": {
+    "letter": "F",
+    "tool": "F_render.src.lesion_fit",
+    "run_id": "20261029-052929-lesion-fit",
+    "code_hash": "41943b46aceba0d73ea1642355d57e022608f47d770b15208c5445bbefd454d1"
+  },
+  "created_utc": "2026-10-29T05:54:54Z",
+  "stub": false,
+  "upstream": [],
+  "source": "LIDC fitted parameters (no voxels)",
+  "types": {
+    "solid": {
+      "shape_params": {
+        "sphericity_mean": 0.784478,
+        "sphericity_std": 0.097261,
+        "d_eq_mm_min": 4.872302,
+        "d_eq_mm_max": 25.743442,
+        "d_eq_mm_mean": 11.874299,
+        "texture_std_hu_mean": 87.21122,
+        "texture_std_hu_std": 101.270569,
+        "sh_l1_power_mean": 0.000397,
+        "sh_l1_power_std": 0.000447,
+        "sh_l2_power_mean": 0.013737,
+        "sh_l2_power_std": 0.009268,
+        "sh_l3_power_mean": 0.007086,
+        "sh_l3_power_std": 0.00463,
+        "sh_l4_power_mean": 0.003724,
+        "sh_l4_power_std": 0.002095
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "sigma_mm_mean": 1.1272,
+          "sigma_mm_std": 0.6243,
+          "sigma_obs_mm_mean": 1.4671,
+          "bg_hu_mean": -815.02
+        }
+      },
+      "hu": {
+        "mean": -21.62,
+        "std": 131.59
+      },
+      "n_fitted": 20
+    },
+    "part-solid": {
+      "shape_params": {
+        "sphericity_mean": 0.781618,
+        "sphericity_std": 0.077532,
+        "d_eq_mm_min": 5.683563,
+        "d_eq_mm_max": 21.836994,
+        "d_eq_mm_mean": 11.265441,
+        "texture_std_hu_mean": 73.541878,
+        "texture_std_hu_std": 67.136827,
+        "sh_l1_power_mean": 0.000475,
+        "sh_l1_power_std": 0.000576,
+        "sh_l2_power_mean": 0.01906,
+        "sh_l2_power_std": 0.01125,
+        "sh_l3_power_mean": 0.009049,
+        "sh_l3_power_std": 0.004399,
+        "sh_l4_power_mean": 0.003889,
+        "sh_l4_power_std": 0.002329
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "sigma_mm_mean": 1.4765,
+          "sigma_mm_std": 0.6448,
+          "sigma_obs_mm_mean": 1.7885,
+          "bg_hu_mean": -825.35
+        }
+      },
+      "hu": {
+        "mean": -163.09,
+        "std": 175.37
+      },
+      "n_fitted": 11
+    },
+    "ground-glass": {
+      "shape_params": {
+        "sphericity_mean": 0.782774,
+        "sphericity_std": 0.073387,
+        "d_eq_mm_min": 5.541925,
+        "d_eq_mm_max": 17.403343,
+        "d_eq_mm_mean": 9.410303,
+        "texture_std_hu_mean": 53.549002,
+        "texture_std_hu_std": 36.661637,
+        "sh_l1_power_mean": 0.000903,
+        "sh_l1_power_std": 0.001186,
+        "sh_l2_power_mean": 0.034843,
+        "sh_l2_power_std": 0.032263,
+        "sh_l3_power_mean": 0.005085,
+        "sh_l3_power_std": 0.004902,
+        "sh_l4_power_mean": 0.006145,
+        "sh_l4_power_std": 0.004552
+      },
+      "edge_profile": {
+        "model": "erf",
+        "params": {
+          "sigma_mm_mean": 1.1007,
+          "sigma_mm_std": 0.6381,
+          "sigma_obs_mm_mean": 1.4124,
+          "bg_hu_mean": -835.86
+        }
+      },
+      "hu": {
+        "mean": -628.8,
+        "std": 95.58
+      },
+      "n_fitted": 10
+    }
+  }
+}
