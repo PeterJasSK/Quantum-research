@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Plan: a clinical memo with one cinematic first screen.
-   Attention order on the first screen: (1) the moving tumour in the dark CT panel, (2) the headline, (3) the numbers, (4) the ask link.
+   Attention order on the first screen: (1) the moving tumor in the dark CT panel, (2) the headline, (3) the numbers, (4) the ask link.
    16:9 = two columns (text left, CT right, Z-pattern). 9:16 = headline, CT, numbers, stacked to fit one phone screen.
-   Only one thing moves: the tumour growing. Everything below the hero is a calm reading column. */
+   Only one thing moves: the tumor growing. Everything below the hero is a calm reading column. */
 :root{
   --bg:#f6f7f8; --paper:#ffffff; --ink:#1b2328; --mut:#5b6870; --line:#dde2e5; --accent:#0b6872;
   --accent-soft:#e3f0f1; --ok:#1f7a45; --ok-soft:#e5f3ea; --warn:#9a6200; --warn-soft:#fbf1dc; --bad:#a3322a; --bad-soft:#f8e5e3;
@@ -39,7 +39,7 @@ html,body{margin:0}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
 body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body)}
-main{max-width:940px;margin:0 auto;padding:0 20px 72px;display:flex;flex-direction:column;gap:52px}
+main{max-width:1240px;margin:0 auto;padding:0 20px 72px;display:flex;flex-direction:column;gap:52px}
 .read{max-width:68ch}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
 h2{font-size:1.55rem;font-weight:650;padding-bottom:8px;border-bottom:2px solid var(--accent);margin-bottom:16px;position:relative}
@@ -50,13 +50,14 @@ section{display:flex;flex-direction:column}
 a{color:var(--accent)}
 
 /* ---------- Hero ---------- */
-.hero{max-width:1240px;margin:0 auto;padding:28px 20px 32px;min-height:min(100vh,920px);
+/* Hero and main share one 1240px container so left edges line up; kicker top = CT panel top */
+.hero{max-width:1240px;margin:0 auto;padding:36px 20px 40px;
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);grid-template-areas:"text film" "nums film" "cta film";
-  grid-template-rows:auto auto 1fr;column-gap:48px;row-gap:24px;align-content:center}
-.hero .text{grid-area:text;align-self:end}
+  grid-template-rows:auto auto 1fr;column-gap:48px;row-gap:24px;align-items:start}
+.hero .text{grid-area:text}
 .hero .nums{grid-area:nums}
-.hero .cta{grid-area:cta;align-self:start}
-.hero .stage{grid-area:film;align-self:center}
+.hero .cta{grid-area:cta}
+.hero .stage{grid-area:film;justify-self:end}
 .kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-text);margin-bottom:14px}
 .cta a.btn:hover{background:var(--orange-text)}
 /* Siemens Healthineers orange accents: button, kicker, numbered labels, progress bar, proposal */
@@ -92,7 +93,7 @@ a{color:var(--accent)}
 .stage button:focus-visible{outline:2px solid var(--film-accent);outline-offset:2px}
 
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr;grid-template-areas:"text" "film" "nums" "cta";grid-template-rows:none;min-height:0;padding:20px 16px 28px;row-gap:16px;column-gap:0}
+  .hero{grid-template-columns:1fr;grid-template-areas:"text" "film" "nums" "cta";grid-template-rows:none;padding:20px 16px 28px;row-gap:16px;column-gap:0}
   .hero .say{max-width:none;margin-top:10px}
   .kicker{margin-bottom:8px}
   .stage{max-width:none;padding:10px}
@@ -111,7 +112,7 @@ a{color:var(--accent)}
 .row figure{margin:0;display:flex;flex-direction:column;gap:6px}
 .row img{width:100%;height:auto;display:block;border-radius:3px}
 .row figcaption{font-family:var(--mono);font-size:.72rem;color:#b9c5ca;font-variant-numeric:tabular-nums;line-height:1.35}
-.wallnote{margin:0;font-size:.84rem;color:#b9c5ca;max-width:68ch}
+.wallnote{margin:0;font-size:.84rem;color:#b9c5ca}
 @media (max-width:700px){.row{grid-template-columns:repeat(4,1fr)}.row .full{grid-column:1 / -1}}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .box{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
@@ -125,7 +126,7 @@ a{color:var(--accent)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qbox h3{color:#4fd0d0}}
 .not{margin:12px 0 0;font-size:.92rem;color:var(--mut);padding-left:12px;border-left:3px solid rgba(0,153,153,.45)}
 .not b{color:var(--ink)}
-/* "Why this matters" is two numbered parts: why virtual tumours, then why quantum computing */
+/* "Why this matters" is two numbered parts: why virtual tumors, then why quantum computing */
 .why-part + .why-part{margin-top:28px}
 .why-part .lead{margin-bottom:14px}
 .sublabel{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#007373;margin-bottom:10px}
@@ -135,7 +136,7 @@ a{color:var(--accent)}
 .limits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .limit{border-radius:8px;padding:14px 16px}
 .limit p{margin:0;font-size:.93rem}
-/* Known gaps: open by default, styled as part 2 of the section rather than a card */
+/* Known gaps: collapsed by default (the three limits above stay visible), styled as part 2 of the section rather than a card */
 details.gaps{background:none;border:0;padding:0;border-radius:0}
 details.gaps summary{list-style:none;display:flex;align-items:center;gap:8px}
 details.gaps summary::-webkit-details-marker{display:none}
@@ -149,8 +150,12 @@ details summary{cursor:pointer;font-weight:600;font-size:.95rem}
 details[open] summary{margin-bottom:12px}
 details .split{margin-top:4px}
 details .box{background:var(--bg)}
-ol.todo{margin:0;padding-left:22px}
-ol.todo li{margin-bottom:10px}
+/* Balance across the 1240px column: long text in two columns, short intros full width, the 12-month plan as cards */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;align-items:start}
+.cols .why-part + .why-part{margin-top:0}
+.cols > p{margin:0}
+.plan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.plan{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .rung{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:8px;padding:16px 18px}
 .rung .when{font-family:var(--mono);font-size:.78rem;color:var(--accent);margin-bottom:4px}
@@ -166,11 +171,16 @@ table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--pape
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);background:var(--bg)}
 tr:last-child td{border-bottom:0}
-.ask{background:rgba(0,153,153,.09);border:1px solid rgba(0,153,153,.35);border-top:4px solid var(--orange);border-radius:10px;padding:24px 26px}
+.ask{background:rgba(0,153,153,.09);border:1px solid rgba(0,153,153,.35);border-top:4px solid #009999;border-radius:10px;padding:24px 26px}
 .ask h2{border-bottom-color:#009999}
 .ask li::marker{color:var(--orange-text);font-weight:600}
 .ask ol{margin:0 0 12px;padding-left:22px}
 .ask li{margin-bottom:10px}
+/* Delivers / needs side by side, column widths weighted by text length so both end at the same height */
+.ask .lead{max-width:none;margin-bottom:18px}
+.ask .split{gap:20px 40px}
+.ask .split .why-part{margin-top:0}
+@media (min-width:701px){.ask .split{grid-template-columns:1.6fr 1fr}}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
 .step{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
 .step .n{font-family:var(--mono);font-size:.76rem;color:var(--accent);font-weight:500;letter-spacing:.04em}
@@ -179,7 +189,7 @@ tr:last-child td{border-bottom:0}
 .q{background:var(--accent-soft);color:var(--accent)}
 .c{background:var(--paper);color:var(--mut);border:1px solid var(--line)}
 footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);padding-top:16px}
-@media (max-width:700px){.split,.ladder,.limits{grid-template-columns:1fr}.ask{padding:18px 16px}}
+@media (max-width:700px){.split,.ladder,.limits,.cols,.plan{grid-template-columns:1fr}.ask{padding:18px 16px}}
 @media print{.hero{min-height:0}.stage button,.stage .bar{display:none}.cta a.btn{border:1px solid var(--accent);color:var(--accent);background:none}details{display:block}}
 </style>
 </head>
@@ -189,11 +199,11 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
   <div class="text">
     <div class="kicker">Status brief · prototype · November 2026</div>
     <h1>Quantum Virtual Tumors</h1>
-    <p class="say">Virtual lung tumours, grown by a biology model and placed into real chest CT scans, to test cancer detection AI.</p>
+    <p class="say">Virtual lung tumors, grown by a biology model and placed into real chest CT scans, to test cancer detection AI.</p>
   </div>
 
   <div class="stage" id="stage">
-    <div class="view" role="img" aria-label="A virtual solid, lobulated tumour in the right upper lobe grows from 3.2 mm to 14.2 mm over 919 days in a real chest CT">
+    <div class="view" role="img" aria-label="A virtual solid, lobulated tumor in the right upper lobe grows from 3.2 mm to 14.2 mm over 919 days in a real chest CT">
       <img class="f on" src="grow_2_0_0.png" alt="">
       <img class="f" src="grow_2_0_1.png" alt="">
       <img class="f" src="grow_2_0_2.png" alt="">
@@ -210,7 +220,7 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
     </div>
     <div class="bar" aria-hidden="true"><i id="hudBar"></i></div>
     <div class="cap">
-      <span><b>Virtual tumour, real CT.</b> Solid, lobulated, right upper lobe, doubling time 232 days. Starting shape from a quantum computing experiment; growth and image are classical.</span>
+      <span><b>Virtual tumor, real CT.</b> Solid, lobulated, right upper lobe, doubling time 232 days. Starting shape from a quantum computing experiment; growth and image are classical.</span>
       <button type="button" id="playBtn" aria-pressed="false">pause</button>
     </div>
   </div>
@@ -218,8 +228,8 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
   <div class="nums">
     <div class="num"><b data-to="156">156</b><span>qubits on the IBM quantum processor the run used (ibm_marrakesh)</span></div>
     <div class="num"><b data-to="35" data-pre="~" data-post=" s">~35 s</b><span>of IBM quantum computer time per run</span></div>
-    <div class="num"><b data-to="919" data-post=" days">919 days</b><span>of tumour growth simulated in the case shown, with follow-up scans</span></div>
-    <div class="num"><b>&lt;1 min</b><span>per finished virtual case, with no patient data inside the tumour</span></div>
+    <div class="num"><b data-to="919" data-post=" days">919 days</b><span>of tumor growth simulated in the case shown, with follow-up scans</span></div>
+    <div class="num"><b>&lt;1 min</b><span>per finished virtual case, with no patient data inside the tumor</span></div>
   </div>
 
   <div class="cta">
@@ -233,37 +243,37 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
 <section id="why">
   <h2>Why this matters</h2>
   <div class="why-part">
-    <div class="sublabel"><span>1</span>Why virtual tumours</div>
-    <p class="read lead">Detection AI has to be tested on many cases, including rare ones, and every result has to be checked.
-      Real patient data is scarce for rare tumours, slow to annotate and carries privacy risk.
-      A virtual tumour comes with its exact position, size and growth rate, so the AI's answer can be checked against it.</p>
+    <div class="sublabel"><span>1</span>Why virtual tumors</div>
+    <p class="lead">Detection AI has to be tested on many cases, including rare ones, and every result has to be checked.
+      Real patient data is scarce for rare tumors, slow to annotate and carries privacy risk.
+      A virtual tumor comes with its exact position, size and growth rate, so the AI's answer can be checked against it.</p>
   </div>
   <div class="why-part">
     <div class="sublabel"><span>2</span>Why quantum computing</div>
-    <p class="read lead">The tumours, their growth and the images are made classically. Quantum computing adds two things to every virtual case:</p>
+    <p class="lead">The tumors, their growth and the images are made classically. Quantum computing adds two things to every virtual case:</p>
   <div class="split">
     <div class="box qbox">
       <h3>An easily auditable origin for every case</h3>
-      <p>Every virtual tumour is drawn on a real IBM quantum computer, together with a physics test showing the draw really came from quantum hardware. That gives each case a record of where it came from, so it is easily auditable: any later change to the case is visible.</p>
+      <p>Every virtual tumor is drawn on a real IBM quantum computer, together with a physics test showing the draw really came from quantum hardware. That gives each case a record of where it came from, so it is easily auditable: any later change to the case is visible.</p>
     </div>
     <div class="box qbox">
       <h3>A place where growth can become quantum</h3>
-      <p>Each tumour's starting shape comes from a small quantum simulation whose entanglement check passed. At today's size a normal computer can still reproduce it. The slot is there so growth can move onto quantum hardware once that is worthwhile.</p>
+      <p>Each tumor's starting shape comes from a small quantum simulation whose entanglement check passed. At today's size a normal computer can still reproduce it. The slot is there so growth can move onto quantum hardware once that is worthwhile.</p>
     </div>
   </div>
-    <p class="not read"><b>What it does not do:</b> quantum computing does not make the images look more realistic. Image quality comes from the classical growth model and scanner physics.</p>
+    <p class="not"><b>What it does not do:</b> quantum computing does not make the images look more realistic. Image quality comes from the classical growth model and scanner physics.</p>
   </div>
 </section>
 
 <section>
   <h2>Four cases from the reference run</h2>
-  <p class="read">Each row is one virtual tumour. The first image is the full lung scan at baseline, with the tumour circled. The next four zoom in and show it growing from its quantum starting shape to the baseline scan and a follow-up 90 days later.</p>
+  <p>Each row is one virtual tumor. The first image is the full lung scan at baseline, with the tumor circled. The next four zoom in and show it growing from its quantum starting shape to the baseline scan and a follow-up 90 days later.</p>
   <div class="cases">
 
     <div class="case">
       <h3>Case A · solid, spiculated, 26 mm, left upper lobe <span class="vdt">doubling time 570 days</span></h3>
       <div class="row">
-        <figure class="full"><img src="full_4_0.png" alt="Full axial lung CT, solid 26 mm tumour circled in the left lung"><figcaption>full scan · slice 164</figcaption></figure>
+        <figure class="full"><img src="full_4_0.png" alt="Full axial lung CT, solid 26 mm tumor circled in the left lung"><figcaption>full scan · slice 164</figcaption></figure>
         <figure><img src="grow_4_0_0.png" alt="Zoom, day 0, 3.9 mm"><figcaption>day 0 · 3.9 mm<br>quantum seed</figcaption></figure>
         <figure><img src="grow_4_0_3.png" alt="Zoom, day 517, 10.1 mm"><figcaption>day 517 · 10.1 mm<br>growing</figcaption></figure>
         <figure><img src="grow_4_0_6.png" alt="Zoom, day 1896, 26.0 mm"><figcaption>day 1896 · 26.0 mm<br>baseline</figcaption></figure>
@@ -274,7 +284,7 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
     <div class="case">
       <h3>Case B · ground-glass, smooth, 13 mm, right lower lobe <span class="vdt">doubling time 1,227 days</span></h3>
       <div class="row">
-        <figure class="full"><img src="full_0_0.png" alt="Full axial lung CT, ground-glass 13 mm tumour circled in the right lower lung"><figcaption>full scan · slice 125</figcaption></figure>
+        <figure class="full"><img src="full_0_0.png" alt="Full axial lung CT, ground-glass 13 mm tumor circled in the right lower lung"><figcaption>full scan · slice 125</figcaption></figure>
         <figure><img src="grow_0_0_0.png" alt="Zoom, day 0, 4.6 mm"><figcaption>day 0 · 4.6 mm<br>quantum seed</figcaption></figure>
         <figure><img src="grow_0_0_3.png" alt="Zoom, day 1408, 7.8 mm"><figcaption>day 1408 · 7.8 mm<br>growing</figcaption></figure>
         <figure><img src="grow_0_0_6.png" alt="Zoom, day 3999, 13.0 mm"><figcaption>day 3999 · 13.0 mm<br>baseline</figcaption></figure>
@@ -285,7 +295,7 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
     <div class="case">
       <h3>Case C · part-solid, smooth, 13 mm, right upper lobe <span class="vdt">doubling time 862 days</span></h3>
       <div class="row">
-        <figure class="full"><img src="full_7_0.png" alt="Full axial lung CT, part-solid 13 mm tumour circled in the right upper lung"><figcaption>full scan · slice 134</figcaption></figure>
+        <figure class="full"><img src="full_7_0.png" alt="Full axial lung CT, part-solid 13 mm tumor circled in the right upper lung"><figcaption>full scan · slice 134</figcaption></figure>
         <figure><img src="grow_7_0_0.png" alt="Zoom, day 0, 3.0 mm"><figcaption>day 0 · 3.0 mm<br>quantum seed</figcaption></figure>
         <figure><img src="grow_7_0_3.png" alt="Zoom, day 986, 6.2 mm"><figcaption>day 986 · 6.2 mm<br>growing</figcaption></figure>
         <figure><img src="grow_7_0_6.png" alt="Zoom, day 2787, 13.0 mm"><figcaption>day 2787 · 13.0 mm<br>baseline</figcaption></figure>
@@ -296,39 +306,39 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
     <div class="case">
       <h3>Case D · solid, spiculated, 13 mm, right lower lobe, on the lung wall <span class="vdt">doubling time 284 days</span></h3>
       <div class="row">
-        <figure class="full"><img src="full_5_0.png" alt="Full axial lung CT at the lung base, solid 13 mm tumour circled against the back wall of the right lung"><figcaption>full scan · slice 72 · lung base</figcaption></figure>
+        <figure class="full"><img src="full_5_0.png" alt="Full axial lung CT at the lung base, solid 13 mm tumor circled against the back wall of the right lung"><figcaption>full scan · slice 72 · lung base</figcaption></figure>
         <figure><img src="grow_5_0_0.png" alt="Zoom, day 0, 3.7 mm"><figcaption>day 0 · 3.7 mm<br>quantum seed</figcaption></figure>
         <figure><img src="grow_5_0_3.png" alt="Zoom, day 271, 6.9 mm"><figcaption>day 271 · 6.9 mm<br>growing</figcaption></figure>
         <figure><img src="grow_5_0_6.png" alt="Zoom, day 778, 13.0 mm"><figcaption>day 778 · 13.0 mm<br>baseline</figcaption></figure>
         <figure><img src="grow_5_0_7.png" alt="Zoom, day 868, 14.0 mm"><figcaption>day 868 · 14.0 mm<br>+90 days</figcaption></figure>
       </div>
-      <p class="wallnote"><b>Why this scan looks different:</b> the slice is at the bottom of the lungs, where the diaphragm pushes up into the chest. The large bright area is the liver; the dark lung is a thin crescent behind it. CT images are viewed from the patient's feet, so the patient's right lung is on the left of the picture. The tumour sits against the lung wall, which the growth model treats as a hard boundary, so it flattens along the wall instead of growing into it.</p>
+      <p class="wallnote"><b>Why this scan looks different:</b> the slice is at the bottom of the lungs, where the diaphragm pushes up into the chest. The large bright area is the liver; the dark lung is a thin crescent behind it. CT images are viewed from the patient's feet, so the patient's right lung is on the left of the picture. The tumor sits against the lung wall, which the growth model treats as a hard boundary, so it flattens along the wall instead of growing into it.</p>
     </div>
   </div>
 </section>
 
 <section>
   <h2>Where it stands</h2>
-  <p class="read lead">A working prototype for lung CT, run once on IBM hardware. The pipeline is not yet closed end to end, and nothing has been validated by radiologists.</p>
+  <p class="lead">A working prototype for lung CT, run once on IBM hardware. The pipeline is not yet closed end to end, and nothing has been validated by radiologists.</p>
   <div class="why-part">
     <div class="sublabel"><span>1</span>The three limits that matter most</div>
     <div class="limits">
       <div class="limit qbox"><h3>Not yet validated</h3><p>No radiologist reader test, no comparison against real nodules, no AI study.</p></div>
-      <div class="limit qbox"><h3>Narrow scope</h3><p>One host patient, one cancer, CT only. Large tumours still come out too round.</p></div>
+      <div class="limit qbox"><h3>Narrow scope</h3><p>One host patient, one cancer, CT only. Large tumors still come out too round.</p></div>
       <div class="limit qbox"><h3>Thin statistics</h3><p>One quantum job per run: no repeats, no error bars, and the audit record is not yet attached to each case.</p></div>
     </div>
   </div>
-  <details class="why-part gaps" open>
+  <details class="why-part gaps">
     <summary><span class="sublabel"><span>2</span>Full list of known gaps</span></summary>
     <div class="split">
       <div class="box qbox">
         <h3>Quantum side</h3>
         <ul>
           <li><b>Reporting:</b> shows the qubits requested, not the qubits actually used after skipping poor ones.</li>
-          <li><b>Entanglement check:</b> runs once per job on one tumour; the other tumours inherit that result.</li>
+          <li><b>Entanglement check:</b> runs once per job on one tumor; the other tumors inherit that result.</li>
           <li><b>Statistics:</b> one quantum job per run, so results have no error bars and no repeat step.</li>
           <li><b>Robustness:</b> no self-test of qubit connections; larger experiments do not yet survive hardware noise.</li>
-          <li><b>Quantum content:</b> one sample per tumour from a process a normal computer can still simulate.</li>
+          <li><b>Quantum content:</b> one sample per tumor from a process a normal computer can still simulate.</li>
         </ul>
       </div>
       <div class="box qbox">
@@ -336,9 +346,9 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
         <ul>
           <li><b>Validation:</b> no radiologist reader test, no comparison with real nodules, no AI study yet.</li>
           <li><b>Audit trail:</b> the replayable record is prototyped but not yet attached to each case.</li>
-          <li><b>Shape:</b> large tumours come out too round; outline rules do not scale with tumour size.</li>
+          <li><b>Shape:</b> large tumors come out too round; outline rules do not scale with tumor size.</li>
           <li><b>Scope:</b> one host patient, one cancer, CT only; placement uses a simple lung-side rule.</li>
-          <li><b>Coverage:</b> calcified nodules are drawn, not grown; a daughter tumour can land in the wrong lobe.</li>
+          <li><b>Coverage:</b> calcified nodules are drawn, not grown; a daughter tumor can land in the wrong lobe.</li>
         </ul>
       </div>
     </div>
@@ -347,27 +357,27 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
 
 <section>
   <h2>Next twelve months</h2>
-  <ol class="todo read">
-    <li><b>Trustworthy record</b> (1 month). Repeat each run several times and combine the results, label everything from what actually ran, and attach a replayable audit record to every case in its DICOM header.</li>
-    <li><b>More lifelike tumours</b> (2 to 3 months). Irregular outlines for every tumour type, spikes that thicken with growth, growth that bends along vessels and airways, and inner texture such as dense cores and air pockets, each checked automatically against real LIDC nodules.</li>
-    <li><b>Scale the quantum process</b> (ongoing, with the hardware). Test each qubit connection before every job, then enlarge the simulation step by step and report honestly where a normal computer can no longer keep up, or that it still can.</li>
-    <li><b>Linked tumour families</b> (6 to 12 months). Link parent and daughter tumours through entanglement and check each pair in two measurement settings. An earlier project did this on the same IBM machine (score 1.96 against a classical limit of 1).</li>
-  </ol>
+  <div class="plan">
+    <div class="rung"><div class="when">1 · 1 MONTH</div><h3>Trustworthy record</h3><p>Repeat each run several times and combine the results, label everything from what actually ran, and attach a replayable audit record to every case in its DICOM header.</p></div>
+    <div class="rung"><div class="when">2 · 2 TO 3 MONTHS</div><h3>More lifelike tumors</h3><p>Irregular outlines for every tumor type, spikes that thicken with growth, growth that bends along vessels and airways, and inner texture such as dense cores and air pockets, each checked automatically against real LIDC nodules.</p></div>
+    <div class="rung"><div class="when">3 · ONGOING, WITH THE HARDWARE</div><h3>Scale the quantum process</h3><p>Test each qubit connection before every job, then enlarge the simulation step by step and report honestly where a normal computer can no longer keep up, or that it still can.</p></div>
+    <div class="rung"><div class="when">4 · 6 TO 12 MONTHS</div><h3>Linked tumor families</h3><p>Link parent and daughter tumors through entanglement and check each pair in two measurement settings. An earlier project did this on the same IBM machine (score 1.96 against a classical limit of 1).</p></div>
+  </div>
 </section>
 
 <section>
   <h2>The long term</h2>
-  <p class="read lead">The project grows in two directions: across more cancers, and from whole populations down to one patient.</p>
+  <p class="lead">The project grows in two directions: across more cancers, and from whole populations down to one patient.</p>
   <div class="why-part">
     <div class="sublabel"><span>1</span>Beyond lung: other cancers</div>
-    <p class="read">The engine is built from swappable layers: a statistics rulebook, a growth model, a host scan with its scanner fingerprint, and a renderer. A new cancer needs a new rulebook from published data, growth parameters from the literature, and host scans.</p>
+    <p>The engine is built from swappable layers: a statistics rulebook, a growth model, a host scan with its scanner fingerprint, and a renderer. A new cancer needs a new rulebook from published data, growth parameters from the literature, and host scans.</p>
     <div class="tw qtable"><table>
       <thead><tr><th>Cancer</th><th>Imaging</th><th>Why it fits</th></tr></thead>
       <tbody>
         <tr><td>Breast</td><td>Mammography, tomosynthesis</td><td>FDA's VICTRE trial set the precedent for virtual breast lesions; large screening market.</td></tr>
         <tr><td>Liver</td><td>CT, MR</td><td>Lesions sit in a single organ with clear boundaries; contrast phases add realism tests.</td></tr>
         <tr><td>Brain (glioma)</td><td>MR</td><td>Glioma growth models are among the best studied; MR is a core Siemens modality.</td></tr>
-        <tr><td>Prostate</td><td>MR</td><td>Standardised reporting (PI-RADS) gives a ready-made rulebook.</td></tr>
+        <tr><td>Prostate</td><td>MR</td><td>Standardized reporting (PI-RADS) gives a ready-made rulebook.</td></tr>
         <tr><td>Colorectal</td><td>CT colonography</td><td>Polyp-to-cancer progression is a natural growth sequence.</td></tr>
       </tbody>
     </table></div>
@@ -375,45 +385,55 @@ footer{font-size:.82rem;color:var(--mut);border-top:1px solid var(--line);paddin
   <div class="why-part">
     <div class="sublabel"><span>2</span>The road to a patient digital twin</div>
     <div class="ladder">
-      <div class="rung qbox"><div class="when">NOW · 2026</div><h3>Population twin</h3><p>Virtual cohorts of patients and tumours to test AI tools and scanners. Prototype for lung CT.</p></div>
-      <div class="rung qbox"><div class="when">3 TO 5 YEARS</div><h3>Patient tumour twin</h3><p>A tumour model fitted to one patient's scans, predicting how it will look and grow, updated at every visit.</p></div>
-      <div class="rung qbox"><div class="when">~10 YEARS</div><h3>Patient digital twin</h3><p>Tumour, organ, treatment response and scanner physics in one model per patient, used for planning and monitoring.</p></div>
+      <div class="rung qbox"><div class="when">NOW · 2026</div><h3>Population twin</h3><p>Virtual cohorts of patients and tumors to test AI tools and scanners. Prototype for lung CT.</p></div>
+      <div class="rung qbox"><div class="when">3 TO 5 YEARS</div><h3>Patient tumor twin</h3><p>A tumor model fitted to one patient's scans, predicting how it will look and grow, updated at every visit.</p></div>
+      <div class="rung qbox"><div class="when">~10 YEARS</div><h3>Patient digital twin</h3><p>Tumor, organ, treatment response and scanner physics in one model per patient, used for planning and monitoring.</p></div>
     </div>
-    <div class="read" style="margin-top:16px">
-      <p>Each stage of today's pipeline is one layer of that twin: anatomy (where), biology rules (what), traceable origin (trust), growth (dynamics), imaging physics (how it appears) and validation (does it hold up). For one patient, the twin would place virtual tumours into their own scan, fit growth to their earlier scans and simulate many possible futures, with and without treatment, to support follow-up and radiotherapy planning.</p>
-      <p class="not" style="margin-top:4px"><b>Where quantum computing fits:</b> simulating many futures is a sampling problem, and classical computers handle it today. IBM's public roadmap targets error-corrected quantum computers around 2029. The twin is <b>quantum-ready</b>: the growth layer can move onto quantum hardware if and when that pays off, and the rest keeps working either way.</p>
+    <div class="cols" style="margin-top:16px">
+      <p>Each stage of today's pipeline is one layer of that twin: anatomy (where), biology rules (what), traceable origin (trust), growth (dynamics), imaging physics (how it appears) and validation (does it hold up). For one patient, the twin would place virtual tumors into their own scan, fit growth to their earlier scans and simulate many possible futures, with and without treatment, to support follow-up and radiotherapy planning.</p>
+      <p class="not"><b>Where quantum computing fits:</b> simulating many futures is a sampling problem, and classical computers handle it today. IBM's public roadmap targets error-corrected quantum computers around 2029. The twin is <b>quantum-ready</b>: the growth layer can move onto quantum hardware if and when that pays off, and the rest keeps working either way.</p>
     </div>
   </div>
 </section>
 
 <section id="ask" class="ask">
   <h2>What I propose</h2>
-  <p class="read lead">I want to do this as real science: done the right way, together with other researchers, and with one clear goal in mind.</p>
-  <ol class="read">
-    <li><b>A working lung CT pipeline, end to end.</b> Close every step from tumour draw to final image, with swappable modules so the same engine can be adapted to other cancers, and with the patient digital twin in mind from the start.</li>
-    <li><b>Open collaboration from day one.</b> I plan to reach out to professors and research groups in related fields around the world, in medical imaging, tumour growth modelling and quantum computing, and invite them to help shape and check the work.</li>
-    <li><b>Conferences and community.</b> Present the work at conferences such as SPIE Medical Imaging and IEEE Quantum Week, meet people working on the same questions, and make the case for quantum computing in tumour modelling and digital twins, with Siemens Healthineers visible as the home of the work.</li>
-    <li><b>A reader test and an AI check.</b> A few radiologists rate mixed real and virtual cases to measure how convincing the virtual tumours are, and one existing detection model is run on a virtual cohort and its findings compared with each tumour's recorded position and size.</li>
-  </ol>
-  <p class="read" style="margin:0">The goal is a measured answer to one question: can virtual cohorts stand in for scarce real cases when testing detection AI?</p>
+  <p class="lead">I propose to continue this as a funded research project at Siemens Healthineers, done as real science with outside researchers and aimed at one measured answer: can virtual cohorts stand in for scarce real cases when testing detection AI?</p>
+  <div class="split">
+  <div class="why-part">
+    <div class="sublabel"><span>.</span>What the project delivers</div>
+    <ol>
+      <li><b>A working lung CT pipeline, end to end.</b> Every step closed, from tumor draw to final image, in swappable modules that adapt to other cancers and build toward a patient digital twin.</li>
+      <li><b>A reader test and an AI check.</b> Radiologists rate mixed real and virtual cases, and one existing detection model is checked against each virtual tumor's known position and size.</li>
+      <li><b>Visibility in the field.</b> Papers and talks at SPIE Medical Imaging and IEEE Quantum Week (verify) with Siemens Healthineers as the home of the work, plus a network of research groups I plan to invite to check it.</li>
+    </ol>
+  </div>
+  <div class="why-part">
+    <div class="sublabel"><span>.</span>What the project needs</div>
+    <ol>
+      <li><b>A funded research position.</b> A salaried role at Siemens Healthineers, so the project runs full time and is carried out as Siemens Healthineers work.</li>
+      <li><b>A conference and travel budget.</b> Registration and travel for the main international meetings each year, where the work is reviewed, seen under the Siemens Healthineers name, and where research partners are found.</li>
+    </ol>
+  </div>
+  </div>
 </section>
 
 <details>
   <summary>How one run works (six steps)</summary>
   <div class="steps">
     <div class="step"><span class="n">STEP 1 · PICK THE MACHINE</span><h3>Choose a quantum computer</h3><p>The script picks the least busy IBM machine and skips qubits and connections that today's calibration marks as poor. <span class="tag q">quantum computing</span></p></div>
-    <div class="step"><span class="n">STEP 2 · DRAW THE TUMOURS</span><h3>Draw 12 tumours</h3><p>One quantum job draws size, type, margin and lung lobe for 12 tumours from published statistics, including 2 parent and daughter pairs, and runs the Bell test in the same job. <span class="tag q">quantum computing</span></p></div>
-    <div class="step"><span class="n">STEP 3 · STARTING SHAPES</span><h3>Quantum starting shapes</h3><p>A second job runs three experiments on separate parts of the chip. The main one, a quantum cellular automaton, gives each tumour its starting shape and is checked for entanglement. <span class="tag q">quantum computing</span></p></div>
-    <div class="step"><span class="n">STEP 4 · GROW</span><h3>Grow each tumour</h3><p>A cell-level growth model grows each tumour day by day inside real lung boundaries, tuned to published doubling times. Snapshots act as follow-up scans. <span class="tag c">classical</span></p></div>
-    <div class="step"><span class="n">STEP 5 · RENDER</span><h3>Insert into a real CT</h3><p>Each tumour is placed in a public chest CT (LIDC-IDRI case 0481) with that scanner's measured sharpness and noise. Shape and density come from a model fitted to 41 real nodules; no patient voxels are copied. <span class="tag c">classical</span></p></div>
+    <div class="step"><span class="n">STEP 2 · DRAW THE TUMORS</span><h3>Draw 12 tumors</h3><p>One quantum job draws size, type, margin and lung lobe for 12 tumors from published statistics, including 2 parent and daughter pairs, and runs the Bell test in the same job. <span class="tag q">quantum computing</span></p></div>
+    <div class="step"><span class="n">STEP 3 · STARTING SHAPES</span><h3>Quantum starting shapes</h3><p>A second job runs three experiments on separate parts of the chip. The main one, a quantum cellular automaton, gives each tumor its starting shape and is checked for entanglement. <span class="tag q">quantum computing</span></p></div>
+    <div class="step"><span class="n">STEP 4 · GROW</span><h3>Grow each tumor</h3><p>A cell-level growth model grows each tumor day by day inside real lung boundaries, tuned to published doubling times. Snapshots act as follow-up scans. <span class="tag c">classical</span></p></div>
+    <div class="step"><span class="n">STEP 5 · RENDER</span><h3>Insert into a real CT</h3><p>Each tumor is placed in a public chest CT (LIDC-IDRI case 0481) with that scanner's measured sharpness and noise. Shape and density come from a model fitted to 41 real nodules; no patient voxels are copied. <span class="tag c">classical</span></p></div>
     <div class="step"><span class="n">STEP 6 · SHOW</span><h3>One web page</h3><p>A self-contained page shows the 12 cases with full slice, zoom, growth player and plain labels saying what is quantum computing and what is classical. <span class="tag c">classical</span></p></div>
   </div>
 </details>
 
 <footer>
-  Reference run 31 Oct 2026 on IBM ibm_marrakesh (156-qubit processor): tumour draw job dbj15npffo6c73b8mls0, starting-shape job dbj16056p51s73cjs7q0.
+  Reference run 31 Oct 2026 on IBM ibm_marrakesh (156-qubit processor): tumor draw job dbj15npffo6c73b8mls0, starting-shape job dbj16056p51s73cjs7q0.
   Host CT: LIDC-IDRI case 0481 (TCIA), CC BY 3.0, doi:10.7937/K9/TCIA.2015.LO9QL9SX; a public research case scanned on a Siemens SOMATOM Definition, used without any Siemens involvement.
-  Tumour statistics: Fleischner Society 2017, LIDC-IDRI, LUNA16.
+  Tumor statistics: Fleischner Society 2017, LIDC-IDRI, LUNA16.
   Headline numbers: 919 days = the animated case, from quantum seed to the 90-day follow-up; under one minute = one run of 12 cases in about ten minutes.
   Quantum evidence: origin at claim level L0 (provenance), Bell test (CHSH) S = 2.73 &gt; 2 against a seeded classical random number generator as baseline;
   starting shapes at claim level L1 (entangled generative state), entanglement witness 0.014 ± 0.006, passed, classically simulable at this size.

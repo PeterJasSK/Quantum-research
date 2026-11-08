@@ -1,0 +1,35 @@
+  1a. Pick a quantum computer. The program asks IBM which quantum computers are free and picks the one with the shortest queue.
+  It skips the weakest parts of the chip, so only the reliable parts are used: 60 qubits on ibm_marrakesh this time.
+
+  1b. Roll the dice for 12 tumours. The quantum computer runs a small program that works like loaded dice,
+  weighted by real medical statistics, to decide each tumour's size, type, edge shape and which part of the lung it sits in.
+  At the same time it runs a fairness test (CHSH). That test scored 2.73, and anything above 2 counts as a pass, so the roll was kept.
+
+  1c. Turn each roll into a personal seed number. Each tumour's dice result is mixed into a long unique code, like a fingerprint.
+  Every later random choice for that tumour starts from this code, so the same run can always be replayed exactly.
+
+  1d. Build a second, bigger quantum program. This one does three experiments side by side on separate parts of the chip:
+  a chain of 28 linked qubits, a small "game of life" grid of 23 qubits, and a tiny memory machine. The game-of-life grid is the important
+  one, because each tumour gets its own starting pattern on it.
+
+  1e. Safety and cost check. The program checks that the three experiments never touch each other,
+  then estimates how much quantum computer time the job will cost. It cuts the number of repeats until the cost fits under the budget
+   (about 27 seconds of machine time).
+
+  1f. Send the job. The job goes to the quantum computer with some noise-reducing settings switched on.
+  The job number is saved first, so if anything crashes you can collect the results later without paying again.
+
+  1g. Grade the three experiments. The 28-qubit chain failed its test: the qubits did not stay linked well enough.
+  The game-of-life grid passed, but only barely and on one of four checks. The memory machine lost to a simple normal-computer model.
+
+  1h. Make the tumour seeds. For each tumour, one result from the game-of-life grid is picked and turned into a tiny 3-D blob.
+  That blob is the tumour's starting shape, its "seed".
+
+  2. Grow the tumours. An ordinary computer, not the quantum one, grows each seed step by step using published rules for how lung tumours
+   grow. It then paints the result into a real lung CT scan from a Siemens scanner, with that scan's own blur and grain.
+   Three calcified tumours skip the seed and use a simpler built-in shape.
+
+  3. Build the web page. Everything goes into one web page: the tumour pictures, the growth over time, and the quantum test scores.
+   That is the page used for the live executive demo.
+  In one sentence: the quantum computer chose what each tumour is and its starting shape, and an ordinary computer grew
+  it and drew it into a real scan. The quantum part makes every case traceable and replayable; it does not make the images more realistic.
