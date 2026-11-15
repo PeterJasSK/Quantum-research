@@ -14,7 +14,7 @@ const DEPTH = 3;            // half-thickness of the lattice slab (world units)
 const DRIFT = 0.35;         // how far a node wanders from its lattice site
 const OVERSCAN = 1.35;      // lattice extends past the viewport edges
 const SPRITE_PX = 22;       // on-screen size of a node sprite (core + halo)
-const SCROLL_SHIFT = 0.004; // world units of lattice travel per scrolled px
+const SCROLL_SHIFT = 0.0015; // world units of lattice travel per scrolled px
 const FLASH_SECONDS = 1.8;  // one "measurement": flash, collapse, re-emerge
 const TAU = Math.PI * 2;
 
@@ -448,8 +448,9 @@ function initScene(THREE, canvas) {
   let baseCount = 0, quantumCount = 0;
 
   function measure() {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    // canvas box, not the window: its CSS height (100lvh) ignores the mobile URL bar
+    width = canvas.clientWidth || window.innerWidth;
+    height = canvas.clientHeight || window.innerHeight;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -554,7 +555,7 @@ function initScene(THREE, canvas) {
     easeLook(ease);
 
     // scroll: lattice drifts up, camera pulls back a little, scene dims below the hero
-    scrollEased += (window.scrollY - scrollEased) * (1 - Math.exp(-dt * 6));
+    scrollEased += (window.scrollY - scrollEased) * (1 - Math.exp(-dt * 3));
     const scrolled = clamp(scrollEased / height, 0, 1);
     const shiftY = scrollEased * SCROLL_SHIFT;
     uniforms.uNodeOpacity.value = look.nodeAlpha * (1 - 0.4 * scrolled);
@@ -563,7 +564,7 @@ function initScene(THREE, canvas) {
     // mouse parallax
     camX += (pointer.x * 0.9 - camX) * ease;
     camY += (-pointer.y * 0.6 - camY) * ease;
-    camera.position.set(camX, camY, CAMERA_Z + scrolled * 1.5);
+    camera.position.set(camX, camY, CAMERA_Z + scrolled * 0.6);
     camera.lookAt(0, 0, 0);
 
     // narrow screens: the machine owns the top of the page, the drone show the bottom
@@ -575,8 +576,8 @@ function initScene(THREE, canvas) {
 
     // sculpture: slow spin (scroll turns it further), pulses run down the cables
     spin += dt * (quantum ? 0.11 : 0.06);
-    sculpture.rotation.y = spin + scrollEased * 0.0012 + camX * 0.08;
-    sculpture.position.y = 0.3 + Math.min(shiftY * 0.3, 2.5);
+    sculpture.rotation.y = spin + scrollEased * 0.0004 + camX * 0.08;
+    sculpture.position.y = 0.3 + Math.min(shiftY * 0.4, 2.5);
     uniforms.uWireOpacity.value = Math.min(1, look.linkAlpha * 1.6) * sculptureDim * (1 - 0.4 * scrolled);
     uniforms.uDotOpacity.value = look.nodeAlpha * sculptureDim * (1 - 0.4 * scrolled);
 
@@ -632,7 +633,7 @@ function initScene(THREE, canvas) {
       swarmPosAttr.needsUpdate = swarmFlashAttr.needsUpdate = true;
       swarm.rotation.y = Math.sin(time * 0.25) * 0.4 + camX * 0.1;   // sway, so flat shapes stay readable
       swarm.rotation.x = Math.sin(time * 0.17) * 0.12;
-      swarm.position.y = wideLayout ? -2.6 + Math.min(shiftY * 0.3, 2.5) : 0;
+      swarm.position.y = wideLayout ? -2.6 + Math.min(shiftY * 0.4, 2.5) : 0;
     }
     uniforms.uSwarmOpacity.value = wideLayout
       ? look.nodeAlpha * 0.85 * (1 - 0.4 * scrolled)
@@ -739,6 +740,8 @@ function initScene(THREE, canvas) {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       const prevW = width, prevH = height;
+      // URL-bar resizes leave the canvas box alone -> nothing to re-fit (setSize would clear the buffer)
+      if (canvas.clientWidth === prevW && canvas.clientHeight === prevH) return;
       measure();
       if (width !== prevW || Math.abs(height - prevH) / prevH > 0.2) buildLattice();
     }, 150);

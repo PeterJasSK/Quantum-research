@@ -21,7 +21,7 @@ const PROJECTS = [
     tags: ["FastAPI", "Next.js", "Postgres", "ML-KEM", "NIST SP 800-90A"],
     links: [
       { label: "Live site ↗", href: "https://qrng.peterjas.sk/" },
-      { label: "Repo ↗", href: REPO + "qrng-eaas" }
+      // { label: "Repo ↗", href: REPO + "qrng-eaas" }
     ]
   },
   {
@@ -38,7 +38,6 @@ const PROJECTS = [
     tags: ["Qiskit", "IBM Quantum", "Generative art"],
     links: [
       { label: "Live site ↗", href: "https://tree.peterjas.sk/" },
-      { label: "Repo ↗", href: REPO + "QuantumLife" }
     ]
   },
   {
@@ -55,7 +54,6 @@ const PROJECTS = [
     tags: ["ECMP", "Network security", "DoS", "Moving-target defence", "Next.js", "QEaaS"],
     links: [
       { label: "Live site ↗", href: "https://ecmp.peterjas.sk/" },
-      { label: "Repo ↗", href: REPO + "TargetedDosColisionsAndRNGAngle" }
     ]
   },
   {
@@ -65,7 +63,6 @@ const PROJECTS = [
     tags: ["Django", "React", "TypeScript", "Tailwind", "PWA", "Postgres"],
     links: [
       { label: "Live site ↗", href: "https://progresso.peterjas.sk/" },
-      { label: "Repo ↗", href: "https://github.com/PeterJasSK/progresso" }
     ]
   },
   // {
@@ -75,13 +72,13 @@ const PROJECTS = [
   //   tags: ["Qiskit", "Education", "Simulator"],
   //   links: [{ label: "Repo ↗", href: REPO + "QuantumAlgorithmsExplained" }]
   // },
-  {
-    title: "Bachelor Thesis — Bell-Pair QRNG",
-    status: "Complete", cls: "done", color: "#ffcf9a",
-    desc: "Design and implementation of a Bell-Pair quantum random number generator. The foundation the later QRNG projects grew from.",
-    tags: ["Thesis", "QRNG", "TUKE"],
-    links: [{ label: "Repo ↗", href: REPO + "BC" }]
-  }
+  // {
+  //   title: "Bachelor Thesis — Bell-Pair QRNG",
+  //   status: "Complete", cls: "done", color: "#ffcf9a",
+  //   desc: "Design and implementation of a Bell-Pair quantum random number generator. The foundation the later QRNG projects grew from.",
+  //   tags: ["Thesis", "QRNG", "TUKE"],
+  //   links: [{ label: "Repo ↗", href: REPO + "BC" }]
+  // }
 ];
 
 // ---- projects grid ----
@@ -90,7 +87,7 @@ const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">"
 const projectCard = (p) => `
   <article class="card panel${p.featured ? " featured" : ""}" style="--card-color:${p.color}" data-reveal>
     <div class="top">
-      <h3>${esc(p.title)}</h3>
+      <h3>${p.links.length ? `<a href="${p.links[0].href}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</h3>
       <span class="status ${p.cls}">${esc(p.status)}</span>
     </div>
     <p>${esc(p.desc)}</p>
