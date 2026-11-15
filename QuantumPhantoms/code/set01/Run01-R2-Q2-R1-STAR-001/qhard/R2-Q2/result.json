@@ -1,0 +1,28 @@
+{
+ "layout": [
+  58
+ ],
+ "n_circuits": 8,
+ "ideal": 0.8535533905932737,
+ "info": {
+  "backend": "ibm_fez",
+  "circuits": 8,
+  "shots": 1000,
+  "two_qubit_gates_max": 0,
+  "job_id": "dbs7ecfv5hds73dikpo0",
+  "label": "hardware: ibm_fez, job dbs7ecfv5hds73dikpo0"
+ },
+ "success": 0.854,
+ "sigma": 0.003944719571782005,
+ "worst_case": 0.834,
+ "per_circuit": [
+  0.875,
+  0.835,
+  0.86,
+  0.854,
+  0.871,
+  0.856,
+  0.847,
+  0.834
+ ]
+}

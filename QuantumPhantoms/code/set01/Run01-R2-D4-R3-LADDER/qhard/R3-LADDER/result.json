@@ -1,0 +1,48 @@
+{
+ "sizes": [
+  8,
+  16
+ ],
+ "instances": 8,
+ "pairs_available": 43,
+ "info": {
+  "backend": "ibm_fez",
+  "circuits": 16,
+  "shots": 1000,
+  "two_qubit_gates_max": 32,
+  "job_id": "dbs96snv5hds73dimhs0",
+  "label": "hardware: ibm_fez, job dbs96snv5hds73dimhs0"
+ },
+ "forecast": [
+  {
+   "n": 8,
+   "forecast_r": 0.9770498172287181
+  },
+  {
+   "n": 16,
+   "forecast_r": 0.9691921985100329
+  }
+ ],
+ "rows": [
+  {
+   "n": 8,
+   "lambda": 0.63,
+   "sigma": 0.008682597537603594,
+   "shots": 8000,
+   "hidden_sign": 0,
+   "sign_recovered": true,
+   "z": 72.55893150310416
+  },
+  {
+   "n": 16,
+   "lambda": -0.35525,
+   "sigma": 0.010451061175186948,
+   "shots": 8000,
+   "hidden_sign": 1,
+   "sign_recovered": true,
+   "z": 33.99176351999923
+  }
+ ],
+ "overhead_per_qubit": 1.1349574079344695,
+ "overhead_sigma": 0.0034292928614669204
+}

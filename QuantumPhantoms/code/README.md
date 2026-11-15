@@ -1,259 +1,99 @@
 # Quantum Phantoms — code
 
-The MVP pipeline (epic `plans/epic-quantum-phantoms-mvp.md`): roll certified-quantum tumor
-parameters, render them into synthetic CT tiles, bake a self-contained web page.
-
-```
-F1  rulebook → circuit → certified params   (f1_quantum/)
-F2  params → 3D lesion → CT tile            (imaging/, renderer "procedural")
-F5  params → grown lesion → Siemens LIDC CT (imaging/, renderer "grown", default)
-F3  tiles → self-contained web page         (f3_web/)
-D-SCALE  40/100/120-q circuit families + seed shapes for F5 (dscale/, optional)
-```
-
-## Directory layout
-
-```
-code/
-  common/            shared data model (JSON-only, no numpy/qiskit)
-    datamodel.py       TumorParams, QuantumRun, CohortTile dataclasses
-  f1_quantum/        F1 — the quantum roll
-    rulebook.py        published nodule stats → Ry angle trees
-    circuit.py         9-qubit property circuit + division + CHSH circuits
-    lineage.py         one quantum division → sibling-pair decode
-    decode.py          measured bits → TumorParams
-    certify.py         CHSH S from counts
-    backend.py         AerSimulator (dev) / ibm_heron (human-run) + runner
-    sampler.py         Sampler seam: PRNGSampler + QRNGSampler
-    run.py             F1 CLI entrypoint
-  imaging/           F2 + F5 — lesion → CT image (both renderers; was f2_imaging/)
-    build_tiles.py     CLI entrypoint (--renderer grown|procedural)
-    lesion.py          procedural: TumorParams → 3D HU blob (F2.1)
-    ctsource.py        procedural: real CT (SimpleITK/.npy/PNG) + synthetic dev fallback
-    insert.py          procedural: 2-D insertion + matched noise; windowing, crop (shared)
-    lidc_fetch.py      grown: fetch a public LIDC-IDRI series from TCIA
-    host.py            grown: 3-D HU host + threshold lung/body masks (cached, gitignored)
-    fingerprint.py     grown: host scanner PSF + NPS (air–skin edge MTF, soft-tissue NPS)
-    place.py           grown: lobe → 3-D site in the lung mask
-    growth.py          grown: Kansal–Torquato + Pixel2Cancer growth engine (RE E copy)
-    lesion_fitted.py   grown: lattice → lesion HU from the LIDC-fitted library (RE F copy)
-    insert3d.py        grown: 3-D additive-delta insert with host blur + noise (RE F copy)
-    frames.py          grown: per-tumour grow → render → insert + growth frames
-    seedhash.py        grown: per-tile seeds from the quantum shot bits
-    data/              copied RE parameter files (params_lung.json, lesion_model_library.json)
-    PORTED.md          what was copied from the RE pipeline @ 2609cbe and what changed
-  f3_web/            F3 — web demo (the MVP page)
-    web_template.html  light Siemens-theme page shell (no logo)
-    build_web.py       F3 CLI entrypoint (embeds PNGs + data → one HTML)
-  f4_qalife/         F4 — Mode-A living-process arm (optional)
-    witness.py         within-generation entanglement witness W = ⟨XX⟩+⟨ZZ⟩
-    fitness.py         classical (non-learned) fitness + selection
-    loop.py            Mode-A hybrid loop: divide (P1) + fate (P2) + measure-restart
-    sampler.py         QALifeSampler — third Sampler impl (evolved cohort)
-    run_qalife.py      F4 CLI entrypoint
-  dscale/            D-SCALE — quantum growth at 40 / 100 / 120 q (simulation only; optional)
-    budget.py          20-min deadline + 4000-shot / 15-repeat caps (--full lifts them)
-    targets.py         marrakesh / kingston / boston / nighthawk / helios-class calibration records
-    allocate.py        calibration pruning, path / BFS tree / patch, buffered composite
-    lint.py            seven survival lints (exit 5 on a violation)
-    pauli_noise.py     Pauli-twirled target noise for stabilizer simulation up to 156 q
-    witness_scale.py   DFE GHZ fidelity, ghz2, TREX-lite, echo, Bonferroni negativity, k·σ
-    families/          ghz_spine, ch_qca, pmd_bank, kicked_ising (+ the composite recipe)
-    survival.py        survive-vs-simulable map + Goldilocks zone
-    validate_noise.py  Pauli model vs full fake-backend noise; hardware back-test
-    run.py             orchestrator over an F1/F4 run → <run>/dscale/
-    hw_pack.py         hardware packs (files only, never submits)
-    bp.py, tomography.py, causal_states.py, seedlift.py   frozen RE D copies (PORTED.md)
-    RUNBOOK_DSCALE.md  full sweeps + hardware steps (Peter only)
-  README.md
-```
-
-Each entrypoint is a package module — **run from `code/` with `python -m`**. Outputs land in
-`../research_runs/<run>/` (F1 + F2) and `../web/index.html` (F3).
+One command, one line through the pipeline. Run from `code/` with `/home/peter/anaconda3/bin/python3`.
 
 ```bash
-pip install -r ../requirements.txt
-cd QuantumPhantoms/code
+python main.py                          # dry run: small sizes on the local fake backend (FakeMarrakesh, not hardware)
+python main.py --backend ibm_aachen     # live: real hardware ("auto" = least busy). Peter only.
+python main.py --shots 2000             # shots per circuit (default 4000 live, 400 dry)
+python main.py --run <run directory>    # continue a stopped run (finished sections skipped, submitted jobs fetched)
 ```
 
-## F1 — the quantum roll
+Every run lives in `../research_runs/run_<dry|live>_<timestamp>/`; the page is `../web/<run>.html`.
 
-Published Fleischner/LIDC nodule stats → `Ry` angles → shallow circuit (9 property qubits +
-one quantum division + one CHSH pair) → decode → 12 `TumorParams` + a job-level CHSH value.
-All behind the `Sampler` seam (`QRNGSampler` quantum / `PRNGSampler` classical baseline).
+## Sections
 
-```bash
-# development — the only path run during implementation/verification:
-python -m f1_quantum.run --backend aer --tiles 12 --pairs 2
-# classical baseline (same schema, no CHSH):
-python -m f1_quantum.run --sampler prng --tiles 12 --pairs 2
-```
+`main.py` calls each section's `main.py` → `run(ctx)` in this order. Sections exchange files only.
 
-Writes `../research_runs/<run>/cohort_params.json` (the `TumorParams` contract) +
-`quantum_run.json` (provenance: backend, job id, CHSH value).
-
-### Hardware (Peter only)
-
-```bash
-python -m f1_quantum.run --backend ibm_heron --tiles 12 --pairs 2   # or --backend auto
-```
-
-Submits one real job — **run by Peter, not by automated implementation** (plan HARD RULE).
-Uses a pre-existing saved IBM account (`QiskitRuntimeService()`); **no token is ever read,
-embedded, or committed** — the repo-root `credentialsApi.py` is never touched. Capture the
-real `job_id` + CHSH value for the demo (Aer writes `job_id=""`).
-
-## Imaging — params → CT tiles (F2 procedural, F5 grown)
-
-One package, two renderers, one output contract (`tiles.json` + `CohortTile`). Re-rendering a run
-**overwrites** `tiles/zoom_*.png` + `tiles.json`; files only the other renderer makes are left and logged
-as `stale:` (delete them by hand if you want).
-
-### F5 `grown` (default) — Siemens LIDC host + classical growth + fitted render
-
-```bash
-python -m imaging.lidc_fetch LIDC-IDRI-0481            # once: ~136 MB public CT -> ~/data/LIDC-IDRI
-python -m imaging.build_tiles --run research_runs/<run> [--host LIDC-IDRI-0481] [--frames 8] [--compare]
-```
-
-- **Host:** `LIDC-IDRI-0481`, a public LIDC-IDRI case scanned on a SIEMENS SOMATOM Definition (kernel
-  B45f, 1 mm; CC BY 3.0). None of the older local LIDC scans is Siemens. Fallback Definition cases:
-  `LIDC-IDRI-0507`, `-0736`. First use builds `research_runs/_hosts/<id>/` (HU volume, threshold masks,
-  fingerprint; ~1 min; gitignored — patient voxels).
-- **Per tumour:** site in the lung (lobe → side + z band) → growth from a Ø 2 mm seed to the rolled size
-  (Kansal–Torquato layers + Pixel2Cancer pleura wall, p0 calibrated to published VDTs *(verify)*), then
-  +90 d follow-up → render with the LIDC-fitted lesion library (solid core HU N(+30, 30), plan Q4) →
-  3-D insert with the scan's own PSF + NPS noise. Calcified: procedural lesion in 3-D, no growth.
-- **Outputs:** `tiles/zoom_<shot>_<gen>.png`, `tiles/full_<host>_<z>.png`, 8 pixel-growth frames
-  `tiles/grow_<shot>_<gen>_<k>.png` (seed → baseline → follow-up), `tiles.json` with `renderer`, `diag`
-  (VDT, volume check, σ ratio), seeds and provenance; `--compare` adds `compare_procedural_vs_grown.png`.
-- **Exit codes:** 0 ok, 1 bad input, 2 host missing (prints the fetch command), 3 a tile fell back to
-  the procedural lesion (`renderer: procedural-fallback`, reason in `diag`).
-- **Runtime (CPU, one cached host):** ≈ 11 min for 12 tiles × 8 frames when the roll draws three 26 mm
-  tumours (each ~2–3 min); ≈ 4 min for a typical small-nodule cohort. Same inputs → byte-identical PNGs.
-- **Seeds:** per tile from the job id / run name + the tile's quantum shot bits. Each shot carries only
-  ~9 quantum bits, so the seed is a **replay key and provenance, not strong randomness**.
-- Code copied (frozen) from the RE pipeline — see `imaging/PORTED.md`.
-
-### F2 `procedural` — the original look
-
-```bash
-# default — real bundled lung (CC BY-SA, see data/ct_slices/NOTICE.md):
-python -m imaging.build_tiles --run research_runs/<f1_run> --renderer procedural
-# real demo — dir of LUNA16 .mhd/.raw, .npy HU arrays, or grayscale PNG:
-python -m imaging.build_tiles --run research_runs/<f1_run> --renderer procedural --ct-source /path/to/luna16
-# synthetic dev fallback (cartoon, zero downloads):
-python -m imaging.build_tiles --run research_runs/<f1_run> --renderer procedural --ct-source synthetic
-```
-
-Builds a **realistic procedural** lesion per tumor (F2.1): irregular lobulated/spiculated shape,
-heterogeneous textured interior, soft partial-volume edge; inserts its central slice into one shared
-lung slice with a point-spread blur (`--psf`, default 0.7 px) + correlated matched noise. Writes
-`tiles/full_slice.png`, per-tile `tiles/zoom_<shot>_<gen>.png` and `tiles.json`. `--ct-source
-synthetic` is tagged `synthetic_dev`. Default spacing 0.7 mm/px (`.mhd` metadata wins). Both renderers
-copy `chsh_value`/`backend_name`/`job_id` from `quantum_run.json` onto every tile — never recompute
-quantum anything.
-
-## F3 — web demo (the MVP)
-
-Bakes one F2 run into a **single self-contained HTML page** (PNGs + data embedded inline; no
-backend, no external requests). Light theme in the Siemens color scheme, **no logo**.
-
-```bash
-python -m f3_web.build_web --run research_runs/<f2_run>
-# -> ../web/index.html   (override with --out)
-```
-
-Header (cohort size · backend · job-level CHSH) → tile grid (image + params + CHSH stamp, renderer
-chip for F5 runs) → click-to-open detail modal (full params + CHSH-vs-2.0 certificate; F5 runs add the
-pixel-growth player: play/pause/scrub, day · Ø · role) → sibling lineage badges →
-cohort-vs-rulebook histogram → honest-label footer. Sampler-blind; never recomputes anything
-quantum. Aer/PRNG runs are labeled "simulator"/"classical baseline"; the real-hardware CHSH
-value is the one for the public demo.
-
-## F4 — Mode-A living-process arm (optional)
-
-Turns F1's one-division hint into a real **evolutionary loop**: founder cells divide with
-mutation (P1) and commit a fate in superposition under a phase dial (P2); a **classical host**
-scores fitness, kills losers, and seeds the next generation from the survivor's measured bits
-(measure-and-restart = **Mode A**, constant depth, survives the coherence wall). Each
-generation records a **within-generation entanglement witness** `W = ⟨XX⟩+⟨ZZ⟩` (`W > 1` ⇒
-entangled; ⟨σz⟩ alone is classical — we measure the off-diagonal).
-
-`QALifeSampler` is a third `Sampler` implementation, so the evolved lineage comes out as the
-same `TumorParams` contract — **feed the F4 run dir straight into the unmodified F2 → F3
-commands**; the page renders the multi-generation genealogy via the existing `gen N of ∞`
-lineage badges.
-
-```bash
-# evolve a cohort (default 4 founders × 3 generations × 1 survivor = 12 tiles):
-python -m f4_qalife.run_qalife --backend aer --founders 4 --generations 3 --survivors 1
-# the interference knob — phase sweeps the fate mix (proliferative/quiescent → necrotic):
-python -m f4_qalife.run_qalife --backend aer --phase 1.5708
-# then render with the SAME F2/F3 entrypoints (no code change):
-python -m imaging.build_tiles --run research_runs/qalife_aer_<ts>
-python -m f3_web.build_web       --run research_runs/qalife_aer_<ts>
-```
-
-Writes `cohort_params.json` + `quantum_run.json` (as F1) plus `witness.json` (per-generation
-`W`). Honest label, carried on every artifact: **quantum *within* a generation, classical
-genealogy** — the measure-and-restart seed between generations is classical. Mode B (coherent
-genealogy) and the collapse-curve sub-study are out of scope (physically blocked on Heron).
-
-## D-SCALE — quantum growth at 40 / 100 / 120 qubits (optional)
-
-Plan: `../plans/feature-D-SCALE-decoherence-surviving-circuits.md`. Four plug-and-play circuit families with a
-40, 100 and 120-qubit preset each, built on the survival laws measured in `artificial-life/` (unitary, terminal
-readout, equator founder, separable soma, native couplers only):
-
-| Family | What | Claim | Hardness |
+| Section | Files | Does | Writes |
 |---|---|---|---|
-| `ghz-spine` | certified clonal genealogy: Big-Cats GHZ tree + parity checks + separable draw-driven soma | L1 (GME, DFE F > 0.5 by 2σ) | none (stabilizer, BP χ = 2) |
-| `ch-qca` | single-control Goldilocks QCA (exact T6 on degree-2 sites, parity-Goldilocks on degree 3/4), 0 routing SWAPs | L1 (Bonferroni negativity) | the frontier family |
-| `pmd-bank` | deferred-measurement causal-state machines (Wu PMD process, re-tuned) | L1′ (gap > 3× sampling floor) | none (2-q blocks) |
-| `kicked-ising` | Kim / Tindall anchor: calibrates the Pauli predictor and BP | calibration | known BP territory |
+| `B_mapping` | `main.py`, `roll.py`, `rac.py`, `xeb.py` | rulebook → circuit → tumour parameters + CHSH pair, one job | `cohort_params.json`, `quantum_run.json`, `rulebook.json` |
+| `C_certificate` | `main.py` | CHSH gate: S ≤ 2 rejects the draw and stops the run (no retry) | `certificate.json` |
+| `D_quantum_growth` | `main.py`, `dscale.py` (+ `ghz_spine`, `ch_qca`, `pmd_bank`, `causal_states`, `seedlift`), `clock.py`, `pairs.py`, `ring_l2.py` | quantum growth: per-tumour seed shapes or a hypothesis circuit | `dscale/` |
+| `A_placement` | `main.py` | a 3-D site per tumour in the host lung | `sites.json` |
+| `E_classical_growth` | `main.py`, `params_lung.json` | Kansal–Torquato + Pixel2Cancer growth from the seed | `growth.json`, `_roi/` |
+| `F_render` | `main.py`, `lesion_fitted.py`, `lesion.py`, `insert.py`, `noise.py`, `fingerprint.py` | render into the host CT with its own blur and noise | `tiles.json`, `tiles/*.png` |
+| `G_provenance` | `main.py` | lineage record + hash-chained ledger | `lineage_record.json`, `ledger.jsonl` |
+| `H_analysis` | `main.py` | what the run shows, with its limits | `analysis.json` |
+| `webpage` | `main.py`, `template.html` | one self-contained HTML page | `../web/<run>.html` |
+| `common` | `runio`, `quantum`, `targets`, `allocate`, `lint`, `pauli_noise`, `witness`, `qhard`, `game`, `host`, `lidc_fetch`, `datamodel` | shared code | — |
 
-The **quantum layer now shapes the tumour**: per tile, a QCA Z-snapshot driven by the tile's draw (21-site patch in
-ideal mode, 12-site hexagon in heron mode) is lifted to a 3-D seed, and F5's grower starts from it instead of the
-2 mm ball. Without `<run>/dscale/` every output is byte-identical to F5.
+Constants live where they are used, one place each: `common/__init__.py` (`HOST`, `FAKE_BACKEND`,
+`MAX_QPU_SECONDS`), `B_mapping/roll.py` (`TILES`, `PAIRS`), `D_quantum_growth/dscale.py` (`BUDGET`),
+`E_classical_growth/main.py` (`FRAMES`), `A_placement/main.py` (`SEED`).
 
-```bash
-python -m dscale.targets --show                                       # the 5 simulation targets
-python -m dscale.families --list                                      # families, claims, 40/100/120 presets
-python -m dscale.allocate --target nighthawk --budget 120 --recipe composite
-python -m dscale.lint --selftest                                      # exit 5 = the 2 injected violations
-python -m dscale.validate_noise --pauli --smoke                       # AC-4 Pauli vs full noise
-python -m dscale.validate_noise --backtest --smoke                    # AC-5 QALife / PJ0 / Big Cats back-test
-python -m dscale.bp --equivalence                                     # QR BP copy == RE BP, and faster
-python -m dscale.survival --budget 120 --target nighthawk --smoke     # survive-vs-simulable map
-python -m dscale.run --run ../research_runs/<run> --budget 40 --mode ideal --smoke
-python -m imaging.build_tiles --run ../research_runs/<run>            # grows from the quantum seeds
-python -m f3_web.build_web --run ../research_runs/<run>               # adds the "Quantum growth (D-SCALE)" panel
-python -m dscale.hw_pack --budget 40 --backend ibm_boston --from-map <survival_map.json>
+## Switching the circuit in B and D
+
+One constant at the top of the section's `main.py`. The table of circuits (sizes, bound, pass rule, refusals) is
+right below it.
+
+```python
+# B_mapping/main.py
+CIRCUIT = "ROLL"      # ROLL | R2-Q2 | R2-Q3 | R2-D4 | R4-HEX | R5-H12 | R5-MAP8 | R5-D20 | R5-Y18
+
+# D_quantum_growth/main.py
+CIRCUIT = "DSCALE"    # DSCALE | GHZ-SPINE | CH-QCA | PMD-BANK | R1-STAR-001 | R1-TILE24 | R1-M2-00001 | R3-LADDER | R3-TEST | R3-CHIP64 | R3-INTRINSIC
+                      # | R5-LADDER | R6a-S36 | R6a-S44 | R6b-LEAN64 | R6b-PUB64
 ```
 
-Outputs: `<run>/dscale/` (`dscale_run.json`, `allocation.json`, `scale_detail.json`, `seed_shapes.npz`,
-`circuits/*.qasm`, `figures/`); standalone maps, validation, the PMD re-tune and hardware packs go to
-`../research_runs/_dscale/`. `dscale.run` refuses (exit 6) a run dir with git-tracked files.
+- **B:** the roll always runs (it is the seed draw). Any other value adds that hypothesis circuit on the same
+  backend; its claim is about the device, never the tumour.
+- **D:** `DSCALE` is today's composite (GHZ spine + QCA + PMD); its QCA snapshots are the seed shapes. `GHZ-SPINE`,
+  `CH-QCA`, `PMD-BANK` run one of its families alone (first pick of the qubits, nothing running next to it; the
+  spine tree is then chosen by qubit quality, not depth). `CH-QCA` and the R6 rings also give seed shapes. With any other circuit the tumours grow from the 2 mm ball.
+- `R3-TEST` is the hypothesis test of Seif et al. (2408.03376 Sec. III): name a hidden Pauli channel with a sister
+  memory; without a quantum memory the success rate is at most 1/2 + 0.43 M 2^-n. One pool of 400 circuits serves
+  every size (8 to 40 pairs) and every trial.
+- Rings (R5, R6) are picked on the calibration-pruned chip; when pruning leaves no ring (one pruned qubit removes
+  a hexagon) every ring is ranked by pruned qubits, then measured CZ + readout error, and the claim note says so.
+- Claims go to `claims.json` and to the page. A dry-run pass is labelled "(dry run: not a claim)".
+- A dry run tests the pipeline, not the science: 4 tumours of at most 7 mm (`DRY_*` in `B_mapping/roll.py`), 400
+  shots, each circuit's `dry` sizes from its `CIRCUITS` row, no do-not-build refusals. About 2 to 3 minutes.
+- Circuits on the plans' "do not build" list for a backend are refused (`refuse` in the table).
+- Scores are raw counts: no readout mitigation in a hypothesis job.
+- Sizes are first-run sizes; the plan's published size is in the comment next to it.
 
-**Caps.** Every CLI stops at `--max-minutes 20` by default, writes what it has with `truncated: true` and prints
-what it skipped; `--shots` is capped at 4000 and `--repeats` at 15. `--full` (with `--max-minutes 0`) lifts them
-and is meant only for the runbook. Full sweeps and all hardware steps are in `dscale/RUNBOOK_DSCALE.md`; nothing
-in `dscale/` submits a job.
+Plans: `../plans/qhard-D-L2-ring-configurations.md`, `../plans/qhard-R1-R5-configurations-and-BD-flagship.md`.
 
-**Honest label.** Simulated; the seed shape is a quantum snapshot; growth and image are classical; no
-classical-hardness claim. Survives (L1 / L1′) and BP-hard (frontier) are separate columns: GHZ and PMD never count
-as frontier. The Goldilocks zone (alive and BP-hard) is the only honest meaning of "closer to quantum advantage"
-here, and an empty zone is a reported result.
+## Live runs
 
-## Honest claim (Tier 1 provenance)
+- Pre-saved `QiskitRuntimeService()` account, never a token. One backend per run (`backend.json`).
+- Every job id is written to `jobs/<key>.json` before waiting. `--run <dir>` fetches it instead of resubmitting.
+- Spend guard: the estimate over all jobs of a run stays under `MAX_QPU_SECONDS` (45); shots are cut to fit, below
+  300 the job is refused.
+- To redo a section, delete its output file and run `--run <dir>` again.
 
-Tumor **parameters** are sampled from certified-quantum measurement; the **growth** (F5) and the
-**image** are classical. CHSH > 2 is evidence the roll was genuinely quantum. No claim that
-quantum makes a better or non-classical tumor. The CHSH value is **job-level** (one Bell test
-over many shots × 4 settings), carried onto every tile with that tile's shot index — never a
-per-tile Bell value. Use the real-hardware S on the page; the Aer value (~2.83) is noiseless
-and for development only.
+```bash
+python -m common.lidc_fetch LIDC-IDRI-0481       # once: the public host CT (~136 MB)
+python -m G_provenance.main <run directory>      # does every file still match the lineage record?
+```
 
-See `../plans/runlog-mvp-run.txt` for the exact copy-paste commands for a live run and a PRNG
-test run.
+## Not run yet
+
+Nothing here was executed after the refactor (repo directive). Syntax, import and undefined-name checks pass. First
+places to look when a run fails:
+
+| Where | Open point |
+|---|---|
+| `common/quantum.py` | New single path for every job (roll included). Dry run of wide Clifford jobs uses the Pauli-twirled model. |
+| `D_quantum_growth/dscale.py` | Same logic as the old live job, re-plumbed. Default `BUDGET = 100` live; a dry run uses `DRY_BUDGET = 40`. |
+| `common/game.py` | Win rule derived (all deterministic parities), not transcribed from 2110.04277. |
+| `D_quantum_growth/ring_l2.py` | Own check construction; doping loss is a placeholder; doped circuits are sampled live only. |
+| `B_mapping/xeb.py` | bits(ε) is a two-point line; inputs are pseudo-random, so it cannot pass as coded. |
+| Pruned files | `ghz_spine`, `ch_qca`, `pmd_bank`, `causal_states`, `seedlift`, `allocate`, `lint` were cut to what the pipeline calls. |
+
+## Honest claim
+
+Tumour parameters are sampled from a quantum measurement; growth and image are classical. CHSH > 2 on hardware is
+evidence the roll was quantum; a dry run certifies nothing. Every other quantum number carries its level, its
+classical bound, the rigour of that bound and its label.

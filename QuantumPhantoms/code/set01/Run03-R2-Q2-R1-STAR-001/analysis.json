@@ -1,0 +1,130 @@
+{
+ "run": "Run03-R2-Q2-R1-STAR-001",
+ "backend": {
+  "name": "ibm_fez",
+  "live": true,
+  "label": "ibm_fez (156 q heavy-hex)",
+  "calibration": {
+   "backend": "ibm_fez",
+   "last_update_date": "2026-11-13 17:27:59+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 12,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "6-8mm": 6,
+    "<6mm": 5,
+    ">20mm": 1
+   },
+   "tvd": 0.283
+  },
+  "lobe": {
+   "counts": {
+    "RUL": 6,
+    "RLL": 5,
+    "RML": 1
+   },
+   "tvd": 0.357
+  },
+  "type": {
+   "ground-glass": 5,
+   "part-solid": 2,
+   "solid": 1,
+   "calcified": 4
+  },
+  "margin": {
+   "smooth": 8,
+   "lobulated": 2,
+   "spiculated": 2
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.7353515625,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "ibm_fez",
+  "job_id": "dbsc6jok09pc73b00deg",
+  "scope": "job-level (one Bell test over 4 settings), not per tumour",
+  "passed": true,
+  "hmin_per_round_analytic": 0.5565953265091774,
+  "status": "Bell violation on hardware: ibm_fez, job dbsc6jok09pc73b00deg (job-level; not device-independent)"
+ },
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R2-Q2",
+   "family": "R2-Q2",
+   "claim_level": "L1'-C",
+   "value": 0.8496250000000001,
+   "sigma": 0.003994255640917341,
+   "bound": 0.75,
+   "bound_rigour": "textbook [verify]",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbsc6rok09pc73b00dm0"
+  },
+  {
+   "stage": "D",
+   "config": "R1-STAR-001",
+   "family": "R1-STAR-001",
+   "claim_level": "L1'-T",
+   "value": 0.40425,
+   "sigma": 0.007759380411798355,
+   "bound": 0.29641,
+   "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbsc73ujjaos73ak104g"
+  },
+  {
+   "stage": "D",
+   "config": "R1-STAR-001",
+   "family": "R1-STAR-001",
+   "claim_level": "L1'-T",
+   "value": 0.389,
+   "sigma": 0.0077084207202253825,
+   "bound": 0.29641,
+   "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbsc73ujjaos73ak104g"
+  }
+ ],
+ "claims_summary": {
+  "total": 3,
+  "passed": 3,
+  "not_passed": [],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 12,
+  "renderers": {
+   "grown+fitted": 8,
+   "procedural-3d": 4
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "n/a": 12
+  },
+  "volume_pd_pct": {
+   "n": 8,
+   "median": -0.005,
+   "min": -0.03,
+   "max": 0.02
+  },
+  "sigma_ratio_in_out": {
+   "n": 9,
+   "median": 0.983,
+   "min": 0.656,
+   "max": 1.599
+  },
+  "vdt_d": {
+   "n": 8,
+   "median": 498.45,
+   "min": 207.5,
+   "max": 1245.1
+  }
+ }
+}

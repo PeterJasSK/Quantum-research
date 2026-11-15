@@ -1,0 +1,56 @@
+{
+ "seq": "001",
+ "memory_qubits": 1,
+ "tiles": [
+  [
+   3,
+   2,
+   4,
+   16
+  ]
+ ],
+ "ideal_value": 0.4374999999999999,
+ "instrument_rigour": "closed form (7/16)",
+ "arms": [
+  "identical_steps",
+  "first step compiled"
+ ],
+ "info": {
+  "backend": "ibm_fez",
+  "circuits": 2,
+  "shots": 4000,
+  "two_qubit_gates_max": 6,
+  "job_id": "dbsc73ujjaos73ak104g",
+  "label": "hardware: ibm_fez, job dbsc73ujjaos73ak104g"
+ },
+ "arms_result": [
+  {
+   "arm": "identical_steps",
+   "p": [
+    0.40425
+   ],
+   "sigma": [
+    0.007759380411798355
+   ],
+   "z": [
+    13.898016887537342
+   ],
+   "tiles_passed": 1,
+   "z_needed": 3.0
+  },
+  {
+   "arm": "first step compiled",
+   "p": [
+    0.389
+   ],
+   "sigma": [
+    0.0077084207202253825
+   ],
+   "z": [
+    12.011539504721378
+   ],
+   "tiles_passed": 1,
+   "z_needed": 3.0
+  }
+ ]
+}

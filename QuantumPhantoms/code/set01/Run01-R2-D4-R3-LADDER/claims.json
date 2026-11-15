@@ -1,0 +1,32 @@
+[
+ {
+  "stage": "B",
+  "config": "R2-D4",
+  "family": "R2-D4",
+  "claim_level": "L1'-C",
+  "witness": "average success of a quantum random access code on the hand-off register",
+  "value": 0.73665625,
+  "sigma": 0.002460749893642688,
+  "bound": 0.625,
+  "bound_rigour": "textbook [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbs96khabdes73fqsovg",
+  "pass_rule": "success > 0.625 by 3 sigma",
+  "note": "Adversary: a classical message of the same dimension; the dimension is assumed (not device-independent). 32 circuits on qubit(s) [58, 71]; ideal 0.750, worst input 0.690; average success, message dimension 4 assumed."
+ },
+ {
+  "stage": "D",
+  "config": "R3-LADDER",
+  "family": "R3-LADDER",
+  "claim_level": "L1'-L",
+  "witness": "fitted per-qubit sample overhead 1/r^2 of Bell-memory Pauli learning",
+  "value": 1.1349574079344695,
+  "sigma": 0.0034292928614669204,
+  "bound": 2.0,
+  "bound_rigour": "memoryless per-qubit sample overhead 2 [verify; gap G3]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbs96snv5hds73dimhs0",
+  "pass_rule": "fitted overhead < 2 by 3 sigma",
+  "note": "Adversary: every learner without a quantum memory (a theorem, no baseline arm is run). sizes [8, 16] pairs, 8 random instances each; largest size: lambda = -0.3553 +- 0.0105 (34.0 sigma, hidden sign recovered); pairs selected by forecast signal; the memoryless bound is a theorem [verify], no baseline arm run."
+ }
+]

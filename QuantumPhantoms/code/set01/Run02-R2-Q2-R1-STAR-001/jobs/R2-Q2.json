@@ -1,0 +1,7 @@
+{
+ "job_id": "dbsbvb8k09pc73b00680",
+ "backend": "ibm_fez",
+ "circuits": 8,
+ "shots": 1000,
+ "qpu_seconds_estimate": 2.013664
+}

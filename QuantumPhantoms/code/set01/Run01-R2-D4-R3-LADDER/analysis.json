@@ -1,0 +1,119 @@
+{
+ "run": "Run01-R2-D4-R3-LADDER",
+ "backend": {
+  "name": "ibm_fez",
+  "live": true,
+  "label": "ibm_fez (156 q heavy-hex)",
+  "calibration": {
+   "backend": "ibm_fez",
+   "last_update_date": "2026-11-13 17:27:59+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 12,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "6-8mm": 2,
+    "8-20mm": 1,
+    ">20mm": 5,
+    "<6mm": 4
+   },
+   "tvd": 0.367
+  },
+  "lobe": {
+   "counts": {
+    "RUL": 8,
+    "RLL": 3,
+    "RML": 1
+   },
+   "tvd": 0.357
+  },
+  "type": {
+   "ground-glass": 2,
+   "calcified": 4,
+   "part-solid": 3,
+   "solid": 3
+  },
+  "margin": {
+   "smooth": 5,
+   "lobulated": 5,
+   "spiculated": 2
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.7705078125,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "ibm_fez",
+  "job_id": "dbs96cejjaos73ajtmag",
+  "scope": "job-level (one Bell test over 4 settings), not per tumour",
+  "passed": true,
+  "hmin_per_round_analytic": 0.6385339345618185,
+  "status": "Bell violation on hardware: ibm_fez, job dbs96cejjaos73ajtmag (job-level; not device-independent)"
+ },
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R2-D4",
+   "family": "R2-D4",
+   "claim_level": "L1'-C",
+   "value": 0.73665625,
+   "sigma": 0.002460749893642688,
+   "bound": 0.625,
+   "bound_rigour": "textbook [verify]",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbs96khabdes73fqsovg"
+  },
+  {
+   "stage": "D",
+   "config": "R3-LADDER",
+   "family": "R3-LADDER",
+   "claim_level": "L1'-L",
+   "value": 1.1349574079344695,
+   "sigma": 0.0034292928614669204,
+   "bound": 2.0,
+   "bound_rigour": "memoryless per-qubit sample overhead 2 [verify; gap G3]",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbs96snv5hds73dimhs0"
+  }
+ ],
+ "claims_summary": {
+  "total": 2,
+  "passed": 2,
+  "not_passed": [],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 12,
+  "renderers": {
+   "grown+fitted": 8,
+   "procedural-3d": 4
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "n/a": 12
+  },
+  "volume_pd_pct": {
+   "n": 8,
+   "median": -0.015,
+   "min": -0.09,
+   "max": 15.19
+  },
+  "sigma_ratio_in_out": {
+   "n": 11,
+   "median": 0.995,
+   "min": 0.774,
+   "max": 1.212
+  },
+  "vdt_d": {
+   "n": 8,
+   "median": 409.75,
+   "min": 85.7,
+   "max": 3895.9
+  }
+ }
+}

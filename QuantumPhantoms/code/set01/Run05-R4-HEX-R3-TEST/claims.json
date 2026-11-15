@@ -1,0 +1,47 @@
+[
+ {
+  "stage": "B",
+  "config": "R4-HEX",
+  "family": "R4-HEX",
+  "claim_level": "L1'-C (n = 12)",
+  "witness": "classical-bit lower bound from the XEB score on the 12-qubit seed hexagon",
+  "value": -79.1377165155189,
+  "sigma": null,
+  "bound": 12.0,
+  "bound_rigour": "bits(eps): two-point linear reading of 2509.07255 [verify]",
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbscgc7v5hds73diq4u0",
+  "pass_rule": "proven bits > 12",
+  "note": "Adversary: any one-way classical message of 12 bits; needs Haar targets, true-random inputs, global Clifford measurements, ONE shot per circuit. eps = -0.213 +- 0.150 over 16 circuits x 1 shot; bits at -3 sigma -189.5; mean ansatz fidelity 0.024 at 8 layers; inputs: 108 quantum roll bits expanded with SHA-256 / PCG64: pseudo-random, theorem assumption X13 NOT met; cannot pass while these are open: true_random_inputs, bound_constants_transcribed."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.392,
+  "sigma": 0.007719067301170524,
+  "bound": 0.29641,
+  "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbscgkejjaos73ak19i0",
+  "pass_rule": "p > 0.29641 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. identical steps; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.392; up to 6 two-qubit gates in the circuit."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.39375,
+  "sigma": 0.007725136527919748,
+  "bound": 0.29641,
+  "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbscgkejjaos73ak19i0",
+  "pass_rule": "p > 0.29641 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. first step compiled from the known input; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.394; up to 6 two-qubit gates in the circuit."
+ }
+]

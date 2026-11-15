@@ -11,33 +11,42 @@ Long-term goal: each pipeline stage is one layer of a future patient digital twi
 - **Quantum Virtual Tumors** (SK: *Kvantové virtuálne nádory*): pitch name for Siemens.
 - **Quantum Synthetic Cultures (QSC)** is retired. It still appears in older plans; do not use it in new material.
 
-## Two codebases (do not mix)
+## Code (minimal pipeline, 2026-11-11)
 
-| | MVP | Reverse-engineering (RE) pipeline |
-|---|---|---|
-| Where | `code/` (F1 quantum roll, F2 imaging, F3 web, F4 QALife arm) | `plans/relatedPapers/reverse-engineering/` (letters A–H + W + INT) |
-| Entry doc | `code/README.md` | `plans/relatedPapers/reverse-engineering/README.md` (**read first** before RE work) |
-| Run from | `code/`, `python -m f1_quantum.run …` | the RE folder, `python -m <L>_<name>.src.<module>` |
-| Outputs | `research_runs/<run>/`, `web/index.html` | `<L>/runs/` (gitignored), via `shared.runrecord.start_run` |
+`code/` is the pipeline; entry doc `code/README.md` (**read first**). One directory per section, each with a
+`main.py` exposing `run(ctx)`; `code/main.py` calls them in the order B C D A E F G H web. Sections exchange files
+in `research_runs/<run>/` only.
 
-The RE pipeline never imports `code/`. RE letters import only `shared/`, never each other, and exchange **files
-only** through the frozen contracts in `shared/contracts/` (check outputs with `python -m shared.validate <file>`).
+```
+cd code
+python main.py                        # dry run on the local fake backend
+python main.py --backend <name|auto>  # live (Peter only)
+python main.py --shots N              # shots per circuit
+python main.py --run <run dir>        # continue a stopped run
+```
 
-Pipeline: **A** placement → **B** rulebook + CT context → circuit → **C** certificate → **D** quantum growth →
-**E** classical growth → **F** render into CT → **G** lineage record → **H** validation. Chain runner:
-`python -m INT_integration.src.chain --probe` (see `INT_integration/README.md` for the known gaps).
+- **B and D have one switch each:** the `CIRCUIT` constant at the top of `B_mapping/main.py` and
+  `D_quantum_growth/main.py` (today: `ROLL`, `DSCALE`; the rest are the Q-HARD circuits of `plans/qhard-*.md`).
+  Every other section is one straight line, no variants. Keep it that way: a change lives in one place.
+- Keep sections small: few files, no CLI flags beyond the four above, constants where they are used.
+- Shared code is `code/common/` (`quantum.py` = the only way a circuit reaches a device; `runio.py` = files, seeds,
+  claims).
+- **The reverse-engineering (RE) work is an archive**, untouched, in `plans/relatedPapers/reverse-engineering/`
+  (letters A–H, `shared/`, `INT_integration/`, dossiers, 21 targets). The pipeline does not import it. It still runs
+  from its own folder (`python -m <L>_<name>.src.<module>`).
+- Removed from `code/` (in git history): the procedural renderer, the QALife roll, the simulated D-SCALE orchestrator,
+  survival map, BP copy, hardware packs, `run_budget_*.sh`.
 
 Python: conda base `/home/peter/anaconda3/bin/python3` (3.13). Pinned deps in `requirements.txt`.
 
 ## Hard rules
 
-- **Hardware jobs are run by Peter only.** Develop and verify on AerSimulator / `FakeMarrakesh`. Never submit an
+- **Hardware jobs are run by Peter only.** Develop and verify on the dry run (`FakeMarrakesh`). Never submit an
   IBM job yourself, never read, print or commit a token, never touch the repo-root `credentialsApi.py`. Hardware
   uses a pre-saved `QiskitRuntimeService()` account.
 - **No automated tests** (repo directive). Verification = manual runs + the paper reproduction in each `repro/`.
-- **RE parallel work:** one git worktree + branch per letter; a session writes only inside its own letter folder
-  and `feature-<L>-*.md`. Never edit `shared/`, the epic, `index.html` or `site/` from a letter session. Contract
-  changes go under "Contract change requests" in the letter README; INT applies them.
+- **Q-HARD:** a configuration on the plans' "do not build" list stays refused; a bound marked [verify] or numerical
+  never becomes a claim; L2 stays blocked until a certified hardware run exists.
 - Paper PDFs (`plans/relatedPapers/papers/`) and run outputs stay local; they are gitignored.
 - Never send email or contact anyone. Draft outreach for Peter to review and send.
 - Commit only when Peter asks.

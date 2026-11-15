@@ -1,0 +1,32 @@
+[
+ {
+  "stage": "B",
+  "config": "R2-Q3",
+  "family": "R2-Q3",
+  "claim_level": "L1'-C",
+  "witness": "average success of a quantum random access code on the hand-off register",
+  "value": 0.7896666666666666,
+  "sigma": 0.002629362776626898,
+  "bound": 0.75,
+  "bound_rigour": "textbook [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbnqhabdes73fqvk70",
+  "pass_rule": "success > 0.75 by 3 sigma",
+  "note": "Adversary: a classical message of the same dimension; the dimension is assumed (not device-independent). 24 circuits on qubit(s) [58]; ideal 0.789, worst input 0.763; average success, message dimension 2 assumed."
+ },
+ {
+  "stage": "D",
+  "config": "R5-LADDER",
+  "family": "R5-LADDER",
+  "claim_level": "calibration",
+  "witness": "effective loss per CZ, lambda = -ln F_n / N_CZ, from the game score",
+  "value": 0.051717973505380814,
+  "sigma": 0.0041323475229028146,
+  "bound": null,
+  "bound_rigour": "none",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbo2pabdes73fqvkfg",
+  "pass_rule": "none (calibration)",
+  "note": "No adversary: a loss meter. 2 rungs (n = 12, 20); a depth-2 meter does not see the idle errors of a deep ring (gap G4)."
+ }
+]

@@ -1,0 +1,11 @@
+{
+ "name": "ibm_fez",
+ "live": true,
+ "label": "ibm_fez (156 q heavy-hex)",
+ "calibration": {
+  "backend": "ibm_fez",
+  "last_update_date": "2026-11-13 17:27:59+01:00",
+  "fake": false,
+  "qiskit_ibm_runtime_version": "0.47.0"
+ }
+}

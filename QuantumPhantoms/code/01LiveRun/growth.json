@@ -1,0 +1,136 @@
+{
+ "host": "LIDC-IDRI-0481",
+ "tiles": {
+  "tile_0_0": {
+   "status": "ok",
+   "day_baseline": 833,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 4.0046,
+   "diameter_follow_up_mm": 4.3635,
+   "vdt_d": 207.5,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 1.789,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 24,
+   "seed_scaled": 0.853
+  },
+  "tile_1_0": {
+   "status": "ok",
+   "day_baseline": 809,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 4.0046,
+   "diameter_follow_up_mm": 4.2955,
+   "vdt_d": 231.3,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 164 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 1.97,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 32,
+   "seed_scaled": 0.717
+  },
+  "tile_2_0": {
+   "status": "ok",
+   "day_baseline": 345,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 7.0069,
+   "diameter_follow_up_mm": 8.089,
+   "vdt_d": 124.6,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 11742 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 3.368,
+   "params_type": "solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 160,
+   "seed_scaled": 0.868
+  },
+  "tile_3_0": {
+   "status": "no growth (calcified)"
+  },
+  "tile_4_0": {
+   "status": "no growth (calcified)"
+  },
+  "tile_5_0": {
+   "status": "ok",
+   "day_baseline": 2826,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 13.0006,
+   "diameter_follow_up_mm": 13.3141,
+   "vdt_d": 938.3,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 556 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 3.06,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 120
+  },
+  "tile_6_0": {
+   "status": "no growth (calcified)"
+  },
+  "tile_7_0": {
+   "status": "no growth (calcified)"
+  },
+  "tile_8_0": {
+   "status": "ok",
+   "day_baseline": 2869,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 13.001,
+   "diameter_follow_up_mm": 13.3517,
+   "vdt_d": 692.9,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 313,
+   "touches_box_edge": false,
+   "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 73070 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 2.841,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 96
+  },
+  "tile_8_1": {
+   "status": "ok",
+   "day_baseline": 2336,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 13.0001,
+   "diameter_follow_up_mm": 13.3561,
+   "vdt_d": 741.3,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 17037 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 3.773,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 225
+  },
+  "tile_9_0": {
+   "status": "no growth (calcified)"
+  },
+  "tile_9_1": {
+   "status": "ok",
+   "day_baseline": 848,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 4.0046,
+   "diameter_follow_up_mm": 4.2998,
+   "vdt_d": 169.2,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 10783 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 1.884,
+   "params_type": "part-solid",
+   "seed_source": "dscale:ch-qca:ibm_fez:27",
+   "seed_cells": 28,
+   "seed_scaled": 0.717
+  }
+ }
+}

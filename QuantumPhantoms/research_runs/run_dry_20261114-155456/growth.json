@@ -1,0 +1,61 @@
+{
+ "host": "LIDC-IDRI-0481",
+ "tiles": {
+  "tile_0_0": {
+   "status": "ok",
+   "day_baseline": 511,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 7.002,
+   "diameter_follow_up_mm": 8.1397,
+   "vdt_d": 146.6,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 2.0,
+   "params_type": "solid"
+  },
+  "tile_1_0": {
+   "status": "ok",
+   "day_baseline": 558,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 7.0004,
+   "diameter_follow_up_mm": 8.0264,
+   "vdt_d": 140.0,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 43\u00b3 at 0.5 mm; hard (outside lung) 16332 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 2.0,
+   "params_type": "solid"
+  },
+  "tile_2_0": {
+   "status": "ok",
+   "day_baseline": 1633,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 4.0046,
+   "diameter_follow_up_mm": 4.1014,
+   "vdt_d": 620.4,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 2889 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 2.0,
+   "params_type": "ground-glass"
+  },
+  "tile_2_1": {
+   "status": "ok",
+   "day_baseline": 3098,
+   "follow_up_days": 90,
+   "diameter_baseline_mm": 7.002,
+   "diameter_follow_up_mm": 7.1993,
+   "vdt_d": 554.5,
+   "f_necrotic_baseline": 0.0,
+   "wall_contacts_baseline": 0,
+   "touches_box_edge": false,
+   "lattice": "lattice 41\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+   "seed_diameter_mm": 2.0,
+   "params_type": "ground-glass"
+  }
+ }
+}

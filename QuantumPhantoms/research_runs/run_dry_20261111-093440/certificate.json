@@ -1,0 +1,11 @@
+{
+ "chsh_S": 2.7685546875,
+ "classical_bound": 2.0,
+ "tsirelson_bound": 2.8284271247461903,
+ "backend": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+ "job_id": "",
+ "scope": "job-level (one Bell test over 4 settings), not per tumour",
+ "passed": true,
+ "hmin_per_round_analytic": 0.633253961114722,
+ "status": "certification-ready, not certified (simulated)"
+}

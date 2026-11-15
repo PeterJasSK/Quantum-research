@@ -1,0 +1,123 @@
+{
+ "run": "Run04-R5-H12-R3-TEST",
+ "backend": {
+  "name": "ibm_fez",
+  "live": true,
+  "label": "ibm_fez (156 q heavy-hex)",
+  "calibration": {
+   "backend": "ibm_fez",
+   "last_update_date": "2026-11-13 17:27:59+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 12,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "6-8mm": 4,
+    "8-20mm": 2,
+    "<6mm": 3,
+    ">20mm": 3
+   },
+   "tvd": 0.3
+  },
+  "lobe": {
+   "counts": {
+    "RML": 2,
+    "LLL": 2,
+    "RUL": 5,
+    "RLL": 1,
+    "LUL": 2
+   },
+   "tvd": 0.18
+  },
+  "type": {
+   "part-solid": 3,
+   "ground-glass": 3,
+   "solid": 5,
+   "calcified": 1
+  },
+  "margin": {
+   "spiculated": 3,
+   "smooth": 8,
+   "lobulated": 1
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.71484375,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "ibm_fez",
+  "job_id": "dbsbfkhabdes73fqvau0",
+  "scope": "job-level (one Bell test over 4 settings), not per tumour",
+  "passed": true,
+  "hmin_per_round_analytic": 0.5179323097417832,
+  "status": "Bell violation on hardware: ibm_fez, job dbsbfkhabdes73fqvau0 (job-level; not device-independent)"
+ },
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R5-H12",
+   "family": "R5-H12",
+   "claim_level": "L1.5",
+   "value": 0.7423437500000001,
+   "sigma": 0.002421172478753837,
+   "bound": 0.8,
+   "bound_rigour": "[verify]: bound from 2110.04277; the win rule here is derived, not transcribed",
+   "passed": false,
+   "label": "hardware: ibm_fez, job dbsbft7v5hds73dip3n0"
+  },
+  {
+   "stage": "D",
+   "config": "R3-TEST",
+   "family": "R3-TEST",
+   "claim_level": "L1'-L",
+   "value": 0.85,
+   "sigma": 0.025248762345905194,
+   "bound": 0.5000000078216544,
+   "bound_rigour": "1/2 + 0.43 M 2^-n without a quantum memory (2408.03376 Eq. 4) [verify]; emulated channel",
+   "passed": true,
+   "label": "hardware: ibm_fez, job dbsbg8ujjaos73ak08n0"
+  }
+ ],
+ "claims_summary": {
+  "total": 2,
+  "passed": 1,
+  "not_passed": [
+   "B:R5-H12"
+  ],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 12,
+  "renderers": {
+   "grown+fitted": 11,
+   "procedural-3d": 1
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "n/a": 12
+  },
+  "volume_pd_pct": {
+   "n": 11,
+   "median": 0.01,
+   "min": 0.0,
+   "max": 2.36
+  },
+  "sigma_ratio_in_out": {
+   "n": 10,
+   "median": 0.965,
+   "min": 0.858,
+   "max": 1.276
+  },
+  "vdt_d": {
+   "n": 11,
+   "median": 620.4,
+   "min": 130.2,
+   "max": 1679.2
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "chsh_S": 2.7705078125,
+ "classical_bound": 2.0,
+ "tsirelson_bound": 2.8284271247461903,
+ "backend": "ibm_fez",
+ "job_id": "dbs96cejjaos73ajtmag",
+ "scope": "job-level (one Bell test over 4 settings), not per tumour",
+ "passed": true,
+ "hmin_per_round_analytic": 0.6385339345618185,
+ "status": "Bell violation on hardware: ibm_fez, job dbs96cejjaos73ajtmag (job-level; not device-independent)"
+}

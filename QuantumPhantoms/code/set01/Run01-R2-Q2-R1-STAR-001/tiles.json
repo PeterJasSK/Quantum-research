@@ -1,0 +1,1382 @@
+{
+ "honest_label": "Tumour parameters come from a quantum measurement (CHSH on the roll); growth (published models) and the image are classical. Host CT: one public LIDC-IDRI scan; all nodules are inserted into that one scan.",
+ "ct_attribution": "Host CT: LIDC-IDRI-0481 (public LIDC-IDRI collection, TCIA, CC BY 3.0, https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX), scanned on a Siemens Definition (kernel B45f, 1 mm). Public case; no Siemens involvement.",
+ "quantum_run": {
+  "backend_name": "ibm_fez",
+  "job_id": "dbs7e4fv5hds73dikpg0",
+  "chsh_value": 2.705078125,
+  "chsh_settings": {
+   "a0": 0.0,
+   "a1": 1.5707963267948966,
+   "b0": 0.7853981633974483,
+   "b1": -0.7853981633974483
+  },
+  "raw_bits": [
+   "100011001",
+   "000000100",
+   "001101001",
+   "101100100",
+   "101111011",
+   "001001110",
+   "001011000",
+   "010000011",
+   "110000001110101011",
+   "100101010100100000"
+  ],
+  "shot_indices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   8,
+   9,
+   9
+  ]
+ },
+ "tiles": [
+  {
+   "tile_id": "tile_0_0",
+   "png_path": "tiles/zoom_0_0.png",
+   "size_mm": 13.0,
+   "type": "part-solid",
+   "margin": "spiculated",
+   "lobe": "RML",
+   "lineage_id": "tile0",
+   "generation": 0,
+   "shot_index": 0,
+   "insert_xy": [
+    119,
+    267
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_157.png",
+   "bbox": [
+    0.20362,
+    0.49269,
+    0.0576,
+    0.0576
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 157,
+   "growth": [
+    {
+     "k": 0,
+     "day": 12,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 370,
+     "diameter_mm": 2.74,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 732,
+     "diameter_mm": 3.73,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 1187,
+     "diameter_mm": 5.1,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 1756,
+     "diameter_mm": 6.97,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 2421,
+     "diameter_mm": 9.52,
+     "role": "growth",
+     "png_path": "tiles/grow_0_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 3311,
+     "diameter_mm": 13.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_0_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 3401,
+     "diameter_mm": 13.36,
+     "role": "follow-up",
+     "png_path": "tiles/grow_0_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "5e3f2f5abebd57d3045a274541ac43644bd20939e1aeb172ddbb05fe2c4e493f",
+   "seed_hex_appearance": "52228b79153c16d19f9317c4291ab9326bf53c0283db1374498a85942214360f",
+   "diag": {
+    "day_baseline": 3311,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 13.0001,
+    "diameter_follow_up_mm": 13.3593,
+    "vdt_d": 861.8,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 154 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": 44.9,
+    "sigma_edge_mm": 1.198,
+    "filled_holes_vox": 23,
+    "volume_pd_pct": 0.31,
+    "sigma_ratio_in_out": 1.052,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_1_0",
+   "png_path": "tiles/zoom_1_0.png",
+   "size_mm": 4.0,
+   "type": "ground-glass",
+   "margin": "smooth",
+   "lobe": "RUL",
+   "lineage_id": "tile1",
+   "generation": 0,
+   "shot_index": 1,
+   "insert_xy": [
+    176,
+    360
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_182.png",
+   "bbox": [
+    0.32946,
+    0.68884,
+    0.02857,
+    0.02857
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 182,
+   "growth": [
+    {
+     "k": 0,
+     "day": 21,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 279,
+     "diameter_mm": 2.25,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 486,
+     "diameter_mm": 2.53,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 693,
+     "diameter_mm": 2.83,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 993,
+     "diameter_mm": 3.18,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 1264,
+     "diameter_mm": 3.57,
+     "role": "growth",
+     "png_path": "tiles/grow_1_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 1535,
+     "diameter_mm": 4.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_1_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 1625,
+     "diameter_mm": 4.14,
+     "role": "follow-up",
+     "png_path": "tiles/grow_1_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "de2e2516359166706fb330cfb7bb03c5b1c3b974a755247bd9c148f1193751d0",
+   "seed_hex_appearance": "df4ab9d6f7748ee9117d767f82c825a403d8b0f8e91778a173ffa3e47cbd17c2",
+   "diag": {
+    "day_baseline": 1535,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 4.0046,
+    "diameter_follow_up_mm": 4.1436,
+    "vdt_d": 308.4,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "ground-glass",
+    "hu_source": "library",
+    "hu_core": -657.9,
+    "sigma_edge_mm": 1.438,
+    "filled_holes_vox": 2,
+    "volume_pd_pct": -0.02,
+    "sigma_ratio_in_out": null,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_2_0",
+   "png_path": "tiles/zoom_2_0.png",
+   "size_mm": 13.0,
+   "type": "part-solid",
+   "margin": "lobulated",
+   "lobe": "LLL",
+   "lineage_id": "tile2",
+   "generation": 0,
+   "shot_index": 2,
+   "insert_xy": [
+    450,
+    263
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_110.png",
+   "bbox": [
+    0.8501,
+    0.48486,
+    0.05762,
+    0.05762
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 110,
+   "growth": [
+    {
+     "k": 0,
+     "day": 4,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 438,
+     "diameter_mm": 2.74,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 797,
+     "diameter_mm": 3.73,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 1217,
+     "diameter_mm": 5.11,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 1816,
+     "diameter_mm": 6.97,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 2648,
+     "diameter_mm": 9.52,
+     "role": "growth",
+     "png_path": "tiles/grow_2_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 3845,
+     "diameter_mm": 13.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_2_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 3935,
+     "diameter_mm": 13.28,
+     "role": "follow-up",
+     "png_path": "tiles/grow_2_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "90437352e8ec74c51f4de2f12ec91e0106dd6786b562bdb0c0e4d66de0bfb089",
+   "seed_hex_appearance": "85b3953a1a454f9e3840c7938a264ea6b183b684134e8d5a3d37d5fb15e6e46f",
+   "diag": {
+    "day_baseline": 3845,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 13.0001,
+    "diameter_follow_up_mm": 13.2767,
+    "vdt_d": 886.5,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 715,
+    "touches_box_edge": false,
+    "lattice": "lattice 57\u00b3 at 0.5 mm; hard (outside lung) 76014 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": 54.1,
+    "sigma_edge_mm": 1.0,
+    "filled_holes_vox": 40,
+    "volume_pd_pct": 0.03,
+    "sigma_ratio_in_out": 1.393,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_3_0",
+   "png_path": "tiles/zoom_3_0.png",
+   "size_mm": 4.0,
+   "type": "ground-glass",
+   "margin": "lobulated",
+   "lobe": "RUL",
+   "lineage_id": "tile3",
+   "generation": 0,
+   "shot_index": 3,
+   "insert_xy": [
+    204,
+    341
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_152.png",
+   "bbox": [
+    0.38417,
+    0.65174,
+    0.02854,
+    0.02854
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 152,
+   "growth": [
+    {
+     "k": 0,
+     "day": 94,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 337,
+     "diameter_mm": 2.25,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 591,
+     "diameter_mm": 2.53,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 788,
+     "diameter_mm": 2.83,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 1037,
+     "diameter_mm": 3.19,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 1332,
+     "diameter_mm": 3.57,
+     "role": "growth",
+     "png_path": "tiles/grow_3_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 1618,
+     "diameter_mm": 4.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_3_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 1708,
+     "diameter_mm": 4.16,
+     "role": "follow-up",
+     "png_path": "tiles/grow_3_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "d25beebab3f4a546551e44150a5a6fdec37169815b6e93a6cd60d5f9e4c918fe",
+   "seed_hex_appearance": "efac20574f4e93cc539a2f317d1917615b87f3cb5401a4a3db3fe38ba445b59d",
+   "diag": {
+    "day_baseline": 1618,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 4.0046,
+    "diameter_follow_up_mm": 4.1574,
+    "vdt_d": 620.4,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 1168 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "ground-glass",
+    "hu_source": "library",
+    "hu_core": -722.1,
+    "sigma_edge_mm": 0.844,
+    "filled_holes_vox": 0,
+    "volume_pd_pct": -0.03,
+    "sigma_ratio_in_out": 0.759,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_4_0",
+   "png_path": "tiles/zoom_4_0.png",
+   "size_mm": 26.0,
+   "type": "part-solid",
+   "margin": "smooth",
+   "lobe": "RUL",
+   "lineage_id": "tile4",
+   "generation": 0,
+   "shot_index": 4,
+   "insert_xy": [
+    165,
+    394
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_155.png",
+   "bbox": [
+    0.27239,
+    0.71966,
+    0.09974,
+    0.09974
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 155,
+   "growth": [
+    {
+     "k": 0,
+     "day": 2,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 433,
+     "diameter_mm": 3.08,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 1055,
+     "diameter_mm": 4.71,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 1740,
+     "diameter_mm": 7.21,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 2832,
+     "diameter_mm": 11.06,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 4410,
+     "diameter_mm": 16.96,
+     "role": "growth",
+     "png_path": "tiles/grow_4_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 6984,
+     "diameter_mm": 26.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_4_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 7074,
+     "diameter_mm": 26.3,
+     "role": "follow-up",
+     "png_path": "tiles/grow_4_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "0db9b727798facb3a546864eda1f19e8f10276e2b270ea61e03158a13bb6a368",
+   "seed_hex_appearance": "a5610efb689fc80f0024a76201bba2c90954f1ba81b74ca7683b98a2af484b59",
+   "diag": {
+    "day_baseline": 6984,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 26.0015,
+    "diameter_follow_up_mm": 26.3017,
+    "vdt_d": 1657.1,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 93\u00b3 at 0.5 mm; hard (outside lung) 3420 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": 17.7,
+    "sigma_edge_mm": 1.576,
+    "filled_holes_vox": 643,
+    "volume_pd_pct": 0.0,
+    "sigma_ratio_in_out": 0.984,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_5_0",
+   "png_path": "tiles/zoom_5_0.png",
+   "size_mm": 7.0,
+   "type": "calcified",
+   "margin": "smooth",
+   "lobe": "LLL",
+   "lineage_id": "tile5",
+   "generation": 0,
+   "shot_index": 5,
+   "insert_xy": [
+    435,
+    241
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_68.png",
+   "bbox": [
+    0.83055,
+    0.45164,
+    0.03813,
+    0.03813
+   ],
+   "morphology_source": "quantum",
+   "renderer": "procedural-3d",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 68,
+   "seed_hex_geometry": "72335441d3308bd2e2d1fd373a2202c8ed0c6a143204f884400bb65c7c6c29dd",
+   "seed_hex_appearance": "bef155caa492226f96fd34f38470144a4ee4678a2416241d24ce4bd687882696",
+   "diag": {
+    "hu_source": "procedural-f2.1",
+    "sigma_ratio_in_out": 2.402,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_6_0",
+   "png_path": "tiles/zoom_6_0.png",
+   "size_mm": 4.0,
+   "type": "part-solid",
+   "margin": "spiculated",
+   "lobe": "LLL",
+   "lineage_id": "tile6",
+   "generation": 0,
+   "shot_index": 6,
+   "insert_xy": [
+    297,
+    377
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_74.png",
+   "bbox": [
+    0.5658,
+    0.72205,
+    0.02856,
+    0.02856
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 74,
+   "growth": [
+    {
+     "k": 0,
+     "day": 6,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 82,
+     "diameter_mm": 2.25,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 197,
+     "diameter_mm": 2.53,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 309,
+     "diameter_mm": 2.83,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 449,
+     "diameter_mm": 3.18,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 580,
+     "diameter_mm": 3.57,
+     "role": "growth",
+     "png_path": "tiles/grow_6_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 711,
+     "diameter_mm": 4.01,
+     "role": "baseline",
+     "png_path": "tiles/grow_6_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 801,
+     "diameter_mm": 4.37,
+     "role": "follow-up",
+     "png_path": "tiles/grow_6_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "e1dc5d0f3ed4a54f06f4eb3511db56955f76fbe11ba58bde34c9d36a62d1bbba",
+   "seed_hex_appearance": "d400ea6748b58de0ce9d1efe1fcd6dbcd1697facf7b46bc91fa4b4337220759b",
+   "diag": {
+    "day_baseline": 711,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 4.0095,
+    "diameter_follow_up_mm": 4.3718,
+    "vdt_d": 233.9,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 1488 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": -30.0,
+    "sigma_edge_mm": 1.473,
+    "filled_holes_vox": 0,
+    "volume_pd_pct": 15.08,
+    "sigma_ratio_in_out": null,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_7_0",
+   "png_path": "tiles/zoom_7_0.png",
+   "size_mm": 26.0,
+   "type": "solid",
+   "margin": "smooth",
+   "lobe": "RLL",
+   "lineage_id": "tile7",
+   "generation": 0,
+   "shot_index": 7,
+   "insert_xy": [
+    201,
+    408
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_66.png",
+   "bbox": [
+    0.3427,
+    0.747,
+    0.09975,
+    0.09975
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 66,
+   "growth": [
+    {
+     "k": 0,
+     "day": 5,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 176,
+     "diameter_mm": 3.07,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 354,
+     "diameter_mm": 4.7,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 637,
+     "diameter_mm": 7.21,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 1032,
+     "diameter_mm": 11.06,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 1705,
+     "diameter_mm": 16.96,
+     "role": "growth",
+     "png_path": "tiles/grow_7_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 2952,
+     "diameter_mm": 26.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_7_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 3042,
+     "diameter_mm": 26.51,
+     "role": "follow-up",
+     "png_path": "tiles/grow_7_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "0dd73ae604a8b8fbe93fef562b64d375fedef8d3ad3e94ea0f5ab377882f35ea",
+   "seed_hex_appearance": "a846f1db588ae0ce560af58d8a87fa1aa32ecabcc1944e8986f0b00e94b9a7d2",
+   "diag": {
+    "day_baseline": 2952,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 26.0001,
+    "diameter_follow_up_mm": 26.5118,
+    "vdt_d": 1010.3,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 6166,
+    "touches_box_edge": false,
+    "lattice": "lattice 99\u00b3 at 0.5 mm; hard (outside lung) 665568 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "solid",
+    "hu_source": "f2.1-constant",
+    "hu_core": 65.5,
+    "sigma_edge_mm": 0.791,
+    "filled_holes_vox": 675,
+    "volume_pd_pct": -0.0,
+    "sigma_ratio_in_out": 0.977,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_8_0",
+   "png_path": "tiles/zoom_8_0.png",
+   "size_mm": 26.0,
+   "type": "part-solid",
+   "margin": "lobulated",
+   "lobe": "LUL",
+   "lineage_id": "pair8",
+   "generation": 0,
+   "shot_index": 8,
+   "insert_xy": [
+    405,
+    214
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_155.png",
+   "bbox": [
+    0.74122,
+    0.36817,
+    0.09959,
+    0.09959
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 155,
+   "growth": [
+    {
+     "k": 0,
+     "day": 7,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 426,
+     "diameter_mm": 3.07,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 988,
+     "diameter_mm": 4.7,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 1705,
+     "diameter_mm": 7.21,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 2729,
+     "diameter_mm": 11.06,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 4314,
+     "diameter_mm": 16.96,
+     "role": "growth",
+     "png_path": "tiles/grow_8_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 7289,
+     "diameter_mm": 26.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_8_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 7379,
+     "diameter_mm": 26.25,
+     "role": "follow-up",
+     "png_path": "tiles/grow_8_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "b9b0dbf1f9b462623550fa88c7c1e939dbd17fd18a0fa073977b98db91e2965f",
+   "seed_hex_appearance": "60409951c60686a8261bd12f4bcd679272b7da21fa0bdc24b6c7e5a2af724b9f",
+   "diag": {
+    "day_baseline": 7289,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 26.0023,
+    "diameter_follow_up_mm": 26.249,
+    "vdt_d": 1978.6,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 3346,
+    "touches_box_edge": false,
+    "lattice": "lattice 93\u00b3 at 0.5 mm; hard (outside lung) 321227 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": 19.0,
+    "sigma_edge_mm": 1.167,
+    "filled_holes_vox": 237,
+    "volume_pd_pct": 0.02,
+    "sigma_ratio_in_out": 1.109,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_8_1",
+   "png_path": "tiles/zoom_8_1.png",
+   "size_mm": 13.0,
+   "type": "solid",
+   "margin": "smooth",
+   "lobe": "LUL",
+   "lineage_id": "pair8",
+   "generation": 1,
+   "shot_index": 8,
+   "insert_xy": [
+    435,
+    236
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_144.png",
+   "bbox": [
+    0.82079,
+    0.43212,
+    0.05764,
+    0.05764
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 144,
+   "growth": [
+    {
+     "k": 0,
+     "day": 3,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_0.png"
+    },
+    {
+     "k": 1,
+     "day": 118,
+     "diameter_mm": 2.74,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_1.png"
+    },
+    {
+     "k": 2,
+     "day": 231,
+     "diameter_mm": 3.74,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_2.png"
+    },
+    {
+     "k": 3,
+     "day": 383,
+     "diameter_mm": 5.11,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_3.png"
+    },
+    {
+     "k": 4,
+     "day": 587,
+     "diameter_mm": 6.97,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_4.png"
+    },
+    {
+     "k": 5,
+     "day": 850,
+     "diameter_mm": 9.52,
+     "role": "growth",
+     "png_path": "tiles/grow_8_1_5.png"
+    },
+    {
+     "k": 6,
+     "day": 1205,
+     "diameter_mm": 13.01,
+     "role": "baseline",
+     "png_path": "tiles/grow_8_1_6.png"
+    },
+    {
+     "k": 7,
+     "day": 1295,
+     "diameter_mm": 13.9,
+     "role": "follow-up",
+     "png_path": "tiles/grow_8_1_7.png"
+    }
+   ],
+   "seed_hex_geometry": "73308812e0b82778ef145536f2072062428954203c1ec6c9af9b7f6cf6c371b2",
+   "seed_hex_appearance": "aca95f231a52dbac3131dc96b3193bf330133dff572ae043626dc3b0a3d63620",
+   "diag": {
+    "day_baseline": 1205,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 13.0128,
+    "diameter_follow_up_mm": 13.901,
+    "vdt_d": 292.1,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 1062,
+    "touches_box_edge": false,
+    "lattice": "lattice 61\u00b3 at 0.5 mm; hard (outside lung) 107258 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "solid",
+    "hu_source": "f2.1-constant",
+    "hu_core": 21.4,
+    "sigma_edge_mm": 1.138,
+    "filled_holes_vox": 26,
+    "volume_pd_pct": 0.0,
+    "sigma_ratio_in_out": 0.917,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_9_0",
+   "png_path": "tiles/zoom_9_0.png",
+   "size_mm": 4.0,
+   "type": "solid",
+   "margin": "lobulated",
+   "lobe": "RML",
+   "lineage_id": "pair9",
+   "generation": 0,
+   "shot_index": 9,
+   "insert_xy": [
+    144,
+    243
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_152.png",
+   "bbox": [
+    0.26694,
+    0.4603,
+    0.02862,
+    0.02862
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 152,
+   "growth": [
+    {
+     "k": 0,
+     "day": 6,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_0.png"
+    },
+    {
+     "k": 1,
+     "day": 35,
+     "diameter_mm": 2.25,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_1.png"
+    },
+    {
+     "k": 2,
+     "day": 60,
+     "diameter_mm": 2.53,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_2.png"
+    },
+    {
+     "k": 3,
+     "day": 108,
+     "diameter_mm": 2.83,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_3.png"
+    },
+    {
+     "k": 4,
+     "day": 153,
+     "diameter_mm": 3.19,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_4.png"
+    },
+    {
+     "k": 5,
+     "day": 189,
+     "diameter_mm": 3.57,
+     "role": "growth",
+     "png_path": "tiles/grow_9_0_5.png"
+    },
+    {
+     "k": 6,
+     "day": 239,
+     "diameter_mm": 4.03,
+     "role": "baseline",
+     "png_path": "tiles/grow_9_0_6.png"
+    },
+    {
+     "k": 7,
+     "day": 329,
+     "diameter_mm": 5.03,
+     "role": "follow-up",
+     "png_path": "tiles/grow_9_0_7.png"
+    }
+   ],
+   "seed_hex_geometry": "f12b8a6395f243dbfa3a16aac9a28e450acda4d8ee934390812f7d9f2fc4a0df",
+   "seed_hex_appearance": "c57c0eba30340bb790fb27b161fc2b73331c64c2ad40d9a97d5ca1e9deb742f2",
+   "diag": {
+    "day_baseline": 239,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 4.0292,
+    "diameter_follow_up_mm": 5.0266,
+    "vdt_d": 79.1,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 33\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "solid",
+    "hu_source": "f2.1-constant",
+    "hu_core": 67.8,
+    "sigma_edge_mm": 0.489,
+    "filled_holes_vox": 0,
+    "volume_pd_pct": -0.03,
+    "sigma_ratio_in_out": 0.958,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  },
+  {
+   "tile_id": "tile_9_1",
+   "png_path": "tiles/zoom_9_1.png",
+   "size_mm": 7.0,
+   "type": "part-solid",
+   "margin": "lobulated",
+   "lobe": "RML",
+   "lineage_id": "pair9",
+   "generation": 1,
+   "shot_index": 9,
+   "insert_xy": [
+    133,
+    233
+   ],
+   "spacing_mm": 0.60546875,
+   "background_source": "lidc_real",
+   "backend_name": "ibm_fez",
+   "job_id": "dbs7e4fv5hds73dikpg0",
+   "chsh_value": 2.705078125,
+   "full_png_path": "tiles/full_LIDC-IDRI-0481_152.png",
+   "bbox": [
+    0.24065,
+    0.43596,
+    0.03824,
+    0.03824
+   ],
+   "morphology_source": "quantum",
+   "renderer": "grown+fitted",
+   "host_id": "LIDC-IDRI-0481",
+   "slice_z": 152,
+   "growth": [
+    {
+     "k": 0,
+     "day": 1,
+     "diameter_mm": 2.01,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_0.png"
+    },
+    {
+     "k": 1,
+     "day": 247,
+     "diameter_mm": 2.47,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_1.png"
+    },
+    {
+     "k": 2,
+     "day": 477,
+     "diameter_mm": 3.04,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_2.png"
+    },
+    {
+     "k": 3,
+     "day": 715,
+     "diameter_mm": 3.74,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_3.png"
+    },
+    {
+     "k": 4,
+     "day": 1023,
+     "diameter_mm": 4.61,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_4.png"
+    },
+    {
+     "k": 5,
+     "day": 1357,
+     "diameter_mm": 5.68,
+     "role": "growth",
+     "png_path": "tiles/grow_9_1_5.png"
+    },
+    {
+     "k": 6,
+     "day": 1737,
+     "diameter_mm": 7.0,
+     "role": "baseline",
+     "png_path": "tiles/grow_9_1_6.png"
+    },
+    {
+     "k": 7,
+     "day": 1827,
+     "diameter_mm": 7.34,
+     "role": "follow-up",
+     "png_path": "tiles/grow_9_1_7.png"
+    }
+   ],
+   "seed_hex_geometry": "2151ffce0bb6f4f67039862725082669f214b59b3b786268547f09f53cf8bd2c",
+   "seed_hex_appearance": "b5d931c471780f1dd89d937b5df10fb08d53c4d0fe9387ac59e868b0de694d41",
+   "diag": {
+    "day_baseline": 1737,
+    "follow_up_days": 90,
+    "diameter_baseline_mm": 7.0004,
+    "diameter_follow_up_mm": 7.3379,
+    "vdt_d": 415.0,
+    "f_necrotic_baseline": 0.0,
+    "wall_contacts_baseline": 0,
+    "touches_box_edge": false,
+    "lattice": "lattice 41\u00b3 at 0.5 mm; hard (outside lung) 0 vox; levels used [1, 2, 3, 4]",
+    "seed_diameter_mm": 2.0,
+    "params_type": "part-solid",
+    "hu_source": "f2.1-constant core + library rim",
+    "hu_core": 34.2,
+    "sigma_edge_mm": 2.089,
+    "filled_holes_vox": 6,
+    "volume_pd_pct": -0.02,
+    "sigma_ratio_in_out": null,
+    "psf_sigma_mm_zyx": [
+     0.6142,
+     0.5965,
+     0.5965
+    ]
+   }
+  }
+ ],
+ "provenance": {
+  "library_sha256": "81155a4b4f4b2e301de74be67d6ccd97722ffc914927c50ad8e6a8d1793ee50f",
+  "params_lung_sha256": "3704e61f20bb69521ec4d56e1c5b87c2d769b68bff447743f660d8a7bf94947a",
+  "hosts": [
+   {
+    "host_id": "LIDC-IDRI-0481",
+    "manufacturer": "SIEMENS",
+    "model": "Definition",
+    "kernel": "B45f",
+    "slice_thickness": "1",
+    "series_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.107351566259572521472765997306",
+    "fingerprint": {
+     "psf_sigma_mm_zyx": [
+      0.6142,
+      0.5965,
+      0.5965
+     ],
+     "noise_sigma_hu": 56.23,
+     "f50_cyc_per_mm": 0.3401,
+     "plausibility": {
+      "checks": {
+       "sigma_xy_mm_in_0.4_1.5": true,
+       "sigma_z_mm_in_0.3t_1.0t": true,
+       "noise_sigma_hu_in_5_60": true
+      },
+      "verdict": "PASS"
+     },
+     "source": "cached"
+    }
+   }
+  ]
+ }
+}

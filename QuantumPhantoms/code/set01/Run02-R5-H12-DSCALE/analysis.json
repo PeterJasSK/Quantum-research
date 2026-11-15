@@ -1,0 +1,148 @@
+{
+ "run": "Run02-R5-H12-DSCALE",
+ "backend": {
+  "name": "ibm_fez",
+  "live": true,
+  "label": "ibm_fez (156 q heavy-hex)",
+  "calibration": {
+   "backend": "ibm_fez",
+   "last_update_date": "2026-11-13 17:27:59+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 12,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "8-20mm": 5,
+    "<6mm": 6,
+    "6-8mm": 1
+   },
+   "tvd": 0.267
+  },
+  "lobe": {
+   "counts": {
+    "RML": 2,
+    "RUL": 9,
+    "RLL": 1
+   },
+   "tvd": 0.467
+  },
+  "type": {
+   "part-solid": 4,
+   "calcified": 2,
+   "ground-glass": 2,
+   "solid": 4
+  },
+  "margin": {
+   "smooth": 6,
+   "lobulated": 4,
+   "spiculated": 2
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.7138671875,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "ibm_fez",
+  "job_id": "dbs9i1mjjaos73aju2b0",
+  "scope": "job-level (one Bell test over 4 settings), not per tumour",
+  "passed": true,
+  "hmin_per_round_analytic": 0.516211694719779,
+  "status": "Bell violation on hardware: ibm_fez, job dbs9i1mjjaos73aju2b0 (job-level; not device-independent)"
+ },
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R5-H12",
+   "family": "R5-H12",
+   "claim_level": "not run",
+   "value": null,
+   "sigma": null,
+   "bound": null,
+   "bound_rigour": null,
+   "passed": false,
+   "label": "not run"
+  },
+  {
+   "stage": "D",
+   "config": "DSCALE",
+   "family": "ghz-spine",
+   "claim_level": "L0",
+   "value": 0.4574583333333333,
+   "sigma": 0.02480171212874039,
+   "bound": null,
+   "bound_rigour": null,
+   "passed": false,
+   "label": "hardware: ibm_fez, job dbs9i9pabdes73fqt530"
+  },
+  {
+   "stage": "D",
+   "config": "DSCALE",
+   "family": "ch-qca",
+   "claim_level": "L0",
+   "value": -0.0,
+   "sigma": 0.0,
+   "bound": null,
+   "bound_rigour": null,
+   "passed": false,
+   "label": "hardware: ibm_fez, job dbs9i9pabdes73fqt530"
+  },
+  {
+   "stage": "D",
+   "config": "DSCALE",
+   "family": "pmd-bank",
+   "claim_level": "L0",
+   "value": -3.085289831343252,
+   "sigma": null,
+   "bound": null,
+   "bound_rigour": null,
+   "passed": false,
+   "label": "hardware: ibm_fez, job dbs9i9pabdes73fqt530"
+  }
+ ],
+ "claims_summary": {
+  "total": 4,
+  "passed": 0,
+  "not_passed": [
+   "B:R5-H12",
+   "D:ghz-spine",
+   "D:ch-qca",
+   "D:pmd-bank"
+  ],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 12,
+  "renderers": {
+   "grown+fitted": 10,
+   "procedural-3d": 2
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "dscale:ch-qca:ibm_fez:12": 10,
+   "n/a": 2
+  },
+  "volume_pd_pct": {
+   "n": 10,
+   "median": -0.005,
+   "min": -0.08,
+   "max": 14.5
+  },
+  "sigma_ratio_in_out": {
+   "n": 8,
+   "median": 0.959,
+   "min": 0.725,
+   "max": 1.694
+  },
+  "vdt_d": {
+   "n": 10,
+   "median": 311.29999999999995,
+   "min": 66.8,
+   "max": 1876.4
+  }
+ }
+}

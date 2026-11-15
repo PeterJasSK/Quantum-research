@@ -1,0 +1,56 @@
+{
+ "seq": "001",
+ "memory_qubits": 1,
+ "tiles": [
+  [
+   11,
+   10,
+   12,
+   18
+  ]
+ ],
+ "ideal_value": 0.4374999999999999,
+ "instrument_rigour": "closed form (7/16)",
+ "arms": [
+  "identical_steps",
+  "first step compiled"
+ ],
+ "info": {
+  "backend": "fake_marrakesh",
+  "circuits": 2,
+  "shots": 400,
+  "two_qubit_gates_max": 6,
+  "job_id": "",
+  "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+ },
+ "arms_result": [
+  {
+   "arm": "identical_steps",
+   "p": [
+    0.4275
+   ],
+   "sigma": [
+    0.02473579137606072
+   ],
+   "z": [
+    5.304204814351828
+   ],
+   "tiles_passed": 1,
+   "z_needed": 3.0
+  },
+  {
+   "arm": "first step compiled",
+   "p": [
+    0.4275
+   ],
+   "sigma": [
+    0.02473579137606072
+   ],
+   "z": [
+    5.304204814351828
+   ],
+   "tiles_passed": 1,
+   "z_needed": 3.0
+  }
+ ]
+}

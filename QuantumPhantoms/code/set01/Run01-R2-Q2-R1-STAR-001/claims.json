@@ -1,0 +1,47 @@
+[
+ {
+  "stage": "B",
+  "config": "R2-Q2",
+  "family": "R2-Q2",
+  "claim_level": "L1'-C",
+  "witness": "average success of a quantum random access code on the hand-off register",
+  "value": 0.854,
+  "sigma": 0.003944719571782005,
+  "bound": 0.75,
+  "bound_rigour": "textbook [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbs7ecfv5hds73dikpo0",
+  "pass_rule": "success > 0.75 by 3 sigma",
+  "note": "Adversary: a classical message of the same dimension; the dimension is assumed (not device-independent). 8 circuits on qubit(s) [58]; ideal 0.854, worst input 0.834; average success, message dimension 2 assumed."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.3855,
+  "sigma": 0.007695611574137562,
+  "bound": 0.2962962962962963,
+  "bound_rigour": "proven (2-state machine)",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbs7ekejjaos73ajrvtg",
+  "pass_rule": "p > 8/27 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. identical steps; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.386; up to 6 two-qubit gates in the circuit."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.3935,
+  "sigma": 0.007724275856026894,
+  "bound": 0.2962962962962963,
+  "bound_rigour": "proven (2-state machine)",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbs7ekejjaos73ajrvtg",
+  "pass_rule": "p > 8/27 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. first step compiled from the known input; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.394; up to 6 two-qubit gates in the circuit."
+ }
+]

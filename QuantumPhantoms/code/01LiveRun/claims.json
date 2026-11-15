@@ -1,0 +1,41 @@
+[
+ {
+  "stage": "D",
+  "family": "ghz-spine",
+  "claim_level": "L0",
+  "witness": "DFE GHZ fidelity (GME)",
+  "value": 0.08745833333333332,
+  "sigma": 0.018996898980984233,
+  "k": 2,
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbs4erfv5hds73dihr0g",
+  "note": "N=35, kept 1.000; ghz2=1.088; stabilizer state (BP chi = 2): survives, not hard",
+  "config": "DSCALE"
+ },
+ {
+  "stage": "D",
+  "family": "ch-qca",
+  "claim_level": "L0",
+  "witness": "QCA pair negativity (Bonferroni)",
+  "value": 0.010803554050852838,
+  "sigma": 0.005754651834417686,
+  "k": 2,
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbs4erfv5hds73dihr0g",
+  "note": "27 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness",
+  "config": "DSCALE"
+ },
+ {
+  "stage": "D",
+  "family": "pmd-bank",
+  "claim_level": "L0",
+  "witness": "PMD memory gap / floor",
+  "value": -2.8544881624714282,
+  "sigma": null,
+  "k": 3,
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbs4erfv5hds73dihr0g",
+  "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2",
+  "config": "DSCALE"
+ }
+]

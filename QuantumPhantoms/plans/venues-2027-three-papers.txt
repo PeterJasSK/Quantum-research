@@ -1,0 +1,249 @@
+QUANTUM PHANTOMS: THREE VENUES IN 2027 AND WHAT GOES INTO EACH
+================================================================
+Written 2026-11-14. Venue facts were read from the conference websites on that day.
+Items marked (verify) were not confirmed on an official page.
+
+
+0. SUMMARY
+----------
+
+  Venue                Place / dates             What we send              Deadline
+  -------------------  ------------------------  ------------------------  ---------------------
+  IEEE CBMS 2027       Rome, 23-25 June 2027     6-page regular paper      20 January 2027
+  IEEE ISBI 2027       Lausanne, 25-28 May 2027  1-page abstract (poster)  1 February 2027
+  IEEE QCE 2027        Raleigh, 10-15 Oct 2027   8-10 page paper           April 2027 (verify)
+
+- CBMS is the first real publication. It is the fast one.
+- ISBI is a poster and a trip. The abstract is not published. The reason to go is to meet imaging
+  people and to visit IBM Research Zurich and ETH in the same week.
+- QCE is the main publication. It is the only one of the three with a quantum computing audience.
+
+The three submissions must be three different pieces of work. All three venues forbid sending the
+same content to two places at once. The split is:
+
+  CBMS   the RECORD      Can a synthetic CT case carry a replayable, checkable record?
+  ISBI   the IMAGE       Does the inserted nodule look like part of the host scan?
+  QCE    the HARDWARE    What does one quantum processor certify inside this pipeline, and what fails?
+
+The content described below is the default option per venue. Four alternatives per venue, and
+the rules for choosing, are in venues-2027-topic-options.txt.
+
+
+1. IEEE CBMS 2027 (ROME): THE RECORD PAPER
+------------------------------------------
+
+1.1 Facts
+- 40th IEEE International Symposium on Computer-Based Medical Systems.
+- 23-25 June 2027, Universita Campus Bio-Medico di Roma. In person only; one author must present.
+- Paper deadline 20 January 2027. Notification 5 March 2027. Camera-ready 15 March 2027.
+- Regular paper: up to 6 pages, two-column IEEE template. (Short: 4 pages. Poster: 2 pages.)
+- Matching topics from the call: "Privacy, security, research ethics and regulatory aspects of
+  medical technologies"; "Digital twins and personalized computational models"; "Explainable,
+  trustworthy and responsible AI in medicine"; "Real-world clinical evaluation, implementation and
+  validation of computer-based systems".
+- Open points to ask the program chairs before submitting:
+    a) The website says "IEEE sponsorship pending approval". Will the proceedings be in IEEE Xplore?
+    b) No preprint policy is stated. Is an arXiv preprint allowed?
+- An ethics statement is required. Ours: public data only (LIDC-IDRI), no new patient data.
+
+1.2 Working title
+"A replayable and formally checked record for synthetic lung nodules seeded by a quantum processor"
+
+1.3 The one question
+Can every synthetic CT case carry a record from which a third party can (a) regenerate the same
+voxels, (b) see any later edit, and (c) trace the random seed to one identified hardware job?
+
+1.4 Content, section by section (6 pages)
+  1. Introduction (0.5 page). Synthetic cases are used to test detection AI. A test case is only
+     evidence if its origin can be checked. State the three contributions.
+  2. Requirements (0.5 page). A short list of what a manufacturer needs from such a record.
+     Source: Michal Baca. Written in the words "traceability", "audit trail", "regulatory evidence".
+  3. Pipeline (1 page). Stages A to H in one figure. One paragraph per stage. State clearly which
+     stages are classical (A, E, F, G, H) and which use the quantum processor (B, C, D).
+  4. Formal model (1.5 pages). The workflow as a Petri net. Properties checked:
+       P1  No tile is rendered unless the Bell test (CHSH) passed for its seed.
+       P2  A failed Bell test (S <= 2) ends the draw: no seed, no retry.
+       P3  Every record refers to exactly one hardware job.
+       P4  No randomness-beacon pulse is used twice.
+       P5  Replay from the record always reaches the same final state.
+     Source: Stefan Korecko (formalism, tool, proof method).
+  5. Experiment (1.5 pages). One tumour through A to H on real hardware.
+       - Replay test: regenerate the case from the record; voxel hash must be identical.
+       - Integrity test: change one voxel; the check must fail.
+       - Seed comparison: quantum seed against pseudo-random seed. Expected result: no difference
+         in the image. Say this plainly. The quantum part gives provenance, not image quality.
+       - Cost: QPU seconds, wall time, record size.
+  6. Limits and conclusion (1 page with references). One host scan, one case, no reader study.
+
+1.5 What must exist before 20 January
+  [ ] The refactored pipeline runs dry, end to end (nothing has been executed since 2026-11-11).
+  [ ] The A-to-H chain is closed (job append in G, D founder from B's draw, beacon rule in C).
+  [ ] One live run with the job ID inside the record, plus 3 to 5 repeats.
+  [ ] The Petri net model and the five property results.
+  [ ] The replay test and the one-voxel test, run on the live case.
+  [ ] Half a page of requirements from Michal Baca.
+  [ ] Answers from the CBMS chairs to the two open points.
+  [ ] Siemens publication clearance, if any Siemens name or affiliation appears. Ask in November.
+
+1.6 People
+- Peter: pipeline, hardware runs, experiment, writing.
+- Stefan Korecko: formal model, study design review, senior co-author.
+- Michal Baca: requirements section. Co-author if he writes it, acknowledgment if he only advises.
+  This needs his agreement and his employer's clearance.
+
+1.7 Wording limits
+- Never write that quantum computing makes the images better or more realistic.
+- The certificate is a statement about the device, not about the tumour.
+- Privacy comes from building cases out of parameters only. It does not come from the certificate.
+- Siemens data is not used. The host scan is a public LIDC case from a Siemens scanner.
+
+
+2. IEEE ISBI 2027 (LAUSANNE): THE IMAGE ABSTRACT
+------------------------------------------------
+
+2.1 Facts
+- 25-28 May 2027, SwissTech Convention Center, EPFL. Fully in person.
+- One-page abstract. Deadline 1 February 2027. Notification 15 February 2027.
+- Poster only. Not in the proceedings, not indexed.
+- Submission through EDAS. An ethics statement is required.
+- Matching topics: "Generative models and synthetic data in biomedical imaging"; "Physical,
+  biological, and statistical modelling"; "Image quality assessment and harmonization".
+- No workshop or special session at ISBI 2027 covers quantum computing or synthetic CT.
+
+2.2 Working title
+"Training-free lung nodule insertion that keeps the host scanner's blur and noise"
+
+2.3 The one question
+Does a nodule that was grown by a published growth model and inserted into a real CT scan match
+the host scan in resolution and noise, and does a detector respond to it as to a real nodule?
+
+2.4 Content (one page)
+- Method, 4 to 5 sentences: placement in the lung, cellular-automaton growth, partial-volume
+  rendering, insertion with the host's measured blur and noise. No training data.
+- One figure: host slice before, after, and a real nodule of similar size next to it.
+- Two or three numbers:
+    volume error of the inserted nodule against the target;
+    noise level inside and around the nodule against the host background;
+    response of an open nodule detector to synthetic and to real nodules (if ready).
+- One sentence on the quantum part: the random seed comes from a certified hardware job and is
+  stored in a replayable record (reference to the preprint).
+- This abstract must not repeat the CBMS paper. It contains no formal model and no record tests.
+
+2.5 What must exist before 1 February
+  [ ] Rendered cases in the Siemens-scanner LIDC host, and ideally two more hosts.
+  [ ] The numbers above, measured on the current pipeline, not copied from older runs.
+  [ ] The detector comparison, or an honest statement that it is planned.
+
+2.6 Why go at all
+The abstract has almost no value on a CV. The trip has value only through meetings:
+  [ ] Three or four named imaging researchers to meet at the poster (synthetic data, virtual
+      imaging trials, lung CT). Write to them in April.
+  [ ] One imaging or medical co-author for the next paper. This is the largest gap of the project.
+  [ ] A seminar or a meeting at IBM Research Zurich and at ETH in the same week. Ask by February,
+      through Stefan Korecko or the Siemens contact, and bring the preprint.
+If the abstract is rejected, register and go anyway. The meetings do not depend on it.
+
+2.7 Trip plan (decided 2026-11-14): one continuous trip, five working days
+  Sun 23 May   Arrive in Zurich.
+  Mon 24 May   Morning: IBM Research Zurich (Rueschlikon). Afternoon: ETH seminar.
+               Evening train to Lausanne (about 2 h 15).
+  Tue 25 May
+  to Fri 28    ISBI. Meetings at EPFL (quantum centre, imaging centre) and with hospital
+               radiology contacts during the conference breaks.
+  Fri 28 May   Fly home from Geneva in the evening, or on Saturday.
+- If only one Zurich meeting confirms, take IBM.
+- No other Swiss stops (Geneva, Basel, Bern, PSI were considered and dropped).
+- The groups and people to contact are not identified yet. (verify)
+
+
+3. IEEE QCE 2027 (RALEIGH): THE HARDWARE PAPER
+----------------------------------------------
+
+3.1 Facts
+- IEEE Quantum Week, 10-15 October 2027, Raleigh, NC, USA.
+- Deadline not published yet. It was 31 March in 2025 and 20 April in 2026. Expect April 2027 (verify).
+- 2025 format: 8 to 10 pages plus 2 pages of references. IEEE Xplore proceedings. (verify for 2027)
+- Call page: https://qce.quantum.ieee.org/callfortechnicalpapers/
+
+3.2 Working title
+"A quantum-seeded virtual tumour pipeline: what one Heron processor certifies today"
+(This is Paper 2 of plans/publication-plan-3-papers.md.)
+
+3.3 The one question
+Inside a working imaging pipeline, which quantum claims hold on current hardware when measured
+with repeats, and which fail?
+
+3.4 Content, section by section
+  1. Introduction. A hybrid job in which the quantum processor is used only where it has a
+     measured task.
+  2. Claim levels, defined once and mapped to standard names: certified randomness, entanglement
+     witness, memory advantage, sampling hardness. Each with its classical bound.
+  3. Circuits: the cohort roll with the Bell test, the entangled seed-shape circuit, the others.
+  4. Hardware results with repeats, each number with backend, job ID and classical bound:
+       - Bell test on the roll. Single job so far: S = 2.733 on ibm_marrakesh.
+       - Cellular-automaton witness: marginal so far.
+       - GHZ spine: failed.
+       - Process-memory circuit: lost to the classical model.
+  5. Design rules learned from the failures: terminal readout only, calibration-based qubit
+     pruning, spend guard, rejection of dead qubits.
+  6. Cost ledger: QPU seconds per case, and why the present circuits are classically simulable.
+  7. The pipeline and the record in brief, citing the CBMS paper.
+  8. Limits. No claim of advantage. No claim about image quality.
+
+3.5 What must exist before April
+  [ ] 3 to 5 repeats of every hardware number, on at least one backend, better two.
+  [ ] The same statistical test for every claim, fixed before the runs.
+  [ ] A classical baseline cohort for comparison.
+  [ ] All figures produced by scripts from the stored runs.
+  [ ] The CBMS paper accepted or at least on arXiv, so that it can be cited.
+
+3.6 People
+- Peter: all hardware work and writing.
+- Stefan Korecko: senior co-author, study design.
+- Useful but not required: one reader with a quantum information background to check section 2.
+
+3.7 Minimum that still publishes
+Certified randomness holds with repeats; the entangled-seed claims are marginal or fail; the
+reasons are given. A negative result with repeats is acceptable at this venue. Single jobs are not.
+
+
+4. SHARED WORK AND CALENDAR
+---------------------------
+
+The hardware repeats in December serve CBMS (one case) and QCE (all claims). Run them once,
+with the QCE requirements in mind.
+
+  November 2026    Pipeline runs dry. Chain closed. Talks with Korecko and Baca.
+                   Ask CBMS chairs the two open points. Ask about Siemens clearance.
+  December 2026    Live runs with repeats. Petri net model. Detector comparison started.
+  20 January 2027  CBMS paper submitted. Preprint on arXiv if CBMS allows it.
+  1 February 2027  ISBI abstract submitted. Ask for the Zurich meetings.
+  15 February      ISBI decision.
+  5 March          CBMS decision.
+  15 March         CBMS camera-ready.
+  April            QCE paper submitted (date to be confirmed) and put on arXiv.
+  24 May           Zurich: IBM Research and ETH.
+  25-28 May        Lausanne: ISBI.
+  23-25 June       Rome, if accepted.
+  10-15 October    Raleigh, if accepted.
+
+
+5. RISKS
+--------
+
+  Risk                                         What to do
+  -------------------------------------------  -----------------------------------------------
+  Pipeline does not run after the refactor     First task in November. Everything depends on it.
+  CBMS proceedings not in IEEE Xplore          Ask the chairs now. Fallback: send the same paper
+                                               to a journal instead.
+  Formal model not ready by 20 January         Reduce to three properties (P1, P2, P3), or submit
+                                               a 4-page short paper.
+  Siemens clearance is slow                    Ask in November. Fallback: no Siemens affiliation,
+                                               acknowledgment only.
+  No medical or imaging co-author              Acceptable for CBMS and QCE. Needed for any later
+                                               imaging paper. Use Lausanne to find one.
+  Overlap between the three submissions        Keep the split of section 0. Each one cites the
+                                               others instead of repeating them.
+  CBMS rejects                                 Revise and send to a journal; QCE is not affected.
+  QCE rejects                                  Journal fallback: IEEE Transactions on Quantum
+                                               Engineering or Quantum Science and Technology.

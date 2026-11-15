@@ -1,0 +1,237 @@
+QUANTUM PHANTOMS: FIVE TOPIC OPTIONS PER VENUE
+================================================
+Written 2026-11-14. Companion to venues-2027-three-papers.txt.
+
+The venues and the split are locked:
+
+  CBMS (Rome, 20 January 2027)        the RECORD      6-page paper
+  ISBI (Lausanne, 1 February 2027)    the IMAGE       1-page abstract
+  QCE  (Raleigh, April / June 2027)   the HARDWARE    8-10 page paper, or 2-page poster paper
+
+Each venue has five options below. Inside one venue the options share most of the work, so a late
+switch costs little. Option 1 is always the current default. Every option states what it needs,
+who it depends on, and when to choose it.
+
+Rule that never changes: the three submissions stay different. An option may not be chosen if it
+repeats what another venue's chosen option already says.
+
+
+1. CBMS: FIVE WAYS TO WRITE THE RECORD PAPER
+--------------------------------------------
+
+C1. The formally checked record (default)
+  Title     A replayable and formally checked record for synthetic lung nodules seeded by a
+            quantum processor
+  Question  Can the rules of the record be proved, not only tested?
+  Core      Petri net model of the workflow; five properties checked; one live case.
+  Needs     Model and property results from Stefan Korecko; one live run with repeats.
+  Depends   Korecko (high), hardware (medium), Baca (low).
+  Choose    If the model is on track by mid-December.
+  Risk      Formal part is late or too thin for 1.5 pages.
+
+C2. From manufacturer requirements to a record design
+  Title     What must a synthetic test case prove about its origin? Requirements and a
+            reference record for synthetic CT
+  Question  Which requirements does a medical device maker place on synthetic test data, and
+            does one concrete record meet each of them?
+  Core      Requirements list; table "requirement -> field in the record -> check that
+            demonstrates it"; one live case as demonstration.
+  Needs     A real requirements list from Michal Baca, with references to the regulations
+            and standards he names.
+  Depends   Baca (high), Korecko (low), hardware (low).
+  Choose    If Baca delivers strong material and the formal model is late.
+  Risk      Reads as an opinion paper unless every requirement has a source.
+
+C3. An integrity and replay experiment at cohort size
+  Title     Every edit is visible: an integrity and replay study on 100 synthetic CT cases
+  Question  How reliably does the record expose changes, and how exactly does replay
+            reproduce a case?
+  Core      100 cases or more. Edit classes: one voxel, one growth parameter, the seed, the
+            host scan, the code version. Detection rate per class. Replay hash match rate.
+            Record size and time per case.
+  Needs     Only the pipeline and compute. Runs on the dry backend; one live batch is a bonus.
+  Depends   Peter only.
+  Choose    If neither the formal model nor the requirements arrive in time.
+  Risk      Result is "100 % detected", which is expected of a hash. The interest must come
+            from the edit classes and from replay across machines and library versions.
+
+C4. What does a certified seed add? Four seed sources compared
+  Title     Pseudo-random, system, public beacon or quantum processor: what each seed source
+            adds to the record of a synthetic case
+  Question  For each seed source, what can a third party verify afterwards, at what cost?
+  Core      Same pipeline, four seed sources. Table: what is checkable, what must be trusted,
+            cost and delay per case, failure modes (a failed Bell test rejects the draw).
+            Image difference between sources: none expected, and reported as such.
+  Needs     Live runs with repeats and the reject gate working; a beacon source wired in.
+  Depends   Hardware (high), Baca (medium, for "what must be trusted").
+  Choose    If the hardware runs go well in December.
+  Risk      Closest to the QCE paper. Keep physics out: no witness, no claim levels here.
+
+C5. Reproducing published methods: a reproducibility report
+  Title     Rebuilding 21 published methods for synthetic lung nodules: what reproduced and
+            what did not
+  Question  How much of the published tool chain for synthetic nodules can be rebuilt from
+            the papers alone?
+  Core      Table of the 21 methods: paper number, our number, matched or not. The three
+            defects that only appeared on a real host scan. One assembled case.
+  Needs     Nothing new. The material is in plans/relatedPapers/reverse-engineering/.
+  Depends   Peter only. No hardware.
+  Choose    If the refactored pipeline still does not run in December. This is the safety net.
+  Risk      Six pages are short for 21 methods; select 8 to 10. Not a record paper, so the
+            ISBI abstract must then avoid the same defects story (do not pair with I4).
+
+
+2. ISBI: FIVE WAYS TO WRITE THE IMAGE ABSTRACT
+----------------------------------------------
+
+I1. Host-matched insertion (default)
+  Title     Training-free lung nodule insertion that keeps the host scanner's blur and noise
+  Question  Does the inserted nodule match the host scan in resolution and noise?
+  Numbers   Volume error; noise inside and around the nodule against the host background.
+  Needs     Rendered cases on the current pipeline, one to three hosts.
+  Choose    If nothing better is ready. Always available.
+
+I2. Detector and observer response
+  Title     Do detectors see synthetic nodules as real? A training-free generator tested
+            with an open detector and a model observer
+  Question  Is detection performance on synthetic nodules the same as on real ones of the
+            same size?
+  Numbers   Sensitivity by size class, synthetic against real; model-observer detectability.
+  Needs     An open nodule detector running on LIDC; 50 or more synthetic and real nodules.
+  Choose    If the detector comparison is finished by mid-January. Strongest option for
+            this audience, and the best one for finding an imaging co-author.
+  Risk      A visible gap between synthetic and real. Report it; it is still a result.
+
+I3. The same nodule over time
+  Title     One nodule, many time points: replayable growth series inserted into a single
+            host scan
+  Question  Can a growth model give a controlled series with known volume doubling time
+            for testing growth measurement software?
+  Numbers   Set doubling time against measured doubling time; volume error per time point.
+  Needs     The growth stage run to 4 to 6 time points in one host.
+  Choose    If the growth player is in good shape. ISBI 2027 has a workshop on longitudinal
+            medical data analysis; check whether it takes papers (deadline 26 January). (verify)
+  Risk      No real follow-up scans to compare with.
+
+I4. Three defects that only a real host scan reveals
+  Title     Pitfalls when published nodule synthesis methods meet a real scan
+  Question  Which errors stay hidden on phantoms and appear in real CT?
+  Numbers   Enclosed holes in the grown shape; volume drift at the edge during rendering;
+            noise estimate inflated by vessels. Each with size of the effect and the fix.
+  Needs     Nothing new; the findings exist from the 2026-10-31 work. Re-measure on the
+            current pipeline.
+  Choose    If time is short in January. Cheapest option.
+  Risk      Small scope. Do not pair with C5.
+
+I5. One generator, three scanner vendors
+  Title     Does training-free insertion adapt to the scanner? Nodules in GE, Toshiba and
+            Siemens hosts
+  Question  Does one parameter set give host-matched nodules on scans from different
+            vendors and reconstruction kernels?
+  Numbers   Blur and noise match per vendor; 9 to 15 hosts.
+  Needs     The local LIDC hosts (GE and Toshiba are already on disk) and Siemens hosts.
+  Choose    If the multi-host run works. Fits the call topic "image quality assessment and
+            harmonization", and Siemens will ask this question anyway.
+  Risk      One vendor matches badly. Report it.
+
+
+3. QCE: FIVE WAYS TO WRITE THE HARDWARE PAPER
+---------------------------------------------
+Routes at QCE: technical paper (April, selective) and poster with a 2-page proceedings paper
+(two rounds in June, much easier). Each option says which route it suits. Dates are the 2026
+pattern. (verify)
+
+Q1. The full ladder inside a working pipeline (default)
+  Title     A quantum-seeded virtual tumour pipeline: what one Heron processor certifies today
+  Question  Which quantum claims hold with repeats inside a real application, and which fail?
+  Core      All claim levels, all circuits, repeats, classical bounds, design rules, cost.
+  Route     Technical paper.
+  Needs     Repeats of every number on one backend, better two.
+  Choose    If the repeat campaign is complete by March.
+  Risk      Broad. A reviewer may say it is several half-results.
+
+Q2. Certified randomness in a real application
+  Title     Certified randomness as a service step: repeated Bell tests on a 156-qubit
+            processor inside an imaging pipeline
+  Question  How stable is the Bell violation over days, backends and qubit pairs, and how
+            many certified bits per job does the application get?
+  Core      S value over many jobs; reject rate; entropy bound and extracted bits per job;
+            cost per certified case; the loopholes stated plainly (this is not a
+            loophole-free test).
+  Route     Technical paper, or poster. The safest poster.
+  Needs     Many cheap repeats of one small circuit. The entropy bound implemented in the
+            pipeline (today only the S value is stored).
+  Choose    If only the Bell test is reliable. Most likely to succeed.
+  Risk      Narrow. Reviewers know that device-independent claims need closed loopholes;
+            the wording must be exact.
+
+Q3. What failed and why
+  Title     Negative results from a 100-qubit application run: GHZ trees, process memory and
+            teleport routing on Heron processors
+  Question  Why do these three constructions fail on current hardware, and what rules follow?
+  Core      Each failure with numbers and cause: dead qubit inside the tree, readout error
+            larger than two-qubit error, memory gap below the sampling floor. The resulting
+            design rules.
+  Route     Technical paper, or poster.
+  Needs     Repeats of the failures so that they are results and not accidents.
+  Choose    If the positive claims stay marginal after repeats.
+  Risk      Must show the failures are due to the hardware and not to the circuits.
+
+Q4. A per-tile entanglement map
+  Title     Where on the chip does an entangled seed survive? A per-tile witness map on a
+            156-qubit processor
+  Question  On how many tiles of the chip does the entangled seed state pass its witness,
+            and does calibration data predict it?
+  Core      Witness value per tile with error bars and multiple-test correction; link to
+            calibration data; pruning rule and its effect.
+  Route     Technical paper if the map is clean; poster otherwise.
+  Needs     The witness to pass clearly on some tiles. Today it is marginal (one run).
+  Choose    If repeats lift the witness above marginal.
+  Risk      Highest physics risk of the five.
+
+Q5. Engineering a hybrid job
+  Title     Running a hybrid quantum-classical job on a budget: spend guard, calibration
+            pruning and dry-run parity
+  Question  How closely does a local dry run predict the hardware run, and what does each
+            engineering rule save?
+  Core      Dry run against hardware, number by number; QPU seconds per case before and
+            after each rule; job batching; failure handling.
+  Route     Technical paper in a software or systems track, or poster.
+  Needs     Paired dry and live runs; logged cost per run.
+  Choose    If the engineering story is stronger than the physics results.
+  Risk      Overlap with the CBMS paper. Keep to run-time engineering; no record, no proofs.
+
+Note: the artificial-life paper (Paper 1 of the publication plan) also names QCE 2027 as a
+venue. Decide before April whether both go to QCE or one goes elsewhere.
+
+
+4. HOW TO DECIDE
+----------------
+
+Decision dates
+  15 December 2026   choose the CBMS option
+  15 January 2027    choose the ISBI option
+  1 March 2027       choose the QCE option and the route (paper, poster, or both)
+
+  What happened by the decision date                        CBMS   ISBI   QCE
+  --------------------------------------------------------  -----  -----  ------------
+  Everything on track                                       C1     I2     Q1
+  Formal model late, Baca's requirements strong             C2     I2     Q1
+  Neither helper delivered                                  C3     I1     Q2
+  Hardware runs went very well                              C4     I5     Q4 or Q1
+  Hardware weak: only the Bell test holds                   C1     I2     Q2 + Q3 poster
+  Pipeline still does not run after the refactor            C5     I1     Q2 from old runs is
+                                                                          not possible; wait
+  Detector comparison not ready                             any    I1/I4  any
+  Growth series works well                                  any    I3     any
+
+Pairs to avoid
+  C5 with I4    same defects story twice
+  C4 with Q2    same seed-source story twice
+  C1 with Q5    same workflow story twice, unless Q5 stays strictly on run-time engineering
+
+Work that serves almost every option, so do it first
+  1. The pipeline runs end to end after the refactor.
+  2. Hardware repeats of the Bell test (C1, C4, Q1, Q2, Q3).
+  3. Rendered cases in three hosts with measured blur and noise (I1, I2, I5, C3).
+  4. The replay and one-voxel tests (C1, C2, C3).

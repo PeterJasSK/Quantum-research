@@ -1,0 +1,26 @@
+{
+ "rows": [
+  {
+   "n": 12,
+   "status": "done",
+   "win": 0.7830312500000001,
+   "sigma": 0.0022881290758977628,
+   "F": 0.5660625000000001,
+   "n_cz": 12,
+   "label": "hardware: ibm_fez, job dbsbo2pabdes73fqvkfg",
+   "lambda": 0.047420898570580794
+  },
+  {
+   "n": 20,
+   "status": "done",
+   "win": 0.6723125,
+   "sigma": 0.0025853612462163776,
+   "F": 0.34462499999999996,
+   "n_cz": 20,
+   "label": "hardware: ibm_fez, job dbsbob9abdes73fqvkog",
+   "lambda": 0.05326492048190882
+  }
+ ],
+ "loss_per_cz": 0.051717973505380814,
+ "spread": 0.0041323475229028146
+}

@@ -46,10 +46,16 @@ A placement → B rulebook + CT context → circuit → C certificate → D quan
 
 ---
 
-## Two codebases (do not mix)
+## Code and archive (since 2026-11-11)
 
-| | MVP prototype | Reverse-engineering (RE) pipeline |
-|---|---|---|
+- [`code/`](code/README.md): the pipeline, kept minimal. One directory per section (B C D A E F G H + web), one
+  `main.py` each, one command (`python main.py [--backend …] [--shots …]`). No backend = dry run on a local fake
+  backend. Sections B and D switch their circuit with one `CIRCUIT` constant (today's circuit or a Q-HARD hypothesis
+  from `plans/qhard-*.md`).
+- [`plans/relatedPapers/reverse-engineering/`](plans/relatedPapers/reverse-engineering/README.md): the RE work
+  (21 published methods, letters A–H, contracts, chain runner) as an untouched archive. The pipeline does not import it.
+
+---|---|---|
 | Purpose | One working demo end to end: quantum roll → realistic CT tiles → web page | Rebuild 21 published methods one letter at a time, each with a reproduced paper number |
 | Where | [`code/`](code/README.md) | [`plans/relatedPapers/reverse-engineering/`](plans/relatedPapers/reverse-engineering/README.md) |
 | Plans | [`plans/epic-quantum-phantoms-mvp.md`](plans/epic-quantum-phantoms-mvp.md), `plans/feature-F*.md` | `epic-reverse-engineering.md`, `feature-<L>-*.md` (in the RE folder) |
@@ -128,17 +134,13 @@ supervisor; EuroHPC Quantum Access Pilot (≤ 54 q, cut-offs 1 Nov / 1 Dec 2026,
 
 ## Run it
 
-**MVP** (from `code/`; details in [`code/README.md`](code/README.md)):
+From `code/` (details in [`code/README.md`](code/README.md)):
 
 ```bash
-python -m f1_quantum.run --backend aer --tiles 12 --pairs 2          # quantum roll (simulator)
-python -m imaging.lidc_fetch LIDC-IDRI-0481                         # once: public Siemens-scanner CT (~136 MB)
-python -m imaging.build_tiles --run ../research_runs/<run> --compare  # grow + render (~4–11 min CPU)
-python -m f3_web.build_web --run ../research_runs/<run>             # -> ../web/index.html
+python -m common.lidc_fetch LIDC-IDRI-0481      # once: public Siemens-scanner CT (~136 MB)
+python main.py                                  # dry run: roll -> CHSH gate -> quantum growth -> place -> grow -> render -> record -> web
+python main.py --backend auto                   # live (Peter only)
 ```
-
-**RE pipeline**: from `plans/relatedPapers/reverse-engineering/`, `python -m <L>_<name>.src.<module>`. Chain probe:
-`python -m INT_integration.src.chain --probe`.
 
 Hardware jobs are run by Peter only, from a pre-saved `QiskitRuntimeService()` account. No tokens in code.
 
@@ -182,6 +184,7 @@ Hardware jobs are run by Peter only, from a pre-saved `QiskitRuntimeService()` a
 
 | Date | Change |
 |---|---|
+| 2026-11-11 | **Minimal pipeline.** `code/` rebuilt as one line: a directory per section with one `main.py`, `common/`, and `main.py` taking only `--backend` (set = live, not set = dry run on a local fake backend), `--shots` and `--run` (continue). B and D switch circuits with one `CIRCUIT` constant: today's (`ROLL`, `DSCALE`) or the Q-HARD circuits R1–R6 of `plans/qhard-*.md`. A, E, G, H are now pipeline sections. Removed from `code/`: procedural renderer, QALife roll, simulated D-SCALE orchestrator, survival map, BP copy, hardware packs, `run_budget_*.sh`. RE folder unchanged (archive). **Nothing executed after the rebuild**: static checks only. |
 | 2026-10-31 | **D-SCALE built (sim) and first live hardware runs:** `code/dscale/` (4 families × 40/100/120 q, survival map, Pauli-twirled 156-q model, BP copy 104× faster); quantum seed shapes now drive F5's grower. Live on ibm_kingston / ibm_marrakesh: first hardware CHSH S = 2.733 with the cohort rolled on the QPU, QCA witness L1 (marginal), GHZ spine L0. Found: dead qubit inside a GHZ tree (T1/T2 gate added), seeds larger than the tumour (capped at ½ Ø), hardware roll size mix not matched. RE pages updated. |
 | 2026-10-31 | **F5 done (sim):** `f2_imaging` → `imaging`; grown renderer (RE E + F copy) in Siemens LIDC-IDRI-0481; pixel-growth player. Found three RE issues visible only on a real host (enclosed growth holes, render volume drift, vessel-inflated σ shell). README created. |
 | 2026-10-29 | RE letters A–H merged; INT pass 1 (runner, probe, readiness, Future). |

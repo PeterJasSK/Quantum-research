@@ -1,0 +1,47 @@
+[
+ {
+  "stage": "B",
+  "config": "R2-Q2",
+  "family": "R2-Q2",
+  "claim_level": "L1'-C",
+  "witness": "average success of a quantum random access code on the hand-off register",
+  "value": 0.85025,
+  "sigma": 0.003987394199223348,
+  "bound": 0.75,
+  "bound_rigour": "textbook [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbvb8k09pc73b00680",
+  "pass_rule": "success > 0.75 by 3 sigma",
+  "note": "Adversary: a classical message of the same dimension; the dimension is assumed (not device-independent). 8 circuits on qubit(s) [58]; ideal 0.854, worst input 0.834; average success, message dimension 2 assumed."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.38225,
+  "sigma": 0.007683341354840354,
+  "bound": 0.29641,
+  "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbvr7v5hds73dipkmg",
+  "pass_rule": "p > 0.29641 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. identical steps; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.382; up to 6 two-qubit gates in the circuit."
+ },
+ {
+  "stage": "D",
+  "config": "R1-STAR-001",
+  "family": "R1-STAR-001",
+  "claim_level": "L1'-T",
+  "witness": "p(sequence 001) of a one-qubit division clock",
+  "value": 0.3945,
+  "sigma": 0.0077277058367927025,
+  "bound": 0.29641,
+  "bound_rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbvr7v5hds73dipkmg",
+  "pass_rule": "p > 0.29641 by 3 sigma",
+  "note": "Adversary: every one-bit classical clock; the memory is assumed to be one qubit. first step compiled from the known input; 1 of 1 tiles pass (need 1, z > 3.00); ideal 0.4375 (closed form (7/16)); worst tile 0.395; up to 6 two-qubit gates in the circuit."
+ }
+]

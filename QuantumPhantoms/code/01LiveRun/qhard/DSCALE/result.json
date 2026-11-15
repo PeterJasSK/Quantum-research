@@ -1,0 +1,115 @@
+{
+ "label": "hardware: ibm_fez, job dbs4erfv5hds73dihr0g",
+ "job_id": "dbs4erfv5hds73dihr0g",
+ "shots": 4000,
+ "budget": 100,
+ "used": 71,
+ "ghz_spine": {
+  "N": 35,
+  "depth": 8,
+  "n_checks": 0,
+  "kept_fraction": 1.0,
+  "m": 24,
+  "F_dfe": 0.08745833333333332,
+  "F_sigma": 0.018996898980984233,
+  "gme": false,
+  "gme_k3": false,
+  "F_dfe_trex": 0.1841939816064303,
+  "ghz2": 1.087794117647059,
+  "ghz2_sigma": 0.015454627012135513,
+  "ghz2_X": 0.229,
+  "ghz2_ZZ": 0.8587941176470588
+ },
+ "ch_qca": {
+  "sites": 27,
+  "rule": "parity",
+  "alpha": 1.5707963267948966,
+  "t_w": 2,
+  "init": [
+   67,
+   71
+  ],
+  "negativity_edges": [
+   {
+    "i": 57,
+    "j": 67,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 67,
+    "j": 68,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 47,
+    "j": 57,
+    "N": 0.010803554050852838,
+    "sigma": 0.005754651834417686,
+    "p": 0.030234374434959414,
+    "p_bonf": 0.12093749773983765,
+    "passed": false
+   },
+   {
+    "i": 68,
+    "j": 69,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   }
+  ],
+  "echo": [
+   {
+    "t": 2,
+    "F": 0.17675,
+    "sigma": 0.0060313646362162516,
+    "alive": true
+   }
+  ],
+  "random_band": 7.450580596923828e-09,
+  "witness_passed": false
+ },
+ "pmd_bank": {
+  "process": {
+   "V": 0.4,
+   "Gamma": 0.7,
+   "N": 8,
+   "L": 8
+  },
+  "machines": [
+   {
+    "k": "pmd0",
+    "path": [
+     1,
+     2,
+     3,
+     16,
+     23,
+     24,
+     25,
+     37,
+     45
+    ],
+    "d_kl_q": 0.0025658177180141366,
+    "n_words": 36000,
+    "floor": 0.0006386931170602181,
+    "d_kl_classical": {
+     "1": 0.010909207533601164,
+     "2": 0.0007426757759137657
+    },
+    "gap_over_floor": -2.8544881624714282,
+    "passed": false
+   }
+  ],
+  "passed_all": false
+ }
+}

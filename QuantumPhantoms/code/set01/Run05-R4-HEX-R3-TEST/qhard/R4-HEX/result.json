@@ -1,0 +1,46 @@
+{
+ "ring": [
+  123,
+  124,
+  125,
+  126,
+  127,
+  137,
+  147,
+  146,
+  145,
+  144,
+  143,
+  136
+ ],
+ "layers": 8,
+ "circuits": 16,
+ "ansatz_fidelity_mean": 0.0238061592775492,
+ "ansatz_fidelity_min": 0.019172722503568718,
+ "input_randomness": "108 quantum roll bits expanded with SHA-256 / PCG64: pseudo-random, theorem assumption X13 NOT met",
+ "info": {
+  "backend": "ibm_fez",
+  "circuits": 16,
+  "shots": 1,
+  "two_qubit_gates_max": 505,
+  "job_id": "dbscgc7v5hds73diq4u0",
+  "label": "hardware: ibm_fez, job dbscgc7v5hds73diq4u0"
+ },
+ "eps": -0.21283611301803182,
+ "sigma": 0.1504445480216131,
+ "bits": {
+  "eps": -0.21283611301803182,
+  "bits": -79.1377165155189,
+  "n": 12,
+  "threshold_eps": 0.16,
+  "rigour": "two-point linear reading of 2509.07255 [verify]; not a proven bound"
+ },
+ "bits_at_minus_3_sigma": -189.46371839803518,
+ "assumptions": {
+  "haar_targets_trained": true,
+  "one_shot_per_circuit": true,
+  "global_clifford_measurement": true,
+  "true_random_inputs": false,
+  "bound_constants_transcribed": false
+ }
+}

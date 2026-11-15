@@ -1,0 +1,325 @@
+{
+ "tile_0_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   67,
+   78
+  ],
+  "active": [
+   47,
+   57,
+   67,
+   68,
+   78,
+   84,
+   88,
+   89,
+   90
+  ],
+  "seed_cells": 115,
+  "shot": 1575,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_1_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   67,
+   86
+  ],
+  "active": [
+   57,
+   67,
+   68,
+   69,
+   70,
+   78,
+   85,
+   86,
+   87,
+   88
+  ],
+  "seed_cells": 154,
+  "shot": 1827,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_2_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   32,
+   58,
+   67
+  ],
+  "active": [
+   18,
+   29,
+   30,
+   32,
+   47,
+   48,
+   49,
+   57,
+   58,
+   67,
+   68,
+   69,
+   71,
+   90
+  ],
+  "seed_cells": 226,
+  "shot": 3413,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_3_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   67,
+   68
+  ],
+  "active": [
+   18,
+   30,
+   32,
+   38,
+   47,
+   49,
+   57,
+   88
+  ],
+  "seed_cells": 99,
+  "shot": 2101,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_4_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   29,
+   67,
+   85
+  ],
+  "active": [
+   28,
+   29,
+   30,
+   31,
+   38,
+   49,
+   57,
+   67,
+   68,
+   69,
+   70,
+   71,
+   78,
+   84
+  ],
+  "seed_cells": 171,
+  "shot": 1357,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_5_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   29,
+   30,
+   48,
+   57,
+   67,
+   70,
+   89
+  ],
+  "active": [
+   28,
+   29,
+   38,
+   47,
+   58,
+   68,
+   69,
+   70,
+   71,
+   78,
+   85,
+   86,
+   87,
+   88,
+   89,
+   90,
+   97
+  ],
+  "seed_cells": 475,
+  "shot": 270,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_6_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   18,
+   48,
+   67,
+   68,
+   85,
+   87,
+   89
+  ],
+  "active": [
+   18,
+   31,
+   48,
+   49,
+   57,
+   84,
+   85,
+   86,
+   88,
+   90
+  ],
+  "seed_cells": 222,
+  "shot": 2502,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_7_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   57,
+   67
+  ],
+  "active": [
+   18,
+   31,
+   47,
+   57,
+   67,
+   68
+  ],
+  "seed_cells": 25,
+  "shot": 2334,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_8_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   47,
+   67
+  ],
+  "active": [
+   47,
+   48,
+   49,
+   57,
+   67
+  ],
+  "seed_cells": 26,
+  "shot": 2181,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_8_1": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   47,
+   67,
+   84,
+   97
+  ],
+  "active": [
+   48,
+   49,
+   68,
+   84,
+   86,
+   97
+  ],
+  "seed_cells": 73,
+  "shot": 3897,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_9_0": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   30,
+   67,
+   71
+  ],
+  "active": [
+   32,
+   58,
+   68,
+   70,
+   71
+  ],
+  "seed_cells": 93,
+  "shot": 3880,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ },
+ "tile_9_1": {
+  "family": "ch-qca",
+  "region": "ibm_fez:27",
+  "sites": 27,
+  "init": [
+   38,
+   67,
+   85
+  ],
+  "active": [
+   29,
+   30,
+   31,
+   38,
+   49,
+   57,
+   84,
+   85,
+   86,
+   87,
+   97
+  ],
+  "seed_cells": 191,
+  "shot": 3123,
+  "claim_level": "L0",
+  "witness_passed": false,
+  "witness_scope": "run-level (measured on the first tumour's initial set)"
+ }
+}

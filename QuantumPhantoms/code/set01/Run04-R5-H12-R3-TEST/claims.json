@@ -1,0 +1,32 @@
+[
+ {
+  "stage": "B",
+  "config": "R5-H12",
+  "family": "R5-H12",
+  "claim_level": "L1.5",
+  "witness": "win rate of the stabilizer-submeasurement game on the cyclic cluster state (raw counts)",
+  "value": 0.7423437500000001,
+  "sigma": 0.002421172478753837,
+  "bound": 0.8,
+  "bound_rigour": "[verify]: bound from 2110.04277; the win rule here is derived, not transcribed",
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbsbft7v5hds73dip3n0",
+  "pass_rule": "win > 0.80 by 3 sigma",
+  "note": "Adversary: depth-1 local classical circuits only. 0 of 1 rings pass (need 1); n = 12, 64 inputs, raw counts; ring picked by measured error, calibration pruning skipped (it leaves no ring)."
+ },
+ {
+  "stage": "D",
+  "config": "R3-TEST",
+  "family": "R3-TEST",
+  "claim_level": "L1'-L",
+  "witness": "success rate of naming the hidden Pauli channel with a sister memory (hypothesis test)",
+  "value": 0.85,
+  "sigma": 0.025248762345905194,
+  "bound": 0.5000000078216544,
+  "bound_rigour": "1/2 + 0.43 M 2^-n without a quantum memory (2408.03376 Eq. 4) [verify]; emulated channel",
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsbg8ujjaos73ak08n0",
+  "pass_rule": "success above the no-memory bound by 3 sigma at some n >= 4",
+  "note": "Adversary: every learner without a quantum memory (a theorem, no baseline arm is run). n = 40 pairs (80 qubits), M = 20000 measurements (10000 of them without a channel), 200 trials on one pool of 400 circuits x 50 shots; all sizes: n=8: 0.980 vs 1.000, n=16: 0.970 vs 0.631, n=24: 0.980 vs 0.501, n=32: 0.885 vs 0.500, n=40: 0.850 vs 0.500; trials share the pool; one inserted Pauli per circuit."
+ }
+]

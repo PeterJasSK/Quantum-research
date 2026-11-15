@@ -1,0 +1,14 @@
+{
+ "job_id": "dbs96cejjaos73ajtmag",
+ "backend": "ibm_fez",
+ "circuits": 6,
+ "shots": [
+  8,
+  2,
+  2048,
+  2048,
+  2048,
+  2048
+ ],
+ "qpu_seconds_estimate": 2.0657494959999996
+}

@@ -1,0 +1,7 @@
+{
+ "circuit": "DSCALE",
+ "target": "ibm_fez",
+ "target_label": "ibm_fez (156 q heavy-hex)",
+ "sim_label": "hardware: ibm_fez, job dbs4erfv5hds73dihr0g",
+ "honest_label": "the seed shape is a quantum snapshot measured on the device; growth and image are classical; every claim names its adversary; a certificate is about the device, never the tumour"
+}

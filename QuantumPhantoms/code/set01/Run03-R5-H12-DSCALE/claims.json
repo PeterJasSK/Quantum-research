@@ -1,0 +1,53 @@
+[
+ {
+  "stage": "B",
+  "config": "R5-H12",
+  "family": "R5-H12",
+  "claim_level": "not run",
+  "witness": "win rate of the stabilizer-submeasurement game on the cyclic cluster state (raw counts)",
+  "value": null,
+  "sigma": null,
+  "passed": false,
+  "label": "not run",
+  "note": "Not run: no hexagon tile on ibm_fez"
+ },
+ {
+  "stage": "D",
+  "family": "ghz-spine",
+  "claim_level": "L0",
+  "witness": "DFE GHZ fidelity (GME)",
+  "value": 0.257875,
+  "sigma": 0.04955776575612676,
+  "k": 2,
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbsaemgk09pc73avucu0",
+  "note": "N=14, kept 1.000; ghz2=0.980; stabilizer state (BP chi = 2): survives, not hard",
+  "config": "DSCALE"
+ },
+ {
+  "stage": "D",
+  "family": "ch-qca",
+  "claim_level": "L1",
+  "witness": "QCA pair negativity (Bonferroni)",
+  "value": 0.013937950312582187,
+  "sigma": 0.005915365158764794,
+  "k": 2,
+  "passed": true,
+  "label": "hardware: ibm_fez, job dbsaemgk09pc73avucu0",
+  "note": "12 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness",
+  "config": "DSCALE"
+ },
+ {
+  "stage": "D",
+  "family": "pmd-bank",
+  "claim_level": "L0",
+  "witness": "PMD memory gap / floor",
+  "value": -3.1427015134322605,
+  "sigma": null,
+  "k": 3,
+  "passed": false,
+  "label": "hardware: ibm_fez, job dbsaemgk09pc73avucu0",
+  "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2",
+  "config": "DSCALE"
+ }
+]

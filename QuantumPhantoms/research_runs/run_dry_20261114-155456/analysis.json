@@ -1,0 +1,125 @@
+{
+ "run": "run_dry_20261114-155456",
+ "backend": {
+  "name": "fake_marrakesh",
+  "live": false,
+  "label": "fake_marrakesh (fake, 156 q heavy-hex)",
+  "calibration": {
+   "backend": "fake_marrakesh",
+   "last_update_date": "2025-02-26 14:52:45-05:00",
+   "fake": true,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 4,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "6-8mm": 3,
+    "<6mm": 1
+   },
+   "tvd": 0.5
+  },
+  "lobe": {
+   "counts": {
+    "RUL": 1,
+    "RML": 1,
+    "LUL": 2
+   },
+   "tvd": 0.43
+  },
+  "type": {
+   "solid": 2,
+   "ground-glass": 2
+  },
+  "margin": {
+   "lobulated": 1,
+   "smooth": 3
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.8232421875,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+  "job_id": "",
+  "scope": "job-level (one Bell test over 4 settings), not per tumour",
+  "passed": true,
+  "hmin_per_round_analytic": 0.8815188036160121,
+  "status": "certification-ready, not certified (simulated)"
+ },
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R2-Q2",
+   "family": "R2-Q2",
+   "claim_level": "L1'-C (dry run: not a claim)",
+   "value": 0.845,
+   "sigma": 0.012725466592624413,
+   "bound": 0.75,
+   "bound_rigour": "textbook [verify]",
+   "passed": true,
+   "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+  },
+  {
+   "stage": "D",
+   "config": "R1-STAR-001",
+   "family": "R1-STAR-001",
+   "claim_level": "L1'-T (dry run: not a claim)",
+   "value": 0.4275,
+   "sigma": 0.02473579137606072,
+   "bound": 0.2962962962962963,
+   "bound_rigour": "proven (2-state machine)",
+   "passed": true,
+   "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+  },
+  {
+   "stage": "D",
+   "config": "R1-STAR-001",
+   "family": "R1-STAR-001",
+   "claim_level": "L1'-T (dry run: not a claim)",
+   "value": 0.4275,
+   "sigma": 0.02473579137606072,
+   "bound": 0.2962962962962963,
+   "bound_rigour": "proven (2-state machine)",
+   "passed": true,
+   "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+  }
+ ],
+ "claims_summary": {
+  "total": 3,
+  "passed": 3,
+  "not_passed": [],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 4,
+  "renderers": {
+   "grown+fitted": 4
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "n/a": 4
+  },
+  "volume_pd_pct": {
+   "n": 4,
+   "median": -0.01,
+   "min": -0.03,
+   "max": 0.03
+  },
+  "sigma_ratio_in_out": {
+   "n": 3,
+   "median": 0.939,
+   "min": 0.839,
+   "max": 0.969
+  },
+  "vdt_d": {
+   "n": 4,
+   "median": 350.55,
+   "min": 140.0,
+   "max": 620.4
+  }
+ }
+}
