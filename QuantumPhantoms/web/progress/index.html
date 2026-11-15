@@ -301,8 +301,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 @keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--cyan) 70%,transparent)}70%,100%{box-shadow:0 0 0 9px transparent}}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.hero-copy>*,.hero-legend{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(.3s + var(--k,0)*.12s)}
-.hero-copy>:nth-child(2){--k:1}.hero-copy>:nth-child(3){--k:2}.hero-copy>:nth-child(4){--k:3}.hero-copy>:nth-child(5){--k:4}.hero-copy>:nth-child(6){--k:5}.hero-legend{--k:6}
+.hero-head>*,.hero-copy>:not(.hero-head),.hero-legend{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(.3s + var(--k,0)*.12s)}
+.hero-head>:nth-child(2){--k:1}.hero-head>:nth-child(3){--k:2}.hero-copy>:nth-child(2){--k:3}.hero-copy>:nth-child(3){--k:4}.hero-copy>:nth-child(4){--k:5}.hero-legend{--k:6}
 #hero-canvas{animation:fadeIn 1.6s ease .1s both}
 .btn{min-height:38px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink)}
 .btn:hover{border-color:var(--cyan)}
@@ -333,7 +333,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .next .nw{font-size:12px;color:var(--muted);margin-top:4px}
 @media(max-width:480px){.nexts{grid-template-columns:1fr}}
 .hero-legend{font-size:13px;color:var(--muted);border-left:2px solid var(--cyan);padding-left:12px;max-width:48em}
-@media(max-width:860px){#hero{display:block;min-height:0;padding-top:70px}#hero-canvas{position:relative;height:40svh;min-height:240px;-webkit-mask-image:none;mask-image:none}#hero-ui{padding:4px 16px 36px}section.sec{padding-top:64px}}
+/* phone: the scene is a tall backdrop. The title sits over the dimmed processor (top 47%), the lungs stay clear below it to be grabbed, the rest of the copy starts under the scene. */
+@media(max-width:860px){
+  #hero{display:block;min-height:0;--hh:max(520px,min(185vw,760px,100vh));--hh:max(520px,min(185vw,760px,100svh))}
+  #hero-canvas{inset:0 0 auto 0;height:var(--hh);-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.35) 0,rgba(0,0,0,.35) 34%,#000 47%);mask-image:linear-gradient(180deg,rgba(0,0,0,.35) 0,rgba(0,0,0,.35) 34%,#000 47%)}
+  #hero-ui{padding:78px 16px 36px;gap:24px}
+  .hero-head{min-height:calc(var(--hh) - 78px)}
+  section.sec{padding-top:64px}
+}
 
 /* sections */
 main{position:relative;z-index:2}
@@ -569,7 +576,7 @@ footer{max-width:1240px;margin:60px auto 0;padding:24px 16px 60px;color:var(--mu
 @media (prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none}
   .wins::after,.win::before{transition:none}.win.lit::before{animation:none}
-  .nav,.nav-links a,.brand i,.hero-copy>*,.hero-legend,#hero-canvas{animation:none}
+  .nav,.nav-links a,.brand i,.hero-copy>*,.hero-head>*,.hero-legend,#hero-canvas{animation:none}
   .sofar li,.chart .gx,.chart .gy{opacity:1;transform:none;transition:none}
   .slab,.drawer,.scrim{transition:none}
 }
@@ -581,7 +588,7 @@ footer{max-width:1240px;margin:60px auto 0;padding:24px 16px 60px;color:var(--mu
   .print-only{display:block}
   .rv,.sofar li,.chart .gx,.chart .gy{opacity:1!important;transform:none!important}
   .agenda{display:none!important}.gscroll{display:block!important}
-  #hero{min-height:0}#hero-ui{padding:0 0 20px}
+  #hero{min-height:0}#hero-ui{padding:0 0 20px}.hero-head{min-height:0}
   section.sec{padding:22px 0 0;max-width:none}
   .panel{backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none!important;break-inside:avoid}
   .win,.pub,.hyp,.risk,.glane,.slab{break-inside:avoid}
@@ -699,8 +706,8 @@ const sec = (s, i, body) => `<section class="sec" id="${esc(s.id)}" aria-labelle
 function rHero() {
   const H = DATA.hero, N = upcoming().slice(0, DATA.meta.showNext || 2), mm = [];
   for (let i = 3; i < HERO_SCENE.nodules.length; i += 4) mm.push(HERO_SCENE.nodules[i]);
-  return `<div class="hero-copy"><p class="eyebrow">Research progress · updated ${esc(fmt(DATA.meta.updated))}</p>${todoNote()}
-    <h1 id="hero-title">${esc(DATA.meta.title)}</h1><p class="pitch">${esc(DATA.meta.pitch)}</p>
+  return `<div class="hero-copy"><div class="hero-head"><p class="eyebrow">Research progress · updated ${esc(fmt(DATA.meta.updated))}</p>${todoNote()}
+    <h1 id="hero-title">${esc(DATA.meta.title)}</h1></div><p class="pitch">${esc(DATA.meta.pitch)}</p>
     <div class="nexts">${N.map((m, i) => `<div class="next panel" data-cd="${esc(m.date)}" role="timer" aria-label="Time to: ${esc(m.title)}">
       <p class="label">${i ? 'Then' : 'Next'}</p><p class="dline"><b class="d mono">${Math.max(0, daysTo(m.date))}</b><span>days</span></p>
       <p class="nt">${esc(m.title)}</p><p class="nw">${esc(m.where)} · <span class="mono">${esc(fmt(m.date))}</span> · <span class="hms mono"></span></p></div>`).join('') || '<p class="pitch">No upcoming deadline in the data block.</p>'}</div>
@@ -901,7 +908,10 @@ const Hero = (() => {
       mNod.forEach((m, i) => m.size = m.userData.s * (1 + (reduced ? 0 : Math.sin(t * .002 + i) * .1))); ren.render(scene, cam); };
     const frame = t => { raf = 0; if (!vis || document.hidden) return; render(t); if (!reduced) raf = requestAnimationFrame(frame); };
     const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-    function size() { const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; const narrow = w / h < 1.25; cam.position.set(narrow ? 0 : -2.4, narrow ? 1.35 : 1.15, narrow ? 8.8 : 9.8); cam.updateProjectionMatrix(); kick(); }
+    function size() { const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; const narrow = w / h < 1.25;
+      if (matchMedia('(max-width:860px)').matches) cam.position.set(0, 1.95, Math.max(2.5 / cam.aspect, 4.4) / Math.tan(Math.PI / 8)); // phone backdrop: the whole scene fits, lungs fill the lower half (the CSS title zone is the top 47%)
+      else cam.position.set(narrow ? 0 : -2.4, narrow ? 1.35 : 1.15, narrow ? 8.8 : 9.8);
+      cam.updateProjectionMatrix(); kick(); }
     function theme() { const light = root.dataset.theme === 'light', b = light ? T.NormalBlending : T.AdditiveBlending, col = n => new T.Color(css(n));
       [mLung, mGlow, mChip, mPulse, mHalo, mScan, mStream, mSLine].forEach(m => m.color = col('--cyan')); [mLine, mDots].forEach(m => m.color = col('--violet')); mNod.forEach(m => m.color = col('--amber'));
       [mLung, mGlow, mChip, mPulse, mHalo, mScan, mStream, mSLine, mLine, mDots, ...mNod].forEach(m => { m.blending = b; m.needsUpdate = true; }); kick(); }
