@@ -1,0 +1,5 @@
+swap_d2_ibm_marrakesh_seed100_20260817-080244_run.js swap     d=12 ideal -0.1787 hw -0.0022 sign-agree 0.55 env-ok True
+swap_r8_ibm_marrakesh_seed100_20260817-093546_run.js swap     d=12 ideal -0.1818 hw +0.0801 sign-agree 0.00 env-ok True
+swap_r8_ibm_marrakesh_seed101_20260817-093724_run.js swap     d=12 ideal -0.0253 hw +0.0257 sign-agree 0.38 env-ok True
+swap_r8_ibm_marrakesh_seed102_20260817-094058_run.js swap     d=12 ideal -0.0625 hw +0.0378 sign-agree 0.25 env-ok True
+swap_r8_ibm_marrakesh_seed103_20260817-094251_run.js swap     d=12 ideal -0.0159 hw +0.0163 sign-agree 0.50 env-ok True

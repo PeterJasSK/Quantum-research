@@ -1,0 +1,515 @@
+{
+ "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+ "plan": {
+  "job_id": "dbj16056p51s73cjs7q0",
+  "backend": "ibm_marrakesh",
+  "fake": null,
+  "budget": 100,
+  "shots": 4000,
+  "qpu_seconds_estimate": 26.643551999999993,
+  "submitted_utc": "2026-10-31T16:10:41+00:00",
+  "n_components": {
+   "ghz-spine": 26,
+   "ch-qca": 22,
+   "pmd-bank": 3
+  },
+  "calibration": {
+   "backend": "ibm_marrakesh",
+   "last_update_date": "2026-10-31 16:29:56+01:00",
+   "fake": false,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "usage_s": 32,
+ "ghz_spine": {
+  "N": 28,
+  "depth": 8,
+  "n_checks": 0,
+  "kept_fraction": 1.0,
+  "m": 24,
+  "F_dfe": 0.05479166666666666,
+  "F_sigma": 0.019256513970966022,
+  "gme": false,
+  "gme_k3": false,
+  "F_dfe_trex": 0.12122556780237963,
+  "ghz2": 0.9462407407407408,
+  "ghz2_sigma": 0.015747114832143055,
+  "ghz2_X": 0.1445,
+  "ghz2_ZZ": 0.8017407407407409
+ },
+ "ch_qca": {
+  "sites": 23,
+  "rule": "parity",
+  "alpha": 1.5707963267948966,
+  "t_w": 2,
+  "init": [
+   133,
+   138,
+   143,
+   147
+  ],
+  "negativity_edges": [
+   {
+    "i": 137,
+    "j": 147,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 146,
+    "j": 147,
+    "N": 0.014017819084372971,
+    "sigma": 0.006171665689290047,
+    "p": 0.011563848971832037,
+    "p_bonf": 0.046255395887328146,
+    "passed": true
+   },
+   {
+    "i": 147,
+    "j": 148,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   },
+   {
+    "i": 145,
+    "j": 146,
+    "N": -0.0,
+    "sigma": 0.0,
+    "p": 0.5,
+    "p_bonf": 1.0,
+    "passed": false
+   }
+  ],
+  "echo": [
+   {
+    "t": 2,
+    "F": 0.05575,
+    "sigma": 0.0036277381899745744,
+    "alive": true
+   }
+  ],
+  "random_band": 1.1920928955078125e-07,
+  "witness_passed": true
+ },
+ "pmd_bank": {
+  "process": {
+   "V": 0.4,
+   "Gamma": 0.7,
+   "N": 8,
+   "L": 8
+  },
+  "machines": [
+   {
+    "k": "pmd0",
+    "path": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "d_kl_q": 0.0025804155606094477,
+    "n_words": 36000,
+    "floor": 0.0006386931170602181,
+    "d_kl_classical": {
+     "1": 0.007929241492587634,
+     "2": 0.0007425983731704171
+    },
+    "gap_over_floor": -2.877465152432127,
+    "passed": false
+   }
+  ],
+  "passed_all": false
+ },
+ "seed_tiles": {
+  "tile_0_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    133,
+    138,
+    143,
+    147
+   ],
+   "active": [
+    121,
+    122,
+    123,
+    131,
+    132,
+    134,
+    136,
+    137,
+    138,
+    141,
+    142,
+    144,
+    146,
+    148,
+    150,
+    151
+   ],
+   "seed_cells": 414,
+   "shot": 46,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "ground-glass",
+   "size_mm": 13.0
+  },
+  "tile_1_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    120,
+    136,
+    141,
+    143,
+    147,
+    148,
+    150
+   ],
+   "active": [
+    120,
+    122,
+    131,
+    137,
+    138,
+    140,
+    145,
+    148,
+    149,
+    151
+   ],
+   "seed_cells": 173,
+   "shot": 3670,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "calcified",
+   "size_mm": 26.0
+  },
+  "tile_2_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    138,
+    145,
+    147,
+    151
+   ],
+   "active": [
+    131,
+    132,
+    133,
+    137,
+    138,
+    144,
+    149,
+    150,
+    151
+   ],
+   "seed_cells": 132,
+   "shot": 3507,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 13.0
+  },
+  "tile_3_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    120,
+    131,
+    133,
+    147
+   ],
+   "active": [
+    120,
+    122,
+    123,
+    132,
+    133,
+    134,
+    136,
+    151
+   ],
+   "seed_cells": 197,
+   "shot": 1524,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "ground-glass",
+   "size_mm": 13.0
+  },
+  "tile_4_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    132,
+    134,
+    136,
+    141,
+    142,
+    145,
+    147
+   ],
+   "active": [
+    121,
+    122,
+    131,
+    132,
+    137,
+    140,
+    141,
+    142,
+    143,
+    145,
+    147,
+    148,
+    149
+   ],
+   "seed_cells": 256,
+   "shot": 2991,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 26.0
+  },
+  "tile_5_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    134,
+    143,
+    147,
+    150
+   ],
+   "active": [
+    123,
+    133,
+    134,
+    136,
+    141,
+    142,
+    144,
+    145,
+    148,
+    149,
+    151
+   ],
+   "seed_cells": 212,
+   "shot": 2134,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 13.0
+  },
+  "tile_6_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    134,
+    147
+   ],
+   "active": [
+    123,
+    131,
+    132,
+    133,
+    134,
+    136,
+    137,
+    141,
+    142,
+    144
+   ],
+   "seed_cells": 172,
+   "shot": 3603,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "part-solid",
+   "size_mm": 4.0
+  },
+  "tile_7_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    131,
+    136,
+    147,
+    149
+   ],
+   "active": [
+    123,
+    136,
+    144,
+    146,
+    147,
+    149,
+    150
+   ],
+   "seed_cells": 109,
+   "shot": 2323,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "part-solid",
+   "size_mm": 13.0
+  },
+  "tile_8_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    143,
+    147
+   ],
+   "active": [
+    123,
+    132,
+    136,
+    137,
+    141,
+    142,
+    144,
+    146,
+    147,
+    148,
+    149
+   ],
+   "seed_cells": 164,
+   "shot": 3696,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_8_1": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    131,
+    147
+   ],
+   "active": [
+    120,
+    131,
+    132,
+    133,
+    137,
+    138,
+    146,
+    147,
+    148,
+    149
+   ],
+   "seed_cells": 154,
+   "shot": 1183,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "solid",
+   "size_mm": 4.0
+  },
+  "tile_9_0": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    123,
+    147
+   ],
+   "active": [
+    121,
+    122,
+    131,
+    137,
+    138,
+    143,
+    144,
+    145,
+    146,
+    147
+   ],
+   "seed_cells": 137,
+   "shot": 2239,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "calcified",
+   "size_mm": 4.0
+  },
+  "tile_9_1": {
+   "region": "ibm_marrakesh:23",
+   "sites": 23,
+   "init": [
+    121,
+    123,
+    134,
+    147
+   ],
+   "active": [
+    120,
+    134,
+    136,
+    137,
+    143,
+    145,
+    146,
+    147,
+    150
+   ],
+   "seed_cells": 100,
+   "shot": 212,
+   "claim_level": "L1",
+   "witness_passed": true,
+   "witness_scope": "run-level (measured on the first tile's initial set)",
+   "type": "calcified",
+   "size_mm": 13.0
+  }
+ },
+ "circuits": {
+  "live_00.qasm": "a61b45a624ca0c5b9eed7371f7743ecbab4a35bde46967a3d96b8beb935c9e4a",
+  "live_01.qasm": "cced45c56db352300be2bea1632c63761e55af8e98b0249cedd55aaedafb33b6",
+  "live_02.qasm": "b4061f343bc53db0694fe06ea79f0219f790fc5bded38dfcc9987f77faa4765d",
+  "live_03.qasm": "57726f9e057d7994695e33e1134d41896d5c74a3e72df7c2be6bd35d3d7e0110",
+  "live_04.qasm": "af3cc743b4700c06c8562bec0d8f5051c6490d9e2dd442b8c43ce18da150ec91",
+  "live_05.qasm": "bc9e666d3b0fe38bca8eaf6f88949a42c3ae2419f628e6d002a3285dd5fb7735",
+  "live_06.qasm": "bd70a8273db3b64b467aec2297507341dd38e4b2697d49ed8fe861b41a5f7bf1",
+  "live_07.qasm": "6022a43d4ad2843e4c178e68129e394fcc82ef72169cf0a366f88f5f9fb82a67",
+  "live_08.qasm": "e7038ce4122d4a63be9fc4332e9f072e3e6981aedde28a75775efd35c4d26c65",
+  "live_09.qasm": "536d55e1060ea4cf7492531e3e2f7ab9098cd1ac8b559cba1c9b8ed525a94289",
+  "live_10.qasm": "9940d20974aabe4538bd5e40d363f6ef6f4f16c1a0462c3c7b01a49faa7e941a",
+  "live_11.qasm": "ed2b074afce6f84f707cf1d9a5ca78c04969064f57d386bd4ebe3b6b4955cf71",
+  "live_12.qasm": "326dbbc0e5d7900d3b154caf3e769252cf93d61c591ff00c33e40da30a4c5e92",
+  "live_13.qasm": "2d9ec10b1043228e9ec5dce3285926f02fe0dfd3aaf81250eabd2404cf934c21",
+  "live_14.qasm": "318c890cc64f7a0e8b88b364f2405139079eda21ff6f01e4aa5d87e6e1719dd0",
+  "live_15.qasm": "0badc8a7be7e99db42ad5476dd140013b7ba04a54958064c681197c317cedfe5",
+  "live_16.qasm": "80ab4457df2a19d06aef2ce5351cc012a1f84b352d06c0a6da7a776227479898",
+  "live_17.qasm": "b262c596342707a005209ecdeeb0c5bc2f095eccf07e1a43207aeea1cfd6170d",
+  "live_18.qasm": "460f3133fad4ae190430ad5cf2fa5cc04d47161a13f4f9b0093728e0f18db97a",
+  "live_19.qasm": "2266e65c419c88407b4bc1981544ab6f08d3ab2fbe7f0e96335b6cba346df9a3",
+  "live_20.qasm": "9fa72b67bcb96401d4d074b1e7f632b0eed8f13222ec26eef4808b9916667f7b",
+  "live_21.qasm": "9dff86df65483a2c40180677a1f2a1ea859ab57de2c05b729716fc28fa7d1f6a",
+  "live_22.qasm": "5b040efdf589df3b7330fdfab1a2c20e696afcd7e17765bfe1dad004c38966af",
+  "live_23.qasm": "092ce20539756305c60b2bd7f06b11f24bf1c9957aaf73bc31e618deacd8443b",
+  "live_24.qasm": "c9394bf039b4228a8e6870dc9b543e2d5edb5970fe5a2018bbc3ee915169ee62",
+  "live_25.qasm": "d167a755601ef739b9670c90e6eaf3990a433faa783682d81b4bea6ce87e5725"
+ },
+ "created_utc": "2026-10-31T16:12:22+00:00"
+}

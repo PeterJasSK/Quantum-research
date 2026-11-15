@@ -1,0 +1,100 @@
+[
+ {
+  "death": "unitary",
+  "W": 2,
+  "interaction": "none",
+  "max_diff_code_surrogate": 1.1102230246251565e-16,
+  "max_diff_swap_replayed": 1.1102230246251565e-16
+ },
+ {
+  "death": "unitary",
+  "W": 2,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.2167727513247394,
+  "max_diff_swap_replayed": 2.220446049250313e-16
+ },
+ {
+  "death": "unitary",
+  "W": 4,
+  "interaction": "none",
+  "max_diff_code_surrogate": 2.220446049250313e-16,
+  "max_diff_swap_replayed": 2.220446049250313e-16
+ },
+ {
+  "death": "unitary",
+  "W": 4,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.9238795325112867,
+  "max_diff_swap_replayed": 4.440892098500626e-16
+ },
+ {
+  "death": "unitary",
+  "W": 6,
+  "interaction": "none",
+  "max_diff_code_surrogate": 1.4432899320127035e-15,
+  "max_diff_swap_replayed": 1.4432899320127035e-15
+ },
+ {
+  "death": "unitary",
+  "W": 6,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.9238795325112867,
+  "max_diff_swap_replayed": 1.4432899320127035e-15
+ },
+ {
+  "death": "unitary",
+  "W": 10,
+  "interaction": "none",
+  "max_diff_code_surrogate": 7.616129948928574e-14,
+  "max_diff_swap_replayed": 7.616129948928574e-14
+ },
+ {
+  "death": "unitary",
+  "W": 10,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.9238795325112865,
+  "max_diff_swap_replayed": 3.319566843629218e-14
+ },
+ {
+  "death": "damping",
+  "W": 2,
+  "interaction": "none",
+  "max_diff_code_surrogate": 0.2436088961783739,
+  "max_diff_swap_replayed": 0.2436088961783739
+ },
+ {
+  "death": "damping",
+  "W": 2,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.1629589515262002,
+  "max_diff_swap_replayed": 0.2436088961783739
+ },
+ {
+  "death": "damping",
+  "W": 3,
+  "interaction": "none",
+  "max_diff_code_surrogate": 0.24360889617837378,
+  "max_diff_swap_replayed": 0.24360889617837378
+ },
+ {
+  "death": "damping",
+  "W": 3,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.1629589515262002,
+  "max_diff_swap_replayed": 0.24360889617837395
+ },
+ {
+  "death": "damping",
+  "W": 4,
+  "interaction": "none",
+  "max_diff_code_surrogate": 0.24360889617837372,
+  "max_diff_swap_replayed": 0.24360889617837372
+ },
+ {
+  "death": "damping",
+  "W": 4,
+  "interaction": "nn",
+  "max_diff_code_surrogate": 0.20820447383149454,
+  "max_diff_swap_replayed": 0.24360889617837383
+ }
+]

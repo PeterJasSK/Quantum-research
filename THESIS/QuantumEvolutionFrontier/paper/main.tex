@@ -1,0 +1,281 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{url}
+\input{numbers}
+\input{prose}
+
+\begin{document}
+
+\title{Certified, Not Superior: What Quantum Computers Can Honestly Generate, from Artificial Life to Synthetic CT}
+
+\author{
+\IEEEauthorblockN{Peter Jas}
+\IEEEauthorblockA{\textit{affiliation (to be added)}\\
+City, Country\\
+email address or ORCID}
+}
+
+\maketitle
+
+\begin{abstract}
+Synthetic cases used to validate medical imaging AI are only useful as evidence if their origin can be proven:
+nobody picked them, anyone can replay them, and they follow published clinical statistics. Today's quantum
+computers can already do this job, and it needs no speed-up. On a 156-qubit IBM Heron processor we rolled a cohort
+of synthetic lung tumours together with a Bell test in the same job, which scored \chshS{}, \chshZ{} standard
+deviations above the classical limit, then grew the tumours and rendered them into a real chest CT from a Siemens
+scanner. Every case carries its job identifier, its Bell value and a replayable seed. A classical twin of the
+generator shows that the content itself is indistinguishable: across \renderNq{} quantum-seeded and \renderNt{}
+twin-seeded nodules no image feature differed. The design rule is to certify the seed on the quantum computer and
+sample the content classically, because sampling clinical statistics directly on noisy hardware distorted them. We
+lay out the road from certified generation to more complex quantum-native content in four measurable layers. We
+also state what is not worth pursuing yet. In \nHwRunFiles{} hardware runs, most of them quantum life simulations
+on up to 108 qubits, every result was reproduced exactly by one classical machine in at most two minutes, so
+quantum life simulation is not yet a route to better medical prediction.
+\end{abstract}
+
+\begin{IEEEkeywords}
+quantum computing, procedural content generation, synthetic CT, provenance, Bell test, quantum artificial life,
+classical simulation, entanglement witness
+\end{IEEEkeywords}
+
+\section{Introduction}
+Detection and segmentation models for medical images need test cases that real data covers poorly: tiny, faint or
+juxtapleural nodules, rare scanners, controlled difficulty. Synthetic cases can fill that gap, but only if they are
+credible evidence. Exact ground truth, no patient voxels in the generator and a traceable origin are the
+requirements, and the last one includes a property that is easy to state and hard to prove: nobody chose the cases.
+A Bell test certifies exactly that for random bits drawn in the same experiment~\cite{clauser1969,pironio2010}.
+This gives quantum computers a medical job that exists today and needs no speed-up.
+
+The surrounding field is crowded with stronger promises. Systematic reviews of quantum computing in biology find
+almost no hardware execution at realistic scale and no demonstrated advantage~\cite{arcieri2026}, and frameworks for
+judging advantage in biology and medicine show how far most proposals are from one~\cite{cordier2022}. We take a
+constructive position and separate three things: what quantum computers can do for medical imaging now, the road
+to more complex quantum-native content, and what is not worth pursuing yet. Each part rests on our own hardware
+record: \nHwRunFiles{} hardware runs from \nHwProjects{} projects on two 156-qubit IBM Heron~r2 processors
+(\texttt{ibm\_kingston}, \texttt{ibm\_marrakesh}) between July and October 2026. These are a quantum tree grown on up
+to 108 qubits, a faithful rebuild of quantum artificial life scaled to 100 qubits, and a synthetic-CT pipeline. Earlier
+runs on \texttt{ibm\_fez} were not retained and are not used.
+
+\textbf{Contributions.}
+(i)~Certified procedural generation of synthetic chest CT, measured end to end against classical twins, with a
+provenance ladder and a design rule (Section~\ref{sec:pcg}, Fig.~\ref{fig:twin}).
+(ii)~A road from certified seeds to quantum-native content in four layers, each with a pass criterion, and an
+objective measure of the remaining distance to classical intractability (Section~\ref{sec:road}, Fig.~\ref{fig:map}).
+(iii)~What does not work yet: for every hardware result of our life simulations, the exact classical reproduction
+cost, nine checks learned from our own mistakes, and three structural reasons why faithful evolution circuits are
+classically easy (Sections~\ref{sec:life} and~\ref{sec:easy}).
+
+\section{What a quantum claim has to show}\label{sec:ladder}
+Any distribution of measurement outcomes in a single basis can be reproduced by a classical sampler that is given
+the same probabilities. Every readout that encodes biology or an image (cell counts, lineage sizes, tumour size,
+voxels) is such a readout. A quantum claim therefore lives in correlations measured in more than one basis, in a
+resource cost, or in a certificate. We use five claim levels:
+\textbf{L0} provenance (a Bell test certifies that nobody chose the draw);
+\textbf{L1} the generating state was entangled (a witness passed);
+\textbf{L1$'$} a memory advantage of the quantum model of a stochastic process~\cite{gu2012};
+\textbf{L2} the output distribution is hard to sample classically;
+\textbf{L3} a useful computational advantage.
+An entanglement witness is an observable whose expectation value is bounded for every separable state; a measured
+violation proves entanglement without tomography~\cite{guhne2009}. The witnesses in our record fall on four rungs:
+\textbf{W-a} a connected correlation compared with one chosen classical surrogate, which excludes only that
+surrogate; \textbf{W-b} a two-qubit witness, here $\langle XX\rangle+\langle ZZ\rangle\le 1$ for separable pairs, or
+pair negativity; \textbf{W-c} genuine multipartite entanglement, for example GHZ fidelity above $1/2$, which needs only
+two measurement settings~\cite{toth2005}; \textbf{W-d} a Bell test, CHSH $S\le 2$ for local models. Entanglement is
+necessary for classical hardness~\cite{jozsa2003,vidal2003} but not sufficient: GHZ states are maximally entangled
+and classically trivial~\cite{gottesman1998}.
+
+\section{Certified procedural generation of synthetic CT}\label{sec:pcg}
+A content generator for validation data is judged on four properties: nobody chose the content, the same seed
+replays the same content, the content follows a specification, and there is a record a reviewer can check. None of
+the four needs L2, and L0 already delivers the first one with a certificate no classical generator can give.
+We use a provenance ladder for generated content. \textbf{P-L0}: a Bell test in the same job certifies the draw.
+\textbf{P-L1}: the job that produced the content also passed an entanglement witness. \textbf{P-L1$'$}: a compressed
+generator. \textbf{P-L2}: content drawn from a distribution outside classical sampling reach. Every generated item
+ships with a \emph{classical twin}, the same item produced by a classical sampler fed the same probabilities, so the
+claim is always about the record and never about appearance. Earlier quantum procedural generation, such as quantum
+blur~\cite{wootton2020}, made appearance claims. In our reproduction a classical Gaussian filter matched its output at
+$r$ up to 0.99, and where it differed it scrambled coordinate bits non-physically.
+
+\textbf{Pipeline.} The synthetic-CT pipeline rolls each tumour's size, type, margin and lobe from a published
+rulebook encoded in a 9-qubit circuit, together with a CHSH test in the same job. It takes each tumour's seed shape
+from one snapshot of a 23-site quantum cellular automaton (QCA) and grows it classically with a cellular
+automaton~\cite{kansal2000}. Each nodule is then rendered into a public chest CT acquired on a Siemens
+scanner~\cite{armato2011}, with that scanner's measured blur and noise. No patient voxels enter the generator.
+
+\textbf{Case study.} \ctParagraph
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig2_twin.pdf}
+\caption{\figTwoCaption}
+\label{fig:twin}
+\end{figure*}
+
+\begin{table}[t]
+\centering
+\caption{Size mix of the 9-qubit tumour roll: published rulebook, exact ideal simulation, simulation with a
+Heron-class noise model (FakeMarrakesh) and the eight independent hardware draws of the live job.}
+\label{tab:roll}
+\small
+\input{tab_roll}
+\end{table}
+
+\textbf{Design rule.} \ruleParagraph
+
+\section{The road to more complex systems}\label{sec:road}
+Certified generation is the base layer. Each further layer adds one quantum ingredient and comes with a pass
+criterion that the next hardware generation can check without new theory.
+
+\textbf{Layer 1, certified seeds (P-L0): done.} Every case of the live cohort carries a Bell value of
+$S=\chshS\pm\chshSig$ from its own job, a job identifier and a seed hash, and is replayable.
+
+\textbf{Layer 2, correlated families from one entangled lineage (P-L1).} Sibling nodules and clonal sub-regions can be
+drawn from one genealogy register, so that a family of cases shares a certified common origin. The building block
+comes from our life simulations: keep the genotype register coherent and express the phenotype separably (a
+germ/soma split, after the Weismann barrier). On hardware it lifted the genealogy signal at $W=4$ from \pjEntNat{} to
+\pjSepNat{} and kept it above its classical surrogate up to $W=50$ (100 qubits). The two-qubit certificate already
+passes, with $\langle XX\rangle+\langle ZZ\rangle=\motileMin$--$\motileMax$ against the separable bound 1. Pass
+criterion: the two-setting multipartite witness~\cite{toth2005} at the family size used, by $3\sigma$. The only
+multipartite test so far, on 28 qubits, gave $F=\ghzF$ against $0.5$, so this is the next experiment.
+
+\textbf{Layer 3, compressed growth models (P-L1$'$).} A quantum model of a stochastic growth process can need less
+memory than any classical model of the same process~\cite{gu2012}, the one advantage that is provable at small scale.
+Pass criterion: a measured memory gap above three times the sampling floor. Our live attempt lost to a two-bit
+classical model, so the process needs re-tuning before hardware.
+
+\textbf{Layer 4, seed structure beyond classical reach (P-L2).} \scanParagraph
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig1_map.pdf}
+\caption{\figOneCaption}
+\label{fig:map}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Exact classical cost of the QCA Z snapshot (ideal, exact MPS, one eight-core machine) by patch size and
+depth. Rows with $>$ did not finish within the stated limit (1200~s wall clock, 20~GB address space).}
+\label{tab:scan}
+\small
+\input{tab_scan}
+\end{table}
+
+Beyond these layers, the routes that could make quantum models useful for medical prediction, such as rare-event
+estimation and drug--target chemistry, need fault-tolerant hardware and lie outside this record~\cite{babbush2021,
+cordier2022}.
+
+\section{What does not work yet: simulating life}\label{sec:life}
+Our first two projects tried to make quantum hardware simulate living processes: a 108-qubit genome that grows a
+tree, with a feedback rule between generations and an optional teleported long-range bond, and a faithful
+operator-by-operator rebuild of quantum artificial life~\cite{alvarez2018}. The rebuild covers founder, clone,
+mutation, phenotype, aging death and interaction, plus germ/soma and motile variants.
+
+\textbf{Method.} For every hardware result we rebuilt the logical circuit from the original builder and simulated it
+exactly with Qiskit Aer 0.17.2 on one eight-core machine with 31~GB of memory. We used a matrix product state (MPS)
+without truncation, or a stabilizer or statevector simulation where cheaper. We record the wall-clock time, the maximal
+MPS bond dimension $\chi$ and the ideal value of the observable the hardware reported. Quantum-tree generation~0 is
+fixed by its seed; later generations are replayed exactly from the recorded frequencies where noted.
+
+\input{tab_record}
+
+\textbf{Every result is classically cheap.} Every circuit in Table~\ref{tab:record} is reproduced exactly in at most
+\costMaxS{}~s, with $\chi\le\chiMaxRecord{}$. The genealogy circuits are the extreme case. The 100-qubit germ/soma
+circuit at $W=50$ has $\chi=2$ and is sampled in \costPjFifty{}~s, and the same construction at 154 qubits ($W=77$,
+the full chip) takes \costPjSevenSeven{}~s at $\chi=2$. Hardware retained \pjFiftyRetainPct{}\% of the ideal witness
+at $W=50$ and \mFourTwentyFourRetainPct{}\% at $W=24$ (Table~\ref{tab:qal}).
+
+\begin{table}[t]
+\centering
+\caption{Genealogy witness $\langle X^{\otimes W}\rangle$ on \texttt{ibm\_kingston} against its exact ideal and
+the exact classical cost (one eight-core machine, MPS, $\chi=2$ in every row). Month~4: three repeats, mutation
+scale 0.08 (hardware angles from a certified entropy service; ideal with pseudo-random angles of the same scale).
+Germ/soma: one run per width, no mutation; steps grow with $W$. W-a rung.}
+\label{tab:qal}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tab_qal}
+\end{table}
+
+\textbf{Nine checks we learned the hard way.} Table~\ref{tab:audit} lists nine ways a result can look quantum without
+being so. Each one is an instance in our own record, with the number that exposed it and the test that catches it.
+Three changed our conclusions.
+
+\input{tab_audit}
+
+\emph{A control that was not a control.} The quantum-tree study subtracted a ``no-entangler'' hardware floor run with
+zero entangling layers. The circuit builder loops \texttt{for \_ in range(max(1, layers))}, so the floor run applied
+one full entangling layer. The recorded logical depth confirms it: \qtDepthFloor{} for the floor against
+\qtDepthLone{} for one layer. One serial layer leaves the generation-0 state an exact product state ($\chi=1$, ideal
+$c(1)=\qtIdealLoneMean{}$), yet the hardware read $c(1)=\qtHwLoneMean{}$, a device artefact. The two-layer arm is a
+genuine circuit correlation (ideal \qtIdealLtwoMin{} to \qtIdealLtwoMax{}, hardware \qtHwLtwoMean{}), reproduced
+classically at $\chi=4$ in \qtCostLtwo{}~s, and the shallow brick-wall layout tracks its ideal closely (ideal
+\bwIdealLoneMean{}, hardware \bwHwLoneMean{}).
+
+\emph{A one-basis witness.} The genealogy signal $\langle X^{\otimes W}\rangle-\prod_i\langle X_i\rangle$ is compared
+with a measure-and-resend surrogate, which gives zero. The fully separable mixture
+$\tfrac12(|{+}\rangle\langle{+}|^{\otimes W}+|{-}\rangle\langle{-}|^{\otimes W})$ gives $\langle X^{\otimes
+W}\rangle=1$ and $\prod_i\langle X_i\rangle=0$ for even $W$. The $W=24$ and $W=50$ results are therefore W-a
+correlations, not entanglement certificates, which is why Layer~2 of the road needs the two-setting witness.
+
+\emph{Depth is not the figure of merit.} \teleportParagraph
+
+\textbf{What survived as a design rule.} Dissipative death that entangles the phenotype with the genotype removes
+the genealogy signal: at one step it is alive at $W=9$ ($k=\dampNineK\sigma$) and dead at $W=10$ ($k=\dampTenK\sigma$).
+Severing that coupling restores it, from \pjEntNat{} to \pjSepNat{} at $W=4$. Both arms use the same test on the same
+processor, so the result holds whatever the witness rung. This is the building block of Layer~2.
+
+\section{Why faithful life simulations are classically easy}\label{sec:easy}
+The record shows one pattern from three sides.
+
+\emph{P1 (diagonal biology).} Clone (CNOT), metabolism (Toffoli), phenotype copy, SWAP interaction and amplitude
+damping map computational-basis states to basis states or act as stochastic maps on them. After a product-state
+preparation, such circuits have single-basis statistics given by a classical Markov chain. With the circuit's SWAP
+order replayed, our classical surrogate matches the quantum phenotype to \surrUnitaryFixed{} (unitary death).
+
+\emph{P2 (genealogies are trees).} In a clone cascade each new individual interacts once with its parent. Any
+bipartition of the line is crossed by the state of one qubit, which bounds the Schmidt rank by 2.
+Tensor-network contraction cost is exponential only in the treewidth~\cite{markov2008}, and low-$\chi$ states are
+efficiently simulable~\cite{vidal2003}. We measured $\chi=2$ for every genealogy circuit from $W=3$ to $77$.
+
+\emph{P3 (equilibrium is stoquastic).} The mutation--selection equilibrium of the quasispecies model is the ground
+state of an Ising chain in a transverse field: mutation plays the field and fitness the coupling~\cite{baake1997}.
+That Hamiltonian is sign-free, the regime where classical Monte Carlo usually works.
+
+\textbf{Not worth pursuing now.} From P1--P3 and the record:
+(a)~quantum life or tumour-evolution simulation as a predictor, since every faithful circuit we ran is reproduced
+classically in at most \costMaxS{}~s;
+(b)~population statistics (cell counts, growth curves, lifetimes) as quantum evidence, since they are single-basis;
+(c)~qubit count as a headline for tree-shaped genealogies, since $\chi$ stays 2 at any width;
+(d)~logical depth as the argument for a routing scheme, since only an exact replay decides.
+What remains open, and what Layer~4 measures, is the one exit the propositions leave: interactions that close
+loops, combined with non-Clifford coupling.
+
+\section{Threats to validity}
+Most hardware configurations ran once (N=1); the Month-4 width sweep and the quantum-tree arms used three
+repeats. Classical costs are wall-clock times on one eight-core machine, an upper bound on the classical cost of
+each circuit, not a lower bound on classical hardness. A BP-hard flag on a small patch is not classical hardness,
+since exact simulation of that patch takes seconds. The noise model (FakeMarrakesh) is a published calibration
+snapshot, not the calibration of the day. All CT cases share one host scan, and the roll and seed comparisons rest
+on twelve tumours from one job. Replays assume the recorded random stream; the environment schedule matched the
+recorded one in every generation we replayed.
+
+\section{Conclusion}
+\conclusionParagraph
+
+\section*{Data and code availability}
+All hardware run files, the exact-simulation scripts and the generators of every number and table in this paper
+are in the author's repository (\texttt{THESIS/QuantumEvolutionFrontier/analysis}). Every number in the paper is
+written by \texttt{paper\_numbers.py} from those files.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

@@ -1,0 +1,61 @@
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_0_0: TVD hw-ideal 0.847 hw-noisy 0.844 hw-indep 0.983 split 0.922; vox {'hardware': 258.289, 'ideal': 229.947, 'noisy': 240.66475, 'indep': 272.1775}  (477 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_1_0: TVD hw-ideal 0.781 hw-noisy 0.771 hw-indep 0.961 split 0.849; vox {'hardware': 298.91725, 'ideal': 321.048, 'noisy': 311.6205, 'indep': 305.772}  (793 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_2_0: TVD hw-ideal 0.754 hw-noisy 0.695 hw-indep 0.939 split 0.774; vox {'hardware': 150.98, 'ideal': 109.08725, 'noisy': 124.10975, 'indep': 167.0185}  (1124 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_3_0: TVD hw-ideal 0.761 hw-noisy 0.728 hw-indep 0.929 split 0.808; vox {'hardware': 209.09575, 'ideal': 187.73775, 'noisy': 201.8725, 'indep': 239.78975}  (1494 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_4_0: TVD hw-ideal 0.799 hw-noisy 0.794 hw-indep 0.970 split 0.855; vox {'hardware': 259.16875, 'ideal': 239.9345, 'noisy': 245.42025, 'indep': 261.3445}  (2124 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_5_0: TVD hw-ideal 0.855 hw-noisy 0.854 hw-indep 0.981 split 0.918; vox {'hardware': 244.84225, 'ideal': 214.128, 'noisy': 222.32925, 'indep': 264.0525}  (3043 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_6_0: TVD hw-ideal 0.720 hw-noisy 0.626 hw-indep 0.882 split 0.686; vox {'hardware': 106.6285, 'ideal': 67.755, 'noisy': 78.18975, 'indep': 128.542}  (3733 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_7_0: TVD hw-ideal 0.790 hw-noisy 0.782 hw-indep 0.974 split 0.859; vox {'hardware': 243.15575, 'ideal': 221.01375, 'noisy': 228.57925, 'indep': 262.75475}  (4403 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_8_0: TVD hw-ideal 0.739 hw-noisy 0.693 hw-indep 0.929 split 0.779; vox {'hardware': 172.3665, 'ideal': 126.16325, 'noisy': 141.769, 'indep': 186.37925}  (4970 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_8_1: TVD hw-ideal 0.721 hw-noisy 0.636 hw-indep 0.922 split 0.729; vox {'hardware': 145.31575, 'ideal': 89.86525, 'noisy': 106.89175, 'indep': 168.98475}  (5406 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_9_0: TVD hw-ideal 0.725 hw-noisy 0.660 hw-indep 0.918 split 0.713; vox {'hardware': 145.92825, 'ideal': 114.95525, 'noisy': 126.251, 'indep': 171.00325}  (5836 s)
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/peter/anaconda3/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+  tile_9_1: TVD hw-ideal 0.770 hw-noisy 0.754 hw-indep 0.939 split 0.832; vox {'hardware': 197.267, 'ideal': 170.156, 'noisy': 178.4665, 'indep': 222.5375}  (6307 s)
+wrote /home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin.json

@@ -1,0 +1,14 @@
+=== A. is _teleport_cx == plain CX ?  (ct output distribution, L1 vs cx) ===
+  worst L1(ff, cx)     = 0.0092
+  worst L1(herald, cx) = 0.0137
+  => feed-forward == CX (equivalent)
+  => herald-00    == CX (equivalent)
+
+=== B. IDEAL bond sign (direct CX), d=12q (3 slots=18q), 4 gens, 20000 shots ===
+  gen0: ideal c(d) = -0.0471
+  gen1: ideal c(d) = +0.0570
+  gen2: ideal c(d) = +0.0642
+  gen3: ideal c(d) = -0.0573
+  MEAN ideal c(d) = +0.0042  => POSITIVE
+
+[total 103.8s]

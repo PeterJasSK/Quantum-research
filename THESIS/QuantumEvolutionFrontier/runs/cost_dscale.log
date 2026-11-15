@@ -1,0 +1,27 @@
+== dscale
+Traceback (most recent call last):
+  File "/home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/code/../../THESIS/QuantumEvolutionFrontier/analysis/classical_cost.py", line 209, in <module>
+    main()
+    ~~~~^^
+  File "/home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/code/../../THESIS/QuantumEvolutionFrontier/analysis/classical_cost.py", line 202, in main
+    res[part] = fn()
+                ~~^^
+  File "/home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/code/../../THESIS/QuantumEvolutionFrontier/analysis/classical_cost.py", line 148, in part_dscale
+    st = AerSimulator(method="stabilizer").run(transpile(spine, basis_gates=["h", "s", "sdg", "x", "z", "cx", "cz",
+                                               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                  "measure", "reset", "barrier"], optimization_level=0),
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/peter/anaconda3/lib/python3.13/site-packages/qiskit/compiler/transpiler.py", line 269, in transpile
+    pm = generate_preset_pass_manager(
+        optimization_level,
+    ...<17 lines>...
+        qubits_initially_zero=qubits_initially_zero,
+    )
+  File "/home/peter/anaconda3/lib/python3.13/site-packages/qiskit/transpiler/preset_passmanagers/generate_preset_pass_manager.py", line 221, in generate_preset_pass_manager
+    basis_gates, name_mapping = _parse_basis_gates(basis_gates, backend)
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/peter/anaconda3/lib/python3.13/site-packages/qiskit/transpiler/preset_passmanagers/generate_preset_pass_manager.py", line 343, in _parse_basis_gates
+    raise ValueError(
+    ...<4 lines>...
+    )
+ValueError: Providing non-standard gates (barrier) through the ``basis_gates`` argument is not allowed. Use the ``target`` parameter instead. You can build a target instance using ``Target.from_configuration()`` and provide custom gate definitions with the ``custom_name_mapping`` argument.

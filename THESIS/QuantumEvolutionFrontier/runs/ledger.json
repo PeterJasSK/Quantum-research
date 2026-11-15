@@ -1,0 +1,1697 @@
+{
+ "quantum_tree": {
+  "arms": {
+   "A_base_sim": {
+    "source": "QuantumLife/research_runs/BackLog/A_base_sim_20260716-063945_summary.json",
+    "backend": "sim",
+    "sim": true,
+    "layers": 2,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 8,
+    "shots": 4096,
+    "c1": {
+     "mean": 2.1043492705698772e-05,
+     "se": 0.00028268774181069853,
+     "n": 24
+    },
+    "c2": {
+     "mean": 4.217526049753453e-05,
+     "se": 0.000238592092862484,
+     "n": 24
+    },
+    "xi": {
+     "mean": 0.0005013930408359809,
+     "se": 0.001645396789913896,
+     "n": 24
+    },
+    "diversity": {
+     "mean": 0.8546800000000001,
+     "se": 0.01885154550039925,
+     "n": 24
+    },
+    "logical_depth_mean": 117.875
+   },
+   "B0_ctrl_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/B0_ctrl_ibm_kingston_20260716-065127_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 0,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 8,
+    "shots": 4096,
+    "c1": {
+     "mean": 0.015028122851442017,
+     "se": 0.0037187799842180007,
+     "n": 24
+    },
+    "c2": {
+     "mean": -0.00043353129898416123,
+     "se": 0.000697657071282034,
+     "n": 24
+    },
+    "xi": {
+     "mean": 0.01680182962680813,
+     "se": 0.004590004421301959,
+     "n": 24
+    },
+    "diversity": {
+     "mean": 0.9308983333333333,
+     "se": 0.006858911337398924,
+     "n": 24
+    },
+    "logical_depth_mean": 113.875
+   },
+   "B_hw_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/B_hw_ibm_kingston_20260716-072100_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 2,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 8,
+    "shots": 4096,
+    "c1": {
+     "mean": -0.07648107986332044,
+     "se": 0.005561634830944558,
+     "n": 24
+    },
+    "c2": {
+     "mean": 0.03964147164459203,
+     "se": 0.001751444501277078,
+     "n": 24
+    },
+    "xi": {
+     "mean": -0.031029058462948043,
+     "se": 0.0072790144378216915,
+     "n": 24
+    },
+    "diversity": {
+     "mean": 0.94447875,
+     "se": 0.004641878067903402,
+     "n": 24
+    },
+    "logical_depth_mean": 117.875
+   },
+   "C_L0_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/C_L0_ibm_kingston_20260716-075356_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 0,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": 0.01969429155765821,
+     "se": 0.005461102069868238,
+     "n": 18
+    },
+    "c2": {
+     "mean": -0.000832371175083439,
+     "se": 0.000625473591677158,
+     "n": 18
+    },
+    "xi": {
+     "mean": 0.019358990854344185,
+     "se": 0.005800822216784695,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.9269111111111111,
+     "se": 0.008119872736731265,
+     "n": 18
+    },
+    "logical_depth_mean": 113.83333333333333
+   },
+   "C_L1_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/C_L1_ibm_kingston_20260716-100216_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 1,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": 0.019147116793016717,
+     "se": 0.004826510750608026,
+     "n": 18
+    },
+    "c2": {
+     "mean": -0.0017837761635891808,
+     "se": 0.0005406515809414332,
+     "n": 18
+    },
+    "xi": {
+     "mean": 0.014810782330894159,
+     "se": 0.004898123005877559,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.9257638888888889,
+     "se": 0.008408712301799673,
+     "n": 18
+    },
+    "logical_depth_mean": 113.83333333333333
+   },
+   "C_L2_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/C_L2_ibm_kingston_20260716-165122_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 2,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": -0.07142433452485715,
+     "se": 0.006055364452846861,
+     "n": 18
+    },
+    "c2": {
+     "mean": 0.03755279840698297,
+     "se": 0.0018999005369897623,
+     "n": 18
+    },
+    "xi": {
+     "mean": -0.030275119690824068,
+     "se": 0.00796286949935721,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.94283,
+     "se": 0.004714258374987923,
+     "n": 18
+    },
+    "logical_depth_mean": 117.83333333333333
+   },
+   "C_L4_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/C_L4_ibm_kingston_20260716-183352_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 4,
+    "entangler": "serial",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": 0.011846598850820962,
+     "se": 0.004829246760489197,
+     "n": 18
+    },
+    "c2": {
+     "mean": -0.049692735728028695,
+     "se": 0.007522045050960791,
+     "n": 18
+    },
+    "xi": {
+     "mean": 0.04302246591492625,
+     "se": 0.015421142153726024,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.9790122222222222,
+     "se": 0.0010283197652378357,
+     "n": 18
+    },
+    "logical_depth_mean": 125.83333333333333
+   },
+   "bw_L2_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/bw_C_L2L_ibm_kingston_20260717-095807_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 2,
+    "entangler": "brickwall",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": -0.000428222125978189,
+     "se": 0.012356293532675235,
+     "n": 18
+    },
+    "c2": {
+     "mean": 0.05664763580789551,
+     "se": 0.0036170547745146843,
+     "n": 18
+    },
+    "xi": {
+     "mean": 0.06476913536018611,
+     "se": 0.015948767801334578,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.9335138888888888,
+     "se": 0.007583566087308858,
+     "n": 18
+    },
+    "logical_depth_mean": 12.833333333333334
+   },
+   "bw_L0_ibm_kingston": {
+    "source": "QuantumLife/research_runs/BackLog/bw_C_L2L_ibm_kingston_20260717-114334_summary.json",
+    "backend": "ibm_kingston",
+    "sim": false,
+    "layers": 0,
+    "entangler": "brickwall",
+    "repeats": 3,
+    "generations": 6,
+    "shots": 4096,
+    "c1": {
+     "mean": 0.06432484095904119,
+     "se": 0.004178873718136018,
+     "n": 18
+    },
+    "c2": {
+     "mean": -0.0014705546512500205,
+     "se": 0.0012837329362533683,
+     "n": 18
+    },
+    "xi": {
+     "mean": 0.061752953210408607,
+     "se": 0.00523420752402254,
+     "n": 18
+    },
+    "diversity": {
+     "mean": 0.8761705555555556,
+     "se": 0.014814535312246288,
+     "n": 18
+    },
+    "logical_depth_mean": 8.833333333333334
+   }
+  },
+  "z_c1_B_vs_sim": -13.737596049472984,
+  "z_c1_B_vs_B0": -13.677740640464293,
+  "z_c1_bwL2_vs_bwL0": -4.964275301989512
+ },
+ "teleport": {
+  "swap_d2_ibm_marrakesh_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/swap_d2_ibm_marrakesh_seed100_20260817-080244_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "swap",
+   "herald": null,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 16384,
+   "c_bond": {
+    "mean": -0.0021802727272727277,
+    "se": 0.006301003863874547,
+    "n": 11
+   },
+   "frac_negative": 0.5454545454545454,
+   "logical_depth_mean": 30.90909090909091,
+   "herald_frac_mean": null
+  },
+  "swap_r8_ibm_marrakesh_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/swap_r8_ibm_marrakesh_seed100_20260817-093546_run.json",
+    "QuantumLife/research_runs/BackLog/swap_r8_ibm_marrakesh_seed101_20260817-093724_run.json",
+    "QuantumLife/research_runs/BackLog/swap_r8_ibm_marrakesh_seed102_20260817-094058_run.json",
+    "QuantumLife/research_runs/BackLog/swap_r8_ibm_marrakesh_seed103_20260817-094251_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "swap",
+   "herald": null,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 4096,
+   "c_bond": {
+    "mean": 0.03998159375,
+    "se": 0.010776876937402135,
+    "n": 32
+   },
+   "frac_negative": 0.15625,
+   "logical_depth_mean": 30.875,
+   "herald_frac_mean": null
+  },
+  "tel_ff_d2_ibm_marrakesh_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/tel_ff_d2_ibm_marrakesh_seed100_20260817-081110_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "teleport",
+   "herald": false,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 16384,
+   "c_bond": {
+    "mean": -0.07479945454545454,
+    "se": 0.01767026572643929,
+    "n": 11
+   },
+   "frac_negative": 0.9090909090909091,
+   "logical_depth_mean": 13.909090909090908,
+   "herald_frac_mean": 1.0
+  },
+  "tel_herald_error_bars_ibm_marrakesh_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/tel_herald_error_bars_ibm_marrakesh_seed100_20260817-090125_run.json",
+    "QuantumLife/research_runs/BackLog/tel_herald_error_bars_ibm_marrakesh_seed101_20260817-090529_run.json",
+    "QuantumLife/research_runs/BackLog/tel_herald_error_bars_ibm_marrakesh_seed102_20260817-091353_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "teleport",
+   "herald": true,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 4096,
+   "c_bond": {
+    "mean": -0.065093625,
+    "se": 0.014682488217114206,
+    "n": 24
+   },
+   "frac_negative": 0.7916666666666666,
+   "logical_depth_mean": 8.875,
+   "herald_frac_mean": 0.2630708333333333
+  },
+  "tel_herald_hw_ibm_marrakesh_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/tel_herald_hw_ibm_marrakesh_seed100_20260817-075652_run.json",
+    "QuantumLife/research_runs/BackLog/tel_herald_hw_ibm_marrakesh_seed100_20260817-084355_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "teleport",
+   "herald": true,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 4096,
+   "c_bond": {
+    "mean": -0.12827669565217392,
+    "se": 0.012186803121486645,
+    "n": 23
+   },
+   "frac_negative": 1.0,
+   "logical_depth_mean": 8.91304347826087,
+   "herald_frac_mean": 0.26053043478260873
+  },
+  "tel_herald_hw_ibm_marrakesh_d36": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/tel_herald_hw_ibm_marrakesh_seed100_20260817-074549_run.json"
+   ],
+   "backend": "ibm_marrakesh",
+   "sim": false,
+   "long_range": "teleport",
+   "herald": true,
+   "d_qubits": 36,
+   "n_qubits": 102,
+   "shots": 16384,
+   "c_bond": {
+    "mean": 0.030374545454545453,
+    "se": 0.014240734190958015,
+    "n": 11
+   },
+   "frac_negative": 0.36363636363636365,
+   "logical_depth_mean": 8.909090909090908,
+   "herald_frac_mean": 0.2504
+  },
+  "tel_null_d2_sim_d12": {
+   "sources": [
+    "QuantumLife/research_runs/BackLog/tel_null_d2_sim_seed100_20260817-075913_run.json"
+   ],
+   "backend": "sim",
+   "sim": true,
+   "long_range": "teleport",
+   "herald": true,
+   "d_qubits": 12,
+   "n_qubits": 102,
+   "shots": 16384,
+   "c_bond": {
+    "mean": -0.0007999090909090917,
+    "se": 0.005764403303432897,
+    "n": 11
+   },
+   "frac_negative": 0.5454545454545454,
+   "logical_depth_mean": 8.909090909090908,
+   "herald_frac_mean": 0.2509636363636364
+  }
+ },
+ "qalife": {
+  "month4_unitary": [
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090118.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 3,
+    "signal": 0.8789081142604118,
+    "sigma": 0.026597512301419962,
+    "k_sigma": 33.044748858467095,
+    "separable_null": -1.8642604118213058e-06,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090118.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.8081868437098633,
+    "sigma": 0.021085170680867876,
+    "k_sigma": 38.32963251481718,
+    "separable_null": 5.2484701029698044e-09,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090633.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 6,
+    "signal": 0.6117350260426054,
+    "sigma": 0.014496188689610584,
+    "k_sigma": 42.19971463816802,
+    "separable_null": -9.387946098808478e-13,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090633.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 12,
+    "signal": 0.3011881510416667,
+    "sigma": 0.01687732131125326,
+    "k_sigma": 17.84573188405461,
+    "separable_null": 1.5231902510275426e-23,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090905.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 24,
+    "signal": 0.038004557291666664,
+    "sigma": 0.016056873990447404,
+    "k_sigma": 2.366871491566567,
+    "separable_null": -3.297291452273772e-49,
+    "survives_k2": true,
+    "survives_k3": false
+   },
+   {
+    "source": "THESIS/QuantumEvolutionFrontier/data/recovered/qalife_m4p2_nn_unitary_ibm_kingston_20260825-090633.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 3,
+    "mut_scale": 0.08,
+    "repeats": 3,
+    "shots": 8192,
+    "W": 32,
+    "signal": 0.007649739583333333,
+    "sigma": 0.012968339007094116,
+    "k_sigma": 0.5898781315902267,
+    "separable_null": -3.8160248652286226e-66,
+    "survives_k2": false,
+    "survives_k3": false
+   }
+  ],
+  "p2": [
+   {
+    "source": "artificial-life/research_runs/originalP2/1-live-test-reproduction_nn_unitary_ibm_kingston_20260911-134756.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.9587945938110352,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 86.7801803582444,
+    "separable_null": 0.00043392181396484375,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/2-live-test-24-width-pushing-limit_nn_unitary_ibm_kingston_20260911-135216.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "unitary",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 24,
+    "signal": 0.02587890625,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 2.3422912126804385,
+    "separable_null": 0.0,
+    "survives_k2": true,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.1-FINAL-improved-amplitude-damping_nn_damping_ibm_kingston_20260912-154050.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.814209093820125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 73.69379475762742,
+    "separable_null": -1.0944512496280367e-07,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.1-original-with-amplitude-damping_nn_damping_ibm_kingston_20260911-135952.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.011002421379089355,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 0.9958255061281189,
+    "separable_null": -1.609325408935547e-05,
+    "survives_k2": false,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.2-original-with-amplitude-damping_nn_damping_ibm_kingston_20260911-141342.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": -0.03930637017094796,
+    "sigma": 0.011048543456039806,
+    "k_sigma": -3.5576065141383597,
+    "separable_null": -2.704540520426235e-07,
+    "survives_k2": false,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.3-original-with-amplitude-damping_nn_damping_ibm_kingston_20260911-142140.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.3484783445858568,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 31.54065927082518,
+    "separable_null": -8.967271085680295e-05,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.4-improved-amplitude-damping_nn_damping_ibm_kingston_20260911-143057.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.27322082889861576,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 24.72912651207944,
+    "separable_null": -2.7469523615764047e-05,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.5-improved-amplitude-damping_nn_damping_ibm_kingston_20260911-143927.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 2,
+    "signal": 0.5449205758661435,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 49.320580403587655,
+    "separable_null": 1.2991338564916077e-06,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.6-improved-amplitude-damping_nn_damping_ibm_kingston_20260911-144138.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 8,
+    "signal": 0.00146484375,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 0.13258252147247765,
+    "separable_null": 1.4394406488548497e-31,
+    "survives_k2": false,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.7-improved-amplitude-damping_nn_damping_ibm_kingston_20260911-204023.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 3,
+    "signal": 0.7819824218750049,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 70.77696937939143,
+    "separable_null": -4.8354874791767255e-15,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.8-improved-amplitude-damping_nn_damping_ibm_kingston_20260911-204149.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.647705078125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 58.6235715777472,
+    "separable_null": 3.553046315182662e-17,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.9-PUSHING-LIMIT-W10_nn_damping_ibm_kingston_20260912-154608.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 10,
+    "signal": 0.021484375,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 1.9445436482630056,
+    "separable_null": 1.7415954176409472e-37,
+    "survives_k2": false,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.9-PUSHING-LIMIT-W12_nn_damping_ibm_kingston_20260912-154529.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 12,
+    "signal": -0.0048828125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": -0.44194173824159216,
+    "separable_null": 2.0808499884723505e-42,
+    "survives_k2": false,
+    "survives_k3": false
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.9-PUSHING-LIMIT-W8_nn_damping_ibm_kingston_20260912-154447.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 8,
+    "signal": 0.467529296875,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 42.31592143663245,
+    "separable_null": -4.3427243837904705e-33,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.9-PUSHING-LIMIT-W9_LAST_ALIVE_nn_damping_ibm_kingston_20260912-154651.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 9,
+    "signal": 0.171142578125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 15.490057925367806,
+    "separable_null": 1.337669364315435e-34,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.9-improved-amplitude-damping_nn_damping_ibm_kingston_20260912-154306.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 1,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 6,
+    "signal": 0.54150390625,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 49.01133877099257,
+    "separable_null": -2.7014670390886935e-26,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.99-PUSHING-STEPS-W4S4_nn_damping_ibm_kingston_20260912-154815.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.13134765624996755,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 11.888232758695892,
+    "separable_null": 3.2445881342614515e-14,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.99-PUSHING-STEPS-W5S4_nn_damping_ibm_kingston_20260912-154858.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 5,
+    "signal": 0.11059570312499999,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 10.00998037117206,
+    "separable_null": 7.150736302647584e-18,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.99-PUSHING-STEPS-W5S5_nn_damping_ibm_kingston_20260912-154942.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 5,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 5,
+    "signal": 0.04907226562500001,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 4.441514469328002,
+    "separable_null": -3.695048432552377e-18,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.99-PUSHING-STEPS-W6S5_LAST_ALIVE_nn_damping_ibm_kingston_20260912-155020.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 5,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 6,
+    "signal": 0.137939453125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 12.48485410532498,
+    "separable_null": 3.1496589921713306e-25,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/originalP2/3.99-PUSHING-STEPS-W6S6_nn_damping_ibm_kingston_20260912-155053.json",
+    "backend": "ibm_kingston",
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "death": "damping",
+    "phenotype": null,
+    "steps": 6,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 6,
+    "signal": 0.012939453125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 1.1711456063402192,
+    "separable_null": -5.680790403273052e-23,
+    "survives_k2": false,
+    "survives_k3": false
+   }
+  ],
+  "pj0": [
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.1_LIVE_Damping_entangled_local_damping_entangled_ibm_kingston_20260912-203902.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "local_damping",
+    "phenotype": "entangled",
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.07885742187499868,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 7.137359072601594,
+    "separable_null": 1.3211872606819846e-15,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.1_LIVE_natural_entangled_natural_entangled_ibm_kingston_20260912-204435.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "entangled",
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.11962890625008418,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 10.827572586926628,
+    "separable_null": -8.417661007694869e-14,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.1_LIVE_damping_seperable_local_damping_separable_ibm_kingston_20260912-205115.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "local_damping",
+    "phenotype": "separable",
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.7678222075471055,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 69.49533308187942,
+    "separable_null": 5.807789449363554e-08,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_0.0_LIVE_W4_S4_natural_separable_ibm_kingston_20260912-203122.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 4,
+    "signal": 0.8994140650017073,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 81.40566841052997,
+    "separable_null": -2.501707285773591e-09,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w6_s4_natural_separable_ibm_kingston_20260912-210928.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 4,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 6,
+    "signal": 0.8703613281248423,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 78.77611484154954,
+    "separable_null": 1.576162296382591e-13,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w12_s6_natural_separable_ibm_kingston_20260912-211013.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 6,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 12,
+    "signal": 0.756103515625,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 68.43467816671055,
+    "separable_null": -1.226610629922925e-25,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w16_s8_natural_separable_ibm_kingston_20260912-211209.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 8,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 16,
+    "signal": 0.295654296875,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 26.759572250528407,
+    "separable_null": 0.0,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w24_s12_natural_separable_ibm_kingston_20260912-211111.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 12,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 24,
+    "signal": 0.19287109375,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 17.45669866054289,
+    "separable_null": -4.06394729243891e-47,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w28_s14_natural_separable_ibm_kingston_20260912-211334.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 14,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 28,
+    "signal": 0.355224609375,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 32.15126145707583,
+    "separable_null": 2.426785369229688e-59,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w32_s16_natural_separable_ibm_kingston_20260912-211530.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 16,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 32,
+    "signal": 0.2705078125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 24.483572298584207,
+    "separable_null": 2.2352185681649688e-67,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w36_18_natural_separable_ibm_kingston_20260912-212117.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 18,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 36,
+    "signal": 0.2197265625,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 19.887378220871646,
+    "separable_null": -1.7040662765974356e-78,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w40_20_natural_separable_ibm_kingston_20260912-211721.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 20,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 40,
+    "signal": 0.06689453125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 6.054601813909812,
+    "separable_null": 0.0,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w42_21_natural_separable_ibm_kingston_20260912-211902.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 21,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 42,
+    "signal": 0.068359375,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 6.18718433538229,
+    "separable_null": -2.601805422506419e-92,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w46_23_natural_separable_ibm_kingston_20260912-212316.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 23,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 46,
+    "signal": 0.0810546875,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 7.33623285481043,
+    "separable_null": 0.0,
+    "survives_k2": true,
+    "survives_k3": true
+   },
+   {
+    "source": "artificial-life/research_runs/pj/pj_1.2_LIVE_LIMIT_w50_25_natural_separable_ibm_kingston_20260912-212522.json",
+    "backend": "ibm_kingston",
+    "stage": "PJ0",
+    "model": "germsoma_weismann",
+    "death": "natural",
+    "phenotype": "separable",
+    "steps": 25,
+    "mut_scale": 0.0,
+    "repeats": 1,
+    "shots": 8192,
+    "W": 50,
+    "signal": 0.057861328125,
+    "sigma": 0.011048543456039806,
+    "k_sigma": 5.237009598162867,
+    "separable_null": -2.4436962922454567e-103,
+    "survives_k2": true,
+    "survives_k3": true
+   }
+  ]
+ },
+ "motile": {
+  "source": "artificial-life/research_runs/pj2_motile/pj2_line_org2L4_ibm_marrakesh_20260927-180920.json",
+  "backend": "ibm_marrakesh",
+  "shots": 8192,
+  "frames": [
+   {
+    "gen": 0,
+    "w": 0.9966,
+    "w_sigma": 0.011,
+    "zz": 0.0,
+    "w_plus_zz": 0.9966,
+    "certified": null,
+    "alive": [
+     0.9911,
+     0.0012
+    ],
+    "born": 1
+   },
+   {
+    "gen": 1,
+    "w": 0.9973,
+    "w_sigma": 0.011,
+    "zz": 0.0,
+    "w_plus_zz": 0.9973,
+    "certified": null,
+    "alive": [
+     0.8063,
+     0.0009
+    ],
+    "born": 1
+   },
+   {
+    "gen": 2,
+    "w": 0.9961,
+    "w_sigma": 0.011,
+    "zz": 0.0,
+    "w_plus_zz": 0.9961,
+    "certified": null,
+    "alive": [
+     0.5469,
+     0.0011
+    ],
+    "born": 1
+   },
+   {
+    "gen": 3,
+    "w": 0.9788,
+    "w_sigma": 0.011,
+    "zz": 0.9814,
+    "w_plus_zz": 1.9602,
+    "certified": true,
+    "alive": [
+     0.3997,
+     0.9954
+    ],
+    "born": 2
+   },
+   {
+    "gen": 4,
+    "w": 0.9836,
+    "w_sigma": 0.011,
+    "zz": 0.9751,
+    "w_plus_zz": 1.9586999999999999,
+    "certified": true,
+    "alive": [
+     0.4749,
+     0.8182
+    ],
+    "born": 2
+   },
+   {
+    "gen": 5,
+    "w": 0.9822,
+    "w_sigma": 0.011,
+    "zz": 0.9827,
+    "w_plus_zz": 1.9649,
+    "certified": true,
+    "alive": [
+     0.4569,
+     0.5092
+    ],
+    "born": 2
+   }
+  ]
+ },
+ "phantoms": {
+  "source": "QuantumPhantoms/research_runs/dscale_live_100_20261031-170957",
+  "roll_job": "dbj15npffo6c73b8mls0",
+  "chsh": {
+   "S": 2.7333984375,
+   "shots_per_setting": 2048,
+   "sigma_S_equal_E": 0.032265781971986054,
+   "z_above_2": 22.729913632242187
+  },
+  "dscale_job": "dbj16056p51s73cjs7q0",
+  "claims": [
+   {
+    "family": "ghz-spine",
+    "claim_level": "L0",
+    "witness": "DFE GHZ fidelity (GME)",
+    "value": 0.05479166666666666,
+    "sigma": 0.019256513970966022,
+    "k": 2,
+    "passed": false,
+    "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+    "note": "N=28, kept 1.000; ghz2=0.946; stabilizer state (BP chi = 2): survives, not hard"
+   },
+   {
+    "family": "ch-qca",
+    "claim_level": "L1",
+    "witness": "QCA pair negativity (Bonferroni)",
+    "value": 0.014017819084372971,
+    "sigma": 0.006171665689290047,
+    "k": 2,
+    "passed": true,
+    "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+    "note": "23 sites, t_w=2, rule parity; non-Clifford (frontier family); hardness is the BP column, not this witness"
+   },
+   {
+    "family": "pmd-bank",
+    "claim_level": "L0",
+    "witness": "PMD memory gap / floor",
+    "value": -2.877465152432127,
+    "sigma": null,
+    "k": 3,
+    "passed": false,
+    "label": "hardware: ibm_marrakesh, job dbj16056p51s73cjs7q0",
+    "note": "process {'V': 0.4, 'Gamma': 0.7, 'N': 8, 'L': 8}; 1 machines; 2-q blocks: survives, never L2"
+   }
+  ],
+  "ghz_spine": {
+   "N": 28,
+   "depth": 8,
+   "n_checks": 0,
+   "kept_fraction": 1.0,
+   "m": 24,
+   "F_dfe": 0.05479166666666666,
+   "F_sigma": 0.019256513970966022,
+   "gme": false,
+   "gme_k3": false,
+   "F_dfe_trex": 0.12122556780237963,
+   "ghz2": 0.9462407407407408,
+   "ghz2_sigma": 0.015747114832143055,
+   "ghz2_X": 0.1445,
+   "ghz2_ZZ": 0.8017407407407409
+  },
+  "ch_qca": {
+   "sites": 23,
+   "t_w": 2,
+   "negativity_edges": [
+    {
+     "i": 137,
+     "j": 147,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 146,
+     "j": 147,
+     "N": 0.014017819084372971,
+     "sigma": 0.006171665689290047,
+     "p": 0.011563848971832037,
+     "p_bonf": 0.046255395887328146,
+     "passed": true
+    },
+    {
+     "i": 147,
+     "j": 148,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    },
+    {
+     "i": 145,
+     "j": 146,
+     "N": -0.0,
+     "sigma": 0.0,
+     "p": 0.5,
+     "p_bonf": 1.0,
+     "passed": false
+    }
+   ],
+   "echo": [
+    {
+     "t": 2,
+     "F": 0.05575,
+     "sigma": 0.0036277381899745744,
+     "alive": true
+    }
+   ]
+  },
+  "pmd_bank": {
+   "process": {
+    "V": 0.4,
+    "Gamma": 0.7,
+    "N": 8,
+    "L": 8
+   },
+   "machines": [
+    {
+     "k": "pmd0",
+     "path": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "d_kl_q": 0.0025804155606094477,
+     "n_words": 36000,
+     "floor": 0.0006386931170602181,
+     "d_kl_classical": {
+      "1": 0.007929241492587634,
+      "2": 0.0007425983731704171
+     },
+     "gap_over_floor": -2.877465152432127,
+     "passed": false
+    }
+   ],
+   "passed_all": false
+  },
+  "usage_s": 32,
+  "tiles": [
+   {
+    "tile": "tile_0_0",
+    "type": "ground-glass",
+    "size_mm": 13.0,
+    "lobe": "RLL",
+    "margin": "smooth",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 13.001,
+    "vdt_d": 1226.5,
+    "seed_cells": 414,
+    "hu_core": -580.6,
+    "volume_pd_pct": 0.01,
+    "sigma_ratio_in_out": 1.003,
+    "sigma_edge_mm": 0.494
+   },
+   {
+    "tile": "tile_1_0",
+    "type": "calcified",
+    "size_mm": 26.0,
+    "lobe": "RUL",
+    "margin": "lobulated",
+    "renderer": "procedural-3d",
+    "seed_source": null,
+    "diameter_baseline_mm": null,
+    "vdt_d": null,
+    "seed_cells": null,
+    "hu_core": null,
+    "volume_pd_pct": null,
+    "sigma_ratio_in_out": 1.001,
+    "sigma_edge_mm": null
+   },
+   {
+    "tile": "tile_2_0",
+    "type": "solid",
+    "size_mm": 13.0,
+    "lobe": "RUL",
+    "margin": "lobulated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 13.001,
+    "vdt_d": 231.5,
+    "seed_cells": 132,
+    "hu_core": 26.8,
+    "volume_pd_pct": 0.0,
+    "sigma_ratio_in_out": 0.97,
+    "sigma_edge_mm": 1.03
+   },
+   {
+    "tile": "tile_3_0",
+    "type": "ground-glass",
+    "size_mm": 13.0,
+    "lobe": "RUL",
+    "margin": "spiculated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 13.0015,
+    "vdt_d": 1823.5,
+    "seed_cells": 197,
+    "hu_core": -775.0,
+    "volume_pd_pct": 0.28,
+    "sigma_ratio_in_out": 0.909,
+    "sigma_edge_mm": 1.205
+   },
+   {
+    "tile": "tile_4_0",
+    "type": "solid",
+    "size_mm": 26.0,
+    "lobe": "LUL",
+    "margin": "spiculated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 26.0021,
+    "vdt_d": 569.6,
+    "seed_cells": 256,
+    "hu_core": 74.5,
+    "volume_pd_pct": 0.01,
+    "sigma_ratio_in_out": 0.985,
+    "sigma_edge_mm": 0.93
+   },
+   {
+    "tile": "tile_5_0",
+    "type": "solid",
+    "size_mm": 13.0,
+    "lobe": "RLL",
+    "margin": "spiculated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 13.0029,
+    "vdt_d": 283.5,
+    "seed_cells": 212,
+    "hu_core": 8.2,
+    "volume_pd_pct": 0.33,
+    "sigma_ratio_in_out": 0.865,
+    "sigma_edge_mm": 1.689
+   },
+   {
+    "tile": "tile_6_0",
+    "type": "part-solid",
+    "size_mm": 4.0,
+    "lobe": "RLL",
+    "margin": "lobulated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 4.0046,
+    "vdt_d": 266.8,
+    "seed_cells": 24,
+    "hu_core": 16.2,
+    "volume_pd_pct": 0.03,
+    "sigma_ratio_in_out": null,
+    "sigma_edge_mm": 1.483
+   },
+   {
+    "tile": "tile_7_0",
+    "type": "part-solid",
+    "size_mm": 13.0,
+    "lobe": "RUL",
+    "margin": "smooth",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 13.0025,
+    "vdt_d": 862.4,
+    "seed_cells": 109,
+    "hu_core": 13.1,
+    "volume_pd_pct": 0.0,
+    "sigma_ratio_in_out": 1.045,
+    "sigma_edge_mm": 1.808
+   },
+   {
+    "tile": "tile_8_0",
+    "type": "solid",
+    "size_mm": 4.0,
+    "lobe": "RML",
+    "margin": "spiculated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 4.0095,
+    "vdt_d": 72.7,
+    "seed_cells": 33,
+    "hu_core": 3.7,
+    "volume_pd_pct": 14.46,
+    "sigma_ratio_in_out": 1.143,
+    "sigma_edge_mm": 0.05
+   },
+   {
+    "tile": "tile_8_1",
+    "type": "solid",
+    "size_mm": 4.0,
+    "lobe": "RML",
+    "margin": "spiculated",
+    "renderer": "grown+fitted",
+    "seed_source": "dscale:ch-qca:ibm_marrakesh:23",
+    "diameter_baseline_mm": 4.0095,
+    "vdt_d": 64.4,
+    "seed_cells": 24,
+    "hu_core": 11.7,
+    "volume_pd_pct": 14.89,
+    "sigma_ratio_in_out": null,
+    "sigma_edge_mm": 1.613
+   },
+   {
+    "tile": "tile_9_0",
+    "type": "calcified",
+    "size_mm": 4.0,
+    "lobe": "RLL",
+    "margin": "smooth",
+    "renderer": "procedural-3d",
+    "seed_source": null,
+    "diameter_baseline_mm": null,
+    "vdt_d": null,
+    "seed_cells": null,
+    "hu_core": null,
+    "volume_pd_pct": null,
+    "sigma_ratio_in_out": 1.245,
+    "sigma_edge_mm": null
+   },
+   {
+    "tile": "tile_9_1",
+    "type": "calcified",
+    "size_mm": 13.0,
+    "lobe": "RUL",
+    "margin": "smooth",
+    "renderer": "procedural-3d",
+    "seed_source": null,
+    "diameter_baseline_mm": null,
+    "vdt_d": null,
+    "seed_cells": null,
+    "hu_core": null,
+    "volume_pd_pct": null,
+    "sigma_ratio_in_out": 1.189,
+    "sigma_edge_mm": null
+   }
+  ]
+ },
+ "separable_check": {
+  "state": "1/2(|+>^n<+|^n + |->^n<-|^n), fully separable",
+  "rows": [
+   {
+    "n": 2,
+    "joint_X": 1.0,
+    "prod_marginals": 0.0,
+    "signal": 1.0
+   },
+   {
+    "n": 4,
+    "joint_X": 1.0,
+    "prod_marginals": 0.0,
+    "signal": 1.0
+   },
+   {
+    "n": 24,
+    "joint_X": 1.0,
+    "prod_marginals": 0.0,
+    "signal": 1.0
+   },
+   {
+    "n": 50,
+    "joint_X": 1.0,
+    "prod_marginals": 0.0,
+    "signal": 1.0
+   }
+  ]
+ }
+}

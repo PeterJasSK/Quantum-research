@@ -1,0 +1,17 @@
+== qt
+  QT serial_L1 seed 100: chi 1, 0.024+0.658 s, ideal c1 +0.0013 hw gen0 -0.0095
+  QT serial_L1 seed 101: chi 1, 0.021+0.674 s, ideal c1 +0.0007 hw gen0 +0.0394
+  QT serial_L1 seed 102: chi 1, 0.022+0.652 s, ideal c1 +0.0006 hw gen0 +0.0426
+  QT serial_L2 seed 100: chi 4, 0.036+4.982 s, ideal c1 -0.1324 hw gen0 -0.1037
+  QT serial_L2 seed 101: chi 4, 0.038+4.937 s, ideal c1 -0.1569 hw gen0 -0.1026
+  QT serial_L2 seed 102: chi 4, 0.037+4.98 s, ideal c1 -0.1827 hw gen0 -0.1054
+  QT serial_L4 seed 100: chi 46, 1.308+46.022 s, ideal c1 -0.0143 hw gen0 +0.0075
+  QT serial_L4 seed 101: chi 46, 0.918+52.13 s, ideal c1 -0.0138 hw gen0 -0.0056
+  QT serial_L4 seed 102: chi 46, 2.156+98.862 s, ideal c1 -0.0311 hw gen0 -0.0116
+  QT brick_L1 seed 100: chi 2, 0.056+8.027 s, ideal c1 +0.0583 hw gen0 +0.0576
+  QT brick_L1 seed 101: chi 2, 0.05+8.187 s, ideal c1 +0.0521 hw gen0 +0.0484
+  QT brick_L1 seed 102: chi 2, 0.104+9.007 s, ideal c1 +0.0488 hw gen0 +0.0486
+  QT brick_L2 seed 100: chi 8, 0.097+17.777 s, ideal c1 -0.0156 hw gen0 +0.0019
+  QT brick_L2 seed 101: chi 8, 0.127+16.793 s, ideal c1 -0.0528 hw gen0 -0.0445
+  QT brick_L2 seed 102: chi 8, 0.113+19.868 s, ideal c1 -0.0661 hw gen0 -0.0465
+wrote /home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/classical_cost.json

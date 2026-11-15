@@ -1,0 +1,411 @@
+[
+ {
+  "source": "swap_d2_ibm_marrakesh_seed100_20260817-080244_run.json",
+  "arm": "swap",
+  "herald": null,
+  "d_qubits": 12,
+  "seed": 100,
+  "rows": [
+   {
+    "gen": 0,
+    "env_match": true,
+    "ideal_c_at_d": -0.123277,
+    "hw_c_at_d": -0.042726,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 1,
+    "env_match": true,
+    "ideal_c_at_d": -0.144549,
+    "hw_c_at_d": -0.02563,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 2,
+    "env_match": true,
+    "ideal_c_at_d": -0.286032,
+    "hw_c_at_d": -0.001246,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 3,
+    "env_match": true,
+    "ideal_c_at_d": -0.250835,
+    "hw_c_at_d": -0.02165,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 4,
+    "env_match": true,
+    "ideal_c_at_d": -0.175841,
+    "hw_c_at_d": -0.009468,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 5,
+    "env_match": true,
+    "ideal_c_at_d": -0.132501,
+    "hw_c_at_d": 0.014543,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 6,
+    "env_match": true,
+    "ideal_c_at_d": -0.160673,
+    "hw_c_at_d": 0.015398,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 7,
+    "env_match": true,
+    "ideal_c_at_d": -0.202757,
+    "hw_c_at_d": 0.018976,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 8,
+    "env_match": true,
+    "ideal_c_at_d": -0.21673,
+    "hw_c_at_d": -0.00245,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 9,
+    "env_match": true,
+    "ideal_c_at_d": -0.1853,
+    "hw_c_at_d": 0.022361,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 10,
+    "env_match": true,
+    "ideal_c_at_d": -0.087681,
+    "hw_c_at_d": 0.007909,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   }
+  ],
+  "ideal_mean": -0.17874327272727275,
+  "hw_mean": -0.0021802727272727277,
+  "sign_agree_frac": 0.5454545454545454,
+  "corr_ideal_hw": -0.03437507002138313
+ },
+ {
+  "source": "swap_r8_ibm_marrakesh_seed100_20260817-093546_run.json",
+  "arm": "swap",
+  "herald": null,
+  "d_qubits": 12,
+  "seed": 100,
+  "rows": [
+   {
+    "gen": 0,
+    "env_match": true,
+    "ideal_c_at_d": -0.123277,
+    "hw_c_at_d": 0.022206,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 1,
+    "env_match": true,
+    "ideal_c_at_d": -0.149126,
+    "hw_c_at_d": 0.152333,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 2,
+    "env_match": true,
+    "ideal_c_at_d": -0.25348,
+    "hw_c_at_d": 0.008955,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 3,
+    "env_match": true,
+    "ideal_c_at_d": -0.233387,
+    "hw_c_at_d": 0.161028,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 4,
+    "env_match": true,
+    "ideal_c_at_d": -0.153816,
+    "hw_c_at_d": 0.108177,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 5,
+    "env_match": true,
+    "ideal_c_at_d": -0.136636,
+    "hw_c_at_d": 0.051429,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 6,
+    "env_match": true,
+    "ideal_c_at_d": -0.181479,
+    "hw_c_at_d": 0.010461,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 7,
+    "env_match": true,
+    "ideal_c_at_d": -0.223534,
+    "hw_c_at_d": 0.126574,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   }
+  ],
+  "ideal_mean": -0.181841875,
+  "hw_mean": 0.08014537499999999,
+  "sign_agree_frac": 0.0,
+  "corr_ideal_hw": -0.11683324161256012
+ },
+ {
+  "source": "swap_r8_ibm_marrakesh_seed101_20260817-093724_run.json",
+  "arm": "swap",
+  "herald": null,
+  "d_qubits": 12,
+  "seed": 101,
+  "rows": [
+   {
+    "gen": 0,
+    "env_match": true,
+    "ideal_c_at_d": -0.01275,
+    "hw_c_at_d": 0.061555,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 1,
+    "env_match": true,
+    "ideal_c_at_d": -0.052348,
+    "hw_c_at_d": 0.037562,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 2,
+    "env_match": true,
+    "ideal_c_at_d": -0.079742,
+    "hw_c_at_d": 0.048471,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 3,
+    "env_match": true,
+    "ideal_c_at_d": -0.122768,
+    "hw_c_at_d": -0.009681,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 4,
+    "env_match": true,
+    "ideal_c_at_d": -0.097537,
+    "hw_c_at_d": 0.006698,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 5,
+    "env_match": true,
+    "ideal_c_at_d": 0.021231,
+    "hw_c_at_d": 0.07292,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 6,
+    "env_match": true,
+    "ideal_c_at_d": 0.083341,
+    "hw_c_at_d": -0.063289,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 7,
+    "env_match": true,
+    "ideal_c_at_d": 0.058122,
+    "hw_c_at_d": 0.051279,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   }
+  ],
+  "ideal_mean": -0.025306375,
+  "hw_mean": 0.025689375,
+  "sign_agree_frac": 0.375,
+  "corr_ideal_hw": -0.06828063763098789
+ },
+ {
+  "source": "swap_r8_ibm_marrakesh_seed102_20260817-094058_run.json",
+  "arm": "swap",
+  "herald": null,
+  "d_qubits": 12,
+  "seed": 102,
+  "rows": [
+   {
+    "gen": 0,
+    "env_match": true,
+    "ideal_c_at_d": -0.141656,
+    "hw_c_at_d": 0.025926,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 1,
+    "env_match": true,
+    "ideal_c_at_d": -0.146116,
+    "hw_c_at_d": 0.093058,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 2,
+    "env_match": true,
+    "ideal_c_at_d": -0.034619,
+    "hw_c_at_d": 0.052952,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 3,
+    "env_match": true,
+    "ideal_c_at_d": 0.042452,
+    "hw_c_at_d": 0.022704,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 4,
+    "env_match": true,
+    "ideal_c_at_d": 0.04991,
+    "hw_c_at_d": 0.01006,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 5,
+    "env_match": true,
+    "ideal_c_at_d": -0.063583,
+    "hw_c_at_d": 0.065306,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 6,
+    "env_match": true,
+    "ideal_c_at_d": -0.092449,
+    "hw_c_at_d": 0.013097,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 7,
+    "env_match": true,
+    "ideal_c_at_d": -0.114282,
+    "hw_c_at_d": 0.019128,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   }
+  ],
+  "ideal_mean": -0.062542875,
+  "hw_mean": 0.037778875,
+  "sign_agree_frac": 0.25,
+  "corr_ideal_hw": -0.394873149988294
+ },
+ {
+  "source": "swap_r8_ibm_marrakesh_seed103_20260817-094251_run.json",
+  "arm": "swap",
+  "herald": null,
+  "d_qubits": 12,
+  "seed": 103,
+  "rows": [
+   {
+    "gen": 0,
+    "env_match": true,
+    "ideal_c_at_d": 0.041544,
+    "hw_c_at_d": 0.015045,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 1,
+    "env_match": true,
+    "ideal_c_at_d": 0.064151,
+    "hw_c_at_d": 0.037608,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 2,
+    "env_match": true,
+    "ideal_c_at_d": 0.064045,
+    "hw_c_at_d": -0.132712,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 3,
+    "env_match": true,
+    "ideal_c_at_d": -0.038577,
+    "hw_c_at_d": 0.12972,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 4,
+    "env_match": true,
+    "ideal_c_at_d": -0.078839,
+    "hw_c_at_d": -0.01312,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 5,
+    "env_match": true,
+    "ideal_c_at_d": -0.088791,
+    "hw_c_at_d": 0.107694,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 6,
+    "env_match": true,
+    "ideal_c_at_d": -0.058076,
+    "hw_c_at_d": 0.015921,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   },
+   {
+    "gen": 7,
+    "env_match": true,
+    "ideal_c_at_d": -0.032612,
+    "hw_c_at_d": -0.029654,
+    "ideal_kept_frac": 1.0,
+    "hw_herald_frac": null
+   }
+  ],
+  "ideal_mean": -0.015894375,
+  "hw_mean": 0.01631275,
+  "sign_agree_frac": 0.5,
+  "corr_ideal_hw": -0.46641022725845993
+ }
+]

@@ -45,7 +45,7 @@ def main() -> None:
         a.backend = saved["name"]
     a.shots = a.shots or (4000 if a.backend else 400)
     ctx = Ctx(run_dir=run_dir, backend=a.backend, shots=a.shots)
-    print(f"run {run_dir}  |  {'LIVE on ' + a.backend + ' (real hardware, Peter only)' if a.backend else 'dry run (local fake backend)'}"
+    print(f"run {run_dir}  |  {'LIVE on ' + a.backend + ' (real hardware, ME only :)' if a.backend else 'dry run (local fake backend)'}"
           f"  |  {a.shots} shots")
     for name, done in SECTIONS:
         if done and (run_dir / done).is_file():

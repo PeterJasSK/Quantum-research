@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "stage": 4,
+    "model": "AlvarezRodriguez2018_full",
+    "backend": "ibm_kingston",
+    "steps": 3,
+    "interaction": "nn",
+    "routing": "swap",
+    "death": "unitary",
+    "mut_scale": 0.08,
+    "delta": 0.39269908169872414,
+    "gamma": 0.18,
+    "alive_thresh": 0.8,
+    "shots": 8192,
+    "repeats": 3,
+    "k": 2.0,
+    "widths": [
+      6,
+      12,
+      32
+    ],
+    "sim": false,
+    "genealogical_entanglement_depth_W": 12
+  },
+  "by_width": {
+    "6": {
+      "witness_joint_mean": 0.6117350260416666,
+      "witness_joint_sigma": 0.014496188689610584,
+      "separable_mean": -9.387946098808478e-13,
+      "entanglement_signal": 0.6117350260426054,
+      "survives": true,
+      "alive_mean": 5.0,
+      "deepest_mean": 4.0
+    },
+    "12": {
+      "witness_joint_mean": 0.3011881510416667,
+      "witness_joint_sigma": 0.01687732131125326,
+      "separable_mean": 1.5231902510275426e-23,
+      "entanglement_signal": 0.3011881510416667,
+      "survives": true,
+      "alive_mean": 11.0,
+      "deepest_mean": 10.0
+    },
+    "32": {
+      "witness_joint_mean": 0.007649739583333333,
+      "witness_joint_sigma": 0.012968339007094116,
+      "separable_mean": -3.8160248652286226e-66,
+      "entanglement_signal": 0.007649739583333333,
+      "survives": false,
+      "alive_mean": 32.0,
+      "deepest_mean": 31.0
+    }
+  }
+}

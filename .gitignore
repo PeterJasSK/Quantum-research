@@ -19,3 +19,7 @@ TargetedDosColisionsAndRNGAngle/testbed/results/**/*.jsonl
 QuantumPhantoms/plans/relatedPapers/papers/
 QuantumPhantoms/plans/relatedPapers/reverse-engineering/**/runs/
 
+
+# QuantumPhantoms F5: host CT voxels/masks + hybrid ROIs (patient voxels, never commit)
+QuantumPhantoms/research_runs/_hosts/
+QuantumPhantoms/research_runs/*/_roi/

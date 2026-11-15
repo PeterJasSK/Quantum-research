@@ -1,0 +1,34 @@
+\begin{table*}[t]
+\centering
+\caption{Nine checks every quantum-biology result should pass. Each row is an instance in our own hardware
+record where a check failed, the number that showed it, and the test that catches it.}
+\label{tab:audit}
+\small
+\begin{tabular}{p{0.3cm}p{2.9cm}p{4.3cm}p{5.0cm}p{3.6cm}}
+\toprule
+& Check fails when & Instance in our record & Number & Test that catches it\\
+\midrule
+F1 & Single-basis biology read as quantum & QAL phenotype populations, alive counts & classical surrogate matches the
+quantum phenotype to \surrUnitaryFixed{} (unitary death); the shipped surrogate had a SWAP-order bug
+(\surrUnitaryCode{}) and a mis-set damping form (\surrDamp{}) & build the classical surrogate of the same
+probabilities\\
+F2 & Diversity or entropy as evidence & tree art metric (mean bit entropy) & diversity \qtDivHw{} (hardware) vs
+\qtDivSim{} (classical surrogate) while $c(1)$ differs by $|z|=\qtZsim$ & measure multi-qubit correlations\\
+F3 & Null that excludes too little & tree ``no-entangler'' floor; QAL measure-and-resend null & floor depth
+\qtDepthFloor{} equals one-layer depth \qtDepthLone{}; a separable mixture scores $\langle X^{\otimes W}\rangle=1$ &
+a real no-op control; the separable set as null\\
+F4 & Depth or crosstalk confound & tree floor arm & ideal product state ($\chi=1$, $c(1)=\qtIdealLoneMean$), hardware
+$c(1)=\qtHwLoneMean$ & exact ideal of the same circuit\\
+F5 & One-basis witness & QAL $W=24$ and $W=50$ & only $\langle X^{\otimes W}\rangle$ measured; the one GME test
+(28 qubits) gave $F=\ghzF<0.5$ & two-setting GME witness~\cite{toth2005}\\
+F6 & Entangled taken as hard & GHZ spine, all genealogies & $\chi=2$ for every genealogy circuit up to 154 qubits
+& stabilizer, MPS, BP simulation\\
+F7 & Hilbert-space size taken as hardness & ``$2^{108}$ amplitudes'' for the 108-qubit tree & exact at
+$\chi\le\qtChiLfour$, at most \qtCostLfour{}~s & the cheapest exact method, not the state vector\\
+F8 & Logical depth or qubit count as merit & teleport vs SWAP; 9-qubit roll & \teleportAuditCell{}; roll compiles
+from \rollTwoQLogical{} to \rollTwoQIsa{} two-qubit gates & exact replay; compiled two-qubit count\\
+F9 & Simulated certification & CHSH in simulation & only the hardware job certifies: $S=\chshS\pm\chshSig$
+& Bell test on hardware in the same job\\
+\bottomrule
+\end{tabular}
+\end{table*}

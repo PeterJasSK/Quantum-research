@@ -1,0 +1,34 @@
+{
+ "render": {
+  "cohorts": [
+   "quantum_0",
+   "quantum_1",
+   "quantum_2",
+   "quantum_3",
+   "twin_0",
+   "twin_1",
+   "twin_2",
+   "twin_3"
+  ],
+  "returncodes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "logs": {
+   "quantum_0": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/quantum_0/tiles.log",
+   "quantum_1": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/quantum_1/tiles.log",
+   "quantum_2": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/quantum_2/tiles.log",
+   "quantum_3": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/quantum_3/tiles.log",
+   "twin_0": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/twin_0/tiles.log",
+   "twin_1": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/twin_1/tiles.log",
+   "twin_2": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/twin_2/tiles.log",
+   "twin_3": "/home/peter/PycharmProjects/Quantum-research/THESIS/QuantumEvolutionFrontier/runs/ct_twin_cohorts/twin_3/tiles.log"
+  }
+ }
+}
