@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuantumPhantoms/web/progress/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/QuantumPhantoms/web/progress/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +212,7 @@
       <workItem from="1793807870919" duration="11617000" />
       <workItem from="1794139314646" duration="46696000" />
       <workItem from="1794512018415" duration="3493000" />
-      <workItem from="1794640551157" duration="45322000" />
+      <workItem from="1794640551157" duration="46105000" />
     </task>
     <servers />
   </component>
