@@ -27,7 +27,8 @@ WL, WW = -600.0, 1500.0       # lung window
 ROI_MARGIN_MM = 15.0
 FRAME_SUPERSAMPLE = 2         # growth-player thumbnails; the inserted tile keeps RenderParams.supersample
 LIDC_DOI = "https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX"
-HONEST = ("Tumour parameters come from a quantum measurement (CHSH on the roll); growth (published models) and the "
+HONEST = ("Tumour parameters are drawn from bits extracted from a Bell test on one chip (job-level, not "
+          "device-independent); growth (published models) and the "
           "image are classical. Host CT: one public LIDC-IDRI scan; all nodules are inserted into that one scan.")
 
 

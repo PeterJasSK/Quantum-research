@@ -1,0 +1,114 @@
+{
+ "chsh_S": 2.773333333333333,
+ "classical_bound": 2.0,
+ "tsirelson_bound": 2.8284271247461903,
+ "backend": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+ "job_id": "",
+ "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+ "scope": "job-level; not device-independent; settings fixed per circuit, pairs on one chip, no space-like separation; pairs selected on the data that is pooled",
+ "chsh_settings": {
+  "a0": 0.0,
+  "a1": 1.5707963267948966,
+  "b0": 0.7853981633974483,
+  "b1": -0.7853981633974483
+ },
+ "shots_per_setting": 200,
+ "pairs_measured": 6,
+ "pairs_certified": 6,
+ "pairs_needed": 4,
+ "z_needed": 3.5088988422771314,
+ "sigma": 0.04160345204694224,
+ "S_low": 2.6485229771925063,
+ "pairs": [
+  {
+   "qubits": [
+    5,
+    6
+   ],
+   "matching": 0,
+   "S": 2.81,
+   "sigma": 0.10057087053416612,
+   "certified": true
+  },
+  {
+   "qubits": [
+    13,
+    14
+   ],
+   "matching": 0,
+   "S": 2.71,
+   "sigma": 0.10401682556202146,
+   "certified": true
+  },
+  {
+   "qubits": [
+    44,
+    45
+   ],
+   "matching": 0,
+   "S": 2.77,
+   "sigma": 0.10166857921698326,
+   "certified": true
+  },
+  {
+   "qubits": [
+    94,
+    95
+   ],
+   "matching": 0,
+   "S": 2.7499999999999996,
+   "sigma": 0.10261335195772528,
+   "certified": true
+  },
+  {
+   "qubits": [
+    111,
+    112
+   ],
+   "matching": 0,
+   "S": 2.7199999999999998,
+   "sigma": 0.10362914647916387,
+   "certified": true
+  },
+  {
+   "qubits": [
+    34,
+    35
+   ],
+   "matching": 0,
+   "S": 2.88,
+   "sigma": 0.09795407086997457,
+   "certified": true
+  }
+ ],
+ "pair_map": {
+  "5-6": 2.81,
+  "13-14": 2.71,
+  "44-45": 2.77,
+  "94-95": 2.7499999999999996,
+  "111-112": 2.7199999999999998,
+  "34-35": 2.88
+ },
+ "passed": true,
+ "rounds": 4800,
+ "hmin_per_round": 0.4185832341769852,
+ "certified_bits": 2009.199524049529,
+ "entropy_rigour": "analytic rate at a 3-sigma lower value, not a composable security proof",
+ "extractor": {
+  "kind": "toeplitz",
+  "seed_hex": "7393b634de97f4f6a812aedd8c525a6d2b54a8dc20b2857509c9c65f8e36b963",
+  "output_bits": 1004,
+  "input_bits": 9600,
+  "seed_expansion": "SHAKE-256 of the 32-byte os.urandom seed"
+ },
+ "budget": {
+  "available": 1004,
+  "spent": {
+   "roll": 256,
+   "R5-H12/game-inputs": 64,
+   "R3-TEST/test": 64
+  }
+ },
+ "pool": "bits extracted from Bell-test outcomes on one chip; job-level; not device-independent; simulated",
+ "status": "certification-ready, not certified (simulated)"
+}

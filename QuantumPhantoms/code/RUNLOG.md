@@ -115,8 +115,23 @@ Notes:
 Scope from 2026-11-14: the tile-scale separations (R1, R2, R3) plus the ring ladder (R5, then R6a) as the measured
 distance to L2. DSCALE (GHZ spine, CH-QCA, PMD), R6b-LEAN64 as an L2 candidate and R4 on fez are dropped.
 
-1. `R3-TEST` once more (repeatability), with any B circuit.
-2. `R1-TILE24` (D) with `R2-D4` (B): the clock on 24 tiles.
+0. QSCALE (2026-11-15, dry runs only so far): C now runs first as a Bell map and the run spends its bits. First
+   live run: B `R2-MAP`, D `R5-LADDER` on the best backend open; compare the pair map with the ring the layout
+   picked, and check the pool size against the spend (12 tumours = 768 bits). Then D `R6a-S36` with `--run` on the
+   same directory to read the forecast line and "L2 distance".
+   QCAND (2026-11-15, dry runs only): 11 candidates built, one live run each, in this order. B and D can share a
+   run; C `GRAPH-BELL` is its own switch. Two live runs below the bound on the best backend = dropped (row kept,
+   commented).
+   - D `D-GRAPH` with B `B-GHZ`; then C `GRAPH-BELL` in the next run.
+   - D `D-DU`, then `R6a-S36` with `--run` on the same directory: the forecast then uses the deep-circuit loss.
+   - B `B-MSQ`, D `D-STC`.
+   - B `B-IQP` (108 qubits need one connected pruned region; refused otherwise), D `D-DTC`.
+   - B `B-KS` last: set `MID_CIRCUIT_LIVE = True` in `B_mapping/games.py` once mid-circuit readout is enabled.
+   Paper checks before any claim: 2512.02284 (GHZ game bound), 2101.10307 Eq. 3 (graph Bell form), 2504.15725
+   (check construction), 2411.00765 (dual-unitary observable), 2501.18036 (couplings), 2506.06869, 2503.18949.
+1. `R3-TEST` once more (repeatability), with any B circuit. It now takes certified pairs of the Bell map, 2,000
+   pool circuits at 10 shots.
+2. `R1-TILE24` (D) with `R2-D4` (B): the clock on 24 tiles, both arms.
 3. `R5-H12` (B) again with the corrected input set, on a backend with lower readout error than ibm_fez if one is
    open; `R5-LADDER` (D) in the same run for a clean loss number.
 4. `R6a-S36`: not on ibm_fez. At 0.045 loss per CZ a depth-22 ring has no signal.

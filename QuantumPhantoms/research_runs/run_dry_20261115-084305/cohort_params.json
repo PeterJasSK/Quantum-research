@@ -1,0 +1,38 @@
+[
+ {
+  "size_mm": 4.0,
+  "type": "solid",
+  "margin": "spiculated",
+  "lobe": "RUL",
+  "lineage_id": "tile0",
+  "generation": 0,
+  "shot_index": 0
+ },
+ {
+  "size_mm": 7.0,
+  "type": "solid",
+  "margin": "smooth",
+  "lobe": "RLL",
+  "lineage_id": "tile1",
+  "generation": 0,
+  "shot_index": 1
+ },
+ {
+  "size_mm": 7.0,
+  "type": "solid",
+  "margin": "lobulated",
+  "lobe": "RML",
+  "lineage_id": "pair2",
+  "generation": 0,
+  "shot_index": 2
+ },
+ {
+  "size_mm": 7.0,
+  "type": "solid",
+  "margin": "lobulated",
+  "lobe": "RML",
+  "lineage_id": "pair2",
+  "generation": 1,
+  "shot_index": 2
+ }
+]

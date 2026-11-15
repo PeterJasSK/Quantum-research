@@ -20,8 +20,8 @@ from common import RESEARCH_RUNS
 from common.runio import Ctx, load_json
 
 SECTIONS = [                                    # (section, the file that marks it done)
-    ("B_mapping", "cohort_params.json"),        # rulebook -> circuit -> tumour parameters (+ CHSH pair)
-    ("C_certificate", "certificate.json"),      # CHSH gate: S <= 2 stops the run
+    ("C_certificate", "certificate.json"),      # Bell map: certificate, bit pool, pair map; too weak stops the run
+    ("B_mapping", "cohort_params.json"),        # rulebook + pool bits -> tumour parameters; B's hypothesis circuit
     ("D_quantum_growth", "dscale/dscale_run.json"),   # quantum growth: seed shapes / hypothesis circuit
     ("A_placement", "sites.json"),              # a 3-D site per tumour in the host lung
     ("E_classical_growth", "growth.json"),      # classical growth from the seed

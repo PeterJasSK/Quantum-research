@@ -9,15 +9,14 @@ Ansatz (M15): |+>^n, then `layers` x (RZZ brick on alternating ring bonds, RX an
 L-BFGS on the exact 2^12 statevector (adjoint gradient). Classical only.
 
 What this implementation does NOT give the theorem (plan X13), and says so in the claim:
-  * inputs: the targets and Cliffords are expanded from the roll's quantum bits (or the run name) with SHA-256 /
-    PCG64. That is a pseudo-random expansion. Pass --randomness <file of true random bytes> through
-    params["randomness_file"] to lift it.
+  * inputs: the targets and Cliffords are expanded with PCG64 from 64 bits of the run's Bell-test pool (same
+    device, drawn before the circuit ran: the setting-independence loophole is open). That is a pseudo-random
+    expansion of a short seed. A file of true random bytes in params["randomness_file"] replaces it.
   * bits(eps) (M16) is a straight line through two published points; the constants are not transcribed (gap G9).
 """
 from __future__ import annotations
 
 import hashlib
-import json
 import math
 from pathlib import Path
 
@@ -137,12 +136,12 @@ def _randomness(ctx: Ctx, name: str, cfg: dict) -> tuple[np.random.Generator, st
         raw = Path(f).read_bytes()
         seed = int.from_bytes(hashlib.sha256(raw).digest()[:8], "big")
         return np.random.Generator(np.random.PCG64(seed)), f"file {f} ({len(raw)} bytes), expanded with PCG64", True
-    qr = ctx.run_dir / "quantum_run.json"
-    bits = "".join(json.loads(qr.read_text()).get("raw_bits", [])) if qr.is_file() else ""
-    src = f"{len(bits)} quantum roll bits" if bits else "the run name (classical)"
-    seed = int.from_bytes(hashlib.sha256((runio.config_seed(ctx, name) + bits).encode()).digest()[:8], "big")
-    return (np.random.Generator(np.random.PCG64(seed)),
-            f"{src} expanded with SHA-256 / PCG64: pseudo-random, theorem assumption X13 NOT met", False)
+    if runio.has_pool(ctx):
+        return (Q.rng(ctx, name, "targets"),
+                f"{Q.RNG_BITS} Bell-test bits of the same device (setting-independence loophole open), expanded with "
+                f"PCG64", True)
+    return (Q.rng(ctx, name, "targets"), "the run name (classical) expanded with SHA-256 / PCG64: pseudo-random, "
+                                         "theorem assumption X13 NOT met", False)
 
 
 def run(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
@@ -176,7 +175,7 @@ def run(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
     b = xeb_bits(eps, n)
     b_low = xeb_bits(eps - 3 * sigma, n)["bits"] if math.isfinite(sigma) else float("nan")
     assumptions = {"haar_targets_trained": True, "one_shot_per_circuit": int(cfg["shots_each"]) == 1,
-                   "global_clifford_measurement": True, "true_random_inputs": true_random,
+                   "global_clifford_measurement": True, "inputs_bell_test_bits_or_true_random_file": true_random,
                    "bound_constants_transcribed": False}
     Q.save(ctx, name, plan | {"eps": eps, "sigma": sigma, "bits": b, "bits_at_minus_3_sigma": b_low,
                               "assumptions": assumptions})

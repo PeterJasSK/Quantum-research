@@ -160,10 +160,16 @@ def score(bits: np.ndarray, cks: list[dict]) -> np.ndarray:
     return win
 
 
-def play(ctx: Ctx, key: str, rings: list[list[int]], game: dict, inputs: list[tuple], shots: int):
-    """One job: one circuit per input, every ring in parallel. -> (win rate per ring, sigma, per-input wins, info)."""
+def play(ctx: Ctx, key: str, rings: list[list[int]], game: dict, inputs: list[tuple], shots: int, pad: int = 0):
+    """One job: one circuit per input, every ring in parallel. pad = identity pairs appended to the cluster circuit
+    (one of its CZ layers applied twice; the loss ladder). -> (win rate per ring, sigma, per-input wins,
+    per-input parities [{sites, parity, input_dependent, pass: rate per ring}], info)."""
     n = game["n"]
     sk = QH.skeleton(n, 2, cluster=True)
+    for j in range(pad):
+        sk["oneq"] += [[None] * n] * 2
+        sk["bonds"] += [sk["bonds"][j % 2]] * 2
+    sk |= {"depth": 2 + 2 * pad, "barrier": pad > 0}
     state = _ideal_state(n)
     circuits, cks = [], []
     for k, x in enumerate(inputs):
@@ -172,12 +178,16 @@ def play(ctx: Ctx, key: str, rings: list[list[int]], game: dict, inputs: list[tu
         cks.append(checks(game, x, state))
     bits, info = Q.execute(ctx, key, circuits, shots)
     wins = np.zeros((len(rings), len(inputs)))
+    parities = []
     for k, bt in enumerate(bits):
         for t in range(len(rings)):
             wins[t, k] = score(bt[:, t * n:(t + 1) * n], cks[k]).mean()
+        parities.append([c | {"input_dependent": bool(set(c["sites"]) & set(game["input_sites"])),
+                              "pass": [float(score(bt[:, t * n:(t + 1) * n], [c]).mean()) for t in range(len(rings))]}
+                         for c in cks[k]])
     sh = info["shots"] if not isinstance(info["shots"], list) else info["shots"][0]
     sigma = np.sqrt((wins * (1 - wins)).sum(1) / max(sh, 1)) / len(inputs)
-    return wins.mean(1), np.maximum(sigma, 1e-9), wins, info
+    return wins.mean(1), np.maximum(sigma, 1e-9), wins, parities, info
 
 
 def _shots(ctx: Ctx, n_inputs: int) -> int:
@@ -198,24 +208,33 @@ def run(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
         rings, relaxed = [lay["ring"]], lay.get("relaxed", False)
     game = build_game(n, cfg.get("spacers", 0))
     inputs = pick_inputs(game, cfg["inputs"], Q.rng(ctx, name, "game-inputs"))
-    win, sigma, per_input, info = play(ctx, name, rings, game, inputs, _shots(ctx, len(inputs)))
+    win, sigma, per_input, parities, info = play(ctx, name, rings, game, inputs, _shots(ctx, len(inputs)))
     z = (win - cfg["bound"]) / sigma
     z_need = 3.0 if len(rings) == 1 else float(norm.isf(norm.sf(3.0) / len(rings)))       # Bonferroni over tiles
     ok = z > z_need
     need = cfg.get("min_pass", len(rings))
-    Q.save(ctx, name, {"n": n, "rings": rings, "n_inputs": len(inputs), "game": game, "info": info, "win": win,
-                       "sigma": sigma, "z": z, "z_needed": z_need, "tiles_passed": int(ok.sum()),
-                       "fidelity_estimate_2w_minus_1": 2 * win - 1, "win_per_input": per_input})
+    Q.save(ctx, name, {"n": n, "rings": rings, "n_inputs": len(inputs), "inputs": inputs, "game": game, "info": info,
+                       "win": win, "sigma": sigma, "z": z, "z_needed": z_need, "tiles_passed": int(ok.sum()),
+                       "fidelity_estimate_2w_minus_1": 2 * win - 1, "win_per_input": per_input,
+                       "parities_per_input": parities})
     k = int(np.argmax(win)) if len(rings) == 1 else int(np.argsort(win)[len(rings) // 2])
+    rate = {dep: [p["pass"][k] for rows in parities for p in rows if p["input_dependent"] == dep] for dep in (True, False)}
     return [Q.claim(ctx, name, cfg, float(win[k]), float(sigma[k]), bool(ok.sum() >= need), info["label"],
                     f"{int(ok.sum())} of {len(rings)} rings pass (need {need}); n = {n}, {len(inputs)} inputs, raw counts"
+                    + "; the value is the all-parities win rate; single parities on this ring: "
+                    + ", ".join(f"{'input-dependent' if dep else 'input-independent'} {np.mean(v):.3f}"
+                                for dep, v in rate.items() if v)
+                    + " (which parity the published bound refers to: [verify])"
                     + ("; two Y-measured spacers" if game["spacers"] else "")
                     + ("; ring picked by measured error, calibration pruning skipped (it leaves no ring)" if relaxed else ""))]
 
 
 def run_ladder(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
-    """R5-LADDER: lambda = -ln F_n / N_CZ from the game score (white-noise model: win = F + (1 - F) / 2^checks [verify]). Written to
-    <run>/qhard/loss_per_cz.json, where R6 reads it for its predicted acceptance."""
+    """R5-LADDER: rung (n, k) = the cluster ring of n qubits plus k identity pairs of its CZ layers (a layer applied
+    twice), so N_CZ = n (1 + k). F from the game score (white-noise model: win = F + (1 - F) / 2^checks [verify]).
+    Two-parameter least squares  -ln F = a n + lam N_CZ:  a = loss per qubit that does not grow with depth
+    (preparation + readout), lam = loss per CZ. Written to <run>/qhard/loss_per_cz.json, where R6 reads both for its
+    forecast. One job per rung."""
     tg = Q.session(ctx).target
     rows = []
     for n in cfg["n"]:
@@ -226,22 +245,36 @@ def run_ladder(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
             continue
         game = build_game(n)
         inputs = pick_inputs(game, cfg["inputs"], Q.rng(ctx, name, f"ladder-inputs-{n}"))
-        win, sigma, _, info = play(ctx, f"{name}/n{n}", [ring], game, inputs, _shots(ctx, len(inputs)))
-        k = 2 ** len(checks(game, inputs[0]))                         # white noise wins with probability 1/k
-        F = (k * float(win[0]) - 1) / (k - 1)
-        rows.append({"n": n, "status": "done", "win": float(win[0]), "sigma": float(sigma[0]), "F": F, "n_cz": n,
-                     "label": info["label"], "lambda": -math.log(F) / n if F > 0 else None})
-    done = [r for r in rows if r.get("lambda") is not None]
+        K = 2 ** len(checks(game, inputs[0]))                         # white noise wins with probability 1/K
+        for k in cfg["k"]:
+            win, sigma, _, _, info = play(ctx, f"{name}/n{n}k{k}", [ring], game, inputs, _shots(ctx, len(inputs)), pad=k)
+            F = (K * float(win[0]) - 1) / (K - 1)
+            rows.append({"n": n, "k": k, "status": "done", "win": float(win[0]), "sigma": float(sigma[0]), "F": F,
+                         "sigma_F": K * float(sigma[0]) / (K - 1), "n_cz": n * (1 + k), "label": info["label"]})
+    done = [r for r in rows if r.get("F", 0) > 0]
     if not done:
         Q.save(ctx, name, {"rows": rows, "status": "no usable rung"})
         return [Q.claim(ctx, name, cfg, None, None, False, "not run", "no ring gave a usable score")]
-    x = np.array([r["n_cz"] for r in done], float)
-    yv = np.array([-math.log(r["F"]) for r in done])
-    lam = float((x * yv).sum() / (x * x).sum())                       # least squares through the origin
-    spread = float(np.std([r["lambda"] for r in done], ddof=1)) if len(done) > 1 else None
-    Q.save(ctx, name, {"rows": rows, "loss_per_cz": lam, "spread": spread})
-    runio.save_json(ctx.path("qhard", "loss_per_cz.json"), {"loss_per_cz": lam, "spread": spread, "source": name,
-                                                            "label": done[0]["label"]})
-    return [Q.claim(ctx, name, cfg, lam, spread, True, done[0]["label"],
-                    f"{len(done)} rungs (n = {', '.join(str(r['n']) for r in done)}); a depth-2 meter does not see "
-                    f"the idle errors of a deep ring (gap G4)")]
+    X = np.array([[r["n"], r["n_cz"]] for r in done], float)
+    y = np.array([-math.log(r["F"]) for r in done])
+    sy = np.array([r["sigma_F"] / r["F"] for r in done])
+    if np.linalg.matrix_rank(X) == 2:
+        P = np.linalg.pinv(X)
+        (a, lam), (sig_a, sig_lam) = P @ y, np.sqrt(np.diag(P @ np.diag(sy ** 2) @ P.T))
+        fit = {"loss_per_cz": float(lam), "readout_loss_per_qubit": float(a), "sigma_lam": float(sig_lam),
+               "sigma_a": float(sig_a)}
+    else:                                                             # rungs on one line: gate and readout loss not separable
+        x = X[:, 1]
+        fit = {"loss_per_cz": float((x * y).sum() / (x * x).sum()), "readout_loss_per_qubit": None,
+               "sigma_lam": float(math.sqrt(((x * sy) ** 2).sum()) / (x * x).sum()), "sigma_a": None}
+    fit |= {"rungs": [[r["n"], r["k"]] for r in done], "source": name, "label": done[0]["label"],
+            "model": "-ln F = a n + lam N_CZ, F from the white-noise reading of the game score [verify]"}
+    Q.save(ctx, name, {"rows": rows} | fit)
+    f = ctx.path("qhard", "loss_per_cz.json")                   # merged: D-DU's loss per layer stays when it ran first
+    runio.save_json(f, (runio.load_json(f) or {}) | fit)
+    a = fit["readout_loss_per_qubit"]
+    return [Q.claim(ctx, name, cfg, fit["loss_per_cz"], fit["sigma_lam"], True, done[0]["label"],
+                    f"{len(done)} rungs (n, k) = {', '.join(f'({r[0]}, {r[1]})' for r in fit['rungs'])}; loss per qubit "
+                    + (f"outside the CZ layers a = {a:.4f} +- {fit['sigma_a']:.4f}" if a is not None else "not separated (one rung line)")
+                    + "; a CZ layer applied twice can echo coherent errors, so lam may read low [verify]; shallow rungs "
+                      "do not see the idle errors of a deep ring (gap G4)")]

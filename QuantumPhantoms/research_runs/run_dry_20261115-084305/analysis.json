@@ -1,0 +1,164 @@
+{
+ "run": "run_dry_20261115-084305",
+ "backend": {
+  "name": "fake_marrakesh",
+  "live": false,
+  "label": "fake_marrakesh (fake, 156 q heavy-hex)",
+  "calibration": {
+   "backend": "fake_marrakesh",
+   "last_update_date": "2025-02-26 14:52:45-05:00",
+   "fake": true,
+   "qiskit_ibm_runtime_version": "0.47.0"
+  }
+ },
+ "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
+ "cohort_vs_rulebook": {
+  "n": 4,
+  "note": "TVD at this n is dominated by sampling noise",
+  "size": {
+   "counts": {
+    "<6mm": 1,
+    "6-8mm": 3
+   },
+   "tvd": 0.5
+  },
+  "lobe": {
+   "counts": {
+    "RUL": 1,
+    "RLL": 1,
+    "RML": 2
+   },
+   "tvd": 0.42
+  },
+  "type": {
+   "solid": 4
+  },
+  "margin": {
+   "spiculated": 1,
+   "smooth": 1,
+   "lobulated": 2
+  }
+ },
+ "certificate": {
+  "chsh_S": 2.773333333333333,
+  "classical_bound": 2.0,
+  "tsirelson_bound": 2.8284271247461903,
+  "backend": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+  "job_id": "",
+  "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+  "scope": "job-level; not device-independent; settings fixed per circuit, pairs on one chip, no space-like separation; pairs selected on the data that is pooled",
+  "chsh_settings": {
+   "a0": 0.0,
+   "a1": 1.5707963267948966,
+   "b0": 0.7853981633974483,
+   "b1": -0.7853981633974483
+  },
+  "shots_per_setting": 200,
+  "pairs_measured": 6,
+  "pairs_certified": 6,
+  "pairs_needed": 4,
+  "z_needed": 3.5088988422771314,
+  "sigma": 0.04160345204694224,
+  "S_low": 2.6485229771925063,
+  "passed": true,
+  "rounds": 4800,
+  "hmin_per_round": 0.4185832341769852,
+  "certified_bits": 2009.199524049529,
+  "entropy_rigour": "analytic rate at a 3-sigma lower value, not a composable security proof",
+  "extractor": {
+   "kind": "toeplitz",
+   "seed_hex": "7393b634de97f4f6a812aedd8c525a6d2b54a8dc20b2857509c9c65f8e36b963",
+   "output_bits": 1004,
+   "input_bits": 9600,
+   "seed_expansion": "SHAKE-256 of the 32-byte os.urandom seed"
+  },
+  "budget": {
+   "available": 1004,
+   "spent": {
+    "roll": 256,
+    "R5-H12/game-inputs": 64,
+    "R3-TEST/test": 64
+   }
+  },
+  "pool": "bits extracted from Bell-test outcomes on one chip; job-level; not device-independent; simulated",
+  "status": "certification-ready, not certified (simulated)"
+ },
+ "certificate_pairs": {
+  "measured": 6,
+  "certified": 6
+ },
+ "certificate_budget": {
+  "available": 1004,
+  "spent": {
+   "roll": 256,
+   "R5-H12/game-inputs": 64,
+   "R3-TEST/test": 64
+  },
+  "spent_total": 384,
+  "scope": "bits extracted from Bell-test outcomes on one chip; job-level; not device-independent; simulated"
+ },
+ "l2_distance": null,
+ "claims": [
+  {
+   "stage": "B",
+   "config": "R5-H12",
+   "family": "R5-H12",
+   "claim_level": "L1.5 (dry run: not a claim)",
+   "value": 0.8090625,
+   "sigma": 0.006944235890965615,
+   "bound": 0.8,
+   "bound_rigour": "[verify]: bound from 2110.04277; the win rule here is derived, not transcribed",
+   "passed": false,
+   "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+  },
+  {
+   "stage": "D",
+   "config": "R3-TEST",
+   "family": "R3-TEST",
+   "claim_level": "L1'-L (dry run: not a claim)",
+   "value": 0.6,
+   "sigma": 0.07745966692414834,
+   "bound": 1.0,
+   "bound_rigour": "1/2 + 0.43 M 2^-n without a quantum memory (2408.03376 Eq. 4) [verify]; emulated channel",
+   "passed": false,
+   "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+  }
+ ],
+ "claims_summary": {
+  "total": 2,
+  "passed": 0,
+  "not_passed": [
+   "B:R5-H12",
+   "D:R3-TEST"
+  ],
+  "rule": "advantage is the exception; a non-pass is a result, not an error"
+ },
+ "render": {
+  "tiles": 4,
+  "renderers": {
+   "grown+fitted": 4
+  },
+  "fallbacks": [],
+  "seed_sources": {
+   "n/a": 4
+  },
+  "volume_pd_pct": {
+   "n": 4,
+   "median": 0.095,
+   "min": -0.01,
+   "max": 14.89
+  },
+  "sigma_ratio_in_out": {
+   "n": 2,
+   "median": 0.951,
+   "min": 0.883,
+   "max": 1.019
+  },
+  "vdt_d": {
+   "n": 4,
+   "median": 132.05,
+   "min": 87.9,
+   "max": 144.9
+  }
+ }
+}

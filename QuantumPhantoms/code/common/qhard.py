@@ -4,7 +4,8 @@ GF(2)      rank / nullspace / left_nullspace / solve on small dense uint8 matric
 Layouts    M1 ring_layout, M9 tile_layout. Rings are boundaries of connected sets of heavy-hex hexagons (XOR of
            their edges, kept when it is one simple cycle): n = 12, 20, 24, 28, ... Tiles are disjoint stars (a
            degree-3 qubit + its 3 neighbours), pairs (maximum matching), hexagons or 20-rings, ranked by calibration
-           error on the pruned graph (common.allocate.prune).
+           error on the pruned graph (common.allocate.prune). When the run has a Bell map (section C), its measured
+           S per coupler is added to every ranking (bell_deficit) and the pairs it measured come first, best S first.
 Ring       M2 skeleton, M3 cut_entropy, M7 acceptance_model. A skeleton is data:
                {"n", "depth", "oneq": [depth][n] of 0 | 1 | None, "bonds": [depth] of [(i, j)], "seed"}
            Layer k (1..depth) = one-qubit gates (0: sqrt-X, 1: S sqrt-X; None: no gate) then the CZ brick on even or
@@ -157,13 +158,26 @@ def _face_sets(fs: list[frozenset], max_faces: int):
 
 
 RELAXED = {"readout_gt": 0.2, "e2q_gt": 0.1}    # only unusable qubits / couplers; used when the pruned chip has no ring
+TSIRELSON = 2 * math.sqrt(2)
+
+
+def bell_deficit(tg: T.Target, edges) -> float:
+    """Sum over couplers of (2 sqrt 2 - S) from the run's Bell map (tg.meta["pair_map"], section C). A coupler the
+    map did not measure counts as the map's median, so it neither helps nor hurts. 0 without a map: the ranking is
+    then calibration only."""
+    pm = tg.meta.get("pair_map") or {}
+    if not pm:
+        return 0.0
+    med = float(np.median(list(pm.values())))
+    return float(sum(TSIRELSON - pm.get(_edge(int(a), int(b)), med) for a, b in edges))
 
 
 def ring_cost(tg: T.Target, ring: list[int], rank_by: str = "cz") -> dict:
     n = len(ring)
     cz = float(np.mean([tg.edge_err(ring[k], ring[(k + 1) % n]) for k in range(n)]))
     ro = float(np.mean([tg.ro(q) for q in ring]))
-    return {"mean_cz": cz, "mean_ro": ro, "score": cz + (ro if rank_by == "cz+ro" else 0.0)}
+    bell = bell_deficit(tg, [(ring[k], ring[(k + 1) % n]) for k in range(n)])
+    return {"mean_cz": cz, "mean_ro": ro, "bell_deficit": bell, "score": cz + (ro if rank_by == "cz+ro" else 0.0) + bell}
 
 
 def rings(tg: T.Target, n: int, rank_by: str = "cz", max_faces: int = MAX_FACES) -> list[dict]:
@@ -260,7 +274,7 @@ def pair_signal(tg: T.Target, a: int, b: int) -> float:
 
 def tile_layout(tg: T.Target, shape: str, max_tiles: int | None = None, seed: int = 0, rank_by: str = "cz+ro",
                 exclude=()) -> list[dict]:
-    """M9. Disjoint tiles ranked by summed CZ + readout error. shape: star4 | pair | hexagon | ring20."""
+    """M9. Disjoint tiles ranked by summed CZ + readout error. shape: star4 | pair | path3 | path4 | hexagon | ring20."""
     g, _ = A.prune(tg)
     if exclude:
         g = g.subgraph([q for q in g.nodes if q not in set(exclude)]).copy()
@@ -270,20 +284,44 @@ def tile_layout(tg: T.Target, shape: str, max_tiles: int | None = None, seed: in
             nb = sorted(g[c])
             if len(nb) != 3:
                 continue
-            cost = sum(tg.edge_err(c, x) for x in nb) + sum(tg.ro(x) for x in nb)
+            cost = sum(tg.edge_err(c, x) for x in nb) + sum(tg.ro(x) for x in nb) + bell_deficit(tg, [(c, x) for x in nb])
             cands.append({"shape": shape, "centre": int(c), "outputs": [int(x) for x in nb],
                           "qubits": [int(c)] + [int(x) for x in nb], "cost": float(cost)})
         tiles = _pack(cands, seed)
     elif shape == "pair":
-        h = nx.Graph()
+        tiles, used = [], set(exclude)
+        pm = tg.meta.get("pair_map") or {}
+        for (a, b), S in sorted(pm.items(), key=lambda kv: (-kv[1], kv[0])):   # measured pairs first, best S first
+            if a in used or b in used or S <= 2.0:              # a coupler measured without a violation is not a tile
+                continue
+            used |= {a, b}
+            tiles.append({"shape": shape, "qubits": [a, b], "r": float(pair_signal(tg, a, b)), "S": float(S),
+                          "cost": float(1 - S / TSIRELSON)})
+        h = nx.Graph()                                      # then the couplers the map did not reach, by calibration
         for a, b in g.edges:
-            h.add_edge(a, b, w=pair_signal(tg, a, b))
+            if a not in used and b not in used and _edge(a, b) not in pm:
+                h.add_edge(a, b, w=pair_signal(tg, a, b))
         m = nx.max_weight_matching(h, maxcardinality=True, weight="w")
-        tiles = sorted(({"shape": shape, "qubits": [int(min(e)), int(max(e))], "r": float(h[e[0]][e[1]]["w"]),
-                         "cost": float(1 - h[e[0]][e[1]]["w"])} for e in m), key=lambda c: (c["cost"], c["qubits"]))
+        tiles += sorted(({"shape": shape, "qubits": [int(min(e)), int(max(e))], "r": float(h[e[0]][e[1]]["w"]),
+                          "S": None, "cost": float(1 - h[e[0]][e[1]]["w"])} for e in m),
+                        key=lambda c: (c["cost"], c["qubits"]))
+    elif shape in ("path3", "path4"):                       # simple paths, in path order (QCAND: B-KS, B-MSQ)
+        k, cands = int(shape[-1]), []
+        stack = [[q] for q in sorted(g.nodes)]
+        while stack:
+            p = stack.pop()
+            if len(p) == k:
+                if p[0] < p[-1]:                            # each path once
+                    es = list(zip(p, p[1:]))
+                    cost = sum(tg.edge_err(a, b) for a, b in es) + sum(tg.ro(q) for q in p) + bell_deficit(tg, es)
+                    cands.append({"shape": shape, "qubits": [int(q) for q in p], "cost": float(cost)})
+                continue
+            stack += [p + [w] for w in g[p[-1]] if w not in p]
+        tiles = _pack(cands, seed)
     elif shape in ("hexagon", "ring20"):
         n = 12 if shape == "hexagon" else 20
-        cands = [{"shape": shape, "qubits": r["ring"], "cost": r["mean_cz"] + (r["mean_ro"] if rank_by == "cz+ro" else 0),
+        cands = [{"shape": shape, "qubits": r["ring"],
+                  "cost": r["mean_cz"] + (r["mean_ro"] if rank_by == "cz+ro" else 0) + r["bell_deficit"],
                   "mean_cz": r["mean_cz"], "mean_ro": r["mean_ro"], "relaxed": r.get("relaxed", False)}
                  for r in rings(tg, n, rank_by, max_faces=2) if not set(r["ring"]) & set(exclude)]
         tiles = _pack(cands, seed)
@@ -417,6 +455,8 @@ def circuit(sk: dict, layout: list[int], ancillas: list[dict] | None = None, ins
                 qc.s(q)
         for i, j in sk["bonds"][d]:
             qc.cz(i, j)
+        if sk.get("barrier"):                      # keeps a repeated CZ layer from being cancelled by the compiler
+            qc.barrier(range(n))
         slot_ops(d + 1)
     for k in ins:
         qc.h(n + int(k))
@@ -515,6 +555,53 @@ def edge_layers(edges: list[tuple[int, int]]) -> list[list[tuple[int, int]]]:
         used[e[0]].add(c)
         used[e[1]].add(c)
     return [[e for e, c in col.items() if c == k] for k in range(max(col.values()) + 1)]
+
+
+def region(tg: T.Target, n: int) -> dict:
+    """Region picker by the Bell map (QCAND). n below the pruned chip: the connected n-qubit patch (grown from every
+    centre of the largest component, common.allocate.patch) with the lowest summed CZ + readout error + Bell deficit.
+    n at or above it: every pruned qubit that keeps a coupler (the region may then be disconnected).
+    -> {nodes (BFS order from the centre), edges [(a, b) physical], whole_chip}."""
+    g, _ = A.prune(tg)
+    live = [q for q in g.nodes if g.degree(q) > 0]
+    if n >= len(live):
+        nodes, whole = sorted(live), True
+    else:
+        comp = max(nx.connected_components(g), key=len)
+        if n > len(comp):
+            raise NoLayout(f"no connected {n}-qubit region on {tg.name} (largest component {len(comp)})")
+        best = None
+        for c in sorted(comp):
+            p = A.patch(g, tg, n, centre=c)
+            cost = (sum(tg.edge_err(a, b) for a, b in p["edges"]) + sum(tg.ro(q) for q in p["nodes"])
+                    + bell_deficit(tg, p["edges"]))
+            if best is None or cost < best[0]:
+                best = (cost, c, p["nodes"])
+        nodes, whole = list(nx.bfs_tree(g.subgraph(best[2]), best[1]).nodes), False
+    edges = sorted(_edge(int(a), int(b)) for a, b in g.subgraph(nodes).edges)
+    return {"nodes": [int(q) for q in nodes], "edges": edges, "whole_chip": whole}
+
+
+def graph_circuit(nodes: list[int], edges, basis: dict | None = None, name: str = "graph") -> QuantumCircuit:
+    """Graph state on `nodes` (H on every qubit, CZ on every edge, one colour class per layer) and a per-qubit readout:
+    basis[physical qubit] = "X" | "Y" | "Z" (default) or an angle theta = the axis at theta from Z in the X-Z plane."""
+    pos = {q: k for k, q in enumerate(nodes)}
+    qc = QuantumCircuit(len(nodes), len(nodes), name=name)
+    qc.h(range(len(nodes)))
+    for layer in edge_layers(list(edges)) if edges else ():
+        for a, b in layer:
+            qc.cz(pos[a], pos[b])
+    for q, p in (basis or {}).items():
+        if p == "X":
+            qc.h(pos[q])
+        elif p == "Y":
+            qc.sdg(pos[q])
+            qc.h(pos[q])
+        elif p != "Z":
+            qc.ry(-float(p), pos[q])
+    qc.measure(range(len(nodes)), range(len(nodes)))
+    qc.metadata = {"layout": [int(q) for q in nodes]}
+    return qc
 
 
 def patch_layout(tg: T.Target, n: int, width: int) -> dict:

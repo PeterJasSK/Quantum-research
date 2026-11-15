@@ -1,0 +1,83 @@
+{
+ "sizes": [
+  4
+ ],
+ "pool": 24,
+ "shots_per_circuit": 10,
+ "calibration_shots": 120,
+ "measurements_M": 240,
+ "pairs_available": 6,
+ "pairs": [
+  [
+   34,
+   35
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   44,
+   45
+  ],
+  [
+   94,
+   95
+  ]
+ ],
+ "pairs_S": [
+  2.88,
+  2.81,
+  2.77,
+  2.7499999999999996
+ ],
+ "pairs_from": "Bell map of this run (certified pairs, best S first)",
+ "info": {
+  "backend": "fake_marrakesh",
+  "circuits": 25,
+  "shots": [
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   10,
+   120
+  ],
+  "two_qubit_gates_max": 8,
+  "job_id": "",
+  "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)"
+ },
+ "rows": [
+  {
+   "n": 4,
+   "success": 0.6,
+   "sigma": 0.07745966692414834,
+   "bound": 1.0,
+   "trials": 40,
+   "success_depolarising": 0.4642857142857143,
+   "success_pauli": 0.9166666666666666,
+   "spam_factor_mean": 0.8895833333333332,
+   "threshold_mean": 0.14826388888888886,
+   "passed": false
+  }
+ ]
+}

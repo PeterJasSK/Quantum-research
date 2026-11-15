@@ -63,7 +63,42 @@ def rac_circuits(d: int, n_inputs: int, layout: list[int]) -> tuple[list[Quantum
     return out, want
 
 
+def _run_map(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
+    """R2-MAP: the circuits of the one-qubit code with every tile in parallel; one tile = one qubit, the best
+    readouts of the pruned chip. Bonferroni over tiles."""
+    from scipy.stats import norm
+
+    from common import allocate as A, game as GM
+
+    tg = Q.session(ctx).target
+    qubits = sorted(A.prune(tg)[0].nodes, key=lambda q: (tg.ro(q), q))[:cfg["tiles"]]
+    if len(qubits) < cfg["tiles"]:
+        raise QH.NoLayout(f"only {len(qubits)} usable qubits on {tg.name}, {cfg['tiles']} asked")
+    per_tile = [rac_circuits(cfg["d"], cfg["n_inputs"], [int(q)]) for q in qubits]
+    want = per_tile[0][1]
+    circuits = [GM.merge([cs[k] for cs, _ in per_tile], f"racmap_{k:02d}") for k in range(len(want))]
+    bits, info = Q.execute(ctx, name, circuits, max(100, ctx.shots // 4), opt=3)
+    ps = np.array([[float((bt[:, t] == w).mean()) for bt, w in zip(bits, want)] for t in range(len(qubits))])
+    sh = len(bits[0])
+    succ = ps.mean(1)
+    sigma = np.maximum(np.sqrt((ps * (1 - ps)).sum(1) / sh) / ps.shape[1], 1e-9)
+    z = (succ - cfg["bound"]) / sigma
+    z_need = float(norm.isf(norm.sf(3.0) / len(qubits)))
+    ok = z > z_need
+    need = cfg.get("min_pass", len(qubits))
+    Q.save(ctx, name, {"qubits": [int(q) for q in qubits], "n_circuits": len(circuits), "info": info,
+                       "ideal": IDEAL[(cfg["d"], cfg["n_inputs"])], "success": succ, "sigma": sigma, "z": z,
+                       "z_needed": z_need, "tiles_passed": int(ok.sum()), "per_circuit": ps})
+    k = int(np.argsort(succ)[len(qubits) // 2])
+    return [Q.claim(ctx, name, cfg, float(succ[k]), float(sigma[k]), bool(ok.sum() >= need), info["label"],
+                    f"{int(ok.sum())} of {len(qubits)} qubits pass (need {need}, z > {z_need:.2f}); {len(circuits)} "
+                    f"circuits, every qubit in parallel; worst qubit {succ.min():.3f}; average success, message "
+                    f"dimension {cfg['d']} assumed per qubit")]
+
+
 def run(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
+    if cfg.get("tiles"):
+        return _run_map(ctx, name, cfg)
     tg = Q.session(ctx).target
     pair = QH.tile_layout(tg, "pair", max_tiles=1)[0]["qubits"]
     layout = pair if cfg["d"] == 4 else [min(pair, key=tg.ro)]

@@ -1,0 +1,11 @@
+{
+ "name": "fake_marrakesh",
+ "live": false,
+ "label": "fake_marrakesh (fake, 156 q heavy-hex)",
+ "calibration": {
+  "backend": "fake_marrakesh",
+  "last_update_date": "2025-02-26 14:52:45-05:00",
+  "fake": true,
+  "qiskit_ibm_runtime_version": "0.47.0"
+ }
+}

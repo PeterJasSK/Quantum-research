@@ -6,7 +6,7 @@ No epic row exists for this step: standalone feature.
 **Feature ID:** QCAND
 **Author:** Claude (Opus)
 **Date:** 2026-11-14
-**Status:** Draft
+**Status:** Complete (2026-11-15; approved by Peter 2026-11-15; dry runs only)
 
 > Stack locked: Python 3.13, Qiskit, the minimal pipeline in `code/`. **Additive only:** every candidate is a new
 > row in a `CIRCUITS` table with its own module; no existing row changes behaviour. No automated tests, manual
@@ -71,84 +71,98 @@ replace the placeholder doping loss in `ring_l2.py`; an L-step clock with qubit 
 
 **Common to every candidate**
 
-- [ ] **AC-0** (QCAND.0): each candidate is one new row plus one module, selected by `CIRCUIT`, with a `dry`
+- [x] **AC-0** (QCAND.0): each candidate is one new row plus one module, selected by `CIRCUIT`, with a `dry`
   size, and writes `<run>/qhard/<CIRCUIT>/result.json` and its claims.
   → Rows carry `level`, `bound`, `rigour` (with `[verify]`), `adversary`, `pass`. Inputs come from
   `runio.draw_bits` (QSCALE AC-5). Layout uses the Bell map (QSCALE AC-6). A dry pass is labelled
   "(dry run: not a claim)".
+  Evidence: `code/B_mapping/main.py:56-81`, `code/D_quantum_growth/main.py:99-125`, `code/C_certificate/main.py:44-50` (rows); result and "(dry run: not a claim)" through `code/common/quantum.py:222,243`; inputs through `Q.rng` → `runio.draw_bits`; regions and tiles by the Bell map `code/common/qhard.py:308,560` (B-GHZ tree and D-DU chain rank by calibration, see §9).
 
 **B candidates**
 
-- [ ] **AC-1** (QCAND.B1) `B-GHZ`: the GHZ parity game on a tree of N qubits.
+- [x] **AC-1** (QCAND.B1) `B-GHZ`: the GHZ parity game on a tree of N qubits.
   → `B_mapping/games.py:run_ghz`. GHZ by breadth-first CZ tree on the best-connected region (reuse the tree
   builder in `D_quantum_growth/ghz_spine.py`). Inputs: 32 even-weight bit strings from the pool; player i measures
   X (bit 0) or Y (bit 1). Win when the output parity equals (sum of inputs / 2) mod 2. Sizes `n: [8, 16, 24, 32, 40]`,
   dry `[4, 6]`. Pass per size: win above 1/2 + 2^-ceil(N/2) by 3 sigma; the claim is the largest passing N.
-- [ ] **AC-2** (QCAND.B2) `B-MSQ`: the Mermin–Peres magic square game.
+  Evidence: `code/B_mapping/games.py:66` (`run_ghz`), row `code/B_mapping/main.py:56`.
+- [x] **AC-2** (QCAND.B2) `B-MSQ`: the Mermin–Peres magic square game.
   → `B_mapping/games.py:run_msq`. Tile = 4 qubits on a path (two Bell pairs, one routed by a SWAP). 9 input pairs
   (row, column) from the pool, each player's three commuting observables read after a two-qubit basis change.
   `tiles: 16`, `min_pass: 12`, dry `tiles: 2`. Pass: win above 8/9 by 3 sigma after Bonferroni.
-- [ ] **AC-3** (QCAND.B3) `B-KS`: sequential Peres–Mermin test on 2 qubits with an ancilla.
+  Evidence: `code/B_mapping/games.py:181` (`run_msq`), row `code/B_mapping/main.py:62`.
+- [x] **AC-3** (QCAND.B3) `B-KS`: sequential Peres–Mermin test on 2 qubits with an ancilla.
   → `B_mapping/games.py:run_ks`. Each context = three compatible two-qubit Paulis measured one after another
   through the ancilla with mid-circuit readout and reset. Reports chi (bound 4, quantum 6) and the memory-cost
   statement as rigour text. `tiles: 8`, dry `tiles: 1`. Refused on a backend without mid-circuit measurement.
-- [ ] **AC-4** (QCAND.B4) `B-IQP`: a cohort drawn from a trained IQP circuit.
+  Evidence: `code/B_mapping/games.py:244` (`run_ks`, refusals at 247-251), row `code/B_mapping/main.py:68`.
+- [x] **AC-4** (QCAND.B4) `B-IQP`: a cohort drawn from a trained IQP circuit.
   → `B_mapping/iqp.py`. Circuit: Hadamards, ZZ(theta) on the heavy-hex edges of the chosen region in 3 layers,
   RZ(phi), Hadamards. Parameters trained classically on the rulebook's joint distribution (type, size, lobe, margin
   per tumour, plus one shared cohort covariate) by MMD on Pauli-Z expectation values; training runs once and is
   cached in `B_mapping/iqp_params.json`. Live: 108 qubits (12 tumours x 9); dry: 18. Result: MMD of hardware
   samples to the target and to the noiseless model. No pass rule beyond "MMD below the untrained circuit's". When
   `CIRCUIT = "B-IQP"` the cohort is decoded from these samples by the existing `bits_to_params`.
+  Evidence: `code/B_mapping/iqp.py:138` (`run`), training and cache `iqp.py:102`, `code/B_mapping/iqp_params.json`, cohort decode `code/B_mapping/roll.py:237`, row `code/B_mapping/main.py:76`.
 
 **D candidates**
 
-- [ ] **AC-5** (QCAND.D1) `D-GRAPH`: whole-device graph state with per-edge negativity.
+- [x] **AC-5** (QCAND.D1) `D-GRAPH`: whole-device graph state with per-edge negativity.
   → `D_quantum_growth/graph_state.py`. Hadamard on every used qubit, CZ on every edge in 3 layers (edge colouring).
   For each batch of non-adjacent edges: neighbours measured in Z, the pair in the 9 Pauli bases; pair state
   reconstructed with the neighbour byproduct applied; negativity per edge. 4 batches x 9 = 36 circuits. Dry: 12
   qubits, 1 batch. Pass: edges with negativity above 0 by 3 sigma (Bonferroni) connect at least 90 % of the used
   qubits. Claim text: "bipartite entanglement on every edge; not genuine multipartite". Seed shapes come from one
   extra all-X snapshot circuit.
-- [ ] **AC-6** (QCAND.D2) `D-STC`: a Clifford growth circuit with spacetime checks.
+  Evidence: `code/D_quantum_growth/graph_state.py:101` (`run`; batches :29, seed shapes :72), row `code/D_quantum_growth/main.py:99`.
+- [x] **AC-6** (QCAND.D2) `D-STC`: a Clifford growth circuit with spacetime checks.
   → `D_quantum_growth/checks.py`. Payload: the 36-ring Clifford circuit of `ring_l2.py` at depth 10, 14, 20. Checks:
   ancilla in |+>, controlled-Paulis at two times chosen so the check commutes through the payload, X readout;
   candidates enumerated by back-propagating low-weight Paulis with `qiskit.quantum_info.Clifford`, kept when the
   two ends sit next to a free ancilla. Up to 8 checks. Result: direct fidelity estimate with and without
   post-selection, kept fraction, gain. Dry: 12 qubits, depth 4, 2 checks. Pass: gain above 1 by 3 sigma.
-- [ ] **AC-7** (QCAND.D3) `D-DU`: dual-unitary loss meter.
+  Evidence: `code/D_quantum_growth/checks.py:189` (`run`; finder :33, :83), row `code/D_quantum_growth/main.py:105`.
+- [x] **AC-7** (QCAND.D3) `D-DU`: dual-unitary loss meter.
   → `D_quantum_growth/du_meter.py`. Kicked-Ising brickwork on a chain at the dual-unitary point, h in (0, 0.1);
   the light-cone autocorrelation C(t) is cos^t(2h). Chains of 21 and 51 qubits, t up to 20. Fit raw C(t) /
   cos^t(2h) = A exp(-g t). Writes `loss_per_layer` to `qhard/loss_per_cz.json` next to the ladder's numbers; the
   L2 forecast (QSCALE AC-13) uses it when present. Dry: 9 qubits, t up to 4.
-- [ ] **AC-8** (QCAND.D4) `D-DTC`: time-crystal growth frames.
+  Evidence: `code/D_quantum_growth/du_meter.py:57` (`run`; merge into `loss_per_cz.json` :99), forecast `code/D_quantum_growth/ring_l2.py:192`, row `code/D_quantum_growth/main.py:112`.
+- [x] **AC-8** (QCAND.D4) `D-DTC`: time-crystal growth frames.
   → `D_quantum_growth/dtc.py`. Floquet cycle of 2501.18036 on a heavy-hex patch (three two-qubit layers of the
   anisotropic coupling, then the imperfect pi-pulse). 8 circuits at cycle counts matched to the 8 growth frames.
   Result: Delta(t), the subharmonic contrast, and per-tumour seed shapes per frame from the Z snapshots of the
   tumour's patch (written to `dscale/seed_shapes.npz` in the existing format). Live 35 qubits first (plan: 144);
   dry 12 qubits, 3 frames. No pass rule; label "quantum-sourced dynamics, diagonal observable, no separation".
+  Evidence: `code/D_quantum_growth/dtc.py:48` (`run`; frames :63), section E `code/E_classical_growth/main.py:411`, row `code/D_quantum_growth/main.py:119`.
 
 **C candidates**
 
-- [ ] **AC-9** (QCAND.C1): C gets a `CIRCUIT` constant: `BELL-MAP` (QSCALE, default) | `GRAPH-BELL`.
+- [x] **AC-9** (QCAND.C1): C gets a `CIRCUIT` constant: `BELL-MAP` (QSCALE, default) | `GRAPH-BELL`.
   → `C_certificate/main.py` table `CIRCUITS`, same pattern as B and D.
-- [ ] **AC-10** (QCAND.C2) `GRAPH-BELL`: one scalable Bell inequality over the chip graph.
+  Evidence: `code/C_certificate/main.py:44-50`.
+- [x] **AC-10** (QCAND.C2) `GRAPH-BELL`: one scalable Bell inequality over the chip graph.
   → `C_certificate/graph_bell.py`. Graph state on the used region, 2 measurement circuits (alternating X and Z by
   sublattice), the inequality of 2101.10307 Eq. 3 with its classical bound computed for the actual graph.
   Certificate verdict: value above the bound by 3 sigma. The bit pool is extracted only from `BELL-MAP`; with
   `GRAPH-BELL` the run still executes one matching of `BELL-MAP` for the pool.
-- [ ] **AC-11** (QCAND.C3) `C-PBR`: finite-statistics verdict by prediction-based ratio.
+  Evidence: `code/C_certificate/graph_bell.py:33,76,100`, wired at `code/C_certificate/main.py:87-93,109-110,118`.
+- [x] **AC-11** (QCAND.C3) `C-PBR`: finite-statistics verdict by prediction-based ratio.
   → `C_certificate/pbr.py`: first third of the rounds estimates the ratio, the rest are tested; p-value bound
   min(1, 1/t). `certificate.json` gets `p_value_local`. The stop rule (QSCALE AC-3) uses p < 1e-6 in place of
   "S_low > 2". The no-signalling p-value per pair is stored as a cross-talk flag in `pair_map`.
-- [ ] **AC-12** (QCAND.C4) `C-CHAIN`: the certificate is bound to time and to the ledger.
+  Evidence: `code/C_certificate/pbr.py:35,53`, stop rule `code/C_certificate/main.py:107-108`, per-pair flag `main.py:99-100`.
+- [x] **AC-12** (QCAND.C4) `C-CHAIN`: the certificate is bound to time and to the ledger.
   → Before the job: SHA-256 of the circuits and the run name is written as `commit`. After the job: the first
   public beacon pulse after the commit (drand HTTP API, one GET; skipped with a logged note when offline) seeds
   the Toeplitz extractor in place of `os.urandom`. `G_provenance` chains `commit`, `pulse`, `certificate.json`.
+  Evidence: commit `code/C_certificate/bell_map.py:82,107`, beacon `code/C_certificate/main.py:68,127`, chain `code/G_provenance/main.py:25,48,58`.
 
 **Docs**
 
-- [ ] **AC-13** (QCAND.X): `code/README.md` circuit lists, `CLAUDE.md` ("B, C and D have one switch each"),
+- [x] **AC-13** (QCAND.X): `code/README.md` circuit lists, `CLAUDE.md` ("B, C and D have one switch each"),
   `code/RUNLOG.md` "Next".
+  Evidence: `code/README.md:20-22,44-64,113-135`, `CLAUDE.md:31-37`, `code/RUNLOG.md:122-131`, `README.md` changelog.
 
 ---
 
@@ -247,23 +261,35 @@ Each step ends with a dry run and can go live on its own.
 
 ## 7. Manual Verification (No Tests)
 
-- [ ] **Every candidate:** set its `CIRCUIT`, run `python main.py` (dry) → section finishes, `result.json`
+- [x] **Every candidate:** set its `CIRCUIT`, run `python main.py` (dry) → section finishes, `result.json`
   present, claim labelled "(dry run: not a claim)", whole pipeline under 3 minutes.
-- [ ] **AC-1:** dry `B-GHZ` on the ideal simulator setting (`FAKE_BACKEND` noise off in a Python shell) → win 1.0
+  Result: done 2026-11-15: four full dry pipelines covering all 11, 1 min 49 s to 2 min 16 s each; lineage record verifies.
+- [x] **AC-1:** dry `B-GHZ` on the ideal simulator setting (`FAKE_BACKEND` noise off in a Python shell) → win 1.0
   at every size; with noise → win between the bound and 1.
-- [ ] **AC-2:** ideal → win 1.0 on all 9 inputs; a product-state control (skip the Bell-pair CZ) → win at most 8/9.
-- [ ] **AC-3:** ideal → chi = 6; with the entangling gates removed → chi at most 4.
-- [ ] **AC-4:** after training, `mmd_model` < `mmd_untrained`; decoded cohort frequencies follow the rulebook.
-- [ ] **AC-5:** ideal → negativity 0.5 on every edge; with one CZ removed → that edge reads 0 within sigma.
-- [ ] **AC-6:** with a Pauli error injected by hand after layer 2, at least one check fires; `gain` > 1 on the
+  Result: ideal: 1.000 at N = 4 and 6; no entangling gates: 0.49 to 0.50; noisy dry: 0.970 / 0.957.
+- [x] **AC-2:** ideal → win 1.0 on all 9 inputs; a product-state control (skip the Bell-pair CZ) → win at most 8/9.
+  Result: ideal: 1.000 on all 9 inputs; product state: 0.505.
+- [x] **AC-3:** ideal → chi = 6; with the entangling gates removed → chi at most 4.
+  Result: ideal: 6.000; entangling gates removed: 4.000.
+- [x] **AC-4:** after training, `mmd_model` < `mmd_untrained`; decoded cohort frequencies follow the rulebook.
+  Result: 0.0013 against 0.4287; formula against the statevector within 0.01 on 358 Z strings; target marginals match the rulebook; the decoded cohort itself (4 tumours) is too small to test.
+- [x] **AC-5:** ideal → negativity 0.5 on every edge; with one CZ removed → that edge reads 0 within sigma.
+  Result: ideal: 0.500 on all 6 couplers; removed CZ: 0.017 +- 0.006, a small positive bias of linear inversion.
+- [x] **AC-6:** with a Pauli error injected by hand after layer 2, at least one check fires; `gain` > 1 on the
   noisy dry run.
-- [ ] **AC-7:** ideal → `C_raw` equals cos^t(2h) within sampling error at h = 0 and h = 0.1.
-- [ ] **AC-8:** ideal → Delta(t) alternates sign each cycle; `seed_shapes.npz` has one shape per tumour per frame
+  Result: an X or Z fault on a checked qubit flips its check in every shot; noisy dry gain 1.040 +- 0.009 in one run, 1.005 and 1.002 (not significant) in two others.
+- [x] **AC-7:** ideal → `C_raw` equals cos^t(2h) within sampling error at h = 0 and h = 0.1.
+  Result: h = 0: 1.0000; h = 0.1: 0.979 / 0.962 / 0.919 against 0.980 / 0.961 / 0.923 at t = 1, 2, 4.
+- [x] **AC-8:** ideal → Delta(t) alternates sign each cycle; `seed_shapes.npz` has one shape per tumour per frame
   and section E consumes it.
-- [ ] **AC-10:** ideal → value equals the quantum bound; product state → value at most the classical bound.
-- [ ] **AC-11:** simulated local data (S = 1.9) → p-value near 1; dry Bell data → p-value below 1e-6.
-- [ ] **AC-12:** with the network off → note "beacon skipped", run continues; with it on → `pulse` stored and
+  Result: ideal Delta: -0.92, +0.92, -0.87, +0.86, -0.76; keys `<tile id>/f<k>`; E records `seed_frames`.
+- [x] **AC-10:** ideal → value equals the quantum bound; product state → value at most the classical bound.
+  Result: ideal: 28.37 +- 0.12 against quantum 28.46, local bound 21; product state: -0.04.
+- [x] **AC-11:** simulated local data (S = 1.9) → p-value near 1; dry Bell data → p-value below 1e-6.
+  Result: S = 1.90 and 2.00: p = 1; S = 2.71: 9e-56; dry Bell map: 2e-34 to 5e-40.
+- [x] **AC-12:** with the network off → note "beacon skipped", run continues; with it on → `pulse` stored and
   `python -m G_provenance.main <run>` passes.
+  Result: network on: pulse stored, G verifies; unreachable beacon URL: note "beacon skipped (URLError)", tested on `beacon()` alone, not on a full run.
 - [ ] **Live (Peter):** one run per candidate in the build order; result added to `code/RUNLOG.md`.
 
 ---
@@ -285,9 +311,60 @@ Each step ends with a dry run and can go live on its own.
 
 ---
 
+**Answers (Peter, 2026-11-15):** Q1 yes, mid-circuit readout is available as an option but not by default, so
+B-KS is built and refused when the backend lacks it. Q2 yes. Q3 yes (marginals plus one shared covariate).
+Q4 yes. Q5 build all candidates. Q6 as proposed: QSCALE parts C and B1 first, then the candidates. Work on `main`.
+
+---
+
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+**Built (2026-11-15).** All 11 candidates, additive: four rows in B, four in D, a `CIRCUIT` switch with two rows in
+C, plus C-PBR and C-CHAIN inside the certificate. Default switches are unchanged (`BELL-MAP`, `R5-H12`, `R3-TEST`).
+Verified on the dry run and on the ideal simulator only (section 7). Nothing ran on hardware.
+
+**Decisions taken with Peter before coding (2026-11-15).**
+- Stop rule: both must hold, `S_low > 2` and `p_value_local < 1e-6` (the CLAUDE.md honesty gate stays true).
+- B-KS live: refused until `MID_CIRCUIT_LIVE = True` in `B_mapping/games.py`; also refused without `reset`.
+- B-GHZ inputs: the pool-seeded generator (`Q.rng`, 64 pool bits per size), not a bit-for-bit draw.
+
+**Deviations from the plan text.**
+- GHZ tree: `common/allocate.bfs_tree(by_cost=True)`; `ghz_spine.py` has no reusable builder. Depth at N = 40 on the
+  pruned FakeMarrakesh is 12, not 4 to 8.
+- B-KS has its own transpile + spend guard + `run_isa` path: `quantum.execute` refuses dynamic circuits.
+- B-MSQ: the second Bell pair is moved by two CX per side (the far qubits start in |0>), not a full SWAP. All 9
+  inputs run, so nothing is drawn from the pool.
+- B-IQP: `roll()` still draws first; the cohort is rewritten from the IQP shots afterwards (no sibling pairs).
+  Parameters are cached per region shape (key = hash of the local coupler list), so a new region trains again
+  and adds an entry to `iqp_params.json`. Z-string expectations are estimated on 1,024 fixed z samples, not exact.
+  `mmd_model` = trained model against the target; `mmd_hw_model` = hardware against the noiseless model.
+- D-GRAPH: batches come from a greedy strong edge colouring (4 on the dry region; the count is in the result), with
+  no cap live. A dry run measures 1 batch, so its pass rule cannot hold (0.17 against 0.9).
+- D-STC: propagation uses `common/qhard` (GF(2)); qiskit's stabilizer simulation gives the check values. On a
+  random ring the finder only reaches one-layer links on the ancilla's own qubit, chained per ancilla: 4 to 9 % of
+  first-order faults detected. `F_raw` is taken on the checked circuit. Expect a gain near 1.
+- D-DU: the observable is own work. Numerically (10 qubits) the operator Z_x Y_(x+1) moves one site per Floquet
+  step with value exactly cos^t(2h); single-site autocorrelators vanish after one step. So t <= n - 2 (a 21-chain
+  reaches t = 14 of the list). `loss_per_layer` = half the loss per step. `game.run_ladder` now merges into
+  `loss_per_cz.json` as well. The forecast uses `loss_per_layer` in place of the ladder's lam when present.
+- D-DTC: couplings (jx, jy, jz, eps) are this module's choice, not the paper's. Per-frame shapes are extra keys
+  `<tile id>/f<k>`; section E seeds from frame 0 and records the frames' cell counts, nothing more (section 3).
+- GRAPH-BELL: 4 circuits, not 2, and an own inequality (several special qubits, sum of CHSH-type bounds) because
+  Eq. 3 of 2101.10307 was not available. Its verdict is its own field; it does not gate the bit pool.
+- C-PBR: a CHSH-game test factor (the prediction-based ratio restricted to the win function), training on the
+  first third of each circuit's rounds. The no-signalling p-value sits in the `pairs` rows (`pair_map` must stay
+  floats for the layouts).
+- C-CHAIN: `commit` goes to `commit.json` before the job (the certificate file marks C as done) and is copied into
+  the certificate. Beacon = drand quicknet (3 s period; genesis and period checked against `/info`), round =
+  first one emitted after the commit time. A reused pulse is not rejected.
+- No ideal-simulator switch was added; the ideal checks ran on the logical circuits in a scratch script.
+
+**Follow-ups.**
+- Every bound and every own derivation above needs the PDF check before a claim.
+- B-GHZ and D-DU layouts do not use the Bell map; live B-IQP needs a connected pruned region of 108 qubits.
+- B-GHZ: the bound is for uniform inputs; 32 sampled inputs add a sampling term that the sigma does not carry.
+- D-STC: the ancilla checks of `ring_l2.py` (M4) cover far more faults; reusing them is the obvious next step.
+- The web page does not show `circuit`, `graph_bell`, `p_value_local`, `commit` or `pulse` yet.
 
 ---
 

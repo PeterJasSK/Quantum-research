@@ -7,7 +7,7 @@ planned as a standalone feature on top of the minimal pipeline of 2026-11-11.
 **Feature ID:** QSCALE
 **Author:** Claude (Opus)
 **Date:** 2026-11-14
-**Status:** Approved (2026-11-14, Peter: all proposed defaults accepted)
+**Status:** Complete (2026-11-15; approved 2026-11-14, Peter: all proposed defaults accepted). Dry runs only: nothing here has run on hardware
 
 > Stack locked: Python 3.13 (conda base), Qiskit, the minimal pipeline in `code/` (one `main.py` per section, one
 > `CIRCUIT` constant in B and D, four CLI flags, no new flags). No automated tests, manual verification only. Dry
@@ -66,74 +66,90 @@ planned as a standalone feature on top of the minimal pipeline of 2026-11-11.
 
 **C: certificate that is consumed**
 
-- [ ] **AC-1** (QSCALE.C1): C runs before B and submits one Bell-map job.
+- [x] **AC-1** (QSCALE.C1): C runs before B and submits one Bell-map job.
+  Evidence: `code/main.py:23`, `code/C_certificate/bell_map.py:36` (matchings), `:54` (4 setting circuits), `:77` (one job)
   → `code/main.py` order becomes C, B, D, A, E, F, G, H, web. `C_certificate/bell_map.py` builds, for each of up
   to 3 edge matchings of the coupling graph, the 4 CHSH setting circuits with every pair of the matching in
   parallel (depth 1, one CZ per pair). 12 circuits, `BELL_SHOTS = 1024` each, through `common.quantum.execute`.
   Dry: 1 matching, 6 pairs, 200 shots.
-- [ ] **AC-2** (QSCALE.C2): `certificate.json` holds one row per pair and a pooled verdict with finite statistics.
+- [x] **AC-2** (QSCALE.C2): `certificate.json` holds one row per pair and a pooled verdict with finite statistics.
+  Evidence: `code/C_certificate/main.py:52` (per pair), `:56` (S_low), `:70` (hmin), `:33` (scope)
   → Per pair: qubits, S, sigma, `certified` = S - 3 sigma > 2 after Bonferroni over pairs. Pooled: rounds of
   certified pairs, S_pooled, S_low = S_pooled - 3 sigma, `hmin_per_round = f(S_low)` (existing Pironio formula),
   `certified_bits = rounds x hmin_per_round`. Scope text stays "job-level; not device-independent" and adds
   "settings fixed per circuit, pairs on one chip, no space-like separation".
-- [ ] **AC-3** (QSCALE.C3): the run stops when the certificate is too weak.
+- [x] **AC-3** (QSCALE.C3): the run stops when the certificate is too weak.
+  Evidence: `code/C_certificate/main.py:31`, `:58`, `:88`; `code/B_mapping/roll.py:220` (no pool: exit 7)
   → Fewer than `MIN_PAIRS = 8` certified pairs, or S_low <= 2: status "FAILED", exit code 7, no bits written, no
   retry. Same rule as today, on the pooled value.
-- [ ] **AC-4** (QSCALE.C4): C writes the bit pool and its budget.
+- [x] **AC-4** (QSCALE.C4): C writes the bit pool and its budget.
+  Evidence: `code/C_certificate/bell_map.py:94` (toeplitz), `code/C_certificate/main.py:73-79`
   → Raw outcomes of certified pairs are compressed by Toeplitz hashing (numpy, GF(2)) to
   `min(4096, floor(certified_bits / 2))` bits, written to `certified_bits.bin`. The hashing seed comes from
   `os.urandom` and is stored in the certificate. `certificate.json` gets `budget: {available, spent: {}}`.
-- [ ] **AC-5** (QSCALE.C5): every seed of the run derives from the pool, and spending is recorded.
+- [x] **AC-5** (QSCALE.C5): every seed of the run derives from the pool, and spending is recorded.
+  Evidence: `code/common/runio.py:62` (run_key), `:84` (draw_bits); `code/common/quantum.py:228` (rng seeded from the pool)
   → `common/runio.py`: `run_key(ctx)` returns the SHA-256 of `certified_bits.bin` when it exists;
   `draw_bits(ctx, label, n)` hands out the next n bits and appends `{label: n}` to `budget.spent`. A draw beyond
   the budget raises. `quantum.rng(ctx, ...)` is unchanged for callers.
-- [ ] **AC-6** (QSCALE.C6): the Bell map is the layout input of the run.
+- [x] **AC-6** (QSCALE.C6): the Bell map is the layout input of the run.
+  Evidence: `code/C_certificate/main.py:64`, `code/common/qhard.py:164` (bell_deficit), `:179`, `:287`, `:294`; `code/D_quantum_growth/pairs.py:109`
   → `certificate.json` field `pair_map` (edge → S). `common/qhard.py`: ring and tile ranking add
   `sum(2 sqrt(2) - S_e)` over measured edges when a map exists; `D_quantum_growth/pairs.py` takes its Bell pairs
   in descending S. Calibration pruning stays as the fallback when an edge was not measured.
-- [ ] **AC-7** (QSCALE.C7): the page and the analysis show the certificate as a resource.
+- [x] **AC-7** (QSCALE.C7): the page and the analysis show the certificate as a resource.
+  Evidence: `code/H_analysis/main.py:53`, `code/webpage/template.html:214`, `code/webpage/main.py:70`, `code/G_provenance/main.py:23`
   → `H_analysis/main.py`: pairs certified, bits available, bits spent by consumer. `webpage/template.html`: one
   line "N of M pairs certified, B bits certified, b spent" in place of the bare S value. `G_provenance/main.py`
   hashes `certified_bits.bin`.
 
 **B: parameters from certified bits, claims on many tiles**
 
-- [ ] **AC-8** (QSCALE.B1): tumour parameters are drawn from the pool with the rulebook distribution.
+- [x] **AC-8** (QSCALE.B1): tumour parameters are drawn from the pool with the rulebook distribution.
+  Evidence: `code/B_mapping/roll.py:181` (draw_tumour, inverse CDF), `:211` (roll, no job)
   → `B_mapping/roll.py`: `roll(ctx)` draws 16 bits per property through `runio.draw_bits`, maps them by inverse
   CDF on the existing `Rulebook` probabilities, and builds sibling pairs by the existing mutation probability.
   No circuit, no job. `quantum_run.json` keeps its fields; `job_id` is the Bell-map job. The amplitude-tree
   circuit builders are removed.
-- [ ] **AC-9** (QSCALE.B2): new B circuit `R2-MAP`: the random access code on every good qubit at once.
+- [x] **AC-9** (QSCALE.B2): new B circuit `R2-MAP`: the random access code on every good qubit at once.
+  Evidence: `code/B_mapping/main.py:31`, `code/B_mapping/rac.py:66`
   → `B_mapping/main.py` row `R2-MAP` (`tiles: 24`, `min_pass: 20`, dry `tiles: 3`), `B_mapping/rac.py` runs the
   8 circuits of R2-Q2 with all tiles in parallel, Bonferroni over tiles. Pass rule: at least 20 of 24 qubits above
   0.75 by 3 sigma.
-- [ ] **AC-10** (QSCALE.B3): the hexagon game reports each parity separately.
+- [x] **AC-10** (QSCALE.B3): the hexagon game reports each parity separately.
+  Evidence: `code/common/game.py:185`, `:219`, `:224`
   → `common/game.py` `play` returns the pass rate of each deterministic parity per input; `result.json` stores
   them. The claim value stays the all-parities win rate; the single input-dependent parity is reported in the
   note. Which one the 0.80 bound refers to is decided by the PDF check (Q3).
 
 **D: raw data, a meter that separates losses, distance to L2**
 
-- [ ] **AC-11** (QSCALE.D1): every hypothesis job keeps its raw counts.
+- [x] **AC-11** (QSCALE.D1): every hypothesis job keeps its raw counts.
+  Evidence: `code/common/quantum.py:209` (`_keep`), called at `:200`, `:205`
   → `common/quantum.py` `execute` writes `jobs/<key>.npz` (packed bit arrays per circuit) next to the job id file.
-- [ ] **AC-12** (QSCALE.D2): `R5-LADDER` separates readout loss from gate loss.
+- [x] **AC-12** (QSCALE.D2): `R5-LADDER` separates readout loss from gate loss.
+  Evidence: `code/common/game.py:232-274`, `code/common/qhard.py:445` (barrier), `code/D_quantum_growth/main.py:73`
   → Rungs become (n, k): the ring cluster circuit plus k identity pairs of its CZ layers (CZ twice = identity),
   `k` in (0, 2, 4), `n` in (12, 20). Fit `-ln F = a n + lam N_CZ`. `loss_per_cz.json` gets `lam`, `a`, both sigmas.
   Dry: n = 12, k in (0, 2).
-- [ ] **AC-13** (QSCALE.D3): the run states its distance to L2.
+- [x] **AC-13** (QSCALE.D3): the run states its distance to L2.
+  Evidence: `code/D_quantum_growth/ring_l2.py:184` (forecast), `:242-251` (log + refusal), `:202` (l2_distance); `code/H_analysis/main.py:73`
   → `D_quantum_growth/ring_l2.py` reads `a` and `lam`, forecasts fidelity and accepted-shot fraction of the
   configured ring, and refuses (`Refused`, logged) when the forecast signal is below 3 sigma at the shot budget.
   `H_analysis/main.py` prints "L2 distance: R6a-S36 needs loss per CZ <= x; measured y on <backend>".
-- [ ] **AC-14** (QSCALE.D4): `R1-TILE24` runs both arms.
+- [x] **AC-14** (QSCALE.D4): `R1-TILE24` runs both arms.
+  Evidence: `code/D_quantum_growth/main.py:45`
   → `D_quantum_growth/main.py`: `identical_steps: [True, False]` (the identical-steps arm is the one that matches
   the time-independent machine of 2005.04241).
-- [ ] **AC-15** (QSCALE.D5): `R3-TEST` uses the best pairs and fewer shots per inserted Pauli.
+- [x] **AC-15** (QSCALE.D5): `R3-TEST` uses the best pairs and fewer shots per inserted Pauli.
+  Evidence: `code/D_quantum_growth/pairs.py:42-43`, `:109-110`, `:120`; `code/D_quantum_growth/main.py:61`
   → `SHOTS_DIV` raised so each circuit gets 10 shots (pool 2,000 circuits live, dry 24); pairs from the Bell map
   (AC-6); sizes extend to every multiple of 8 up to the certified pairs available.
 
 **Docs**
 
-- [ ] **AC-16** (QSCALE.X1): documents match the code.
+- [x] **AC-16** (QSCALE.X1): documents match the code.
+  Evidence: `code/README.md` (sections table, "C: the certificate the run spends", circuit list), `CLAUDE.md:17`, `:28`, `README.md` changelog 2026-11-15, `code/RUNLOG.md` Next item 0
   → `code/README.md` (section table, order, C description, new circuits), `CLAUDE.md` (order C B D), `README.md`
   progress and changelog, `code/RUNLOG.md` "Next".
 
@@ -243,24 +259,24 @@ Build order: C (AC-1 to AC-7) → B1 (AC-8) → D1, D2, D3 (AC-11 to AC-13) → 
 
 ## 7. Manual Verification (No Tests)
 
-- [ ] **Verify AC-1, AC-2:** `python main.py` (dry). Log shows `[C_certificate]` first, one job of 4 circuits;
+- [x] **Verify AC-1, AC-2:** `python main.py` (dry). Log shows `[C_certificate]` first, one job of 4 circuits;
   `certificate.json` has 6 pair rows with S and sigma, status "certification-ready, not certified (simulated)".
-- [ ] **Verify AC-3:** set `MIN_PAIRS = 99`, dry run → exit code 7, no `certified_bits.bin`, no `cohort_params.json`.
+- [x] **Verify AC-3:** set `MIN_PAIRS = 99`, dry run → exit code 7, no `certified_bits.bin`, no `cohort_params.json`.
   Restore the constant.
-- [ ] **Verify AC-4, AC-5:** `certified_bits.bin` exists; `budget.spent` lists `roll` and the D circuit's labels;
+- [x] **Verify AC-4, AC-5:** `certified_bits.bin` exists; `budget.spent` lists `roll` and the D circuit's labels;
   the sum is at most `budget.available`. Run again with `--run <dir>` → identical cohort.
-- [ ] **Verify AC-6:** dry run of D `R3-TEST`: the pairs in `result.json` are the highest-S pairs of `pair_map`.
-- [ ] **Verify AC-7:** open the page: certificate line shows pairs, bits available, bits spent.
+- [x] **Verify AC-6:** dry run of D `R3-TEST`: the pairs in `result.json` are the highest-S pairs of `pair_map`.
+- [x] **Verify AC-7:** open the page: certificate line shows pairs, bits available, bits spent.
   `python -m G_provenance.main <run>` passes; flip one byte of `certified_bits.bin` → it fails.
-- [ ] **Verify AC-8:** dry run: no "roll: SUBMITTED" line; `cohort_params.json` has 4 tumours. With 2,000 draws in
+- [x] **Verify AC-8:** dry run: no "roll: SUBMITTED" line; `cohort_params.json` has 4 tumours. With 2,000 draws in
   a Python shell the type frequencies match the rulebook within sampling error.
-- [ ] **Verify AC-9:** B `CIRCUIT = "R2-MAP"`, dry → 3 tiles, claim "(dry run: not a claim)".
-- [ ] **Verify AC-10:** B `R5-H12`, dry → `result.json` has per-parity pass rates; only even-weight inputs.
-- [ ] **Verify AC-11:** `jobs/*.npz` present for every job; shapes equal (shots, qubits).
-- [ ] **Verify AC-12, AC-13:** D `R5-LADDER`, dry → `loss_per_cz.json` has `lam` and `readout_loss_per_qubit`;
+- [x] **Verify AC-9:** B `CIRCUIT = "R2-MAP"`, dry → 3 tiles, claim "(dry run: not a claim)".
+- [x] **Verify AC-10:** B `R5-H12`, dry → `result.json` has per-parity pass rates; only even-weight inputs.
+- [x] **Verify AC-11:** `jobs/*.npz` present for every job; shapes equal (shots, qubits).
+- [x] **Verify AC-12, AC-13:** D `R5-LADDER`, dry → `loss_per_cz.json` has `lam` and `readout_loss_per_qubit`;
   then D `R6a-S36`, dry → log shows the forecast line; `analysis.json` has `l2_distance`.
-- [ ] **Verify AC-14, AC-15:** D `R1-TILE24` dry → two claims; D `R3-TEST` dry → 10 shots per circuit.
-- [ ] Whole pipeline dry run stays under 3 minutes.
+- [x] **Verify AC-14, AC-15:** D `R1-TILE24` dry → two claims; D `R3-TEST` dry → 10 shots per circuit.
+- [x] Whole pipeline dry run stays under 3 minutes (2 min 3 s, `research_runs/run_dry_20261115-084305`).
 - [ ] Live (Peter): one run with B `R2-MAP`, D `R5-LADDER` on the best backend available; compare the Bell map
   with the ring the layout picked.
 
@@ -294,7 +310,42 @@ additively in [feature-QCAND-candidate-circuits-B-C-D.md](feature-QCAND-candidat
 
 ## 9. Post-Implementation Notes
 
-[Filled after implementation.]
+Built 2026-11-15, on `main`, verified by dry runs on FakeMarrakesh only (run `run_dry_20261115-084305` plus
+hand runs of `R2-MAP`, `R1-TILE24`, `R5-LADDER`, `R6a-S36`, the stop rule and a continued run). No hardware job.
+
+Deviations from the plan, each small:
+
+- **Dry stop rule.** The dry Bell map has 6 pairs, so `MIN_PAIRS = 8` could never pass there. Added
+  `DRY_MIN_PAIRS = 4`. Verification of AC-3 set both constants to 99.
+- **Extractor seed.** 32 bytes of `os.urandom`, expanded with SHAKE-256 to the Toeplitz length, in place of a
+  full-length random seed (which would be about 70 kB of hex in the certificate on a live run). The certificate
+  says so. This is a computational expansion.
+- **`Q.rng` and the pool.** Each `Q.rng(ctx, name, label)` draws 64 pool bits (budget label `<name>/<label>`) and
+  expands them with PCG64. Random inputs are therefore a pseudo-random expansion of a quantum seed, not pool bits
+  one for one: R3-TEST alone would need about 160,000 bits against a pool of 4,096.
+- **Unmeasured couplers in a ranking** count as the map's median S, so a ring is not preferred for avoiding the
+  map. A measured coupler with S <= 2 is never a pair tile.
+- **Pruning unchanged.** `common/allocate.prune` still uses calibration; the Bell map changes ranking only.
+- **Ladder: one job per rung** (6 live), not one job for the section.
+- **R2-MAP qubits** are the best readouts of the pruned chip (no CZ in the circuit, so the pair map does not rank
+  them).
+- **Sibling pair.** The daughter copies each property and redraws it with probability 0.044 (what a 2-qubit
+  field of the old division circuit gave at theta = 0.3).
+- **Selection bias.** The pooled S is taken over pairs selected on the same data. The scope text says so; no
+  correction is applied.
+- Extra, not in the file plan: `B_mapping/xeb.py` (inputs from the pool, Q5), `F_render/main.py` (honest label),
+  `G_provenance` also hashes `jobs/*.npz`, the page labels a dry run as simulated (it showed "real hardware").
+  `bits_to_params` is kept unused for QCAND's B-IQP.
+
+Found while verifying:
+
+- The ring forecast is optimistic: on the dry backend it gave fidelity 0.75 for the 12-ring at depth 6 and the
+  ring measured 0.29. The ladder's lam read 0.004 there. Treat "go" as necessary, not sufficient.
+- Dry `R3-TEST` now runs on 4 pairs (6 certified pairs, size 8 left out) and cannot pass at that size (bound 1).
+- `ctx.qpu_spent` is still not persisted across `--run` (unchanged, noted by the exploration).
+
+Follow-ups: first live run (RUNLOG "Next" item 0); QCAND builds on `runio.draw_bits`, `tg.meta["pair_map"]`,
+`qhard.bell_deficit`, `jobs/*.npz` and `qhard/loss_per_cz.json` as they now exist.
 
 ---
 

@@ -1,7 +1,7 @@
 # Quantum Phantoms
 
 > **Live document.** This README tracks overall progress. Update the "Progress" tables and the changelog
-> whenever a stage changes state. Last updated: **2026-10-31**.
+> whenever a stage changes state. Last updated: **2026-11-15**.
 
 Training-free synthetic lung CT for validating detection AI. Virtual tumours are **placed** by anatomy, **grown**
 by published models and **rendered** into real CT with the host scanner's own blur and noise. Quantum computing
@@ -138,7 +138,7 @@ From `code/` (details in [`code/README.md`](code/README.md)):
 
 ```bash
 python -m common.lidc_fetch LIDC-IDRI-0481      # once: public Siemens-scanner CT (~136 MB)
-python main.py                                  # dry run: roll -> CHSH gate -> quantum growth -> place -> grow -> render -> record -> web
+python main.py                                  # dry run: Bell map (certificate + bit pool) -> draw the cohort -> quantum growth -> place -> grow -> render -> record -> web
 python main.py --backend auto                   # live (Peter only)
 ```
 
@@ -150,7 +150,8 @@ Hardware jobs are run by Peter only, from a pre-saved `QiskitRuntimeService()` a
 
 - Every quantum number carries a claim level, a classical baseline, a BP simulability number and a label
   (`simulated: ideal`, `simulated: Heron-class noise (FakeMarrakesh)`, `hardware: <backend>, job <id>`).
-- Simulated CHSH certifies nothing. S ≤ 2 means fail: no seed, the draw rejected and logged.
+- Simulated CHSH certifies nothing. Fewer than 8 certified pairs, or pooled S − 3 sigma ≤ 2, means fail: no bits,
+  no tumours, logged. The bit pool is job-level, on one chip, not device-independent.
 - Diagonal observables (⟨σz⟩, cell counts, growth curves) have exact classical surrogates.
 - Privacy comes from parameter-only construction (no patient voxels in a generator), not from the quantum
   certificate.
@@ -184,6 +185,8 @@ Hardware jobs are run by Peter only, from a pre-saved `QiskitRuntimeService()` a
 
 | Date | Change |
 |---|---|
+| 2026-11-15 | **QCAND: 11 candidate circuits for B, C and D (additive, dry runs only).** B: `B-GHZ` (GHZ parity game on a tree), `B-MSQ` (magic square game), `B-KS` (sequential Peres–Mermin test, mid-circuit readout; refused live until enabled), `B-IQP` (cohort sampled from a classically trained IQP circuit, L0). D: `D-GRAPH` (per-coupler negativity of the region's graph state), `D-STC` (Clifford ring with spacetime checks, own finder), `D-DU` (dual-unitary loss meter with exact reference cos^t(2h), feeds the ring forecast), `D-DTC` (time-crystal growth frames, L0). C: a `CIRCUIT` switch (`BELL-MAP` / `GRAPH-BELL`), a p-value valid for dependent rounds added to the stop rule (S_low > 2 and p < 1e-6), and a commit → public beacon pulse → certificate chain checked by section G. All bounds are [verify]; nothing ran on hardware. |
+| 2026-11-15 | **QSCALE: the certificate is consumed (dry runs only).** Section order is now C B D. C runs a Bell map (CHSH on many disjoint pairs, one job) and writes the certificate, a Toeplitz-extracted bit pool with a budget, and a per-coupler pair map. B draws the tumours from the pool by inverse CDF (the 642-CZ roll circuit is removed; the cohort is L0). Every random input of a B or D circuit is seeded from the pool and the spend is recorded. Layouts rank by the pair map. New: `R2-MAP`, per-parity rates in the hexagon game, raw counts per job (`jobs/*.npz`), `R5-LADDER` with (n, k) rungs separating readout loss from gate loss, a ring forecast with automatic refusal, "L2 distance" in the analysis. Not run on hardware yet. |
 | 2026-11-11 | **Minimal pipeline.** `code/` rebuilt as one line: a directory per section with one `main.py`, `common/`, and `main.py` taking only `--backend` (set = live, not set = dry run on a local fake backend), `--shots` and `--run` (continue). B and D switch circuits with one `CIRCUIT` constant: today's (`ROLL`, `DSCALE`) or the Q-HARD circuits R1–R6 of `plans/qhard-*.md`. A, E, G, H are now pipeline sections. Removed from `code/`: procedural renderer, QALife roll, simulated D-SCALE orchestrator, survival map, BP copy, hardware packs, `run_budget_*.sh`. RE folder unchanged (archive). **Nothing executed after the rebuild**: static checks only. |
 | 2026-10-31 | **D-SCALE built (sim) and first live hardware runs:** `code/dscale/` (4 families × 40/100/120 q, survival map, Pauli-twirled 156-q model, BP copy 104× faster); quantum seed shapes now drive F5's grower. Live on ibm_kingston / ibm_marrakesh: first hardware CHSH S = 2.733 with the cohort rolled on the QPU, QCA witness L1 (marginal), GHZ spine L0. Found: dead qubit inside a GHZ tree (T1/T2 gate added), seeds larger than the tumour (capped at ½ Ø), hardware roll size mix not matched. RE pages updated. |
 | 2026-10-31 | **F5 done (sim):** `f2_imaging` → `imaging`; grown renderer (RE E + F copy) in Siemens LIDC-IDRI-0481; pixel-growth player. Found three RE issues visible only on a real host (enclosed growth holes, render volume drift, vessel-inflated σ shell). README created. |

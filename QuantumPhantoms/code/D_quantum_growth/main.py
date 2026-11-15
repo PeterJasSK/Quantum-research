@@ -1,8 +1,8 @@
 """Section D: quantum growth. What the quantum computer does at the start of each tumour's growth.
 
 Set CIRCUIT below; that is the only switch. Every circuit runs on the run's backend (or the local fake in a dry
-run), writes <run>/qhard/<CIRCUIT>/result.json and its claims. DSCALE, CH-QCA and the R6 rings also write per-tumour seed
-shapes (<run>/dscale/seed_shapes.npz); with any other circuit section E grows from the 2 mm ball.
+run), writes <run>/qhard/<CIRCUIT>/result.json and its claims. DSCALE, CH-QCA, the R6 rings, D-GRAPH and D-DTC also write
+per-tumour seed shapes (<run>/dscale/seed_shapes.npz); with any other circuit section E grows from the 2 mm ball.
 
 Plans: plans/qhard-D-L2-ring-configurations.md, plans/qhard-R1-R5-configurations-and-BD-flagship.md. Sizes below
 are first-run sizes; the plan's published size is in the comment where it differs. `dry` = the sizes a dry run
@@ -14,7 +14,7 @@ from __future__ import annotations
 from common import quantum as Q, runio
 from common.runio import Ctx
 
-CIRCUIT = "R3-TEST"  # DSCALE | GHZ-SPINE | CH-QCA | PMD-BANK | R1-STAR-001 | R1-TILE24 | R1-M2-00001 | R3-LADDER | R3-TEST | R3-CHIP64 | R3-INTRINSIC | R5-LADDER | R6a-S36 | R6a-S44 | R6b-LEAN64 | R6b-PUB64 | L2-BAND
+CIRCUIT = "R3-TEST"  # DSCALE | GHZ-SPINE | CH-QCA | PMD-BANK | R1-STAR-001 | R1-TILE24 | R1-M2-00001 | R3-LADDER | R3-TEST | R3-CHIP64 | R3-INTRINSIC | R5-LADDER | R6a-S36 | R6a-S44 | R6b-LEAN64 | R6b-PUB64 | L2-BAND | D-GRAPH | D-STC | D-DU | D-DTC
 
 _R1 = {"run": "D_quantum_growth.clock:run", "level": "L1'-T", "bound": 0.29641,
        "rigour": "computer-certified upper bound 0.29641 for 2-state machines, attained value 8/27 (2005.04241 Table 3) [verify]",
@@ -42,7 +42,7 @@ CIRCUITS = {
                  "dry": {"circuits": 3}},
     # R1 temporal memory: a degree-3 qubit is the clock's memory, its 3 neighbours the outputs
     "R1-STAR-001": _R1 | {"tiles": 1, "identical_steps": [True, False], "pass": "p > 0.29641 by 3 sigma"},
-    "R1-TILE24": _R1 | {"tiles": 24, "identical_steps": [False], "min_pass": 20, "dry": {"tiles": 3, "min_pass": 2},
+    "R1-TILE24": _R1 | {"tiles": 24, "identical_steps": [True, False], "min_pass": 20, "dry": {"tiles": 3, "min_pass": 2},   # identical steps = the time-independent machine of 2005.04241
                         "pass": ">= 20 of 24 tiles pass at 3 sigma after Bonferroni"},
     "R1-M2-00001": _R1 | {"memory_qubits": 2, "seq": "00001", "tiles": 1, "restarts": 4,      # plan: 12 restarts
                           "dry": {"restarts": 1},
@@ -58,7 +58,7 @@ CIRCUITS = {
     "R3-CHIP64": _R3 | {"pairs": [64], "instances": 32, "dry": {"pairs": [8], "instances": 2},
                         "witness": "hidden full-weight Pauli sign on 64 selected Bell pairs (128 qubits)",
                         "pass": "hidden Pauli sign recovered at 5 sigma and overhead < 2"},
-    "R3-TEST": _R3 | {"channel": "test", "pairs": [8, 16, 24, 32, 40], "pool": 400, "trials": 200,
+    "R3-TEST": _R3 | {"channel": "test", "pairs": list(range(8, 73, 8)), "pool": 2000, "trials": 200,   # sizes the certified pairs cannot hold are left out
                       "dry": {"pairs": [4, 8], "pool": 24, "trials": 40},
                       "witness": "success rate of naming the hidden Pauli channel with a sister memory (hypothesis test)",
                       "rigour": "1/2 + 0.43 M 2^-n without a quantum memory (2408.03376 Eq. 4) [verify]; emulated channel",
@@ -69,9 +69,9 @@ CIRCUITS = {
                            "pass": "calibration (noise model for R6)"},
     # R5 loss meter for R6
     "R5-LADDER": {"run": "common.game:run_ladder", "level": "calibration", "bound": None, "rigour": "none",
-                  "witness": "effective loss per CZ, lambda = -ln F_n / N_CZ, from the game score",
-                  "n": [12, 20], "inputs": 16,                                                # plan: 12..44, 32 inputs
-                  "dry": {"n": [12], "inputs": 4},
+                  "witness": "loss per CZ, lam of -ln F = a n + lam N_CZ, from the game score on rings with identity CZ pairs",
+                  "n": [12, 20], "k": [0, 2, 4], "inputs": 16,                                # plan: 12..44, 32 inputs
+                  "dry": {"n": [12], "k": [0, 2], "inputs": 4},
                   "adversary": "No adversary: a loss meter", "pass": "none (calibration)"},
     # R6 deep T-doped ring with ancilla checks: the L2 attempt (L2 stays blocked)
     "R6a-S36": _R6 | {"level": "L2 protocol, below threshold", "n": 36, "depth": 22, "t": [0, 5, 40], "n_anc": 8,
@@ -95,6 +95,34 @@ CIRCUITS = {
     "R6b-PUB64": _R6 | {"level": "L2 (published reference)", "n": 64, "depth": 73, "t": [0, 314], "n_anc": 12,
                         "m_dfe": 8, "min_entropy": 27, "min_t": 200, "pass": "as published",
                         "refuse": {"marrakesh": "acceptance ~4e-9", "kingston": "ring readout error 2.6 %"}},
+    # QCAND candidates (plans/feature-QCAND-*.md)
+    "D-GRAPH": {"run": "D_quantum_growth.graph_state:run", "level": "L1 (bipartite per edge)", "bound": 0.9,
+                "n": 156, "dry": {"n": 12, "batches": 1},                                     # n >= the pruned chip: every usable qubit
+                "witness": "share of the region's qubits joined by couplers with negativity > 0 (graph state, pair tomography)",
+                "rigour": "negativity > 0 proves entanglement of that pair; linear inversion, 3 sigma after Bonferroni [verify]",
+                "adversary": "Adversary: any separable state of the pair, per coupler; bipartite, not genuine multipartite",
+                "pass": "couplers with negativity > 0 by 3 sigma (Bonferroni) connect >= 90 % of the used qubits"},
+    "D-STC": {"run": "D_quantum_growth.checks:run", "level": "L2 protocol, below threshold", "bound": 1.0,
+              "n": 36, "depth": [10, 14, 20], "n_anc": 8, "m_dfe": 8,
+              "dry": {"n": 12, "depth": [4], "n_anc": 2, "m_dfe": 2},
+              "witness": "fidelity gain of the Clifford ring from post-selection on spacetime checks (DFE, kept / all shots)",
+              "rigour": "none: a measured gain, no bound (own minimal check finder after 2504.15725 [verify])",
+              "adversary": "No adversary: about the device and the road to L2",
+              "pass": "gain > 1 by 3 sigma (Bonferroni over depths)"},
+    "D-DU": {"run": "D_quantum_growth.du_meter:run", "level": "calibration", "bound": None,
+             "n": [21, 51], "t": [1, 2, 3, 4, 6, 8, 10, 14, 20], "h": 0.05, "strings": 4,
+             "dry": {"n": [9], "t": [1, 2, 3, 4], "strings": 2},
+             "witness": "loss per CZ layer of the light-cone autocorrelation of a dual-unitary kicked-Ising chain",
+             "rigour": "exact reference cos^t(2h) for the operator Z_x Y_(x+1), checked numerically at 9 and 10 qubits, "
+                       "not transcribed from 2411.00765 [verify]",
+             "adversary": "No adversary: a loss meter that sees idle errors (gap G4)", "pass": "none (calibration)"},
+    "D-DTC": {"run": "D_quantum_growth.dtc:run", "level": "L0", "bound": None,
+              "n": 35, "cycles": [1, 2, 3, 4, 6, 9, 14, 20], "jx": 0.1, "jy": 0.1, "jz": 0.8, "eps": 0.05,   # plan: 144 qubits
+              "dry": {"n": 12, "cycles": [1, 2, 3]},
+              "witness": "subharmonic contrast of a Floquet time-crystal cycle on a heavy-hex patch (Z readout)",
+              "rigour": "none: diagonal observable; couplings are not transcribed from 2501.18036 [verify]",
+              "adversary": "No adversary: quantum-sourced dynamics, diagonal observable, no separation",
+              "pass": "none (growth frames)"},
 }
 HONEST = ("the seed shape is a quantum snapshot measured on the device; growth and image are classical; every claim "
           "names its adversary; a certificate is about the device, never the tumour")

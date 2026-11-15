@@ -2,7 +2,8 @@
 
     cohort vs rulebook   marginals of size and lobe against the published rulebook (total variation distance; at
                          n = 12 this is a sanity check, not a test)
-    certificate          the CHSH gate's verdict
+    certificate          the Bell map's verdict as a resource: pairs certified, bits available, bits spent by consumer
+    L2 distance          the loss per CZ the R6a-S36 ring needs against the one this run measured (R5-LADDER or D-DU)
     claims               every quantum claim: level, bound, rigour of the bound, passed or not. A non-pass is a result.
     render checks        fallbacks, inserted-volume error, noise ratio in / out of the lesion, seed sources
 """
@@ -34,6 +35,11 @@ def run(ctx: Ctx) -> None:
     sizes = Counter(size_of.get(round(t["size_mm"], 3), "?") for t in cohort)
     lobes = Counter(t["lobe"] for t in cohort)
     diag = [t.get("diag", {}) for t in tiles]
+    cert = runio.load_json(d / "certificate.json") or {}
+    budget = cert.get("budget") or {"available": 0, "spent": {}}
+    from D_quantum_growth import ring_l2
+
+    l2 = ring_l2.l2_distance(d, ctx.shots)
     out = {
         "run": d.name, "backend": runio.load_json(d / "backend.json"),
         "readiness": "one run, small n: descriptive only. A dry run certifies nothing.",
@@ -42,7 +48,12 @@ def run(ctx: Ctx) -> None:
                                "lobe": {"counts": dict(lobes), "tvd": round(_tvd(lobes, rb["lobe"], n), 3)},
                                "type": dict(Counter(t["type"] for t in cohort)),
                                "margin": dict(Counter(t["margin"] for t in cohort))},
-        "certificate": runio.load_json(d / "certificate.json"),
+        "certificate": {k: v for k, v in cert.items() if k not in ("pairs", "pair_map")},
+        "certificate_pairs": {"measured": cert.get("pairs_measured"), "certified": cert.get("pairs_certified")},
+        "certificate_budget": {"available": budget["available"], "spent": budget["spent"],
+                               "spent_total": sum(budget["spent"].values()),
+                               "scope": cert.get("pool", "no bit pool in this run")},
+        "l2_distance": l2,
         "claims": [{k: c.get(k) for k in ("stage", "config", "family", "claim_level", "value", "sigma", "bound",
                                           "bound_rigour", "passed", "label")} for c in claims],
         "claims_summary": {"total": len(claims), "passed": sum(bool(c.get("passed")) for c in claims),
@@ -55,6 +66,12 @@ def run(ctx: Ctx) -> None:
                    "vdt_d": _stat(diag, "vdt_d")},
     }
     runio.save_json(d / "analysis.json", out)
+    b = out["certificate_budget"]
+    print(f"  certificate: {cert.get('pairs_certified', 'n/a')} of {cert.get('pairs_measured', 'n/a')} pairs certified; "
+          f"{b['available']} bits available, {b['spent_total']} spent ("
+          + ", ".join(f"{k} {v}" for k, v in b["spent"].items()) + ")")
+    print(f"  L2 distance: {l2['config']} needs loss per CZ <= {l2['needed']:.4f}; measured {l2['measured']:.4f} on "
+          f"{l2['backend']} ({l2['note']})" if l2 else "  L2 distance: n/a (no R5-LADDER or D-DU in this run)")
     s = out["claims_summary"]
     print(f"  claims: {s['passed']} of {s['total']} passed" + (f"; not passed: {', '.join(s['not_passed'])}" if s["not_passed"] else ""))
     print(f"  render: {out['render']['renderers']}, fallbacks {len(out['render']['fallbacks'])}, seeds {out['render']['seed_sources']}")

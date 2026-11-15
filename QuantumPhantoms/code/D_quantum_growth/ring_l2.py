@@ -30,6 +30,7 @@ simulation the reference runs (stabilizer) and the doped circuits are built, cou
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 import numpy as np
 from qiskit import qpy
@@ -175,6 +176,49 @@ def certify(values: list[float], sigmas: list[float], t: int) -> dict:
                                  f"2607.25941 is not implemented [verify]"}
 
 
+# ---------------------------------------------------------------------------------------------- forecast from the ladder
+SIGNAL_SIGMA = 3.0            # a ring is not run when its forecast reference fidelity is below this many sigma
+ACCEPTED_SHARE = 0.07         # share of the gate loss left in the accepted shots (desk model of QH.acceptance_model)
+
+
+def forecast(n: int, n_cz: int, m_dfe: int, shots: int, loss: dict | None) -> dict | None:
+    """Distance to L2 from the loss meter of this run (R5-LADDER: lam per CZ, a per qubit). Desk model:
+        accepted-shot fraction  exp(-lam N_CZ)
+        fidelity of accepted    exp(-a n) exp(-ACCEPTED_SHARE lam N_CZ)
+        sigma of the estimate   1 / sqrt(m_dfe shots accepted)
+    lam_needed = the loss per CZ at which the signal is exactly SIGNAL_SIGMA. None without a ladder in the run.
+    When D-DU ran in this run directory its loss per CZ layer (deep circuit, idle errors included) replaces the
+    ladder's lam: a weight-2 operator crosses one to two CZ per layer, so it is used as the loss per CZ."""
+    layer = (loss or {}).get("loss_per_layer")
+    if not loss or (layer is None and loss.get("loss_per_cz") is None):
+        return None
+    lam = max(float(loss["loss_per_cz"] if layer is None else layer), 0.0)
+    a = max(float(loss.get("readout_loss_per_qubit") or 0.0), 0.0)
+    acc = math.exp(-lam * n_cz)
+    fid = math.exp(-a * n - ACCEPTED_SHARE * lam * n_cz)
+    signal = fid * math.sqrt(m_dfe * shots * acc)
+    needed = (0.5 * math.log(m_dfe * shots) - a * n - math.log(SIGNAL_SIGMA)) / ((0.5 + ACCEPTED_SHARE) * n_cz)
+    return {"n": n, "n_cz": int(n_cz), "m_dfe": m_dfe, "shots": shots, "loss_per_cz": lam, "readout_loss_per_qubit": a,
+            "accepted_fraction": acc, "fidelity_accepted": fid, "signal_sigma": signal, "go": signal >= SIGNAL_SIGMA,
+            "loss_per_cz_needed": needed, "label": loss.get("label") if layer is None else loss.get("layer_label"),
+            "loss_source": "R5-LADDER loss per CZ" if layer is None else "D-DU loss per CZ layer",
+            "rigour": "desk model on the loss meter's numbers"}
+
+
+def l2_distance(run_dir, shots: int, config: str = "R6a-S36") -> dict | None:
+    """What section H prints: the loss per CZ `config` needs against the one measured in this run. The CZ count is
+    the ring's own (n depth / 2); its checks add more, so the real need is stricter."""
+    from D_quantum_growth.main import CIRCUITS
+
+    cfg = CIRCUITS[config]
+    loss = runio.load_json(Path(run_dir) / "qhard" / "loss_per_cz.json")
+    f = forecast(cfg["n"], cfg["n"] * cfg["depth"] // 2, cfg["m_dfe"], shots, loss)
+    if f is None:
+        return None
+    return {"config": config, "needed": f["loss_per_cz_needed"], "measured": f["loss_per_cz"], "go": f["go"],
+            "backend": f["label"], "note": f"ring CZ only (checks add more); desk model on the {f['loss_source']}"}
+
+
 def _pauli_label(x: np.ndarray, z: np.ndarray) -> str:
     return "".join("IXZY"[int(a) + 2 * int(b)] for a, b in zip(x, z))
 
@@ -201,7 +245,18 @@ def run(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
     ledger = QH.classical_cost(sk, max(cfg["t"]))
     model = QH.acceptance_model(tg, ring, n_cz)
     lam = (runio.load_json(ctx.run_dir / "qhard" / "loss_per_cz.json") or {}).get("loss_per_cz")
-    design = {"ring": ring, "ancillas": anc, "depth": depth, "skeleton_seed": sk["seed"],
+    fc = forecast(n, n_cz, cfg["m_dfe"], ctx.shots, runio.load_json(ctx.run_dir / "qhard" / "loss_per_cz.json"))
+    if fc is None:
+        Q.log(f"{name}: no forecast (no R5-LADDER or D-DU in this run: qhard/loss_per_cz.json missing)")
+    else:
+        Q.log(f"{name}: forecast from the {fc['loss_source']} ({fc['label']}): accepted fraction {fc['accepted_fraction']:.2e}, "
+              f"fidelity of accepted shots {fc['fidelity_accepted']:.3f}, signal {fc['signal_sigma']:.1f} sigma at "
+              f"{cfg['m_dfe']} x {ctx.shots} shots; needs loss per CZ <= {fc['loss_per_cz_needed']:.4f}, measured "
+              f"{fc['loss_per_cz']:.4f}")
+        if not fc["go"]:
+            raise Q.Refused(f"forecast signal {fc['signal_sigma']:.2f} sigma < {SIGNAL_SIGMA:.0f} at the shot budget: needs "
+                            f"loss per CZ <= {fc['loss_per_cz_needed']:.4f}, measured {fc['loss_per_cz']:.4f}")
+    design = {"forecast": fc,"ring": ring, "ancillas": anc, "depth": depth, "skeleton_seed": sk["seed"],
               "cut_entropy": ent, "classical_cost": ledger, "n_checks": len(cks),
               "checks": [{"ancillas": c["ancillas"], "n_cz": c["n_cz"], "web_weight": c["weight"]} for c in cks],
               "group_size": max(1, math.ceil((n + 1) / (depth + 1))), "first_order_detected": detected_fraction(sk, cks),

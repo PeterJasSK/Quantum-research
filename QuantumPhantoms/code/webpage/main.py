@@ -65,7 +65,13 @@ def run(ctx: Ctx) -> None:
     ds = runio.load_json(d / "dscale" / "dscale_run.json") or {}
     ds["claims"] = [c | {"family": f"{c.get('stage', '?')} · {c.get('family', '?')}"}
                     for c in runio.load_json(d / "claims.json") or []]
+    cert = runio.load_json(d / "certificate.json") or {}
+    budget = cert.get("budget") or {}
+    certificate = {"pairs_certified": cert.get("pairs_certified"), "pairs_measured": cert.get("pairs_measured"),
+                   "bits_available": budget.get("available"), "S_low": cert.get("S_low"),
+                   "bits_spent": sum(budget["spent"].values()) if "spent" in budget else None}
     cohort = {"tiles": data["tiles"], "quantum_run": data["quantum_run"], "honest_label": data.get("honest_label", ""),
+              "certificate": certificate,
               "ct_attribution": data.get("ct_attribution", ""), "full_images": full_images,
               "provenance": data.get("provenance"), "dscale": ds,
               "rulebook": {"size_labels": labels, "size_probs": [rb["size"][k] for k in labels],

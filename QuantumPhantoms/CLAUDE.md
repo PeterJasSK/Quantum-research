@@ -14,7 +14,7 @@ Long-term goal: each pipeline stage is one layer of a future patient digital twi
 ## Code (minimal pipeline, 2026-11-11)
 
 `code/` is the pipeline; entry doc `code/README.md` (**read first**). One directory per section, each with a
-`main.py` exposing `run(ctx)`; `code/main.py` calls them in the order B C D A E F G H web. Sections exchange files
+`main.py` exposing `run(ctx)`; `code/main.py` calls them in the order C B D A E F G H web. Sections exchange files
 in `research_runs/<run>/` only.
 
 ```
@@ -25,9 +25,16 @@ python main.py --shots N              # shots per circuit
 python main.py --run <run dir>        # continue a stopped run
 ```
 
-- **B and D have one switch each:** the `CIRCUIT` constant at the top of `B_mapping/main.py` and
-  `D_quantum_growth/main.py` (today: `ROLL`, `DSCALE`; the rest are the Q-HARD circuits of `plans/qhard-*.md`).
+- **C runs first and is spent:** one Bell-map job gives the certificate, the bit pool (`certified_bits.bin`) and
+  the pair map. B draws the tumours from the pool (`runio.draw_bits`), every `Q.rng` of a B or D circuit is seeded
+  from it, and layouts rank by the pair map. No certificate, no bits, no tumours.
+- **B, C and D have one switch each:** the `CIRCUIT` constant at the top of `B_mapping/main.py`,
+  `C_certificate/main.py` (`BELL-MAP` default | `GRAPH-BELL`) and `D_quantum_growth/main.py` (the Q-HARD circuits
+  of `plans/qhard-*.md` and the QCAND candidates `B-*` / `D-*` of `plans/feature-QCAND-*.md`; `ROLL` = cohort only).
   Every other section is one straight line, no variants. Keep it that way: a change lives in one place.
+- QCAND candidates are additive and dry-run only so far; their bounds are [verify]. `B-KS` stays refused live
+  until Peter sets `MID_CIRCUIT_LIVE` in `B_mapping/games.py`. C calls the public drand beacon once per run (one
+  GET, skipped offline).
 - Keep sections small: few files, no CLI flags beyond the four above, constants where they are used.
 - Shared code is `code/common/` (`quantum.py` = the only way a circuit reaches a device; `runio.py` = files, seeds,
   claims).
@@ -56,8 +63,10 @@ Python: conda base `/home/peter/anaconda3/bin/python3` (3.13). Pinned deps in `r
 - Every quantum number carries: claim level (**L0** provenance, **L1** entangled generative state, **L1′** memory
   advantage; L2/L3 are blocked, frontier map only), its classical baseline or surrogate, its BP simulability number
   (target #9), and a label: `simulated: ideal`, `simulated: Heron-class noise (FakeMarrakesh)` or `hardware: <backend>, job <id>`.
-- Simulated CHSH certifies nothing: write "certification-ready, not certified (simulated)". S ≤ 2 = fail, no seed,
-  draw rejected and logged, no retry.
+- Simulated CHSH certifies nothing: write "certification-ready, not certified (simulated)". Fewer than 8 certified
+  pairs or pooled S − 3 sigma ≤ 2 or `p_value_local` ≥ 1e-6 = fail, no bits, no tumours, logged, no retry.
+- The bit pool is "bits extracted from Bell-test outcomes on one chip; job-level; not device-independent". Never
+  "certified random" without that scope. The cohort drawn from it is L0.
 - **The 1.96 on `ibm_marrakesh` is the GHZ witness ⟨XX⟩+⟨ZZ⟩ (bound 1), not CHSH (bound 2).** Read as CHSH it is
   a failed Bell test. Never call it CHSH.
 - A single-qubit dial read in Z is a classical biased coin. Interference claims need multi-qubit correlations in

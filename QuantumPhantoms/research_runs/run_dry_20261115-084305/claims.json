@@ -1,0 +1,32 @@
+[
+ {
+  "stage": "B",
+  "config": "R5-H12",
+  "family": "R5-H12",
+  "claim_level": "L1.5 (dry run: not a claim)",
+  "witness": "win rate of the stabilizer-submeasurement game on the cyclic cluster state (raw counts)",
+  "value": 0.8090625,
+  "sigma": 0.006944235890965615,
+  "bound": 0.8,
+  "bound_rigour": "[verify]: bound from 2110.04277; the win rule here is derived, not transcribed",
+  "passed": false,
+  "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+  "pass_rule": "win > 0.80 by 3 sigma",
+  "note": "Adversary: depth-1 local classical circuits only. 0 of 1 rings pass (need 1); n = 12, 8 inputs, raw counts; the value is the all-parities win rate; single parities on this ring: input-dependent 0.878, input-independent 0.875 (which parity the published bound refers to: [verify])."
+ },
+ {
+  "stage": "D",
+  "config": "R3-TEST",
+  "family": "R3-TEST",
+  "claim_level": "L1'-L (dry run: not a claim)",
+  "witness": "success rate of naming the hidden Pauli channel with a sister memory (hypothesis test)",
+  "value": 0.6,
+  "sigma": 0.07745966692414834,
+  "bound": 1.0,
+  "bound_rigour": "1/2 + 0.43 M 2^-n without a quantum memory (2408.03376 Eq. 4) [verify]; emulated channel",
+  "passed": false,
+  "label": "dry run: FakeMarrakesh noise on a local simulator (not hardware)",
+  "pass_rule": "success above the no-memory bound by 3 sigma at some n >= 4",
+  "note": "Adversary: every learner without a quantum memory (a theorem, no baseline arm is run). n = 4 pairs (8 qubits), M = 240 measurements (120 of them without a channel), 40 trials on one pool of 24 circuits x 10 shots; all sizes: n=4: 0.600 vs 1.000; trials share the pool; one inserted Pauli per circuit."
+ }
+]

@@ -6,7 +6,8 @@
 
 One backend per run: the first pick is written to <run>/backend.json and reused by every section and by a
 continued run. Every submitted job id is written to <run>/jobs/<key>.json before waiting; when that file exists the
-job is fetched instead of submitted again (so a stopped live run can be continued without paying twice).
+job is fetched instead of submitted again (so a stopped live run can be continued without paying twice). The raw
+bit arrays of every job that goes through execute() are kept in <run>/jobs/<key>.npz.
 Spend guard: shots are cut so the estimate stays under common.MAX_QPU_SECONDS for the run; below MIN_SHOTS it refuses.
 """
 from __future__ import annotations
@@ -25,6 +26,7 @@ from common.runio import Ctx
 
 REP_DELAY_S = 250e-6
 WIDE = 16                     # logical qubits above which the local fake run needs MPS (or the Pauli model if Clifford)
+RNG_BITS = 64                 # pool bits that seed one rng(ctx, name, label)
 
 
 class Refused(Exception):
@@ -87,6 +89,7 @@ def session(ctx: Ctx) -> Session:
         log(f"backend {b.name}: {b.num_qubits} qubits")
     runio.save_json(ctx.path("backend.json"), {"name": s.target.name, "live": s.live, "label": s.target.label,
                                                "calibration": s.target.calibration})
+    s.target.meta["pair_map"] = runio.pair_map(ctx.run_dir)        # Bell map of a continued run (layout input)
     _SESSION[key] = s
     return s
 
@@ -194,10 +197,19 @@ def execute(ctx: Ctx, key: str, circuits: list[QuantumCircuit], shots: int | lis
         for c, sh in zip(isa, per):
             res = PN.run([PN.delays_to_pauli(c, s.target.name)], s.target.name, int(sh), seed)
             out.append(np.array([[int(ch) for ch in w.replace(" ", "")[::-1]] for w in res.get_memory(0)], np.uint8))
+        _keep(ctx, key, out)
         return out, info | {"job_id": "", "label": f"dry run: Pauli-twirled {FAKE_BACKEND} noise, stabilizer "
                                                    f"simulation (not hardware)"}
     res, job_id, label = run_isa(ctx, key, isa, per, wide=wide)
-    return [bits(res[i]) for i in range(len(isa))], info | {"job_id": job_id, "label": label}
+    out = [bits(res[i]) for i in range(len(isa))]
+    _keep(ctx, key, out)
+    return out, info | {"job_id": job_id, "label": label}
+
+
+def _keep(ctx: Ctx, key: str, out: list[np.ndarray]) -> None:
+    """Raw counts of the job -> <run>/jobs/<key>.npz: c<k> = np.packbits of circuit k, shapes[k] = (shots, clbits)."""
+    np.savez_compressed(ctx.path("jobs", f"{key.replace('/', '_')}.npz"), shapes=np.array([b.shape for b in out]),
+                        **{f"c{k:04d}": np.packbits(b) for k, b in enumerate(out)})
 
 
 # ---------------------------------------------------------------------------------------------- claims
@@ -214,8 +226,17 @@ def claim(ctx: Ctx, name: str, cfg: dict, value, sigma, passed: bool, label: str
 
 
 def rng(ctx: Ctx, name: str, label: str) -> np.random.Generator:
-    """Seeded by the run (roll job id or run name) and the circuit name: a continued run rebuilds the same circuits."""
-    return runio.rng(runio.config_seed(ctx, name), label)
+    """Random inputs of a circuit. Seeded by RNG_BITS bits drawn from the run's bit pool (recorded in the
+    certificate's budget under "<name>/<label>") and expanded with PCG64: a pseudo-random expansion of Bell-test
+    bits of the same device, drawn before the circuit ran (the setting-independence loophole is open). A continued
+    run gets the same bits. No pool (a run directory without section C): seeded by the run name."""
+    if not runio.has_pool(ctx):
+        return runio.rng(runio.config_seed(ctx, name), label)
+    try:
+        word = runio.draw_bits(ctx, f"{name}/{label}", RNG_BITS)
+    except RuntimeError as e:
+        raise Refused(str(e)) from e
+    return np.random.Generator(np.random.PCG64(int.from_bytes(np.packbits(word).tobytes(), "big")))
 
 
 def save(ctx: Ctx, name: str, result: dict) -> None:

@@ -4,6 +4,8 @@ Seed = section D's quantum seed shape for the tumour when it wrote one (<run>/ds
 2 mm ball. A cubic lattice is centred on the site; the host lung mask (nearest) and HU (linear) are resampled onto
 it; outside-lung is a hard wall (pleura). Growth runs until the equivalent diameter reaches the rolled size
 (baseline), then +90 days (follow-up), with snapshots at log-spaced diameters for the growth frames.
+When section D also wrote one quantum shape per growth frame ("<tile id>/f<k>" in the same file, D-DTC), their cell
+counts are recorded next to the growth summary ("seed_frames"); the growth law itself stays classical.
 
 Engine (per day; Kansal-Torquato + Pixel2Cancer):
   1. Rt = mean distance of the tumour's edge voxels from the seed centroid; dn = a Rt^(2/3), dp = b Rt^(2/3)
@@ -404,6 +406,9 @@ def run(ctx: Ctx) -> None:
             error = str(e)
         runio.save_growth(ctx.run_dir, tid, growth, error)
         summary[tid] = {"status": "ok" if growth else f"failed: {error}"} | (growth.summary if growth else {})
+        frames = sorted((k for k in masks if k.startswith(tid + "/f")), key=lambda k: int(k.rsplit("/f", 1)[1]))
+        if frames:                                           # D-DTC: one quantum shape per growth frame, recorded only
+            summary[tid]["seed_frames"] = [int(masks[k].sum()) for k in frames]
         print(f"  {tid:10s} {p.type:12s} {p.size_mm:5.1f} mm  {summary[tid]['status']}"
               + (f"  seed {growth.summary.get('seed_source', 'ball')}, VDT {growth.summary.get('vdt_d')} d" if growth else ""))
     runio.save_json(ctx.path("growth.json"), {"host": HOST_ID, "tiles": summary})

@@ -1,10 +1,11 @@
 """Run context and the files the sections exchange in research_runs/<run>/. Sections pass files, never objects.
 
-    B  cohort_params.json, quantum_run.json, rulebook.json     C  certificate.json
+    C  certificate.json, certified_bits.bin (the bit pool)      B  cohort_params.json, quantum_run.json, rulebook.json
     D  dscale/dscale_run.json, dscale/seed_shapes.npz           A  sites.json
     E  growth.json, _roi/growth_<tile>.pkl                      F  tiles.json, tiles/*.png
     G  lineage_record.json, ledger.jsonl                        H  analysis.json
     claims.json  every hypothesis claim of B and D              jobs/<key>.json  submitted job ids (resume)
+                                                                jobs/<key>.npz   raw bit arrays of every job
 """
 from __future__ import annotations
 
@@ -59,14 +60,59 @@ def tile_seeds(run_key: str, shot_index: int, generation: int, raw_bits: list[st
 
 
 def run_key(ctx_or_dir) -> str:
-    """Replay key of the run: the roll's job id on hardware, else the run directory name."""
+    """Replay key of the run: the SHA-256 of the bit pool (section C). Before the pool exists, and in run
+    directories older than the pool: the roll's job id on hardware, else the run directory name."""
     d = Path(getattr(ctx_or_dir, "run_dir", ctx_or_dir))
+    if (d / POOL_FILE).is_file():
+        return sha256_file(d / POOL_FILE)
     f = d / "quantum_run.json"
     return (json.loads(f.read_text()).get("job_id") if f.is_file() else "") or d.name
 
 
 def config_seed(ctx: Ctx, key: str) -> str:
     return hashlib.sha256(f"{run_key(ctx)}|{key}".encode()).hexdigest()
+
+
+# ---------------------------------------------------------------------------------------------- bit pool (C -> B, D)
+POOL_FILE = "certified_bits.bin"
+
+
+def has_pool(ctx_or_dir) -> bool:
+    return (Path(getattr(ctx_or_dir, "run_dir", ctx_or_dir)) / POOL_FILE).is_file()
+
+
+def draw_bits(ctx: Ctx, label: str, n: int) -> np.ndarray:
+    """The next n bits of the pool, recorded as certificate.json budget.spent[label] = n. Bits are handed out in
+    the order of first use; asking again with the same label returns the same bits (a continued run replays its
+    draws). A draw beyond the budget raises: there is no fallback to another source."""
+    f = ctx.run_dir / "certificate.json"
+    cert = load_json(f) or {}
+    budget = cert.get("budget")
+    if budget is None or not has_pool(ctx):
+        raise RuntimeError("no bit pool in this run (section C did not pass)")
+    spent = budget["spent"]
+    if label in spent:
+        if spent[label] != n:
+            raise RuntimeError(f"bit pool: {label!r} drew {spent[label]} bits earlier, {n} asked now")
+        start = sum(v for k, v in list(spent.items())[:list(spent).index(label)])
+    else:
+        start = sum(spent.values())
+        if start + n > budget["available"]:
+            raise RuntimeError(f"bit pool exhausted: {label!r} asks {n} bits, {budget['available'] - start} of "
+                               f"{budget['available']} left")
+        spent[label] = n
+        save_json(f, cert)
+    return np.unpackbits(np.fromfile(ctx.run_dir / POOL_FILE, dtype=np.uint8))[start:start + n]
+
+
+def pair_map(run_dir) -> dict[tuple[int, int], float]:
+    """Bell map of the run: (a, b) with a < b -> CHSH S of that coupler; empty when section C has not run."""
+    cert = load_json(Path(run_dir) / "certificate.json") or {}
+    out = {}
+    for k, S in cert.get("pair_map", {}).items():
+        a, b = sorted(int(q) for q in k.split("-"))
+        out[(a, b)] = float(S)
+    return out
 
 
 def sha256_file(path) -> str:

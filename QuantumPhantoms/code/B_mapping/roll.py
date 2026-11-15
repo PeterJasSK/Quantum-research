@@ -1,18 +1,19 @@
-"""ROLL: today's stage B. Published nodule statistics -> a shallow circuit -> tumour parameters, with a CHSH pair.
+"""ROLL: stage B's draw. Published nodule statistics + bits of the run's pool -> tumour parameters.
 
-    rulebook   Fleischner / LIDC statistics (size, type | size, margin | type, lobe) as Ry angle trees
-    circuit    9 property qubits per tumour; a sibling pair = parent + mutated daughter (2 x 9 qubits); 4 CHSH settings
-    decode     one shot = one tumour (one shot per sibling pair)
-    roll()     all of it as ONE job on the run's backend: cohort_params.json + quantum_run.json
-CHSH S is a job-level statistic (one Bell test over 4 settings), never a per-tumour value. S <= 2: the draw is
-rejected, no cohort file is written, no retry (section C stops the run).
+    rulebook   Fleischner / LIDC statistics: size, type | size, margin | type, lobe
+    draw       BITS pool bits per property, mapped by inverse CDF on the rulebook probabilities (4 properties per
+               tumour). A sibling pair = a parent and a daughter that copies each property of the parent and
+               redraws it with probability P_MUT.
+    roll()     the whole cohort from ONE draw of the pool (label "roll"): cohort_params.json + quantum_run.json
+No circuit and no job here: the bits come from section C's Bell map (common.runio.draw_bits). Without a pool there
+is no cohort. The cohort's claim level is L0 (provenance): the sibling pair is a classical copy with mutation.
 """
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
 
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+import numpy as np
 
 from common import quantum as Q, runio
 from common.datamodel import LOBES, MARGINS, TYPES, QuantumRun, TumorParams
@@ -22,10 +23,9 @@ TILES = 12                    # tumours in the cohort
 PAIRS = 2                     # sibling pairs among them
 DRY_TILES, DRY_PAIRS = 4, 1   # dry run: a small cohort (tests the pipeline, not the patients)
 DRY_MAX_MM = 7.0              # dry run: larger rolled sizes are cut to this (growth time)
-CHSH_SHOTS = 2048             # shots per CHSH setting
 
 
-# ============================================================================================== rulebook: published nodule statistics -> Ry angle trees
+# ============================================================================================== rulebook: published nodule statistics
 # Size bands (mm). 4 bands -> 2 qubits. Fleischner 2017 reporting thresholds
 # (<6 / 6-8 / >8 mm) split into 4 render bands; frequencies follow the small-nodule
 # skew of LIDC-IDRI aggregates. Representative mm used for rendering per band.
@@ -99,232 +99,9 @@ def _normalize(probs) -> list[float]:
     return [p / total for p in probs]
 
 
-def _pad_pow2(probs: list[float]) -> list[float]:
-    """Pad a distribution up to the next power of two with zero-probability slots
-    (the spare register codes; remapped at decode time)."""
-    n = 1
-    while n < len(probs):
-        n <<= 1
-    return probs + [0.0] * (n - len(probs))
-
-
-def amp_tree_angles(probs) -> list[float]:
-    """Binary-tree `Ry` angles for amplitude-encoding `probs` over `log2(len)` qubits.
-
-    Returns angles in the fixed order `circuit.py` consumes them: breadth-first over
-    the split tree, MSB qubit first. Node angle = `2*acos(sqrt(P(left-subtree)))`;
-    a node with zero mass yields angle 0. `len(probs)` must be a power of two
-    (use `_pad_pow2` first).
-    """
-    probs = _normalize(_pad_pow2(list(probs)))
-    n = len(probs)
-    if n & (n - 1):
-        raise ValueError("len(probs) must be a power of two")
-
-    angles: list[float] = []
-    width = n
-    # Walk levels from the whole array down to pairs; each level = one qubit.
-    while width > 1:
-        half = width // 2
-        for start in range(0, n, width):
-            block = probs[start:start + width]
-            left = sum(block[:half])
-            total = sum(block)
-            if total <= 0:
-                angles.append(0.0)
-            else:
-                ratio = min(1.0, max(0.0, left / total))
-                angles.append(2.0 * math.acos(math.sqrt(ratio)))
-        width = half
-    return angles
-
-
-def angles_from_rulebook(rulebook: Rulebook) -> dict:
-    """All gate angles for the property register (plan §4, AC-1).
-
-    Shape (each value is an angle-tree or a list of trees, one per parent state):
-      - "size":             tree over 4 size bands            (2 qubits)
-      - "type_given_size":  4 trees (one per size band)       (2 qubits, uniformly-controlled)
-      - "margin_given_type":4 trees (one per type)            (2 qubits, uniformly-controlled)
-      - "lobe":             tree over 5 lobes padded to 8     (3 qubits)
-    """
-    size = amp_tree_angles(rulebook.size_probs())
-
-    type_given_size = [
-        amp_tree_angles(rulebook.type_given_size[label])
-        for label in rulebook.size_labels()
-    ]
-
-    # margin has 3 categories -> padded to 4 (one spare code, remapped in decode).
-    margin_given_type = [
-        amp_tree_angles(rulebook.margin_given_type[t]) for t in TYPES
-    ]
-
-    lobe = amp_tree_angles([rulebook.lobe_freqs[l] for l in LOBES])
-
-    return {
-        "size": size,
-        "type_given_size": type_given_size,
-        "margin_given_type": margin_given_type,
-        "lobe": lobe,
-    }
-
-
-# ============================================================================================== CHSH: settings and the job-level S
-# Optimal CHSH angle settings (radians), as ry rotations applied before Z measurement.
-# a in {a0, a1} on the first qubit, b in {b0, b1} on the second.
-CHSH_SETTINGS = {
-    "a0": 0.0,
-    "a1": math.pi / 2,
-    "b0": math.pi / 4,
-    "b1": -math.pi / 4,
-}
-
-# The four (a, b) pairs and their signs in S. circuit.py applies ry(-theta) on each
-# qubit before Z-measurement; with these angles S -> +2*sqrt(2) on a noiseless pair
-# (matches study-ideas/QuantumAlgorithmsExplained/code/11_chsh.py).
-CHSH_PAIRS = (("a0", "b0"), ("a0", "b1"), ("a1", "b0"), ("a1", "b1"))
-CHSH_SIGNS = (1.0, 1.0, 1.0, -1.0)
-
-
-def correlator(counts: dict[str, int]) -> float:
-    """E = (agree - disagree)/total for a 2-qubit setting's counts.
-
-    `counts` keys are 2-char bitstrings ("00".."11"); agree = "00" + "11".
-    Extra classical bits (if the key is longer) are ignored by taking the last 2.
-    """
-    agree = disagree = 0
-    for bitstring, n in counts.items():
-        two = bitstring.replace(" ", "")[-2:]
-        if two in ("00", "11"):
-            agree += n
-        else:
-            disagree += n
-    total = agree + disagree
-    if total == 0:
-        return 0.0
-    return (agree - disagree) / total
-
-
-def chsh_value(counts_by_pair: dict[tuple[str, str], dict[str, int]]) -> float:
-    """S from the four settings' counts.
-
-    `counts_by_pair` maps each (a, b) in CHSH_PAIRS to that setting's counts dict.
-    S = E(a0,b0) + E(a0,b1) + E(a1,b0) - E(a1,b1).
-    """
-    return sum(
-        sign * correlator(counts_by_pair[pair])
-        for pair, sign in zip(CHSH_PAIRS, CHSH_SIGNS)
-    )
-
-
-# ============================================================================================== circuits: 9 property qubits, one division, the 4 CHSH settings
-# Field slices within the 9-qubit property register (qubit indices; first = MSB).
-SIZE_Q = (0, 1)
-TYPE_Q = (2, 3)
-MARGIN_Q = (4, 5)
-LOBE_Q = (6, 7, 8)
-N_PROP = 9
-
-
-def _apply_tree(qc, qubits, tree, *, base, fixed_controls=(), fixed_value=0):
-    """Apply a breadth-first `Ry` angle tree to a register, optionally conditioned.
-
-    `qubits`/`fixed_controls` are integer offsets into the circuit's qubit list,
-    added to `base`. `qubits[0]` is the MSB. When `fixed_controls` is non-empty,
-    every rotation is additionally controlled on those parent qubits being in the
-    big-endian state `fixed_value` (this is how type|size and margin|type condition).
-    """
-    tq = [base + q for q in qubits]
-    fc = [base + q for q in fixed_controls]
-    nfixed = len(fc)
-    k = len(tq)
-    pos = 0
-    for level in range(k):
-        target = tq[level]
-        controls = fc + tq[:level]
-        for c in range(1 << level):
-            theta = tree[pos]
-            pos += 1
-            if not controls:
-                qc.ry(theta, target)
-                continue
-            flips = []
-            for m in range(nfixed):
-                if not ((fixed_value >> (nfixed - 1 - m)) & 1):
-                    flips.append(fc[m])
-            for m in range(level):
-                if not ((c >> (level - 1 - m)) & 1):
-                    flips.append(tq[m])
-            for q in flips:
-                qc.x(q)
-            qc.mcry(theta, controls, target)
-            for q in flips:
-                qc.x(q)
-
-
-def _encode_properties(qc, angles, base=0):
-    """Encode the rulebook Bayesian network onto the 9 property qubits at `base`."""
-    _apply_tree(qc, SIZE_Q, angles["size"], base=base)
-    for j in range(4):
-        _apply_tree(qc, TYPE_Q, angles["type_given_size"][j],
-                    base=base, fixed_controls=SIZE_Q, fixed_value=j)
-    for j in range(4):
-        _apply_tree(qc, MARGIN_Q, angles["margin_given_type"][j],
-                    base=base, fixed_controls=TYPE_Q, fixed_value=j)
-    _apply_tree(qc, LOBE_Q, angles["lobe"], base=base)
-
-
-def build_tumor_circuit(angles: dict) -> QuantumCircuit:
-    """Independent single-nodule circuit: one measured shot -> one tile (AC-2)."""
-    prop = QuantumRegister(N_PROP, "prop")
-    creg = ClassicalRegister(N_PROP, "c")
-    qc = QuantumCircuit(prop, creg)
-    _encode_properties(qc, angles, base=0)
-    qc.measure(prop, creg)
-    return qc
-
-
-def build_sibling_pair_circuit(angles: dict, theta_mut: float) -> QuantumCircuit:
-    """Division circuit: parent genotype -> controlled-copy + Ry(theta_mut) -> daughter.
-
-    One measured shot -> one sibling pair (parent gen 0, daughter gen 1) correlated
-    by shared ancestry (epic §5, AC-6). Full-genotype copy (Q2): every property qubit
-    is copied, then mutated.
-    """
-    parent = QuantumRegister(N_PROP, "parent")
-    daughter = QuantumRegister(N_PROP, "daughter")
-    # One 18-bit register so both the Aer and SamplerV2 paths read via `.data.c`.
-    # Low 9 bits (c0..c8) = parent word; high 9 bits (c9..c17) = daughter word.
-    creg = ClassicalRegister(2 * N_PROP, "c")
-    qc = QuantumCircuit(parent, daughter, creg)
-
-    _encode_properties(qc, angles, base=0)  # parent occupies qubits 0..8
-    for i in range(N_PROP):
-        qc.cx(parent[i], daughter[i])        # controlled-copy (clone in Z basis)
-        qc.ry(theta_mut, daughter[i])        # mutation
-
-    qc.measure(parent, creg[:N_PROP])
-    qc.measure(daughter, creg[N_PROP:])
-    return qc
-
-
-def build_chsh_circuits() -> dict[tuple[str, str], QuantumCircuit]:
-    """The 4 CHSH setting circuits (AC-5). Bell pair h+cx, ry(-theta) per qubit, Z-measure."""
-    out: dict[tuple[str, str], QuantumCircuit] = {}
-    for a_key, b_key in CHSH_PAIRS:
-        qc = QuantumCircuit(2, 2)
-        qc.h(0)
-        qc.cx(0, 1)
-        qc.ry(-CHSH_SETTINGS[a_key], 0)
-        qc.ry(-CHSH_SETTINGS[b_key], 1)
-        qc.measure([0, 1], [0, 1])
-        out[(a_key, b_key)] = qc
-    return out
-
-
-# ============================================================================================== decode: measured bits -> TumorParams
-# Field slices within the 9-qubit property register (qubit indices).
+# ============================================================================================== decode: a measured 9-bit property word -> TumorParams
+# Not used by roll(). Used by from_words() for B circuits that sample property words (B-IQP, B_mapping/iqp.py).
+# Field slices within the 9-bit word (first index = MSB of the field).
 _SIZE = (0, 1)
 _TYPE = (2, 3)
 _MARGIN = (4, 5)
@@ -337,13 +114,6 @@ def _val(bits: list[int], idx: tuple[int, ...]) -> int:
     for i in idx:
         v = (v << 1) | (bits[i] & 1)
     return v
-
-
-def _str_to_bits(s: str, n_qubits: int) -> list[int]:
-    """qiskit counts/memory key -> qubit-indexed bit list (bits[i] = qubit i)."""
-    clean = s.replace(" ", "")
-    rev = clean[::-1]  # now rev[i] = clbit i = qubit i
-    return [int(rev[i]) for i in range(n_qubits)]
 
 
 def bits_to_params(
@@ -395,127 +165,92 @@ def _most_common_lobe(rulebook: Rulebook) -> str:
     return max(rulebook.lobe_freqs, key=rulebook.lobe_freqs.get)
 
 
-def decode_memory(
-    memory: list[str],
-    rulebook: Rulebook,
-    *,
-    generation: int,
-    shot_start: int,
-    lineage_prefix: str,
-    n_qubits: int = 9,
-) -> list[TumorParams]:
-    """Decode a run's per-shot property words (one independent tile per shot)."""
-    out: list[TumorParams] = []
-    for k, s in enumerate(memory):
-        bits = _str_to_bits(s, n_qubits)
-        shot = shot_start + k
-        out.append(
-            bits_to_params(
-                bits,
-                rulebook,
-                lineage_id=f"{lineage_prefix}{shot}",
-                generation=generation,
-                shot_index=shot,
-            )
-        )
-    return out
+# ============================================================================================== draw: pool bits -> TumorParams by inverse CDF
+BITS = 16                     # pool bits per property: inverse CDF at a resolution of 2^-16
+PROPS = 4                     # size, type, margin, lobe
+DEFAULT_THETA_MUT = 0.3       # mutation angle of the former division circuit (radians)
+P_MUT = 1 - math.cos(DEFAULT_THETA_MUT / 2) ** 4      # a 2-qubit property of that circuit changed with this probability (0.044)
 
 
-# ============================================================================================== lineage: one quantum division -> parent + daughter
-def flatten_counts(counts: dict[str, int]) -> list[str]:
-    """Expand a counts dict into a flat list of per-shot bitstrings.
-
-    Lets F1 treat each shot as one independent draw (one tile / one pair) without
-    depending on a per-shot memory API. Order is by key; length == total shots.
-    """
-    out: list[str] = []
-    for key, n in counts.items():
-        out.extend([key] * int(n))
-    return out
+def _pick(u: float, probs) -> int:
+    """Inverse CDF: the outcome whose cumulative interval holds u in [0, 1)."""
+    c = np.cumsum(_normalize(probs))
+    return int(min(np.searchsorted(c, u, side="right"), len(c) - 1))
 
 
-# Mutation rotation applied to each copied daughter qubit (radians). Small so daughters
-# stay strongly correlated to the parent (shared ancestry) with a little drift.
-DEFAULT_THETA_MUT = 0.3
+def draw_tumour(bits, rulebook: Rulebook, *, lineage_id: str, generation: int, shot_index: int,
+                parent: TumorParams | None = None) -> TumorParams:
+    """PROPS x BITS pool bits -> one tumour. With `parent`: a daughter, each property copied from the parent unless
+    its draw u falls below P_MUT; then u / P_MUT (uniform again) redraws it from the rulebook."""
+    w = np.asarray(bits, dtype=np.int64).reshape(PROPS, BITS)
+    u = (w * (1 << np.arange(BITS - 1, -1, -1))).sum(1) / 2.0 ** BITS
+
+    def pick(k: int, probs, old: int | None) -> int:
+        if old is None:
+            return _pick(u[k], probs)
+        return _pick(u[k] / P_MUT, probs) if u[k] < P_MUT else old
+
+    labels = rulebook.size_labels()
+    old = (None,) * PROPS if parent is None else (rulebook.size_mm().index(parent.size_mm), TYPES.index(parent.type),
+                                                   MARGINS.index(parent.margin), LOBES.index(parent.lobe))
+    si = pick(0, rulebook.size_probs(), old[0])
+    ti = pick(1, rulebook.type_given_size[labels[si]], old[1])
+    mi = pick(2, rulebook.margin_given_type[TYPES[ti]], old[2])
+    li = pick(3, [rulebook.lobe_freqs[lobe] for lobe in LOBES], old[3])
+    return TumorParams(size_mm=rulebook.size_mm()[si], type=TYPES[ti], margin=MARGINS[mi], lobe=LOBES[li],
+                       lineage_id=lineage_id, generation=generation, shot_index=shot_index)
 
 
-def decode_pairs(
-    counts: dict[str, int],
-    rulebook: Rulebook,
-    *,
-    n_pairs: int,
-    shot_start: int,
-    lineage_prefix: str = "pair",
-) -> list[TumorParams]:
-    """Decode the first `n_pairs` shots of a sibling-circuit run into 2*n_pairs tiles.
-
-    The 18-bit word is `daughter(9) parent(9)` low-to-high: bits[0:9] = parent,
-    bits[9:18] = daughter (circuit.build_sibling_pair_circuit measures parent into the
-    low half of register `c`). Each pair shares one `lineage_id`.
-    """
-    out: list[TumorParams] = []
-    words = flatten_counts(counts)[:n_pairs]
-    for k, word in enumerate(words):
-        bits = _str_to_bits(word, 2 * N_PROP)
-        parent_bits = bits[:N_PROP]
-        daughter_bits = bits[N_PROP:]
-        lineage_id = f"{lineage_prefix}{shot_start + k}"
-        out.append(
-            bits_to_params(
-                parent_bits, rulebook,
-                lineage_id=lineage_id, generation=0, shot_index=shot_start + k,
-            )
-        )
-        out.append(
-            bits_to_params(
-                daughter_bits, rulebook,
-                lineage_id=lineage_id, generation=1, shot_index=shot_start + k,
-            )
-        )
-    return out
-
-
-# ============================================================================================== the job
+# ============================================================================================== the draw of the cohort
 def rulebook_json(rb: Rulebook) -> dict:
     return {"size": dict(zip(rb.size_labels(), rb.size_probs())), "size_mm": dict(zip(rb.size_labels(), rb.size_mm())),
             "type_given_size": rb.type_given_size, "margin_given_type": rb.margin_given_type, "lobe": rb.lobe_freqs,
             "types": list(TYPES), "sources": list(rb.source_citations)}
 
 
-def roll(ctx: Ctx) -> float:
-    """Roll the cohort on the run's backend. Returns the CHSH value S."""
+def roll(ctx: Ctx) -> None:
+    """Draw the cohort from the run's bit pool. quantum_run.json keeps its fields: job_id and chsh_value are the
+    Bell-map job and its pooled S, raw_bits the pool bits spent per shot (a sibling pair shares one shot)."""
     rb = Rulebook()
     runio.save_json(ctx.path("rulebook.json"), rulebook_json(rb))
-    ang = angles_from_rulebook(rb)
     n_tiles, n_pairs = (TILES, PAIRS) if ctx.live else (DRY_TILES, DRY_PAIRS)
     n_indep = n_tiles - 2 * n_pairs
-    jobs = [("tumor", build_tumor_circuit(ang), n_indep), ("pairs", build_sibling_pair_circuit(ang, DEFAULT_THETA_MUT), n_pairs)]
-    jobs += [(f"chsh_{a}_{b}", qc, CHSH_SHOTS) for (a, b), qc in build_chsh_circuits().items()]
-    bits, info = Q.execute(ctx, "roll", [qc for _, qc, _ in jobs], [sh for _, _, sh in jobs], opt=3, scalable=False)
-    words = {n: ["".join(str(v) for v in row[::-1]) for row in bt] for (n, _, _), bt in zip(jobs, bits)}
-    counts = {n: {} for n in words}
-    for n, ws in words.items():
-        for w in ws:
-            counts[n][w] = counts[n].get(w, 0) + 1
-    S = chsh_value({tuple(n.split("_")[1:3]): counts[n] for n in counts if n.startswith("chsh_")})
-    tiles = decode_memory(words["tumor"][:n_indep], rb, generation=0, shot_start=0, lineage_prefix="tile", n_qubits=9)
-    tiles += decode_pairs(dict(_count(words["pairs"][:n_pairs])), rb, n_pairs=n_pairs, shot_start=n_indep, lineage_prefix="pair")
+    W = PROPS * BITS
+    try:
+        bits = runio.draw_bits(ctx, "roll", n_tiles * W)
+    except RuntimeError as e:
+        Q.log(f"roll: {e}: no cohort")
+        raise SystemExit(7) from e
+    word = [bits[k * W:(k + 1) * W] for k in range(n_tiles)]
+    text = ["".join(str(int(v)) for v in w) for w in word]
+    tiles = [draw_tumour(word[k], rb, lineage_id=f"tile{k}", generation=0, shot_index=k) for k in range(n_indep)]
+    raw = text[:n_indep]
+    for j in range(n_pairs):
+        k, shot = n_indep + 2 * j, n_indep + j
+        parent = draw_tumour(word[k], rb, lineage_id=f"pair{shot}", generation=0, shot_index=shot)
+        tiles += [parent, draw_tumour(word[k + 1], rb, lineage_id=f"pair{shot}", generation=1, shot_index=shot,
+                                      parent=parent)]
+        raw.append(text[k] + text[k + 1])
+    _save(ctx, tiles, raw, f"drawn from {n_tiles * W} pool bits")
+
+
+def from_words(ctx: Ctx, words, source: str) -> None:
+    """CIRCUIT = "B-IQP": the cohort decoded from sampled 9-bit property words (bits_to_params), one tumour per
+    word, each its own lineage (no sibling pairs). Replaces the cohort roll() drew from the pool; still L0."""
+    rb = Rulebook()
+    tiles = [bits_to_params([int(v) for v in w], rb, lineage_id=f"tile{k}", generation=0, shot_index=k)
+             for k, w in enumerate(words)]
+    _save(ctx, tiles, ["".join(str(int(v)) for v in w) for w in words], f"decoded from {len(tiles)} sampled words of {source}")
+
+
+def _save(ctx: Ctx, tiles: list[TumorParams], raw: list[str], how: str) -> None:
     if not ctx.live:
         for t in tiles:
             t.size_mm = min(t.size_mm, DRY_MAX_MM)
-    run = QuantumRun(backend_name=info["label"] if not ctx.live else info["backend"], job_id=info["job_id"], chsh_value=S,
-                     chsh_settings=dict(CHSH_SETTINGS), raw_bits=words["tumor"][:n_indep] + words["pairs"][:n_pairs],
-                     shot_indices=[t.shot_index for t in tiles])
+    cert = runio.load_json(ctx.run_dir / "certificate.json")
+    run = QuantumRun(backend_name=cert["backend"], job_id=cert["job_id"], chsh_value=cert["chsh_S"],
+                     chsh_settings=cert["chsh_settings"], raw_bits=raw, shot_indices=[t.shot_index for t in tiles])
     runio.save_json(ctx.path("quantum_run.json"), run.to_dict())
-    if S > 2:
-        runio.save_json(ctx.path("cohort_params.json"), [t.to_dict() for t in tiles])
-        Q.log(f"cohort rolled ({info['label']}): CHSH S = {S:.3f}, {len(tiles)} tumours: "
-              + ", ".join(f"{t.type[:5]} {t.size_mm:.0f}mm {t.lobe}" for t in tiles))
-    return S
-
-
-def _count(ws: list[str]) -> dict[str, int]:
-    out: dict[str, int] = {}
-    for w in ws:
-        out[w] = out.get(w, 0) + 1
-    return out
+    runio.save_json(ctx.path("cohort_params.json"), [t.to_dict() for t in tiles])
+    Q.log(f"cohort {how} ({cert['label']}): {len(tiles)} tumours: "
+          + ", ".join(f"{t.type[:5]} {t.size_mm:.0f}mm {t.lobe}" for t in tiles))

@@ -39,7 +39,8 @@ from common.runio import Ctx
 
 PAULI_XZ = {"I": (0, 0), "X": (1, 0), "Y": (1, 1), "Z": (0, 1)}
 LETTERS = "IXYZ"
-SHOTS_DIV = 80                # R3-TEST: shots per pool circuit = --shots / SHOTS_DIV (few shots per inserted Pauli)
+SHOTS_DIV = 400               # R3-TEST: shots per pool circuit = --shots / SHOTS_DIV, at least MIN_POOL_SHOTS
+MIN_POOL_SHOTS = 10           # 10 shots per inserted Pauli at the default 4000 shots (and in a dry run)
 
 
 def _anti(p: str, q: str) -> int:
@@ -104,14 +105,19 @@ def efl_bound(n: int, m: int) -> float:
 def _run_test(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
     tg = Q.session(ctx).target
     tiles = QH.tile_layout(tg, "pair")
+    cert = (runio.load_json(ctx.run_dir / "certificate.json") or {}).get("pairs")
+    if cert:                                                        # Bell map of this run: its certified pairs, best S first
+        good = {tuple(p["qubits"]) for p in cert if p["certified"]}
+        tiles = [t for t in tiles if tuple(t["qubits"]) in good]
     sizes = sorted(n for n in cfg["pairs"] if n <= len(tiles))      # sizes the chip cannot hold are left out
     if not sizes:
-        raise QH.NoLayout(f"only {len(tiles)} disjoint pairs on {tg.name}, {min(cfg['pairs'])} asked")
+        raise QH.NoLayout(f"only {len(tiles)} disjoint {'certified ' if cert else ''}pairs on {tg.name}, "
+                          f"{min(cfg['pairs'])} asked")
     n_max, K, T = sizes[-1], cfg["pool"], cfg["trials"]
     pairs = [t["qubits"] for t in tiles[:n_max]]
     g = Q.rng(ctx, name, "test")
     pool = ["".join(LETTERS[int(v)] for v in g.integers(0, 4, n_max)) for _ in range(K)]
-    s = max(4, ctx.shots // SHOTS_DIV)
+    s = max(MIN_POOL_SHOTS, ctx.shots // SHOTS_DIV)
     half = K // 2
     circuits = [pair_layer(pairs, q, f"test_{k:03d}") for k, q in enumerate(pool)] + [pair_layer(pairs, "I" * n_max, "test_cal")]
     bits, info = Q.execute(ctx, name, circuits, [s] * K + [half * s])
@@ -155,7 +161,10 @@ def _run_test(ctx: Ctx, name: str, cfg: dict) -> list[dict]:
         r = rows[-1]
         r["passed"] = bool(n >= 4 and r["bound"] < 1 and r["success"] - 3 * r["sigma"] > r["bound"])
     Q.save(ctx, name, {"sizes": sizes, "pool": K, "shots_per_circuit": s, "calibration_shots": cal_shots,
-                       "measurements_M": M, "pairs_available": len(tiles), "info": info, "rows": rows})
+                       "measurements_M": M, "pairs_available": len(tiles), "pairs": pairs,
+                       "pairs_S": [t.get("S") for t in tiles[:n_max]],
+                       "pairs_from": "Bell map of this run (certified pairs, best S first)" if cert else "calibration forecast",
+                       "info": info, "rows": rows})
     ok = [r for r in rows if r["passed"]]
     top = ok[-1] if ok else rows[-1]
     return [Q.claim(ctx, name, cfg | {"bound": top["bound"]}, top["success"], top["sigma"], bool(ok), info["label"],

@@ -168,6 +168,7 @@ function chshLabel(run){
   const v = run.chsh_value;
   if(v===null||v===undefined||Number.isNaN(v)) return {text:"classical baseline — no CHSH", sim:true, value:null};
   if(b==="AerSimulator") return {text:"simulator (noiseless)", sim:true, value:v};
+  if(b.indexOf("dry run")===0) return {text:"dry run: certification-ready, not certified (simulated)", sim:true, value:v};
   if(b.indexOf("prng")>=0) return {text:"classical baseline — no CHSH", sim:true, value:null};
   return {text:"real hardware", sim:false, value:v};
 }
@@ -207,7 +208,12 @@ function renderMeta(){
   const parts = [];
   parts.push(`<span class="chip"><b>${COHORT.tiles.length}</b> tumors</span>`);
   parts.push(`<span class="chip">backend <b>${run.backend_name||"—"}</b></span>`);
-  if(lab.value!==null){
+  const c = COHORT.certificate || {};
+  const na = v => (v===null||v===undefined) ? "n/a" : v;
+  if(c.pairs_measured!==null && c.pairs_measured!==undefined){
+    parts.push(`<span class="chip cert"><b>${na(c.pairs_certified)}</b> of <b>${c.pairs_measured}</b> pairs certified, `
+      + `<b>${na(c.bits_available)}</b> bits certified, <b>${na(c.bits_spent)}</b> spent</span>`);
+  } else if(lab.value!==null){            // run directories older than the Bell map: the bare S value
     parts.push(`<span class="chip cert">CHSH <b>${lab.value.toFixed(3)}</b> &nbsp;>&nbsp;2.0</span>`);
   }
   parts.push(`<span class="chip${lab.sim?' warn':''}">${lab.text}</span>`);
@@ -304,7 +310,7 @@ function openModal(i){
       <h4>Quantum certificate</h4>
       <div class="bar"><div class="fill" style="width:${fillPct}%"></div><div class="cl" style="left:${clPct}%"></div></div>
       <div class="lab"><span>0</span><span>classical max 2.0</span><span>2.83</span></div>
-      <div class="verdict${lab.sim?' sim':''}">CHSH ${v.toFixed(3)} — ${lab.sim?lab.text:"✓ genuine quantum roll"}</div>
+      <div class="verdict${lab.sim?' sim':''}">CHSH ${v.toFixed(3)} — ${lab.sim?lab.text:"✓ Bell violation on hardware (job-level; not device-independent)"}</div>
     </div>` : `
     <div class="cert"><h4>Quantum certificate</h4>
       <div class="verdict sim">classical baseline — no CHSH</div></div>`;

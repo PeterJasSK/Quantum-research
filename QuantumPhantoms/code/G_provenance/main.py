@@ -6,8 +6,10 @@ to a file, to the record or to the ledger is visible:
 
     python -m G_provenance.main <run directory>          # prints every difference; exit 1 if any
 
-Unsigned, and with no commit-before-draw ordering. Privacy rests on parameter-only construction (no patient voxels
-enter a generator), not on this record.
+Chain (plans/feature-QCAND-*.md, C-CHAIN): the record also names the commit section C wrote before its job
+(commit.json), the beacon pulse that seeded the extractor after it, and the certificate's hash, so the order
+commit -> pulse -> certificate is part of what the ledger fixes. Unsigned. Privacy rests on parameter-only
+construction (no patient voxels enter a generator), not on this record.
 """
 from __future__ import annotations
 
@@ -20,10 +22,10 @@ from pathlib import Path
 from common import CODE_ROOT, PROJECT_ROOT, runio
 from common.runio import Ctx
 
-FILES = ("backend.json", "cohort_params.json", "quantum_run.json", "rulebook.json", "certificate.json", "claims.json",
-         "dscale/dscale_run.json", "dscale/seed_shapes.npz", "dscale/seed_tiles.json", "dscale/plan.json", "sites.json",
-         "growth.json", "tiles.json")
-GLOBS = ("tiles/*.png", "qhard/**/*.json", "jobs/*.json")
+FILES = ("backend.json", "commit.json", "certificate.json", "certified_bits.bin", "cohort_params.json", "quantum_run.json",
+         "rulebook.json", "claims.json", "dscale/dscale_run.json", "dscale/seed_shapes.npz", "dscale/seed_tiles.json",
+         "dscale/plan.json", "sites.json", "growth.json", "tiles.json")
+GLOBS = ("tiles/*.png", "qhard/**/*.json", "jobs/*.json", "jobs/*.npz")
 ZERO = "0" * 64
 
 
@@ -43,9 +45,17 @@ def _ledger(run_dir: Path) -> list[dict]:
     return [json.loads(x) for x in f.read_text().splitlines() if x.strip()] if f.is_file() else []
 
 
+def _chain(run_dir: Path) -> dict:
+    """commit (before the job) -> pulse (first beacon pulse after it; None when skipped) -> certificate."""
+    cert = runio.load_json(run_dir / "certificate.json") or {}
+    return {"commit": (runio.load_json(run_dir / "commit.json") or {}).get("commit"), "pulse": cert.get("pulse"),
+            "certificate_sha256": runio.sha256_file(run_dir / "certificate.json")}
+
+
 def run(ctx: Ctx) -> None:
     d = ctx.run_dir
     record = {"record": "run lineage", "run": d.name, "backend": runio.load_json(d / "backend.json"),
+              "chain": _chain(d),
               "job_ids": {f.stem: runio.load_json(f)["job_id"] for f in sorted(d.glob("jobs/*.json"))},
               "files": _hashes(d),
               "code_hash": {p.name: runio.code_hash(p) for p in sorted(CODE_ROOT.iterdir()) if (p / "__init__.py").is_file()},
@@ -66,6 +76,10 @@ def verify(run_dir: Path) -> list[str]:
     errs += [f"{n}: file missing" for n in rec["files"] if n not in now]
     errs += [f"{n}: content changed since the record" for n, h in rec["files"].items() if n in now and now[n] != h]
     errs += [f"{n}: file not in the record" for n in now if n not in rec["files"]]
+    if "chain" in rec:                                       # records older than the chain have none
+        cert = runio.load_json(run_dir / "certificate.json") or {}
+        if rec["chain"] != _chain(run_dir) or rec["chain"]["commit"] != cert.get("commit"):
+            errs.append("chain: commit, pulse and certificate do not match the record")
     led, prev = _ledger(run_dir), ZERO
     for i, e in enumerate(led):
         body = {k: v for k, v in e.items() if k != "entry_hash"}
