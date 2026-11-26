@@ -40,6 +40,15 @@ const PROJECTS = [
       { label: "Live site ↗", href: "https://tree.peterjas.sk/" },
     ]
   },
+  {
+    title: "Taxi taxi",
+    status: "Live", cls: "live", color: "#ffde00",
+    desc: "Congrats you went through all of the really interesting project. This is game I dreamed up in class on unity then rewrote with claude to treeJS and put on web enjoy",
+    tags: ["FUN"],
+    links: [
+      { label: "Live site ↗", href: "https://taxi.peterjas.sk/" },
+    ]
+  },
   // {
   //   title: "artificial-life project",
   //   status: "IN PROGRESS", cls: "progress", color: "#12ddcb",
