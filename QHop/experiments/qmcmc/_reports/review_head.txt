@@ -1,0 +1,132 @@
+QHOP - QUANTUM-ENHANCED MCMC: APPLIED REVIEW
+=============================================
+Date: 2026-11-21. Lead: research-team coordinator (Claude), with 30 sub-agents in 6 waves (list in Appendix C).
+Scope: where quantum-enhanced Markov chain Monte Carlo (QeMCMC; Layden et al. 2023 = P1; Ferguson and Wallden 2025 = P2)
+could pay off in engineering practice, across LOW, MEDIUM and HIGH temperature, with new implementation variants, simulations,
+red-team attacks and an independent number check.
+Sub-agents ran in this environment. Three usage-limit interruptions and an overloaded 8-core machine forced several
+experiments to stop at smaller n or fewer instances than planned; every cut is listed in the experiment READMEs. All simulation numbers are ideal (noiseless) exact or exact-matrix simulations unless marked noisy.
+
+Claim labels used throughout: [P1] shown in P1; [P2] shown in P2; [LIT] other literature (cited); [SIM] own simulation
+(folder given); [CALC] own calculation; [SPEC] speculation.
+
+
+0. PROJECT CONTEXT (Step 0)
+---------------------------
+Summary (10 lines):
+1. QHop = QeMCMC as a master's thesis plus a game ("Quantum Leap" map race, idea qh-18); science core = qh-15, the noise
+   threshold eps* where the QeMCMC step advantage dies on IBM Heron, per noise type, and T1-induced sample bias.
+2. Own Layden reproduction existed (QuantumPhantoms RE letter B, n<=8, ideal): k_q 0.250 / k_local 1.017 / k_unif 0.939.
+3. Earlier FakeMarrakesh run (n=6) had found an asymmetric noisy proposal; this review corrects the number (Section 5).
+4. qh-17 (quantum-proposed tumour) is CLOSED; the lung work went classical on 2026-11-19.
+5. QHop/plans/use-cases-ideas.md lists 24 use cases; its criterion was "fewer steps than local/uniform at n<=12, showable";
+   its domain-agent results had never landed (scratchpad lost).
+6. Reusable code: RE-B qemcmc.py (quantum_Q, Trotter circuit, noisy_Q), browser simulator in demo-quantum-leap-race.html,
+   fake backends and job helpers in QuantumPhantoms/code/common/.
+7. New shared harness written for this review: QHop/experiments/qmcmc/common/qmc.py (reproduces the old SK calibration
+   exactly: gap ratio quantum/local 29.25 at n=8, 40.08 at n=10).
+8. Classical adversaries named in the plans but not yet run: tensor-network proposals, parallel tempering, cluster moves.
+9. Machine: 8 cores, 31 GB, qiskit 2.3.1 + aer 0.17.2.
+10. Nothing had been measured at MEDIUM or HIGH temperature before this review.
+
+Ideas found in QHop/plans/use-cases-ideas.md (tagged KNOWN, IDs used in the master table):
+K0 SK spin-glass calibration (n=8,10, T=1)
+K1 multi-site rain occurrence, autologistic Ising weather generator
+K2 compound extremes (drought/flood coincidence), low T or conditioned
+K3 3x4 convective-cell / frost lens
+K4 urban land-use zoning lens
+K5 redistricting ensembles (GerryChain-style)
+K6 WFC-rule terrain / level layouts (the QHop game)
+K7 antenna coverage
+K8 TCGA driver-mutation co-occurrence / exclusivity Ising
+K9 binarised protein Potts / HP lattice protein
+K10 resistance-gene / drug-synergy Ising
+K11 fMRI energy-landscape analysis
+K12 neuron-population max-ent Ising
+K13 symptom / comorbidity networks
+K14 MRF segmentation lens (easy contrast)
+K15 alloy and Li/vacancy ordering (cluster expansion)
+K16 triangular / kagome / spin-ice patches
+K17 adsorbates on catalyst surfaces
+K18 proton / H-bond ice rules
+K19 grid cascading outages (IEEE 14-bus)
+K20 credit default contagion
+K21 species co-occurrence
+K22 roll-call voting blocs
+K23 wildfire lens
+
+
+1. VERIFIED FACTS FROM THE BASIS PAPERS (Wave 1, reports A1 and A2)
+-------------------------------------------------------------------
+P1 (arXiv:2203.12497, Nature 619, 282). Read: arXiv v1 with the 40-page supplement (SI page N = PDF page N+9).
+- H = (1-gamma)*alpha*H_prob + gamma*sum X, alpha = sqrt(n)/sqrt(sum J^2 + sum h^2); gamma ~ U[0.25,0.6], t ~ U[2,20],
+  ranges "ad hoc ... trial and error" [P1 Alg. S1, Eqs 5-8]. H_prob is not divided by T: the proposal ignores temperature.
+- Symmetry needs real symmetric H (U = U^T) or a palindromic H(t) [P1 Eq 4, S40-S46]. Bare hardware circuits "clearly
+  break" symmetry; twirling restored it statistically [P1 SI p.17, p.22].
+- Exact simulation n=3-10, 500 SK-like instances per n, T=1: k_quantum 0.264(4), k_local 0.94(4), k_uniform 0.948(7) [P1 Fig 2c].
+- Temperature: advantage claimed only for T <~ 1; at high T the uniform gap goes to 1 and the quantum gap stays near 0.3
+  [P1 Fig 2a, S2, p.4]. With unscaled N(0,1) couplings, T=1 is far below the glass transition (T_c ~ sqrt(n)), so P1's
+  regime is LOW in this review's definition [CALC].
+- Hardware: ibmq_mumbai (27-qubit device), three 1D instances n=8,9,10; chains run offline from cached shots because the
+  control stack was "impractically slow" [P1 SI p.20]. (An earlier project note "hardware to n=27" was wrong.)
+- Baselines: local, uniform; Swendsen-Wang/Wolff/Houdayer only on the 3 hardware instances; parallel tempering explicitly
+  excluded [P1 SI p.14]. No wall-clock, cost-per-step or autocorrelation numbers anywhere in P1.
+P2 (arXiv:2405.04247 v2; Phys. Rev. Research 7, 013231 (2025), DOI 10.1103/PhysRevResearch.7.013231).
+- Effective field h~_j = h_j + sum_{i not in g} J_ji s_i, group couplings = J restricted to g [P2 Eq 13-14].
+- Only three grouping strategies, all consecutive index blocks at a random start [P2 Sec IV].
+- Gap exponents T=1, n=4-10: uniform 0.97, local 0.92, full QeMCMC 0.335, single group 0.64-0.77, sequential multi-group
+  0.50 [P2 Fig 3]; at T=0.1 single groups are worse than uniform [P2 Table I]; T=10 exponents QeMCMC 0.087, local 0.26,
+  uniform 0.341 [P2 Table I, App B].
+- Detailed balance is asserted, not proved [P2 p.11]. Own result: single-group strategies are symmetric; the fixed-order
+  sequential sweep is NOT [CALC, SIM B7 V02: TV bias 0.061]; random forward/reverse order or per-group accept fixes it.
+- Noise untested; "Concrete analysis for the level and types of noise under which we maintain the quantum scaling
+  advantage is an important open question" [P2 p.10-11]. Small-group advantage is "quantum inspired" [P2 footnote 12].
+
+
+2. TEMPERATURE REGIMES (definitions used everywhere)
+----------------------------------------------------
+Defined per instance family by beta_c = specific-heat peak of the exact Boltzmann distribution, cross-checked by where the
+local-proposal gap starts to collapse:
+  HIGH   beta <= 0.5 beta_c (single-spin Metropolis mixes in a few sweeps)
+  MEDIUM 0.5 beta_c < beta <= 2 beta_c (critical / crossover region)
+  LOW    beta > 2 beta_c (local moves trapped; P1 and P2's regime)
+Measured boundaries [SIM D1, D8, D9]: SK n=10 (J,h ~ N(0,1) unscaled) beta_c = 0.41 [0.32-0.55]; 2D EA 3x3 beta_c = 0.65;
+2D ferromagnet 3x3/3x4 beta_c = 0.40/0.41; fixed-composition n=12: CuAu-like Tc 2.88-3.43, Coulomb Tc 0.40-0.50, SK
+Tc 0.68-0.84 (D8 used LOW=0.5 Tc, MEDIUM=1.1 Tc, HIGH=3 Tc). Planted inference posteriors: the specific-heat peak is NOT a
+glass marker (it tracks collapse onto the planted vector); there the matched temperature beta_match = 1 is the reference.
+Bayesian posteriors sampled at the matched temperature lie on the Nishimori line, where no spin-glass phase exists
+(Zdeborova and Krzakala, arXiv:1511.02476, Sec II.7) [LIT]; confirmed numerically in D6 [SIM].
+
+
+3. BREAK-EVEN MODEL (convention for all rows)
+---------------------------------------------
+Wall-clock speedup = (tau_C/tau_Q) x (t_C/t_Q); S* = t_Q/t_C.
+t_C: best classical step; cheap dense Ising ~30 ns per proposal at n<=100 (measured on this laptop, A5 bench,
+  QHop/experiments/qmcmc/bench/sk_bench.c); sparse lattices 0.15 ns/flip CPU (Isakov et al. arXiv:1401.1084), ~2-3 ps GPU/FPGA.
+t_Q (A4 hardware scan, sources in A4-hardware.txt; D4 compilation):
+  optimistic  best published per-step latency of the best-fitting device: D-Wave 0.03 s (16 ms QPU access + 10-20 ms
+              overhead, D-Wave timing docs); IBM 2 s (documented ~2 s per sub-job); Quantinuum Helios in-program loop: D4
+              estimate ~8 s per step for SK n=10 at t=6 (gate time dominated), not the 0.1-0.5 s first estimated in A4.
+  realistic   IBM Heron session ~3 s per step (queue excluded; derived from Marshall et al. arXiv:2602.06171v3), D-Wave 0.5 s.
+  pessimistic realistic t_Q and the step advantage eroded by noise: required ideal S = S*_realistic / F, F = D4 proxy (1-e2)^N_2q (1-e1)^N_1q (1-ro)^n
+              with e2 = 2e-3 (Heron median) and N_2q from D4 (e.g. SK n=10 at t=6: 2,160 CZ on heavy-hex, F ~ 3e-3).
+Cheap dense Ising: S* = 7e7 (IBM optimistic) / 1e8 (IBM realistic) / ~3e10 (pessimistic, SK n=10); D-Wave 1e6 / 1.7e7.
+Expensive energy t_E: S* = (t_Q + t_E)/t_E -> 1 as t_E grows (e.g. t_E = 1 s: 3 / 4 / 4/F).
+Batching many independent chains per IBM job (only when the application needs many chains): ~0.85 ms per chain-step,
+S* ~ 3e4 for cheap energies [CALC, B7].
+Note: C1-C4 master-table rows computed the optimistic S* with the superseded Helios 0.1 s figure (e.g. 3e6 for 30 ns
+energies, 28 rows) and pessimistic F as (1-2e-3)^N_2q; with the D4 values optimistic S* rises (IBM 7e7, D-Wave 1e6);
+no verdict changes (F1 check).
+
+
+4. MASTER TABLE (Waves 2-5)
+---------------------------
+Definition changes: none to the requested columns. "Measured or estimated S" quotes the strongest fair comparison
+available; [SIM] experiments are in QHop/experiments/qmcmc/<folder>. Likelihoods were set by the screening agents
+(C1-C4) and revised after Wave 4 and the red team; most rows are near 0 by design. Sorted by wall-clock likelihood, then
+steps likelihood. 144 rows: 118 from Wave 2 ideation, 24 KNOWN, plus 2 new rows from variant tests (N-S1, N-S2).
+Column order: ID | KNOWN/NEW | Application | Temperature regime | Ising/QUBO/Potts mapping | Implementation variant |
+Energy cost per step | Spins needed | Hardware fit today (0-3) | Best classical competitor | Beats best classical? |
+Break-even S* (optimistic/realistic/pessimistic) | Measured or estimated S | Evidence | SUCCESS LIKELIHOOD | Verdict |
+Main risk or kill reason
+

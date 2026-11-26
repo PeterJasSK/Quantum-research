@@ -1,0 +1,72 @@
+QHOP STUDY
+==========
+
+
+WHAT THIS STUDY IS
+------------------
+Generating many good solutions (maps, molecule shapes, magnet states) with Markov chain Monte Carlo is slow
+because the method gets stuck in one valley of good solutions. A quantum computer can propose a jump to a distant
+solution of similar quality, which a classical check still accepts or rejects, so it needs fewer steps while the
+results stay correct (Layden et al., Nature 2023). QHop measures how much noise this quantum jump survives on real
+IBM hardware, which kinds of noise make the results wrong instead of only slower, and shows it as a game anyone
+can play.
+
+
+THE 3 METRICS
+-------------
+1. Step advantage
+   How many fewer steps the quantum jump needs than classical moves to mix (spectral gap, and its scaling with
+   problem size n). Compared against one-tile flips, random jumps and stronger classical methods.
+
+2. Noise threshold eps*
+   The error rate at which the step advantage disappears, measured separately for each noise type:
+   depolarizing, dephasing, energy decay (T1), readout error.
+
+3. Bias
+   How far the results drift from the correct distribution because noise makes the jump lopsided (T1 pulls
+   qubits toward 0). Measured with the plain classical check and with the corrected one (Metropolis-Hastings
+   using the measured proposal).
+
+
+POSSIBLE RESULTS
+----------------
+A. Best case: the step advantage holds on Heron at small n; eps* lies just above today's error, so the next
+   hardware generation is in range; T1 creates a measurable bias that the correction removes.
+   Message: "it works, here is the error rate it needs, and here is how to keep it correct."
+
+B. Likely: a clear advantage in simulation, partial on hardware (smallest boards only); eps* below today's error;
+   T1 bias visible in simulation and weak on hardware.
+   Message: "not yet on today's hardware; this is how far away it is."
+
+C. Null: no advantage survives on hardware; all noise types act alike; no bias.
+   Message: "noise kills it before anything else; required error rate is X." Still a measured answer to the open
+   question of Ferguson & Wallden.
+
+Every outcome also says whether the gain comes from interference (coherent circuit vs the same circuit with
+interference destroyed).
+
+
+HOW TO VISUALIZE IT
+-------------------
+1. The game (demo-quantum-leap-race.html): two generators race on a tile map the player builds; step counters,
+   median steps per generator, decohered and random-jump controls. To add: noise type selector, strength slider,
+   and a "distance from the correct result" meter, so players see the advantage fade and the bias appear.
+
+2. Paper figure 1: step advantage vs board size n (log scale), quantum vs classical lines, ideal simulation and
+   Heron points on the same axes.
+
+3. Paper figure 2: step advantage vs error rate, one curve per noise type, eps* marked where each curve crosses
+   the classical line.
+
+4. Paper figure 3: bias vs error rate for T1 and depolarizing, plain check vs corrected check.
+
+
+IS IT A MASTER'S THESIS?
+------------------------
+Yes. It has a research question from a named open problem, three measured quantities, simulation plus real
+hardware experiments, and a substantial engineering part:
+- exact simulator with noise channels (density matrix up to about 10 qubits, trajectories to 12)
+- hardware pipeline for Heron: proposal circuits, proposal-matrix estimation, coherent vs dephased runs, repeats
+- statistics: gap fits with confidence intervals, bias measurement, Hastings correction
+- the interactive game with replay of real hardware data
+Supervisor role (Korecko): formal proof of when the chain stays correct, and the correctness check.

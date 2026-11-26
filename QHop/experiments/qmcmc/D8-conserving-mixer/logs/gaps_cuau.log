@@ -1,0 +1,5 @@
+cuau n=12 seed=0 Tc=2.958 D=924 sym_maxdev=5.6e-17 477s
+cuau n=12 seed=1 Tc=2.884 D=924 sym_maxdev=1.1e-16 229s
+cuau n=12 seed=2 Tc=2.984 D=924 sym_maxdev=5.6e-17 212s
+cuau n=12 seed=3 Tc=3.155 D=924 sym_maxdev=1.1e-16 220s
+cuau n=12 seed=4 Tc=3.425 D=924 sym_maxdev=8.3e-17 196s

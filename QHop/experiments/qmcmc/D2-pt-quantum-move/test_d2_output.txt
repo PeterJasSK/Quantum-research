@@ -1,0 +1,16 @@
+quantum row max abs err vs qmc.quantum_Q (n=8): 1.0796918914479647e-14
+single-sample TV distance vs exact row (20000 draws, n=8): 0.036359157512860174
+symmetry of Q_m (exact, n=8): 9.163548515765313e-17
+decohered TV distance vs qmc.decohered_Q (20000 draws, n=8): 0.033770730783705696 leak/substep -5.8695596914879826e-18
+  sampling-noise TV floor (exact draws): 0.03464817736069181
+sk n 12 beta 0.745 exact <E> -30.48 metro -30.486
+   PT -30.464 swap [0.76 0.65 0.56 0.56 0.68]
+   PT+Houdayer -30.479 mean cluster 4.025903333333333 exact <|q_gs|> 0.922 PT+H <|q|> 0.922
+   QeMCMC -30.595 acc 0.083 {'n_row': 18, 'n_single': 82, 't_row': 5.486534833908081, 't_single': 3.1321613788604736, 'cached_states': 16}
+ea n 16 beta 4.275 exact <E> -19.248 metro -17.509
+   PT -19.25 swap [0.64 0.64 0.59 0.63 0.82]
+   PT+Houdayer -19.251 mean cluster 5.38378 exact <|q_gs|> 0.988 PT+H <|q|> 0.989
+speed n=12: single-shot quantum proposal 0.089 s, full row 1.440 s, decohered proposal 0.0113 s, Chebyshev K per gamma [280, 284, 265, 266]
+speed n=14: single-shot quantum proposal 1.033 s, full row 0.414 s, decohered proposal 0.0056 s, Chebyshev K per gamma [324, 329, 308, 310]
+speed n=16: single-shot quantum proposal 0.730 s, full row 5.605 s, decohered proposal 0.0188 s, Chebyshev K per gamma [367, 374, 350, 351]
+speed n=18: single-shot quantum proposal 3.422 s, full row 43.436 s, decohered proposal 0.0157 s, Chebyshev K per gamma [382, 383, 355, 357]

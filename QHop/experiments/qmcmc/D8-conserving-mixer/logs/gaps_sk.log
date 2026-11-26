@@ -1,0 +1,5 @@
+sk n=12 seed=0 Tc=0.7743 D=924 sym_maxdev=5.6e-17 393s
+sk n=12 seed=1 Tc=0.6798 D=924 sym_maxdev=4.2e-17 200s
+sk n=12 seed=2 Tc=0.8407 D=924 sym_maxdev=5.6e-17 194s
+sk n=12 seed=3 Tc=0.8173 D=924 sym_maxdev=5.6e-17 193s
+sk n=12 seed=4 Tc=0.7666 D=924 sym_maxdev=1.1e-16 203s

@@ -1,0 +1,34 @@
+[ea12s520      12s] LOW metro 27.0 22.8
+[ea12s520      13s] LOW PT R 3 swap [0.22 0.25] tau(flips) 71 63
+[ea12s520      18s] LOW PT+H tau(flips) 132 124
+[ea12s520      47s] LOW QeMCMC tau 23.2 17.2 N 19800 acc 0.091 teq nan {'n_row': 105, 'n_single': 516, 't_row': 15.710004091262817, 't_single': 13.033262491226196, 'cached_states': 96}
+[ea12s520      92s] LOW decohered tau 60.1 125.1 N 5800 acc 0.011
+[ea12s520      97s] LOW PT+Q pq=0.01 tau 1.97 1.78 N 50000 qacc 0.21
+[ea12s520     143s] LOW PT+Q pq=0.1 tau 1.89 1.66 N 35622 qacc 0.22
+[ea12s520     188s] LOW PT+Q pq=0.5 tau 1.71 1.64 N 12434 qacc 0.223
+[ea12s520     233s] LOW PT+Q pq=1.0 tau 1.5 1.32 N 9038 qacc 0.217
+[ea12s520     278s] LOW PT+D pq=0.1 tau 1.79 1.67 N 24186 qacc 0.067
+[ea12s520     323s] LOW PT+D pq=1.0 tau 1.66 1.78 N 2667 qacc 0.064
+[ea12s520     332s] MED metro 62.9 70.6
+[ea12s520     333s] MED PT R 3 swap [0.49 0.51] tau(flips) 113 118
+[ea12s520     337s] MED PT+H tau(flips) 193 200
+[ea12s520     378s] MED QeMCMC tau 65.2 47.6 N 19800 acc 0.328 teq nan {'n_row': 806, 'n_single': 3672, 't_row': 108.60237455368042, 't_single': 86.57944416999817, 'cached_states': 782}
+[ea12s520     424s] MED decohered tau 103.2 107.9 N 5600 acc 0.098
+[ea12s520     430s] MED PT+Q pq=0.01 tau 3.09 3.22 N 50000 qacc 0.403
+[ea12s520     475s] MED PT+Q pq=0.1 tau 3.12 3.33 N 48331 qacc 0.423
+[ea12s520     520s] MED PT+Q pq=0.5 tau 3.06 3.08 N 14172 qacc 0.422
+[ea12s520     565s] MED PT+Q pq=1.0 tau 2.57 2.47 N 5925 qacc 0.413
+[ea12s520     611s] MED PT+D pq=0.1 tau 2.97 3.25 N 25544 qacc 0.168
+[ea12s520     656s] MED PT+D pq=1.0 tau 2.32 2.36 N 2524 qacc 0.158
+[ea12s520     676s] HIGH metro 11.0 12.7
+[ea12s520     676s] HIGH PT R 1 swap [0.] tau(flips) 15 17
+[ea12s520     678s] HIGH PT+H tau(flips) 38 39
+[ea12s520     808s] HIGH QeMCMC tau 15.5 10.8 N 6900 acc 0.748 teq nan {'n_row': 1932, 'n_single': 8370, 't_row': 261.2082440853119, 't_single': 189.50149941444397, 'cached_states': 1900}
+[ea12s520     854s] HIGH decohered tau 9.7 12.0 N 6800 acc 0.517
+[ea12s520     860s] HIGH PT+Q pq=0.01 tau 1.27 1.36 N 50000 qacc 0.749
+[ea12s520     882s] HIGH PT+Q pq=0.1 tau 1.25 1.39 N 22218 qacc 0.742
+[ea12s520     905s] HIGH PT+Q pq=0.5 tau 1.28 1.3 N 3879 qacc 0.748
+[ea12s520     928s] HIGH PT+Q pq=1.0 tau 1.45 1.32 N 2856 qacc 0.735
+[ea12s520     950s] HIGH PT+D pq=0.1 tau 1.24 1.37 N 25937 qacc 0.511
+[ea12s520     973s] HIGH PT+D pq=1.0 tau 1.29 1.49 N 2603 qacc 0.509
+[ea12s520     973s] done

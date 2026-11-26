@@ -1,0 +1,383 @@
+A5 - CLASSICAL-BASELINE SCOUT FOR QeMCMC
+=========================================
+Date: 2026-11-20. Author: sub-agent A5.
+Scope: for each problem class, the best classical sampler per temperature regime (LOW / MEDIUM / HIGH), its speed
+(wall-clock per flip or per sweep on named hardware), and where it fails. Also typical per-step classical cost t_C
+for O(n^2) dense Ising energies, and the evidence on whether PT+Houdayer/ICM or population annealing beat SK/EA
+spin glasses at n ~ 10-1000.
+
+EVIDENCE TAGS (used everywhere below)
+  [V]  verified this session by reading the primary source (full text or abstract) at the URL given
+  [S]  search-snippet / secondary write-up level only; check before quoting in a paper
+  [M]  standard literature fact from memory, NOT re-checked this session (DOI given where known)
+  [D]  derived by A5 from verified numbers (arithmetic shown)
+  [E]  A5 estimate, given as a range; NOT a published number
+  [B]  A5's own micro-benchmark on this machine (see section 5); a rough upper bound, not a published number
+
+Regime definitions (from the brief):
+  LOW    = below the glass/ordering transition; local moves get trapped
+  MEDIUM = near the transition; critical slowing down
+  HIGH   = well above it; single-spin Metropolis mixes fast
+
+
+-------------------------------------------------------------------------------------------------------------------
+0. HEADLINE FINDINGS (read this first)
+-------------------------------------------------------------------------------------------------------------------
+H1. HIGH T is where the classical baseline is strongest. Single-spin Metropolis or heat-bath mixes in O(n log n)
+    attempted flips. Optimised codes run them at 0.15 ns (CPU, 1 thread) down to ~2-3 ps (GPU or FPGA) per flip on
+    sparse lattices. A dense O(n^2) Ising costs O(1) per proposal plus O(n) per ACCEPTED flip (cached local fields).
+    That is ~20-50 ns per attempt at n <= 300 and ~0.05-0.5 us at n = 1000 in plain scalar C on a laptop [B].
+    Any QeMCMC step (circuit + readout) has to beat that per step times the gap in mixing. At high T there is
+    no mixing gap left to exploit.
+
+H2. MEDIUM T. For ferromagnets (and Potts with q <= 4 in 2D), Swendsen-Wang/Wolff essentially remove critical
+    slowing down: z_SW ~ 0.22-0.25 (2D Ising) against z_Metropolis = 2.1665 [S]. For spin glasses near T_c, PT
+    (plus ICM in 2D) equilibrates n <= ~1000 routinely [V]. For SK, rigorous fast mixing of Glauber dynamics is only
+    proven at high T (beta < ~0.295; quoted in a 2026 survey [S]). Poly-time non-MCMC samplers now reach beta < 1/2
+    (with TV guarantees), and there is a preprint claim for beta < 1 [S]. So "medium" for SK is where classical
+    guarantees run out, but empirical PT still works at N <= 4096.
+
+H3. LOW T. PT, PT+Houdayer/ICM and population annealing (PA) all equilibrate 3D EA up to L = 10 (n = 1000) down to
+    T = 0.2 (~0.2 T_c) for the large majority of instances. Hardness is heavy-tailed: 286/4945 L=10 instances
+    needed extra PA runs, and 0.6% of L=10 PT instances stayed unequilibrated after 2^30 sweeps [V]. Cost grows
+    roughly exponentially in L for both PT and PA [V]. This hard tail at n ~ 500-1000 is the only place where a
+    QeMCMC sampling advantage could plausibly show, and it has to be compared against PT+ICM / PA, not Metropolis.
+
+H4. Fastest per-flip classical numbers found (all on SPARSE lattice Ising; dense SK is much slower per flip):
+      CPU   : 6.65 flips/ns, 1 thread; 52.2 flips/ns, 16 threads (Xeon E5-2670, multi-spin coding, chimera,
+              range-1 couplings) [V] Isakov et al. 2015.
+              3D EA: ~60 ps/flip on a 16-core Sandy Bridge; 30 ps/flip on a Xeon-Phi for 128^3 [V] Janus II paper.
+      GPU   : 417.5 flips/ns on one V100 and 453.6 flips/ns on one DGX-2H GPU (2D Ising, multi-spin);
+              7,292 flips/ns on 16 GPUs [V] Romero et al. 2019.
+              ~1.15e5 lattice updates/ns on a GB200 NVL72 rack [V] Bisson et al. 2025.
+              3D EA spin glass: ~3 ps/flip on a GTX Titan; 2-3 ps/flip on K20x [V] Lulli et al. 2015.
+              Population annealing on GPU: 10 ps/flip [S] Barash et al. 2017.
+      FPGA  : Janus I: 16 ps/flip. Janus II: 2 ps/flip per FPGA processor (design figure); 0.125 ps per 16-FPGA box
+              [V] Janus II paper. A 2D Ising FPGA reaches 614 flips/ns [V], as cited in Romero 2019.
+      p-bit : 143.8 flips/ns (FPGA, 4,793 p-bits, sparse graph, max degree ~4-5 after sparsification)
+              [V] Aadit et al. 2022.
+              50-64 flips/ns (FPGA, deep Boltzmann machine training) [S] Niazi et al. 2024.
+              1e6 flips/ns for nanodevices is a PROJECTION only [V].
+
+H5. Ising machines (Digital Annealer, simulated bifurcation, CIM) are OPTIMISERS, not unbiased Boltzmann samplers.
+    The SB paper itself says bSB and dSB are deterministic apart from random initial values [V]. They are the right
+    baseline for "find low-energy states" claims, NOT for "sample pi_beta" claims. p-bit machines ARE Gibbs samplers
+    (chromatic Gibbs) and are a valid sampling baseline.
+
+
+-------------------------------------------------------------------------------------------------------------------
+1. MAIN TABLE
+-------------------------------------------------------------------------------------------------------------------
+Format: Problem class | Regime | Best classical sampler | Speed (number, hardware, source) | Where it fails
+
+(1) SK / dense spin glass | HIGH (beta well below 1, units J/sqrt(N)) | Single-spin Metropolis / heat bath with cached local fields | O(1) dE per proposal + O(n) per accepted flip. ~20-50 ns per attempt for n<=300; 0.05-0.5 us for n=1000 (i5-1135G7, scalar C) [B]. Glauber provably fast-mixing for beta < ~0.295 [S] arXiv:2605.03718 survey | Nothing to fix here; dense couplings make each accepted flip O(n), so multi-spin coding does not apply
+(1) SK | MEDIUM (beta ~ 0.5-1, near T_c = 1) | Parallel tempering (PT); for i.i.d.-like samples, algorithmic stochastic localisation (AMP-based) | PT: 38 temps in T=0.4-1.325, 4e5-8e5 sweeps judged enough for equilibrium up to N=4096 [S] Billoire arXiv:1003.6086, Billoire arXiv:1401.4341. ASL: poly time, beta<1/2, Wasserstein guarantee [S] arXiv:2203.05093. TV-accurate beta<1/2 [S] arXiv:2605.03718. Claim for beta<1 [S] arXiv:2609.30590 | Houdayer/ICM gives no gain on SK (overlap clusters percolate in mean field; [E] inference from Zhu 2015's percolation argument). ASL gives approximate samples, not an exact MCMC
+(1) SK | LOW (T << 1) | PT (many temps); PA; Digital Annealer / SB / p-bit APT for ground states only | PT equilibrated to T=0.4 at N<=4096 [S]. DA: ~100x TTS speedup over single-core SA/PT on fully connected <=1024 [V] Aramon 2019, doi:10.3389/fphy.2019.00048. dSBM reaches the best known cut of K2000 (2000 spins all-to-all) in ~2 ms; bSBM time-to-target 0.26 ms (single FPGA) [V] Goto 2021 Sci. Adv. (PMC11323291) | T<0.4 at N>~4000 not routinely equilibrated. Ising machines are biased (not Boltzmann samplers). Exponential tunnelling in N
+
+(2) 2D EA | HIGH | Metropolis/heat bath, multi-spin coded (CPU/GPU) | GPU 2D lattice ~418 flips/ns on a V100 [V] Romero 2019 (ferromagnet code; spin-glass multi-spin is comparable order [E] 0.3-1x of that) | none
+(2) 2D EA | MEDIUM/LOW (T_c=0, so all low T is "near critical") | PT + Houdayer cluster moves (= ICM) | 2D, N=1024, T=0.212: plain PT thermalises in >=2^25 sweeps, PT+ICM in ~2^16 (~500x) [V] Zhu-Ochoa-Katzgraber PRL 115, 077201 (2015), arXiv:1501.05630. Houdayer: 100x100 equilibrated down to T=0.1, "several orders of magnitude" [S] EPJB 22, 479 (2001), arXiv cond-mat/0101116. Planar ground states are exact in poly time via matching [M] | Houdayer moves are not ergodic alone (must add SSF/PT) [S]. Gain vanishes in higher dimension. Long-range couplings break planarity tricks
+(2) 3D EA | HIGH | GPU/FPGA multi-spin Metropolis | 3D EA: GPU ~3 ps/flip (GTX Titan); 2-3 ps/flip multi-GPU K20x [V] Lulli-Bernaschi-Parisi arXiv:1411.0127. Janus II 2 ps/flip per processor [V] arXiv:1310.1032 | none
+(2) 3D EA | MEDIUM (T~T_c~0.95-1.1) | PT (16+ temps) | Round-trip log10 tau_RT mean 3.62 / 4.46 / 5.24 sweeps for L=6/8/10 [V] Yucesoy-Machta-Katzgraber PRE 87, 012104, arXiv:1210.6290 | Fine at n<=1000
+(2) 3D EA | LOW (T=0.2-0.4) | PT (+ICM, modest gain) or population annealing (PA) | PT+ICM, 3D N=1728, T~0.42: 2^23 -> 2^20 sweeps (8x) [V] Zhu 2015. PA ~ PT efficiency; L=10, R=1e6, 301 temps, 3e9 sweeps total [V] Wang-Machta-Katzgraber PRE 92, 063307 (arXiv:1508.05647). PA wall time 1.3 / 12 / 75 min on one 20-core node for N=216/512/1000 [V] Barzegar et al. PRE 98, 053308 (arXiv:1710.09025). Tensor-network MCMC: ~500x fewer steps than Metropolis to first passage at L=64, beta=1.0, but 9-350x costlier per sweep [V] Chen-Liu-Deng-Zhang PRL 137, 117101 (2026), arXiv:2509.23945 | Heavy-tailed instance hardness (sec. 3). ICM gain marginal in 3D for PA [V]. Exponential growth with L
+
+(3) Ferro Ising/Potts lattice | HIGH | Checkerboard multi-spin Metropolis on GPU | 417.5 flips/ns (V100), 453.6 (DGX-2H GPU), 7,292 flips/ns (16 GPUs) [V] Romero et al. arXiv:1906.06297. ~1.15e5 updates/ns per GB200 NVL72 rack [V] arXiv:2502.18624 | none
+(3) Ferro Ising/Potts | MEDIUM (critical) | Swendsen-Wang / Wolff cluster | z_SW(2D Ising) ~0.22-0.25; z_Metropolis = 2.1665(12) [S] Nightingale-Bloete PRL 76, 4548 (1996), arXiv cond-mat/9601059. 3D Ising SW z~0.45-0.75 (est. spread); 2D q=3 Potts z~0.51-0.55; q=4 z~1 [S]. GPU SW: 2.51 ns/flip (GTX580), 37.3 flips/ns on 256 GPUs [S] Komura-Okabe arXiv:1202.0635, 1208.2080. TNMCMC also works on 3D 3-state Potts [V] arXiv:2509.23945 | First-order transitions (2D Potts q>4): clusters do not help, use multicanonical/Wang-Landau [M]. Random or frustrated couplings kill cluster efficiency. Fields reduce efficiency
+(3) Ferro Ising/Potts | LOW (ordered) | Metropolis (fast in an ordered phase) or Wolff | as HIGH row | Only domain-wall / tunnelling between ordered states is slow: multicanonical [M]
+
+(4) Frustrated lattices (triangular, kagome, spin ice) | HIGH | Metropolis | as (3) | none
+(4) Frustrated | MEDIUM/LOW (ice-rule / constrained manifold) | Loop/worm moves inside Metropolis; dual-worm cluster algorithms; KBD for the fully frustrated square lattice; PA on GPU | Spin-ice loop algorithm (Melko-den Hertog-Gingras PRL 87, 067203, 2001): reached the low-T ordered state that single flips could not [S]. Dual worm for triangular/kagome Ising AFMs with up to 3rd-neighbour couplings, "efficient across the relevant T range" [S] Rakala-Damle arXiv:1612.00851. KBD (PRL 65, 941, 1990) works for the 2D fully frustrated model, poorly or not at all for spin glasses [S] arXiv cond-mat/9402030. Tensor-network collective updates (2D frustrated, EA) [S] SciPost Phys. 14, 123 (2023). No per-flip timing found | Loop moves are model-specific: they need an ice rule or a dimer mapping. Dipolar long-range interactions need Ewald sums: O(n) or O(n log n) per flip [M]. Random frustration -> back to (2)
+
+(5) MRF image segmentation (Potts + data term) | HIGH (weak coupling) | Checkerboard Gibbs (GPU) | per-site cost like a Potts update; GPU Potts ~ ns/site order [E] 0.1-3 ns, by analogy with 2.5 ns/flip GPU SW and 2.4 ps/flip GPU Ising | none
+(5) MRF | MEDIUM/LOW | MAP: graph cuts / alpha-expansion (exact for binary submodular) [M]. Sampling: Swendsen-Wang cuts (Barbu-Zhu, IEEE TPAMI 27, 1239, 2005) | SW-cuts: ergodic, reversible partition moves for arbitrary posteriors [S]. No wall-clock numbers found | A strong data term (external field) shrinks clusters. Graph cuts give MAP, not samples. Non-submodular terms break exact cuts
+
+(6) MIMO detection | HIGH-T (sampling temperature >= noise) | Gibbs-sampling detector; annealed Langevin | Optimal Gibbs temperature scales as Omega(sqrt(SNR)); mixing blows up at low T if the lattice has local minima [S] Hassibi et al. IEEE TSP 62, 4436 (2014), arXiv:1310.7305. Annealed Langevin: SOTA symbol error rate [S] Zilberstein et al. IEEE TWC 22, 3762 (2023), arXiv:2205.05776 | Runtime and complexity are the main limit in fast fading [S]
+(6) MIMO | LOW (ML detection) | Sphere decoding (exact, exponential worst case) [M]; regularised-Ising + Ising machine | RI-MIMO / TRIM: near-optimal BPSK 16x16-24x24 in SIMULATION only [S] Singh-Jamieson-McMahon-Venturelli arXiv:2105.10535 | Ising formulation without regularisation hits an error floor [S]
+(6) LDPC decoding | all | Belief propagation / min-sum (not MCMC) [M] | not searched | Sampling decoders are not competitive with BP in practice [M, unverified]
+
+(7) General QUBO / combinatorial sampling | HIGH | Metropolis with cached local fields | as (1) | none
+(7) QUBO | MEDIUM | PT / adaptive PT on p-bits (Boltzmann sampling) | p-bit APT on XORSAT: TTS scaling gamma 0.0201 (3rd-order p-bits) against PT 0.0248, SBM 0.0217, DAU 0.0185, SATonGPU 0.0171 [V] Nikhar et al. Nat. Commun. 15, 8977 (2024), arXiv:2312.08748. All-to-all p-computer on an Alveo U250: one sweep = 66.67 ns at n=112, i.e. ~1.7 flips/ns per replica [D] | Dense problems must be sparsified/embedded (adds p-bits) [V]. Equality constraints become penalty terms, which create rugged landscapes [M]
+(7) QUBO | LOW (optimisation) | DA (<=1024 fully connected; 3rd/4th gen up to 100k bits on GPU [S]), dSB/bSB, CIM, PT+ICM | DA ~100x TTS vs single-core SA/PT, dense <=1024, NO speedup on sparse 2D [V] Aramon 2019. CIM with 100,512 spins: 600 us to a greedy reference score vs 0.7 s for SA on CPU [S] Honjo et al. Sci. Adv. 2021 (PMC8480917). SB: K2000 dSBM ~2 ms; 100k-spin all-to-all on 16 GPUs [V] | Biased samplers. Hardware size limits. "TTS to a reference" metrics are not sampling metrics
+
+(8) Cluster-expansion alloys | HIGH (disordered solid solution) | Canonical MC with species swaps / semi-grand-canonical MC | CE energy change per swap is "very cheap" (local clusters only) [S] arXiv:2605.19124. No timing found; [E] 0.1-10 us per trial in typical CE codes | none
+(8) CE alloys | MEDIUM (order-disorder, often 1st order) | Wang-Landau (windows) / replica-exchange WL; multicanonical | WL+CE handles FeCo/CuZn order-disorder; CuZn needed 3 energy windows because of the steep DOS near the ground state [S] arXiv:1510.01543. REWL: Vogel-Li-Wuest-Landau PRL 110, 210603 (2013) [S] | Swaps are local: phase separation and coarsening are slow. 1st-order hysteresis in canonical MC
+(8) CE alloys | LOW (ordered) | Canonical MC + simulated annealing for ground states; enumeration | not quantified | Antiphase domains trap local swaps
+
+(9) RBM / EBM negative phase | HIGH (early training, smooth model) | CD-k / PCD (alternating block Gibbs) | Block Gibbs is a dense mat-vec per half-sweep. p-bit FPGA: 50-64 flips/ns [S] Niazi et al. Nat. Electron. 2024, arXiv:2303.10728 | none
+(9) RBM | MEDIUM/LOW (clustered data, late training) | PT for RBMs (Desjardins et al. AISTATS 2010); Parallel Trajectory Tempering (Bereux et al. ICLR 2025) | PTT "outperforms previously optimized MCMC" [S] arXiv:2405.15376. Most published RBMs are trained out of equilibrium [S] arXiv:2105.13889 | PCD chains drift away from equilibrium on clustered data [S]. PT is too costly inside training [S]
+
+(10) Bayesian variable selection / discrete posteriors | HIGH (flat posterior) | Random-scan Gibbs / add-delete-swap MH | O(1) dE for Ising-like targets; for linear-model marginal likelihoods [E] O(p*k) to O(k^2) per update with rank-1 updates | none
+(10) Discrete posteriors | MEDIUM/LOW (peaked, multimodal) | Locally balanced / informed proposals (Zanella JASA 115, 852, 2020, doi:10.1080/01621459.2019.1585255); Gibbs-with-gradients (Grathwohl ICML 2021, arXiv:2102.04509); discrete Langevin DLP/DMALA (Zhang-Liu-Liu ICML 2022, arXiv:2206.09914); adaptive informed MCMC (arXiv:2110.11747) | "Orders of magnitude" efficiency gains over uninformed MH [S] Zanella. GWG near-optimal among local samplers on Ising/Potts/RBM/FHMM [S]. One step of an informed proposal costs one full neighbourhood (or gradient) evaluation: O(n) for sparse, O(n^2) for dense Ising [D] | Still local: exponentially separated modes stay hard. Gradient proxies are poor on highly non-smooth targets [M]
+
+(11) Lattice proteins (HP) | HIGH | Pull moves (+pivot) Metropolis | n/a | none
+(11) HP | MEDIUM/LOW (folding transition, ground state) | Wang-Landau + pull moves + bond-rebridging + pivot | Found all known putative ground states of the hardest benchmark HP sequences; up to 3x faster WL convergence than pull moves alone [S] Wuest-Landau J. Chem. Phys. 137, 064903 (2012), arXiv:1207.3974. REWL: Vogel et al. 2013 | Local moves are non-ergodic without pull moves; compact states block monomer moves [S]
+
+(12) Redistricting ensembles | (no physical T; "constraint tightness" plays the role of T) | ReCom / RevReCom (GerryChain); SMC (redist); merge-split | Per 1,500 nominal samples, effective sample size ~580 (SMC), ~76 (ReCom), ~27 (merge-split) on one statistic [S] McCartan-Imai slides; paper arXiv:2008.06131. A ReCom variant converges in quasi-linear steps in |E|; exponential on a constructed hard instance [S] arXiv:2206.04883. ReCom intro arXiv:1911.05725 | Target is the spanning-tree measure, not a Boltzmann measure. Tight compactness/VRA constraints cause rejection; there is no simple Ising energy here
+
+
+-------------------------------------------------------------------------------------------------------------------
+2. SAMPLER-BY-SAMPLER CHEAT SHEET (speed + failure modes)
+-------------------------------------------------------------------------------------------------------------------
+Single-spin Metropolis / heat bath
+  Speed: CPU multi-spin 6.65 flips/ns (1 thread), 52.2 flips/ns (16 threads), Xeon E5-2670, chimera range-1 [V].
+         General-degree single-spin code: 0.30 flips/ns per thread [V] Isakov et al. CPC 192, 265 (2015),
+         arXiv:1401.1084.
+  Dense: no multi-spin coding; cost per accepted flip is O(n) (section 5).
+  Fails: critical slowing down (z ~ 2.17 in 2D Ising), glassy trapping at low T.
+
+Parallel tempering / replica exchange (+ Houdayer/ICM)
+  Speed: overhead ~ N_T replicas (16-40 typical). ICM costs ~1 cluster construction per sweep.
+  Gains: 2D ~500x (2^25 -> 2^16 sweeps), chimera ~128x, 3D ~8x [V] Zhu 2015.
+  Fails: first-order transitions (replicas cannot cross the latent-heat gap); temperature chaos; ICM is useless
+         where overlap clusters percolate (high dimension, SK, high T) [V for the mechanism, E for SK].
+
+Wolff / Swendsen-Wang
+  Speed: GPU SW 2.51 ns/flip on a GTX580 [S].
+  Fails: frustration (clusters percolate trivially -> whole-system flips); random-sign couplings; strong fields;
+         first-order transitions.
+
+KBD / loop / worm algorithms
+  Model-specific (fully frustrated square lattice, spin ice, triangular/kagome via dual worms).
+  Fail for generic spin glasses [S] arXiv cond-mat/9402030.
+
+Population annealing
+  Speed: GPU 10 ps/flip including resampling [S] Barash et al. CPC 220, 341 (2017), arXiv:1703.03676.
+  Equal to PT in efficiency on 3D EA [V].
+  Massively parallel, but memory-heavy: R ~ 1e6 replicas.
+
+Simulated annealing
+  Optimiser only.
+  Worse than PA/PT for ground states of 3D EA [V] Wang-Machta-Katzgraber PRE 92, 013303 (2015), arXiv:1412.2104.
+
+Wang-Landau
+  Gives the density of states; best at first-order transitions (alloys, HP, Potts q>4).
+  Needs energy windows when the DOS is steep [S].
+  Parallel form: REWL [S].
+
+GPU multi-spin coding
+  2D Ising: 417-454 flips/ns per V100-class GPU [V].
+  3D EA: ~3 ps/flip [V].
+  Fails: dense couplings; continuous couplings (bit-packing needs discrete J).
+
+FPGA (Janus II)
+  Speed: 2 ps/flip per FPGA processor; 16 processors per box [V].
+  Hard-wired to short-range lattices (3D EA, Potts).
+
+p-bits / p-computers
+  Speed: 143.8 flips/ns (sparse, 4,793 p-bits) [V]; 50-64 flips/ns [S].
+  All-to-all needs a multiplexed or sparsified embedding: ~1.7 flips/ns per replica at n=112 all-to-all [D].
+  Speedup over GPU/TPU chessboard Gibbs: 5-18x [V].
+  NOTE: Aadit's table lists a V100 at only 11.37 flips/ns, against 417 flips/ns in Romero 2019. Different
+  implementations and graphs (irregular vs square). Always compare like-for-like.
+
+Ising machines (DA, SB, CIM)
+  Speed: DA ~100x TTS vs single-core SA/PT on dense <= 1024 [V].
+         SB: K2000 in 0.26 ms (bSBM time-to-target) / ~2 ms (dSBM to best known) [V].
+         CIM 100k spins: 600 us to a greedy reference [S].
+  Not Boltzmann samplers. DA gives no speedup on sparse 2D [V].
+
+Neural / flow samplers (VAN, normalising flows)
+  VAN: Wu-Wang-Zhang PRL 122, 080602 (2019), arXiv:1809.10606 [S].
+  Fail on hard instances: "ML-assisted MC fails at sampling computationally hard problems" [S] Ciarella et al.
+  MLST 4, 010501 (2023), arXiv:2210.11145.
+  Diffusion/flow samplers hit first-order transitions along the denoising path [S] Ghio et al. PNAS (2024),
+  doi:10.1073/pnas.2311810121.
+  Training costs dominate; useful as proposals inside MH at high/medium T.
+
+Locally balanced / gradient-informed proposals
+  Zanella 2020; GWG 2021; DLP 2022 [S].
+  Cost per step = O(neighbourhood) energy differences. Wins at medium T on rugged but connected landscapes.
+
+Tensor-network samplers
+  2D: Frias-Perez et al. SciPost 14, 123 (2023) [S].
+  3D EA up to 64^3: Chen et al. PRL 2026 [V].
+  Large step-count reductions, but per-sweep cost 9-350x Metropolis [V].
+  Acceptance of the older TNMC collapses at L=12 at T_c [V].
+
+
+-------------------------------------------------------------------------------------------------------------------
+3. DOES PT + HOUDAYER/ICM OR POPULATION ANNEALING "DEFEAT" SK/EA AT n ~ 10-1000?
+-------------------------------------------------------------------------------------------------------------------
+Short answer: for EQUILIBRIUM SAMPLING at n <= ~1000, yes in practice, down to T ~ 0.2 (3D EA) and T ~ 0.4 (SK).
+It costs 1e6-1e9 sweeps per instance with a heavy-tailed hardness distribution, and the cost grows roughly
+exponentially with linear size.
+
+Evidence:
+ a) Yucesoy, Machta, Katzgraber, PRE 87, 012104 (2013), arXiv:1210.6290 [V]
+    Setup: 3D EA (Gaussian), L = 6, 8, 10 (n up to 1000). PT with 16 temps, T = 0.2-2.0. ~5,000 instances per L.
+    Cost: ~140 CPU-years.
+    log10 tau_int (|q|) mean = 1.60 / 2.81 / 3.89, sd = 0.63-0.69 decades.
+      [D] So the 99th-percentile instance is ~30-40x slower than the median (lognormal assumption).
+    log10 round-trip time mean = 3.62 / 4.46 / 5.24 sweeps, sd 0.19-0.29.
+      Round-trip times are essentially UNCORRELATED with tau_int (r = 0.01-0.13). Round trips alone are therefore
+      not a sufficient equilibration criterion.
+    0.6% (32) of L=10 instances stayed above the noise floor even after 2^30 sweeps.
+ b) Wang, Machta, Katzgraber, PRE 92, 063307 (2015), arXiv:1508.05647 [V]
+    PA vs PT on 3D EA, L = 4-10 (PA also L = 12, 14).
+    PA "at least comparable in efficiency to PT".
+    Instance hardness is strongly correlated between the two methods.
+    log rho_s (PA) and log tau_int (PT) both grow ~linearly in L, i.e. exponential slowdown for both.
+    Instances needing extra PA runs: 0/4941 (L=4), 5/5099 (L=8), 286/4945 (L=10), 533/5000 (L=12, at T=0.333).
+    Equilibration criterion: R >= 100 rho_s (family-entropy based); rho_f ~ 1.6-2x rho_s.
+ c) Wang, Machta, Katzgraber, PRE 92, 013303 (2015), arXiv:1412.2104 [V/S]
+    Ground states of 3D EA: PA >> SA, PA ~ PT. Thermalisation test: e^{S_f} >= 100.
+ d) Zhu, Ochoa, Katzgraber, PRL 115, 077201 (2015), arXiv:1501.05630 [V]
+    ICM (Houdayer generalised). Thermalisation measured in sweeps:
+      2D N=1024, T=0.212:              2^25 -> 2^16
+      chimera N=1152:                  2^25 -> 2^18
+      3D N=1728, T~0.42 (~0.43 T_c):   2^23 -> 2^20
+    The speedup grows with system size. It works only where overlap clusters do not percolate (low T, low
+    dimension).
+ e) Barzegar, Pattison, Wang, Katzgraber, PRE 98, 053308 (2018), arXiv:1710.09025 [V]
+    PA+ICM: clear speedup in 2D, marginal in 3D.
+    3D wall time 1.3 / 12 / 75 min (N = 216 / 512 / 1000) on one 20-core node.
+    Notes a growing density of "chaotic" hard instances with size.
+ f) SK [S]
+    Billoire & Marinari (cond-mat/0101177): PT with 38 temps over T = 0.4-1.325, 4e5 iterations.
+    Billoire (arXiv:1003.6086, 1401.4341): N = 256-4096; 4e5-8e5 thermalisation sweeps. Cites Aspelmeier, Billoire,
+    Marinari, Moore (2008) as the empirical basis that this equilibrates T >= 0.4 up to N = 4096.
+    No Houdayer gain is expected in SK [E].
+ g) Houdayer, EPJB 22, 479 (2001) [S]: 2D +-J 100x100 equilibrated down to T = 0.1.
+    The moves are not ergodic alone and must be combined with SSF or PT.
+ h) The Digital Annealer study (Aramon 2019) used PT+ICM as its strongest classical baseline [V/S].
+Implication for QeMCMC: the honest comparison at n ~ 100-1000 and low T is the TAIL (hardest 1-10% of instances)
+against PT+ICM / PA, measured in wall-clock, with tau_int (not round trips) as the metric.
+
+
+-------------------------------------------------------------------------------------------------------------------
+4. NOTES ON WHERE CLASSICAL "SUPER-SAMPLERS" DO NOT APPLY (useful for picking a QeMCMC niche)
+-------------------------------------------------------------------------------------------------------------------
+- Cluster moves (SW/Wolff) need non-frustrated (or gauge-equivalent) couplings. They fail for spin glasses, generic
+  QUBO, and a strong random field.
+- Houdayer/ICM needs non-percolating overlap clusters: low dimension and low T. It is useless for SK and dense QUBO.
+- Loop/worm algorithms need a local constraint structure (ice rule, dimer mapping).
+- Multi-spin coding (GPU, FPGA, CPU) needs short-range, discrete couplings. Dense or continuous J loses 1-3 orders
+  of magnitude per flip.
+- Ising machines: hardware-size limits (DA chip <= 8,192 bits; FPGA SB 2,048; p-bit FPGA ~5,000 [V/S]). They are
+  biased w.r.t. Boltzmann. DA gave no gain on sparse 2D [V].
+- Neural samplers: training cost; documented failures on hard (glassy/coloring) instances [S].
+- Wang-Landau: needs a discrete, bounded energy range. Convergence is slow with a steep DOS [S].
+- Constraints (one-hot, cardinality, redistricting contiguity) break single-flip Ising moves. They need swap moves,
+  spanning-tree moves or penalties.
+
+
+-------------------------------------------------------------------------------------------------------------------
+5. PER-STEP CLASSICAL COST t_C FOR DENSE O(n^2) ISING (n = 10 ... 1000)
+-------------------------------------------------------------------------------------------------------------------
+Published numbers
+  - No published benchmark was found that gives ns-per-flip for DENSE SK Metropolis at n = 10-1000. The published
+    per-flip records are all sparse-lattice codes (section 0, H4).
+  - Isakov 2015 general-degree single-spin code: 0.30 flips/ns per thread (~3.3 ns/flip) on degree-6 chimera [V].
+    By O(degree) scaling, a dense degree-(n-1) graph would cost [E] ~n/6 x more if dE were recomputed each time.
+    With cached local fields it costs O(1) per proposal + O(n) per accepted flip.
+
+A5 micro-benchmark [B]
+  Code:     /tmp/claude-1000/-home-peter-PycharmProjects-Quantum-research/c21f50ee-da54-4e5f-8954-64e1b388dc37/
+            scratchpad/bench/sk_bench.c
+  Settings: gcc -O3 -march=native; scalar double; xoshiro RNG; exp() per proposal.
+  Machine:  Intel i5-1135G7 laptop, pinned to 1 core, under background load (load average ~17 on 8 threads).
+            Treat these as upper bounds, probably 1.5-3x pessimistic.
+  Metric:   ns per ATTEMPTED single-spin flip, min / max of 3 runs.
+  SK units: J_ij ~ N(0, 1/n), T_c = 1. beta = 0.3 (high T), 1.0 (critical), 3.0 (low T).
+
+    n    | dense, cached fields (b=0.3 / 1.0 / 3.0) | dense, naive O(n) dE per proposal | sparse 3-regular +-J
+    10   | 31-38 / 26-33 / 17-25                    | 27-62                             | 20-49
+    30   | 40-43 / 32-34 / 24-25                    | 68-143                            | 23-47
+    100  | 46-75 / 37-46 / 18-31                    | 189-221                           | 20-46
+    300  | 107-141 / 65-73 / 30-34                  | 533-663                           | 24-47
+    1000 | 461-555 / 198-260 / 44-45                | 1,810-2,280                       | 29-53
+    3000 | 1,503-2,200 / 658-894 / 122-255          | 5,520-7,730                       | 31-59
+
+  Acceptance rate (cached-field dense): 0.76 at beta=0.3, 0.32-0.38 at beta=1.0, 0.03-0.06 at beta=3.0.
+  Cost ~ c0 + acc * n * c1, with c0 ~ 15-30 ns and c1 ~ 0.5-0.7 ns per element.
+
+Take-away t_C ranges (single CPU core, unoptimised scalar C)
+  [E, anchored on B]   ~20-50 ns per proposal for n <= 100 at any T
+                       ~30-150 ns at n = 300
+                       ~0.05-0.6 us at n = 1000 (low T cheaper because few flips are accepted)
+  [E] SIMD/float32 or a GPU batch of independent chains would cut the per-chain cost by ~1-2 orders of magnitude.
+  One full sweep = n proposals: [E] ~0.2-0.5 us (n=10), ~2-8 us (n=100), ~50-600 us (n=1000).
+  Compare these with the quantum per-proposal latency (circuit + readout + classical round trip; see the hardware
+  report A4).
+
+
+-------------------------------------------------------------------------------------------------------------------
+6. SOURCES (URL / DOI)
+-------------------------------------------------------------------------------------------------------------------
+Hardware / per-flip speed
+ - Janus II (Baity-Jesi et al., CPC 185, 550 (2014)): https://arxiv.org/abs/1310.1032 (Table 1 SUT; Janus II 2 ps
+   per processor) [V]
+ - Romero, Bisson, Fatica, Bernaschi 2019/2020, "A performance study of the 2D Ising model on GPUs" (CPC):
+   https://arxiv.org/abs/1906.06297 [V]
+ - Bisson et al. 2025, GB200 NVL72 Ising (CPC): https://arxiv.org/abs/2502.18624 [V]
+ - Block, Virnau, Preis 2010, multi-GPU multi-spin 2D Ising: 7.9 flips/ns per GPU, 206 flips/ns on 64 GPUs:
+   https://arxiv.org/abs/1007.3726 [S]
+ - Lulli, Bernaschi, Parisi 2015, 3D spin glass GPU: https://arxiv.org/abs/1411.0127 [V]
+ - Fang et al. 2014, 3D EA PT on GPU, 33.5 ps/flip: https://arxiv.org/abs/1311.5582 [S]
+ - Isakov, Zintchenko, Ronnow, Troyer, CPC 192, 265 (2015): https://arxiv.org/abs/1401.1084 [V]
+ - Barash, Weigel, Borovsky, Janke, Shchur, CPC 220, 341 (2017): https://arxiv.org/abs/1703.03676 [S]
+ - Komura & Okabe 2012, GPU SW: https://arxiv.org/abs/1202.0635 , https://arxiv.org/abs/1208.2080 [S]
+ - Aadit et al., Nat. Electron. 5, 460 (2022), doi:10.1038/s41928-022-00774-2: https://arxiv.org/abs/2110.02481 [V]
+ - Niazi et al., Nat. Electron. (2024), doi:10.1038/s41928-024-01182-4: https://arxiv.org/abs/2303.10728 [S]
+ - Nikhar et al., Nat. Commun. 15, 8977 (2024): https://arxiv.org/abs/2312.08748 [V]
+ - Chowdhury et al., Nat. Commun. (2025), p-computers vs QA on 3D spin glasses: https://arxiv.org/abs/2503.10302 [S]
+ - Aramon et al., Front. Phys. 7, 48 (2019), doi:10.3389/fphy.2019.00048: https://arxiv.org/abs/1806.08815 [V]
+ - Goto et al., Sci. Adv. 7, eabe7953 (2021), bSB/dSB: https://pmc.ncbi.nlm.nih.gov/articles/PMC11323291/ [V]
+ - Goto, Tatsumura, Dixon, Sci. Adv. 5, eaav2372 (2019) [S]
+ - Honjo et al., Sci. Adv. (2021), 100,000-spin CIM: https://pmc.ncbi.nlm.nih.gov/articles/PMC8480917 [S]
+ - Fujitsu DA 3rd/4th gen, 100k bits: https://portal.aispf.global.fujitsu.com/apidoc/da/jp/da-guide-en.html [S]
+Spin-glass algorithms / equilibration
+ - Zhu, Ochoa, Katzgraber, PRL 115, 077201 (2015): https://arxiv.org/abs/1501.05630 [V]
+ - Houdayer, EPJB 22, 479 (2001): https://arxiv.org/abs/cond-mat/0101116 [S]
+ - Wang, Machta, Katzgraber, PRE 92, 063307 (2015): https://arxiv.org/abs/1508.05647 [V]
+ - Wang, Machta, Katzgraber, PRE 92, 013303 (2015): https://arxiv.org/abs/1412.2104 [V]
+ - Barzegar, Pattison, Wang, Katzgraber, PRE 98, 053308 (2018): https://arxiv.org/abs/1710.09025 [V]
+ - Yucesoy, Machta, Katzgraber, PRE 87, 012104 (2013): https://arxiv.org/abs/1210.6290 [V]
+ - Billoire & Marinari (SK PT): https://arxiv.org/abs/cond-mat/0101177 ; Billoire 2010:
+   https://arxiv.org/abs/1003.6086 ; Billoire 2014: https://arxiv.org/abs/1401.4341 [S]
+ - El Alaoui, Montanari, Sellke (SK sampling, beta<1/2): https://arxiv.org/abs/2203.05093 [S]
+ - Davies, Lee, Sandhu, Shi (TV sampler beta<1/2; survey of the Glauber ~0.295 bound):
+   https://arxiv.org/abs/2605.03718 [S]
+ - Potential Hessian Ascent IV (SK beta<1 claim): https://arxiv.org/abs/2609.30590 [S]
+ - Eldan, Koehler, Zeitouni, Glauber spectral gap beta<1/4: arXiv:2007.08200 [M]
+ - Chen, Liu, Deng, Zhang, TNMCMC, PRL 137, 117101 (2026), doi:10.1103/96lr-z7tb:
+   https://arxiv.org/abs/2509.23945 [V]
+ - Frias-Perez et al., SciPost Phys. 14, 123 (2023): https://arxiv.org/abs/2104.13264 [S]
+Critical / frustrated
+ - Nightingale & Bloete, PRL 76, 4548 (1996), z = 2.1665(12): https://arxiv.org/abs/cond-mat/9601059 [S]
+ - Ossola & Sokal (3D SW): https://arxiv.org/abs/hep-lat/0402019 [S]
+ - Melko, den Hertog, Gingras, PRL 87, 067203 (2001): https://arxiv.org/abs/cond-mat/0009225 [S]
+ - Rakala & Damle (dual worm): https://arxiv.org/abs/1612.00851 [S]
+ - KBD: Kandel, Ben-Av, Domany PRL 65, 941 (1990); limits: https://arxiv.org/abs/cond-mat/9402030 [S]
+ML / statistics / applications
+ - Wu, Wang, Zhang PRL 122, 080602 (2019) VAN: https://arxiv.org/abs/1809.10606 [S]
+ - Ciarella, Trinquier, Weigt, Zamponi, MLST 4, 010501 (2023): https://arxiv.org/abs/2210.11145 [S]
+ - Ghio, Dandi, Krzakala, Zdeborova, PNAS (2024), doi:10.1073/pnas.2311810121: https://arxiv.org/abs/2308.14085 [S]
+ - Zanella, JASA 115, 852 (2020), doi:10.1080/01621459.2019.1585255: https://arxiv.org/abs/1711.07424 [S]
+ - Grathwohl et al., ICML 2021 (GWG): https://arxiv.org/abs/2102.04509 [S]
+ - Zhang, Liu, Liu, ICML 2022 (DLP/DMALA): https://arxiv.org/abs/2206.09914 [S]
+ - Liang, Livingstone, Griffin, adaptive informed MCMC for BVS: https://arxiv.org/abs/2110.11747 [S]
+ - Desjardins et al., AISTATS 2010: https://proceedings.mlr.press/v9/desjardins10a.html [S]
+ - Bereux et al., ICLR 2025 (PTT): https://arxiv.org/abs/2405.15376 [S]
+ - Decelle, Furtlehner, Seoane 2021: https://arxiv.org/abs/2105.13889 [S]
+ - Barbu & Zhu, IEEE TPAMI 27, 1239 (2005), SW-cuts: https://ani.stat.fsu.edu/~abarbu/Research/SWC.html [S]
+ - Hassibi et al., IEEE TSP 62, 4436 (2014): https://arxiv.org/abs/1310.7305 [S]
+ - Zilberstein et al., IEEE TWC 22, 3762 (2023): https://arxiv.org/abs/2205.05776 [S]
+ - Singh, Jamieson, McMahon, Venturelli: https://arxiv.org/abs/2105.10535 [S]
+ - Wuest & Landau, J. Chem. Phys. 137, 064903 (2012): https://arxiv.org/abs/1207.3974 [S]
+ - Vogel, Li, Wuest, Landau, PRL 110, 210603 (2013): https://arxiv.org/abs/1305.5615 [S]
+ - CE + WL CuZn: https://arxiv.org/abs/1510.01543 ; CE tutorial: https://arxiv.org/abs/2405.14787 ;
+   review: https://arxiv.org/abs/2605.19124 [S]
+ - DeFord, Duchin, Solomon (ReCom): https://arxiv.org/abs/1911.05725 ; ReCom complexity:
+   https://arxiv.org/abs/2206.04883 ; McCartan & Imai SMC: https://arxiv.org/abs/2008.06131 ; slides:
+   https://imai.fas.harvard.edu/talk/files/redist21.pdf [S]
+ - Tuziemski et al., "Limits of quantum run-time advantage", PRApplied 25, 044084 (2026):
+   https://arxiv.org/abs/2510.06337 [S] (method for choosing strong classical baselines)
+
+GAPS / NOT FOUND
+ - No published dense-SK ns/flip benchmark at n = 10-1000; section 5 is A5's own rough measurement.
+ - No wall-clock per-step numbers for GerryChain/ReCom, CE alloy codes (icet/smol), SW-cuts, or LDPC sampling
+   decoders.
+ - Janus II measured (as opposed to design) per-flip time: the only figure found is a third-party citation of
+   "3-5 ps" for a single sample [V via arXiv:1411.0127].
+ - Single-GPU flips/ns for the GB200 code: not stated in the abstract. Dividing 1.15e5 by 64-72 GPUs gives
+   ~1,600-1,800 flips/ns per GPU [D, assumes the peak used all 64-72 GPUs].

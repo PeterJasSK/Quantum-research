@@ -1,0 +1,523 @@
+A4 HARDWARE SCOUT REPORT -- QeMCMC on real quantum hardware
+Date: 2026-11-20. Author: sub-agent A4 (hardware scout).
+Scope: per-device numbers for running a SEQUENTIAL quantum-enhanced MCMC chain
+(prepare |s> -> exp(-iHt) -> measure 1..few shots -> classical accept/reject -> next step).
+
+CONVENTIONS
+- Every number has a URL. "not found" = I searched and found no primary/secondary figure.
+- "ESTIMATE:" marks my own inference. It is never a sourced number.
+- "derived:" = arithmetic on sourced numbers. The inputs are cited.
+- The main bottleneck for sequential QeMCMC is the per-JOB (per-task, per-QMI) round trip.
+  Shot time is almost never the bottleneck. A step needs a new input state |s>, and on almost
+  every cloud stack that means a new job, unless the accept/reject runs inside the device's
+  real-time controller (see Helios and the IBM dynamic-circuits notes).
+
+======================================================================================
+0. KEY CROSS-CUTTING FACTS (read first)
+======================================================================================
+F1. IBM bills a fixed overhead of about 2 s per sub-job ("includes operations such as loading
+    the payload into control electronics"). The quick estimate is 2 + 0.00035*<num executions> s.
+    So one IBM job per MCMC step costs at least about 2 s of QPU-locked time, before any
+    network or client latency.
+    https://quantum.cloud.ibm.com/docs/en/guides/estimate-job-run-time
+F2. Sessions are billed by wall clock, including the idle interactive-TTL gap between jobs
+    while your CPU does the accept/reject.
+    https://quantum.cloud.ibm.com/docs/en/guides/estimate-job-run-time
+    https://quantum.cloud.ibm.com/docs/en/guides/execution-modes-faq
+F3. Braket charges per task ($0.30) plus per shot, on every gate/analog QPU. A 1-shot step
+    therefore costs about $0.30, and the per-task fee dominates.
+    https://aws.amazon.com/braket/pricing/
+F4. A D-Wave QMI with a tiny problem in the official example reports qpu_access_time =
+    16,016 us. Of that, qpu_programming_time = 15,935 us (including about 1 ms
+    post-programming thermalization), anneal = 20 us/sample, readout = 39.76 us/sample, and
+    delay = 21 us/sample. There is also a separate unbilled qpu_access_overhead_time of
+    10,427 us. Internet latency and SAPI service time come on top and are not published.
+    https://docs.dwavequantum.com/en/latest/quantum_research/operation_timing.html
+F5. Quantinuum Helios offers "real-time integer and floating point arithmetic, real-time
+    boolean logic, real-time arbitrary control flow", mid-circuit measurement, qubit reuse,
+    and an RNG capability. In principle a whole QeMCMC chain (measure -> compute dE ->
+    draw a uniform -> conditionally re-prepare |s'>) can run inside ONE program, with no
+    network round trip per step. It is the only platform found where that is documented as
+    supported.
+    https://docs.quantinuum.com/systems/_static/assets/data_sheets/Quantinuum%20Helios%20Product%20Data%20Sheet.pdf
+    https://docs.quantinuum.com/systems/user_guide/hardware_user_guide/helios.html
+    Limit: 10,000 shots and 500,000 HQC per job (same helios.html page).
+
+======================================================================================
+1. PER-DEVICE BLOCKS
+======================================================================================
+
+--------------------------------------------------------------------------------------
+1.1 IBM Heron r2 (e.g. ibm_fez, ibm_marrakesh, ibm_kingston*)  [superconducting]
+--------------------------------------------------------------------------------------
+- Qubits: 156, heavy-hex lattice.
+  https://quantum.cloud.ibm.com/docs/en/guides/processor-types
+- Median 2q (CZ) error: published values vary by device and date.
+  * 0.175% median CZ, plus SX 2.22e-4, on ibm_basquecountry (Heron r2). Source: arXiv paper
+    surfaced by search; exact paper not pinned. The family figure is "median CZ error
+    reduced from ~5e-3 to ~3e-3 by 2024 calibration updates" (same search).
+  * A third-party reprint of IBM's dashboard gives Heron r2: 2Q median 2.03e-3,
+    readout median 1.666e-2, CLOPS 340K. Undated.
+    https://quantum.cloud.ibm.com/computers (the live page is the primary source; values change daily)
+- EPLG (100-qubit chain): ibm_marrakesh 3.98e-3 and ibm_kingston 9.93e-4 "at execution time"
+  (per the paper cited in search results, arXiv 2510.16915 context).
+  https://arxiv.org/pdf/2510.16915
+  [*ibm_kingston is labelled r2 in one paper and r3 in a Zenodo record. Treat it as uncertain.]
+- Readout error: about 1-2% median (1.666e-2 per the reprint above). Not pinned to a primary source.
+- T1: not found as a fleet median for r2. Nighthawk r1 is "highest coherence of our fleet,
+  median T1 ~350 us", which implies Heron is lower.
+  https://thequantuminsider.com/2026/01/13/ibm-announces-nighthawk-and-latest-heron-are-now-available/
+- Usable depth: Marshall et al. 2026 ran QeMCMC proposals on ibm_boston (Heron r3) with up to
+  5,532 2q gates / 2q-depth 228 (52-node MIS). The noise needed an estimated 4.28M shots/iter
+  and they used 100,000.
+  https://arxiv.org/html/2602.06171v3 (Table 4)
+  Layden 2023 used up to 48 layers of 2q gates on 10 spins (ibmq_mumbai, 27q, older generation).
+  https://ar5iv.labs.arxiv.org/html/2203.12497
+- Shot rate: default rep_delay 250 us on most backends.
+  https://quantum.cloud.ibm.com/docs/en/guides/estimate-job-run-time
+  Heron runs about 4,000 circuits/s. https://www.ibm.com/quantum/blog/nighthawk-r2
+- Job latency: about 2 s per sub-job overhead (F1). Queue: not published; varies from seconds
+  (Premium/Flex/dedicated, inside a session) to hours (Open plan).
+  ESTIMATE: in-session 1-shot round trip = 2-4 s.
+- Dynamic circuits: mid-circuit measurement plus feedforward, with feedforward latency about
+  600 ns per IBM. https://www.ibm.com/quantum/blog/utility-scale-dynamic-circuits
+  Classical logic is limited to bit conditionals and simple expressions. Computing an Ising dE
+  and comparing it to a random threshold in real time is NOT documented as supported.
+  (not found)
+- Price: Pay-As-You-Go $96/min, Flex $72/min (min 400 min), Premium $48/min (min 5,200 min),
+  Open plan free with 10 min/month.
+  https://www.ibm.com/quantum/pricing
+  derived: at 2-3 s/step on PAYG, one sequential step costs about $3.2-$4.8.
+
+--------------------------------------------------------------------------------------
+1.2 IBM Heron r3 (ibm_boston, ibm_pittsburgh, ibm_aachen?)  [superconducting]
+--------------------------------------------------------------------------------------
+- Qubits: 156, heavy-hex. r3 (July 2025) brings "targeted manufacturing improvements ...
+  coherence, gate fidelity, readout".
+  https://quantum.cloud.ibm.com/docs/en/guides/processor-types
+- EPLG at 100 qubits: 2.15e-3 on ibm_boston, with 57 of 176 2q gates below 1e-3.
+  https://thequantuminsider.com/2026/01/13/ibm-announces-nighthawk-and-latest-heron-are-now-available/
+  https://newsroom.ibm.com/2025-11-12-ibm-delivers-new-quantum-processors,-software,-and-algorithm-breakthroughs-on-path-to-advantage-and-fault-tolerance
+- Note: Marshall et al. report that at the time of writing, error rates were lowest on Heron r1,
+  then r2, then r3 for their circuits.
+  https://arxiv.org/html/2602.06171v3
+- Timing, latency and price are the same as Heron r2 (above).
+
+--------------------------------------------------------------------------------------
+1.3 IBM Nighthawk r1 / r2 (ibm_miami = r1, ibm_phoenix = r2)  [superconducting]
+--------------------------------------------------------------------------------------
+- Qubits: 120 on a square lattice with 218 tunable couplers. r2 adds 120 reset elements
+  (458 physical elements in total).
+  https://thequantuminsider.com/2026/01/13/ibm-announces-nighthawk-and-latest-heron-are-now-available/
+  https://www.datacenterdynamics.com/en/news/ibm-announces-availability-of-its-nighthawk-r2-quantum-processor/
+- Median T1 (r1): about 350 us (TQI link above). Effective T1 during dissipative reset on r2:
+  about 25 ns, versus about 200 us normally. https://www.ibm.com/quantum/blog/nighthawk-r2
+- 2q error: "Heron-class gate fidelity" (r2 blog). No separate median found.
+- Depth: up to 5,000 2q gates (r1 claim). r2 "demonstrated accurate observable estimation on
+  circuits containing more than 7,500 gates" (with PEA).
+  https://www.datacenterdynamics.com/en/news/ibm-announces-availability-of-its-nighthawk-r2-quantum-processor/
+- Shot rate: r2 runs more than 100,000 circuits/s, 25x Heron's ~4,000/s. Idle between shots
+  can be as low as about 1 us. https://www.ibm.com/quantum/blog/nighthawk-r2
+  r1 (exploratory): rep time raised to 4 ms. Dynamic circuits were NOT supported at launch.
+  https://thequantuminsider.com/2026/01/13/ibm-announces-nighthawk-and-latest-heron-are-now-available/
+- Relevance to QeMCMC: the faster shot rate does not help a 1-shot sequential step, because
+  the about 2 s per-job overhead (F1) dominates. It helps a lot for batched independent
+  chains (many PUBs/circuits per job).
+- Price and latency: same as Heron (IBM plans).
+
+--------------------------------------------------------------------------------------
+1.4 Google Willow  [superconducting]
+--------------------------------------------------------------------------------------
+- Qubits: 105, square grid.
+- Two chips on the spec sheet:
+  * EC chip: CZ error 0.33% +/- 0.18%, measurement error 0.77%, T1 68 us.
+  * RCS chip: 2q (iSWAP-like) error 0.14%, measurement error 0.67%, T1 98 us.
+  https://quantumai.google/static/site-assets/downloads/willow-spec-sheet.pdf
+  Blog figures: "99.88% entangling, 99.5% readout".
+  https://blog.google/technology/research/quantum-hardware-verifiable-advantage/
+- Cloud access, pricing, latency, shot rate: not found. Willow is not on a public pay-per-use
+  cloud as far as I found. It is a research-collaboration-only platform, so it is not a
+  practical QeMCMC target.
+
+--------------------------------------------------------------------------------------
+1.5 Quantinuum H2 (H2-1/H2-2)  [trapped ion, QCCD, 171Yb+]
+--------------------------------------------------------------------------------------
+- Qubits: 56, all-to-all.
+- 2q infidelity: 1e-3 typical (2e-3 max). SPAM: 1e-3. Memory error per depth-1: 2e-4.
+  MCM crosstalk: 5e-6.
+  https://docs.quantinuum.com/systems/_static/assets/data_sheets/Quantinuum%20H2%20Product%20Data%20Sheet.pdf
+- Mid-circuit measurement, conditional branching, qubit reuse, and RNG are supported.
+  https://docs.quantinuum.com/systems/user_guide/hardware_user_guide/h2.html
+- Depth-1 circuit time / shot time: not found for H2. ESTIMATE: tens of ms per depth-1 layer
+  (Helios at 55 ms is the same architecture class).
+- Price: HQC-based contracts. Public $/HQC not found.
+- Queue/latency: not found. ESTIMATE: minutes per job on the shared queue.
+
+--------------------------------------------------------------------------------------
+1.6 Quantinuum Helios  [trapped ion, QCCD, 137Ba+]
+--------------------------------------------------------------------------------------
+- Qubits: 98, all-to-all. Eight gate zones (four for 2q gates). T2 is about seconds.
+- 2q infidelity: 8e-4 typical (2e-3 max). 1q: 0.3e-4. SPAM: 5e-4. Memory per depth-1: 6e-4.
+  https://docs.quantinuum.com/systems/_static/assets/data_sheets/Quantinuum%20Helios%20Product%20Data%20Sheet.pdf
+  Paper: 99.921% average 2q fidelity. https://arxiv.org/abs/2511.05465
+- Speed: depth-1 time (random pairing plus 1q/2q gates on all qubits) averages 55 ms per layer.
+  https://arxiv.org/html/2511.05465
+  derived: an all-to-all SK Trotter step on n spins needs about n-1 depth-1 layers. For n=20
+  that is about 1 s per Trotter step, so a shot with r Trotter steps takes about r seconds.
+  Sparse H is much faster.
+- Real-time control: arbitrary control flow, float/int arithmetic, RNG, MCMR, and qubit reuse
+  (F5). A whole QeMCMC chain can be a single Guppy program, so the per-step cost is just the
+  circuit time. The job cap is 10,000 shots and 500,000 HQC.
+  https://docs.quantinuum.com/systems/user_guide/hardware_user_guide/helios.html
+- Logical: 48 error-corrected logical qubits at 2:1 encoding (vendor claim).
+  https://thequantuminsider.com/2025/11/06/illuminating-helios-quantinuums-shiny-new-quantum-computer-gets-sunny-reception/
+- Price: not found (contract/HQC). Queue: not found.
+- Successor Sol (2027) is planned to run about 2x faster than Helios.
+  https://www.hpcwire.com/2025/11/05/quantinuum-introduces-helios-quantum-system-as-roadmap-advances-toward-apollo/
+
+--------------------------------------------------------------------------------------
+1.7 IonQ Forte / Forte Enterprise / Tempo  [trapped ion, single chain, all-to-all]
+--------------------------------------------------------------------------------------
+- Forte and Forte Enterprise: 36 qubits.
+  * Forte: 2q gate 970 us, 1q 130 us, readout 150 us, reset 50 us, T1 100 s, T2 1 s.
+    2q fidelity 0.9849 (per that table).
+  * Forte Enterprise: 2q gate 650 us, 2q fidelity 0.9915.
+  https://arxiv.org/html/2603.03801 (Appendix A table)
+  Other papers report 2q DRB fidelity of 99.3% (Forte) and 99.5% (Forte Ent.), with ZZ gate
+  about 950 us. https://arxiv.org/html/2506.07866
+- Tempo: #AQ 64 reached on a 64-qubit chain (Sept 2025). A 100-qubit register is the target.
+  https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher
+  Tempo cloud availability and 2026 fidelity: not found.
+- Shot time: derived from about 0.97 ms per 2q gate (mostly serial on a single chain). A
+  circuit with 100 2q gates takes about 0.1 s per shot, plus readout and cooling.
+  Shots per second: not found.
+- Mid-circuit measurement on cloud Forte: not found.
+- Price (Braket): $0.30/task + $0.08/shot. Reservation $7,000/h. Error mitigation needs at
+  least 2,500 shots per task. https://aws.amazon.com/braket/pricing/
+- Queue/latency: not found. ESTIMATE: minutes to hours per task on-demand. Inside a Braket
+  Hybrid Job, tasks get queue priority.
+  https://docs.aws.amazon.com/braket/latest/developerguide/braket-what-is-hybrid-job.html
+
+--------------------------------------------------------------------------------------
+1.8 QuEra Aquila  [neutral atom, ANALOG Rydberg, 87Rb]
+--------------------------------------------------------------------------------------
+- Qubits: up to 256 atoms in user-defined 1D/2D geometry. Rows must be at least 4 um apart.
+  https://aws.amazon.com/braket/quantum-computers/quera
+  https://arxiv.org/pdf/2306.11727 (Aquila white paper)
+- Hamiltonian: Rydberg H = global Rabi drive (X) + global detuning (Z) + 1/r^6 Rydberg-Rydberg
+  ZZ. That is an Ising + transverse + longitudinal field form, but the couplings are fixed by
+  geometry (positive, unit-disk-like). Arbitrary J (SK spin glass) cannot be encoded natively.
+- Limits: max evolution time 4 us, max Rabi amplitude 2.51 MHz, max detuning 19.89 MHz
+  (at time of that post). https://aws.amazon.com/blogs/quantum-computing/analog-hamiltonian-simulation-with-pennylane
+- Shot rate: "typically < 10 samples per second". The full array is reloaded every shot, and
+  the cycle repeats "up to 10 times per second". https://arxiv.org/pdf/2306.11727
+- Preparing a computational basis state |s>: atoms always start in |g...g>. Local detuning
+  (a static site pattern with time-dependent magnitude) can be used to "prepare a
+  non-equilibrium starting state". It is available through Braket Direct experimental
+  capabilities only, and it adds decoherence even at zero magnitude.
+  https://docs.aws.amazon.com/braket/latest/developerguide/braket-access-local-detuning.html
+  https://aws.amazon.com/blogs/quantum-computing/local-detuning-now-available-on-queras-aquila-device-with-braket-direct
+  => every MCMC step with a new |s> is a NEW TASK (new local-detuning pattern).
+- Availability window: 48 h/week (2023 figure, up from 10). Current window: not found.
+  https://thequantuminsider.com/2023/08/29/quera-quadruples-availability-of-its-quantum-computer-on-amazon-braket/
+- Price: $0.30/task + $0.01/shot. Reservation $2,500/h. https://aws.amazon.com/braket/pricing/
+- Per-task overhead (compile, SLM phase-mask update, rearrangement, queue): not found.
+  ESTIMATE: at least several seconds per task even when reserved.
+
+--------------------------------------------------------------------------------------
+1.9 QuEra Gemini  [neutral atom, DIGITAL gate model]
+--------------------------------------------------------------------------------------
+- 260 physical qubits, all-to-all (via atom shuttling). Global 2q gate fidelity 99.2%.
+  20 parallel 2q pairs. https://www.quera.com/gemini
+- Access: delivered on-premises (AIST Japan, UK NQCC). No public cloud access found as of
+  2026-11. AWS/QuEra plan fault-tolerant machines on Braket "starting in 2028".
+  https://aws.amazon.com/blogs/quantum-computing/aws-deepens-strategic-collaboration-with-quera-to-bring-fault-tolerant-quantum-computing-to-amazon-braket/
+- Latency and price: not found.
+
+--------------------------------------------------------------------------------------
+1.10 Pasqal Orion Beta / Orion Gamma  [neutral atom, ANALOG]
+--------------------------------------------------------------------------------------
+- Orion Gamma: 140+ qubits per the April 2026 brochure; the website says 200+.
+  https://www.pasqal.com/wp-content/uploads/2026/04/2026.04_Pasqal-Quantum-Computing-Processor-Brochure.pdf
+  https://www.pasqal.com/solutions/hardware/
+- Repetition rate: minimum effective 0.25 Hz (Orion Beta technical overview). Billing uses
+  1 shot = 4 s.
+  https://www.pasqal.com/wp-content/uploads/2025/03/Technical-Overview-for-Advanced-Users-Orion-Beta.pdf
+  https://docs.pasqal.com/cloud/billing/
+- Price: about EUR/USD 3,000 per QPU-hour (OVHcloud, Azure). Scaleway charges 3.3 EUR/shot.
+  https://learn.microsoft.com/en-ca/azure/quantum/pricing
+  https://www.scaleway.com/en/docs/quantum-computing/additional-content/pasqal-qpus/
+- Per-job latency: not found.
+
+--------------------------------------------------------------------------------------
+1.11 Rigetti Cepheus-1-108Q (replaced Ankaa-3 on Braket) / Cepheus-1-36Q  [superconducting]
+--------------------------------------------------------------------------------------
+- 108Q: GA 7 Apr 2026. Twelve 9-qubit chiplets. Median 2q fidelity 99.1% at launch, with
+  99.5% targeted for later in 2026. Gate time about 60 ns. 1q fidelity 99.9%.
+  https://www.nasdaq.com/press-release/rigetti-announces-general-availability-108-qubit-system-2026-04-07
+  https://aws.amazon.com/blogs/quantum-computing/amazon-braket-launches-rigetti-cepheus-1-108q-superconducting-device/
+- 36Q: 99.5% median 2q (Aug 2025), 2x lower error than Ankaa-3 (84q).
+  https://www.nasdaq.com/articles/rigetti-computing-achieves-995-two-qubit-gate-fidelity-milestone-new-36-qubit-system
+- Connectivity: square-lattice tiles (chiplet). Readout and T1: not found.
+- Price (Braket): $0.30/task + $0.000425/shot. Reservation $4,100/h.
+  https://aws.amazon.com/braket/pricing/
+- Latency: not found. Braket Hybrid Jobs parametric compilation avoids recompiling every
+  iteration.
+  https://aws.amazon.com/blogs/quantum-computing/speeding-up-hybrid-quantum-algorithms-with-parametric-circuits-on-amazon-braket
+
+--------------------------------------------------------------------------------------
+1.12 IQM Garnet (20q) / Emerald (54q) / Radiance / Halocene  [superconducting]
+--------------------------------------------------------------------------------------
+- Garnet: 20q square lattice. Median 2q fidelity 99.5%. https://arxiv.org/pdf/2408.12433
+- Emerald: 54q square lattice (Crystal 54). Median 2q 99.5%, max 99.85%, median 1q 99.93%.
+  https://aws.amazon.com/blogs/quantum-computing/amazon-braket-launches-new-54-qubit-superconducting-quantum-processor-from-iqm
+  Full-chip GHZ fidelity 0.516 (Oct 2026).
+  https://thequantuminsider.com/2026/10/29/iqm-full-chip-entanglement-54-qubit-processor/
+- Radiance: on-prem NISQ line. Halocene: 150q, 99.7% 2q target, commercially available by
+  end of 2026.
+  https://www.businesswire.com/news/home/20251113614564/en/IQM-Launches-Halocene-a-New-Quantum-Computer-Product-Line-for-Error-Correction
+- Price (Braket): Garnet $0.30/task + $0.00145/shot (reservation $3,000/h). Emerald $0.30/task
+  + $0.0016/shot (reservation $4,000/h). https://aws.amazon.com/braket/pricing/
+- Latency: not found.
+
+--------------------------------------------------------------------------------------
+1.13 D-Wave Advantage (Pegasus) / Advantage2 (Zephyr)  [quantum annealer]
+--------------------------------------------------------------------------------------
+- Advantage2: 4,400+ qubits, 40,000+ couplers, Zephyr with 20-way connectivity (Advantage
+  had 15). 40% higher energy scale, 75% lower noise, 2x coherence. GA 20 May 2025.
+  https://support.dwavesys.com/hc/en-us/articles/32105885880087
+  https://www.nasdaq.com/press-release/d-wave-announces-general-availability-advantage2-quantum-computer-its-most-advanced
+  Example solver sizes: Advantage_system4.1 5,627q, Advantage2_system1.9 4,590q.
+  Max anneal 2,000 us. https://arxiv.org/html/2512.19685v1 (Table 1)
+- Hamiltonian: H = -A(s)/2 sum X + B(s)/2 (g(t) sum h Z + sum J ZZ). This is a native
+  Ising + transverse field, which is exactly the QeMCMC proposal Hamiltonian family.
+  https://docs.dwavequantum.com/en/latest/quantum_research/solver_parameters.html
+- Analog controls: anneal_schedule (piecewise linear, 0.01 us granularity) with pause and
+  quench; reverse anneal from a given initial_state; reinitialize_state True/False;
+  h_gain_schedule; fast_anneal (down to about ns-scale, but it cannot be combined with
+  reverse anneal or h).
+  https://docs.dwavequantum.com/en/latest/quantum_research/solver_parameters.html
+  * reinitialize_state=False: each read starts from the previous read's final state, which
+    gives an on-QPU chain with about 10 us extra per read. But there is no classical MH
+    accept/reject between reads, so it does not sample the Boltzmann target exactly.
+  * A QeMCMC step with a classical accept/reject needs a NEW QMI (new initial_state), which
+    costs about 16 ms of QPU access plus SAPI, network and queue.
+- Per-QMI timing (example on the docs page): programming 15.9 ms, anneal 20 us/sample,
+  readout 39.8 us/sample, delay 21 us/sample. Unbilled overhead 10.4 ms, "roughly 10-20 ms".
+  https://docs.dwavequantum.com/en/latest/quantum_research/operation_timing.html
+- End-to-end: D-Wave advertises "QPUs with subsecond response times" on Leap.
+  https://www.dwavequantum.com/solutions-and-products/cloud-platform/
+  Measured round-trip numbers: not found.
+- Batching: parallel disjoint embeddings (146-178 copies of a small native Ising) in one QMI.
+  https://arxiv.org/html/2512.19685v1
+  => 100+ independent chains can advance per QMI for small problems.
+- Price: no public per-minute list price found. Historical $2,000/h (2018).
+  https://spectrum.ieee.org/dwave-launches-free-quantum-cloud-service
+  AWS Marketplace 12-month Leap contract: $70,000.
+  https://aws.amazon.com/marketplace/pp/prodview-swm25ss53l2ss
+  Trial: 1 min QPU. https://dwavesys.com/take-leap
+
+--------------------------------------------------------------------------------------
+1.14 Others
+--------------------------------------------------------------------------------------
+- AQT IBEX-Q1 (trapped ion, Braket): $0.30/task + $0.0235/shot; reservation $4,800/h.
+  https://aws.amazon.com/braket/pricing/  Specs: not found.
+- Infleqtion Sqale (neutral atom): 30 entangled logical qubits (error detection) from 80
+  physical, Sept 2026. Best entangling fidelity 99.73%.
+  https://thequantuminsider.com/2026/09/24/infleqtion-achieves-30-entangled-logical-qubits-on-its-sqale-quantum-computer/
+- Atom Computing / Microsoft "Magne": 50 logical qubits from about 1,200 physical,
+  operational about start of 2027. https://spectrum.ieee.org/neutral-atom-quantum-computing
+- Fujitsu/RIKEN: 256q superconducting (Apr 2025). 1,000q targeted for FY2026; not confirmed.
+  https://www.riken.jp/en/news_pubs/news/2025/20250422_1/index.html
+- Alice & Bob (cat qubits): roadmap only, no public QPU for this use.
+  https://thequantuminsider.com/2026/11/18/alice-bobs-updated-roadmap-targets-200-logical-qubits-from-3600-physical-qubits-by-2030/
+
+======================================================================================
+2. SUMMARY TABLE
+======================================================================================
+device | qubits | median 2q err | readout err | connectivity | depth/2q budget | shot time or rate | min per-job overhead | MCM+FF | price | cloud
+IBM Heron r2 | 156 | ~2e-3 (dashboard reprint); EPLG 1e-3..4e-3 | ~1.7e-2 | heavy-hex | ~2-5k 2q (w/ mitigation) | ~4,000 circ/s; rep_delay 250us | ~2 s/sub-job (F1) | yes, FF ~600 ns | $96/$72/$48 per min | yes
+IBM Heron r3 | 156 | EPLG(100q) 2.15e-3 (boston) | not found | heavy-hex | up to 5,532 2q used in QeMCMC (Marshall) | ~4,000 circ/s | ~2 s | yes | same | yes
+IBM Nighthawk r2 | 120 | "Heron-class" | not found | square, 218 couplers | >7,500 gates (PEA) | >100,000 circ/s | ~2 s | yes (reset in-circuit) | same | yes
+Google Willow | 105 | 0.14-0.33% | 0.67-0.77% | square | not found | not found | not found | research | n/a | no public
+Quantinuum H2 | 56 | 1e-3 | SPAM 1e-3 | all-to-all | not found | not found | not found | yes, full control flow | HQC contract | yes
+Quantinuum Helios | 98 | 8e-4 | SPAM 5e-4 | all-to-all | not found (QEC-capable) | 55 ms per depth-1 layer | not found | yes, real-time arithmetic+RNG | not found | yes
+IonQ Forte (Ent.) | 36 | 0.7-1.5% (99.3/99.5% DRB) | SPAM ~5e-3 | all-to-all | ~100s of 2q | 2q gate 650-970 us | not found | not found | $0.30/task+$0.08/shot | Braket/IonQ
+QuEra Aquila | 256 | analog | not found | geometric 1/r^6 | 4 us evolution | <10 shots/s | per task (not found) | no | $0.30/task+$0.01/shot | Braket
+QuEra Gemini | 260 | 0.8% | not found | all-to-all (shuttle) | not found | not found | n/a | not found | n/a | no (on-prem)
+Pasqal Orion | 140-200+ | analog | not found | geometric | not found | 0.25 Hz min | not found | no | ~3,000/h | Azure/OVH/Scaleway
+Rigetti Cepheus-108Q | 108 | 0.9% | not found | square chiplets | not found | not found | not found | not found | $0.30/task+$0.000425/shot | Braket
+IQM Emerald | 54 | 0.5% | not found | square | not found | not found | not found | not found | $0.30/task+$0.0016/shot | Braket/Resonance
+D-Wave Advantage2 | 4,400+ | analog | not found | Zephyr 20-way | anneal 0.005-2000 us | ~80 us/sample (anneal+read+delay) | ~16 ms QPU + 10-20 ms overhead | n/a (reverse anneal) | not public | Leap
+Sources: the per-device blocks in section 1.
+
+======================================================================================
+3. PUBLISHED WALL-CLOCK MEASUREMENTS OF QeMCMC / ITERATIVE LOOPS ON HARDWARE
+======================================================================================
+3.1 Layden et al., Nature 619, 282 (2023), arXiv:2203.12497. Hardware: ibmq_mumbai (27q),
+    n = 10 spins, up to 48 layers of pulse-efficient 2q gates.
+    They did NOT run a sequential chain. They "recorded quantum transitions between
+    computational states with s uniformly distributed" to estimate the transition matrix and
+    spectral gap offline.
+    https://ar5iv.labs.arxiv.org/html/2203.12497
+    Wall-clock per step: not reported / not applicable.
+3.2 Marshall, Egger, Garn, Schiavello, Brandhofer, Zoufal, Woerner, arXiv:2602.06171 (v3,
+    17 Nov 2026). QeMCMC with parallel tempering (5 replicas) on ibm_aachen and ibm_boston
+    (Heron r2/r3), 17-117 node MIS, using Qiskit Runtime Session mode with parameter
+    streaming. Wall-clock "includes quantum execution and classical processing between
+    iterations, but excludes queue".
+    https://arxiv.org/html/2602.06171v3 (Table 4, Table 6, Appendix G)
+    - 17-node: median 32 iterations at 5 shots/iter. t_solution,best = 1.63 min.
+      derived: about 3 s per iteration (one iteration = one job advancing 5 replica chains).
+    - 117-node: 10,000 shots/iter, 151 iterations to optimum on ibm_boston.
+      t_solution,best = 76.88 min. derived: about 30 s per iteration.
+    - t_trial (estimated full trial to the 200,000-iteration cap): 5.35 min (17-node) to
+      170 min (117-node). TTS95 = 680 min for 117 nodes, versus CPLEX 1.06 s.
+    Caveat: the derived per-iteration times divide best-run minutes by the median iteration
+    count, so they are approximate.
+3.3 D-Wave reverse-anneal chains: Le et al., arXiv:2512.19685, "Monte Carlo chains of reverse
+    quantum anneals" on Advantage_system4.1/6.4 and Advantage2_system1.9 for
+    partition-function estimation.
+    https://arxiv.org/html/2512.19685v1
+    These chains run on-QPU (reinitialize_state=False), so there is no per-step classical
+    round trip. Per-step wall-clock: not reported in what I read.
+3.4 Arai, Kadowaki et al., "Quantum Annealing Enhanced MCMC", arXiv:2502.08060: theory and
+    simulation (spectral gap on SK). No hardware wall-clock found.
+    https://arxiv.org/html/2502.08060v1
+3.5 IBM feedforward latency (in-circuit, not job-level): about 600 ns.
+    https://www.ibm.com/quantum/blog/utility-scale-dynamic-circuits
+3.6 No published QeMCMC on neutral-atom (Aquila/Pasqal) or trapped-ion hardware was found.
+
+======================================================================================
+4. PUBLIC ROADMAPS TO ~2029-2030
+======================================================================================
+IBM:
+  2026 Nighthawk 7,500 gates on up to 3x120-qubit modules; Kookaburra (logical processing
+    unit + quantum memory).
+  2027 Nighthawk r3: 520 programmable qubits, 10,000 operations; two linked = 1,040 qubits.
+  2028 15,000 gates on up to 1,080 qubits.
+  2029 Starling: 200 logical qubits, 100M gates.
+  2033+ Blue Jay: 2,000 logical qubits, 1B gates.
+  https://www.ibm.com/roadmaps/quantum
+  https://www.datacenterdynamics.com/en/news/ibm-unveils-quantum-nighthawk-r3-processor-slated-for-deployment-in-2027/
+Quantinuum:
+  Helios (2025, 98q). Sol 2027: hundreds of physical qubits, 2q error <2e-4, about 2x faster.
+  Apollo 2029: universal fault-tolerant, hundreds of logical qubits.
+  https://www.hpcwire.com/2025/11/05/quantinuum-introduces-helios-quantum-system-as-roadmap-advances-toward-apollo/
+  https://hpcwire.com/2026/10/19/quantinuum-says-helios-results-strengthen-its-path-to-apollo
+IonQ:
+  Physical qubits: 10k (2027), 20k (2028), 200k (2029), 2M (2030), all at 99.99%.
+  Logical qubits: 800 / 1,600 / 8,000 / 80,000.
+  https://ionq.com/roadmap
+Google:
+  Milestone 3 "long-lived logical qubit" (1e6 steps with <1 error), listed as 2025+.
+  https://blog.google/technology/research/quantum-hardware-verifiable-advantage/
+QuEra:
+  2026 target: about 10k physical, 100 logical (2024 roadmap; not confirmed shipped).
+  Gigaquop-class 2028-29: >1,000 logical, 1e-9 logical error.
+  https://www.quera.com/press-releases/quera-computing-releases-a-groundbreaking-roadmap-for-advanced-error-corrected-quantum-computers-pioneering-the-next-frontier-in-quantum-innovation
+  https://www.quera.com/press-releases/quera-unveils-gigaquop-class-fault-tolerant-roadmap-and-invites-organizations-to-co-design-quantum-applications
+Pasqal:
+  Gamma 140-200+q, then Vela 200+ (2027), then Centaurus 500+ (2028).
+  200 logical qubits by 2029/2030 (sources differ). Repetition-rate targets 1 / 3 / 10 / 100 Hz.
+  https://www.pasqal.com/solutions/hardware/
+  https://www.hpcwire.com/off-the-wire/pasqal-details-2025-roadmap-focused-on-deployment-quantum-advantage-and-fault-tolerance/
+Rigetti:
+  108Q in 2026 (99.5% target). About 3-4 years to 1,000+ qubits at 99.9% with EC (2025
+  statement). Updated roadmap pending.
+  https://www.constellationr.com/index%2Ephp/insights/news/rigetti-computing-ceo-quantum-advantage-4-years-away
+IQM:
+  Halocene 150q (end 2026). Fault tolerance by 2030; path to 1M qubits; 1e-9 logical error.
+  https://thequantuminsider.com/2024/11/13/iqm-quantum-computers-roadmap-sets-fault-tolerant-quantum-computing-by-2030/
+D-Wave:
+  Advantage2 Performance update (2026), Advantage3 (~2028), Advantage3 Performance (2030).
+  Gate model: 17-qubit dual-rail (2026), 100 logical qubits by 2032.
+  https://www.hpcwire.com/2026/02/12/qubits-2026-d-wave-steps-forward-users-show-what-quantum-can-do/
+  https://www.hpcwire.com/off-the-wire/d-wave-unveils-gate-model-roadmap-targeting-100-logical-qubits-by-2032/
+Alice & Bob:
+  200 logical qubits from 3,600 cat qubits by 2030 (Carbon); 2,048 logical by 2034.
+  https://thequantuminsider.com/2026/11/18/alice-bobs-updated-roadmap-targets-200-logical-qubits-from-3600-physical-qubits-by-2030/
+Infleqtion:
+  100 logical qubits by 2028, 1,000 by 2030.
+  https://thequantuminsider.com/2026/09/24/infleqtion-achieves-30-entangled-logical-qubits-on-its-sqale-quantum-computer/
+Atom Computing / Microsoft:
+  Magne, 50 logical qubits, about start of 2027.
+  https://spectrum.ieee.org/neutral-atom-quantum-computing
+Fujitsu/RIKEN:
+  1,000 qubits in FY2026.
+  https://www.riken.jp/en/news_pubs/news/2025/20250422_1/index.html
+
+======================================================================================
+5. PER-STEP LATENCY FOR A SEQUENTIAL QeMCMC LOOP (one chain, one step = one new |s>)
+   optimistic / realistic / pessimistic, by device class
+======================================================================================
+(a) IBM gate-based (Heron r2/r3, Nighthawk), one Runtime job per step inside a Session
+    - Optimistic: about 2 s per step.
+      Floor = the documented about 2 s per sub-job overhead; shot time (<1 ms) is negligible.
+      https://quantum.cloud.ibm.com/docs/en/guides/estimate-job-run-time
+    - Realistic: about 3-5 s per step.
+      Marshall et al. derived about 3 s per iteration (17-node, 5 shots, session plus
+      parameter streaming, queue excluded); about 30 s per iteration at 10,000 shots.
+      https://arxiv.org/html/2602.06171v3
+    - Pessimistic: minutes to hours per step (no session or dedicated plan, so each job
+      re-queues). ESTIMATE; queue times are not published.
+    - Cost: $96/min PAYG, so about $3-5 per step. 10^4 steps cost about $30k-50k.
+      https://www.ibm.com/quantum/pricing
+    - Escape hatches:
+      (i) Batch K independent chains per job. The cost is still about 2 s per job, so the
+          effective time is about 2/K s per chain-step. Nighthawk r2 at >100k circuits/s
+          makes K ~ 10^3-10^4 cheap.
+      (ii) In-circuit MCMC via dynamic circuits (feedforward ~600 ns) would cut a step to
+          about 10-100 us. But real-time Ising dE computation plus random comparison is NOT
+          documented on IBM: not found.
+(b) Trapped ion
+    - Helios, whole chain in one real-time program (F5):
+      * Optimistic: about 0.1-0.5 s per step for sparse or small H. derived from 55 ms per
+        depth-1 layer x a few layers. https://arxiv.org/html/2511.05465
+      * Realistic: about 1-5 s per step for all-to-all n~20-50 with 1-3 Trotter steps.
+        derived: (n-1) layers x 55 ms per Trotter step.
+      * Capped at 10,000 shots and 500,000 HQC per job.
+        https://docs.quantinuum.com/systems/user_guide/hardware_user_guide/helios.html
+    - One job per step (H2/Helios/IonQ via cloud):
+      * Realistic: tens of seconds to minutes per step. ESTIMATE; per-job latency not found.
+      * Pessimistic: hours (shared queue).
+      * IonQ Forte shot time is about 0.1 s per 100 2q gates (970 us per 2q gate,
+        https://arxiv.org/html/2603.03801). Braket costs $0.38 per 1-shot step.
+        https://aws.amazon.com/braket/pricing/
+(c) Neutral-atom analog (QuEra Aquila, Pasqal Orion)
+    - Every new |s> needs a new task with a new local-detuning pattern (Aquila, Braket Direct
+      only) or a new register/pulse (Pasqal).
+    - Optimistic: about 1-10 s per step on a reserved Aquila. ESTIMATE; per-task overhead
+      not found. The physics floor is 0.1 s per shot (<10 Hz).
+      https://arxiv.org/pdf/2306.11727
+    - Realistic: about 1 min per step. ESTIMATE (Braket task submission + compile + queue
+      priority under reservation).
+    - Pessimistic: hours to days. Outside the availability window (48 h/week in 2023) or on
+      the shared queue.
+      https://thequantuminsider.com/2023/08/29/quera-quadruples-availability-of-its-quantum-computer-on-amazon-braket/
+    - Pasqal floor: at least 4 s per shot (0.25 Hz, billing 1 shot = 4 s).
+      https://docs.pasqal.com/cloud/billing/
+    - Caveat: the native couplings are geometric 1/r^6, so arbitrary-J Ising is not native.
+(d) D-Wave annealer (Advantage / Advantage2), one QMI per step (reverse anneal from s, 1 read)
+    - Optimistic: about 30-50 ms per step. derived: about 16 ms QPU access (programming
+      dominated) + 10-20 ms unbilled overhead, from a client co-located near the SAPI
+      endpoint. https://docs.dwavequantum.com/en/latest/quantum_research/operation_timing.html
+    - Realistic: about 0.2-1 s per step. Leap advertises "subsecond response times"
+      (https://www.dwavequantum.com/solutions-and-products/cloud-platform/); internet + SAPI
+      service time is not published, and the range is an ESTIMATE.
+    - Pessimistic: a few seconds or more, under contention on the shared QPU. ESTIMATE.
+    - Batching: 100+ parallel embeddings per QMI (https://arxiv.org/html/2512.19685v1), so
+      the effective time drops to about 1-10 ms per chain-step for small native instances.
+    - An on-QPU chain with reinitialize_state=False costs about 0.1 ms per step but has no
+      MH correction (biased).
+      https://docs.dwavequantum.com/en/latest/quantum_research/solver_parameters.html
+
+BOTTOM LINE
+- For a single sequential chain on today's clouds, D-Wave (about 0.03-1 s per step) is
+  1-2 orders of magnitude faster per step than IBM (about 2-5 s per step), which in turn
+  beats analog neutral atoms (seconds to minutes per step).
+- The only gate-model route to sub-second steps is running the whole MH loop inside the
+  device's real-time controller. That is documented on Quantinuum Helios (and H2: control
+  flow plus RNG); on IBM it is not shown for arithmetic.
+- For any device, batching many independent chains per job is the practical way to amortize
+  the per-job floor.

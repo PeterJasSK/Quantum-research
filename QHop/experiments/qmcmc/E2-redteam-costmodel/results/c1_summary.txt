@@ -1,0 +1,7 @@
+random     MGS  N= 384 right/1-slem ratio max=nan median=nan | abs (or log-rate) ratio max=nan | argmax n=6 beta=3.0 k=1 random uniform
+random     SYM  N= 384 right/1-slem ratio max=inf median=0.487 | abs (or log-rate) ratio max=inf | argmax n=6 beta=1.0 k=1 random dirichlet
+random     INV  N= 384 right/1-slem ratio max=nan median=nan | abs (or log-rate) ratio max=nan | argmax n=6 beta=0.1 k=1 random uniform
+random     QCG  N= 160 right/1-slem ratio max=inf median=0.321 | abs (or log-rate) ratio max=inf | argmax n=6 beta=0.3 k=2 random dirichlet
+systematic MGS  N=  96 right/1-slem ratio max=444089209850062573449433770378875316397246371610531286662141936348805050199449635158679709618927637716222720162150858412650819769168786490614605546721154729079707608490995885049177877700899184439155207206971593035210306512105624798047901282679165681552542090473000753917889371206320128.0000 median=1.046 | abs (or log-rate) ratio max=nan | argmax n=8 beta=0.1 k=3 blocks uniform
+systematic SYM  N=  96 right/1-slem ratio max=222044604925031286724716885189437658198623185805265643331070968174402525099724817579339854809463818858111360081075429206325409884584393245307302773360577364539853804245497942524588938850449592219577603603485796517605153256052812399023950641339582840776271045236500376958944685603160064.0000 median=0.366 | abs (or log-rate) ratio max=inf | argmax n=8 beta=0.1 k=3 blocks uniform
+systematic INV  N=  96 right/1-slem ratio max=2.2395 median=0.036 | abs (or log-rate) ratio max=inf | argmax n=6 beta=0.3 k=1 blocks uniform

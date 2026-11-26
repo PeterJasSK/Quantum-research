@@ -1,0 +1,161 @@
+F1 VERIFICATION - QHop/plans/qmcmc-applied-review.txt (sections 0-12, master table, assemble_master.py OVERRIDES/NEW_ROWS)
+Date 2026-11-21. Verifier F1 (did not write the review; review file not edited).
+Paths below are relative to QHop/experiments/qmcmc/ unless noted. Review line numbers = plans/qmcmc-applied-review.txt.
+
+TOTALS: about 242 numbers checked. OK 242, MISMATCH 11 (one of them systematic, touching 28 table rows), NOT FOUND 7
+(all are planning estimates or citations, not simulation results).
+
+A. MISMATCHES
+M1  Sec 3 l.112-113: "F = (1-eps)^N_2q with eps = 2e-3 ... SK n=10 at t=6: 2,160 CZ on heavy-hex, F ~ 3e-3".
+    (1-2e-3)^2160 = 1.3e-2, not 3e-3. D4's 3e-3 (D4 README l.66) comes from D4's full proxy
+    F = prod(1-e2)^N2q (1-e1)^N1q (1-ro)^n (D4 README l.52). The number is right and the formula is wrong. The same holds
+    for V01 "924 CZ, F 0.08" (2q-only 0.16) and B3-04 "360 CZ, F 0.31" (2q-only 0.49). These match D4, but the
+    C1-C4 rows use the 2q-only formula (e.g. B3-04 row N_2q 880 F 0.17, K3 200 CZ F 0.67), so the review mixes two
+    F conventions. The pessimistic S* ~3e10 = 1e8/3e-3 is consistent with D4.
+M2  Sec 3 vs master table (systematic): Sec 3 says the optimistic Helios t_Q is ~8 s (D4), not 0.1-0.5 s, and gives cheap
+    dense Ising optimistic S* = 7e7. Yet 28 rows still carry optimistic S* = 3e6/3.3e6 = 0.1 s / 30 ns, from
+    BRIEF-screening.txt l.12 (Helios 0.1 s). Examples: C3-notes.txt l.118 for K0, and also B4-15, B3-01, B5-12, K20,
+    B3-07, B4-05, K15, K2, B2-17, B3-08, B4-17, K1, K22, B3-10, B3-15, B6-09, B6-16, K10, K17, K8, B1-07, B1-20, B4-19,
+    B5-14, B5-17, K21, K3. Other rows use Helios 0.1 s as well: B6-07 3.3e5, B6-03 1e7, B3-09 1e5, B5-08 optimistic 1.3
+    (= (0.1+0.4)/0.4). With IBM 2 s or D-Wave 0.03 s these values would go up, so no verdict changes, but the
+    optimistic column contradicts Sec 3.
+M3  K0 row S* "3.3e6/1e8/5e8 (N_2q 800 brief default; repo-scaled 3,700 CZ at n=10 gives 1.6e11)" (C3-notes l.118):
+    this contradicts Sec 3 "7e7 / 1e8 / ~3e10 (SK n=10)" and D4's 2,160 CZ for SK n=10 (D4 README l.66).
+M4  B3-09 OVERRIDE Main risk "S* 3e6/1e8/1e27 (D8 CZ count)" contradicts the same row's S* column "1e5/3e6/3e19" (C-row,
+    t_C ~1 us, N_2q 1.5e4). The override uses t_C 30 ns. With the row's t_C 1 us and D8's ~2.2e4 CZ, F ~1e-19
+    (D8 README l.68-69), the value is 1e5/3e6/3e25.
+M5  B3-07 (and K15) S* pessimistic 5.6e9 uses N_2q 2,000 (C-row). D8 measured ~2.2e4 CZ per proposal, F ~1e-19
+    (D8 README l.68-69), and the row's own override Main risk cites 2.2e4, so the pessimistic value is ~1e27.
+M6  OVERRIDE B1-14 "tau ratio 0.58-0.73 at p_q=1": D2-pt-quantum-move/summary.txt, PT+Q1.0 tau_sweeps/tau_PT, gives
+    0.577 (EA LOW), 0.693 (EA MED), 0.887 (EA HIGH), 0.688/0.73/0.723 (SK12 L/M/H), 0.734 (SK14 LOW), 1.13 (SK14 MED).
+    So the range is 0.58-1.13. The decohered range 0.6-1.0 is OK (0.61-1.06).
+M7  V04 l.297, the B3-01 override, and Sec 10 item 4 claim "best quantum fraction p_q = 0 for move cost >= 1e3 flips in every
+    regime". D2 summary.txt, SK n=12 LOW, gives "best p_q (Q) at R=1e+03: 0x4, 0.01x1", and the wall-clock check
+    gives 2 wins at R=1e3 (sk 1202 LOW). p_q = 0 holds everywhere only from R >= 1e6.
+M8  Sec 12 l.464: "local/uniform baselines inflate S by 3-1e6x (D1)". D1 results/summary.txt gives, on SK n=10,
+    layden/uniform over layden/bestmix = 1.26/0.896 = 1.4x (HIGH) and 7.79/3.01 = 2.6x (MED); layden/local LOW
+    4.89e5/9.85 = 5e4x. On the 3x4 ferromagnet LOW the value is 2.2e9/0.0241 = 9e10x. The stated range matches no
+    single comparison.
+M9  Sec 8 l.385: "where PT relaxation exceeds ~1e7 flips; C3 bound S*/2". C3-notes.txt l.124 says tau_PT > S*/2 = 5e7.
+M10 V06 l.299 "gain only 1.2-1.65x even with oracle tuning". D1 README l.93-94 says "1.2-1.6x over Layden". SK gives
+    1.19-1.53 (tuned/bestmix over layden/bestmix). 1.65 is tuned/bestmix on EA LOW, which is not a gain over Layden. Minor.
+M11 Header l.8: "every cut is listed in the experiment READMEs and in Section 8". Section 8 is the target specification
+    and lists no cuts.
+
+B. NOT FOUND (estimates or citations without a numeric source)
+N1  Sec 1 l.78 "[P2 App B.3]" for the T=10 exponents. A2 gives these numbers (0.087/0.26/0.341, l.155-157) from
+    "Table I p15 / Fig 3" without naming B.3. The numbers are OK.
+N2  Sec 8 "n >= ~40-100" (reasoned, no source line).
+N3  Sec 11 cost/time estimates "~$100-500, 1-2 days", "B3-04 ~$150, 1 day", CPU-day estimates (reasoned; E3 only gives
+    $126 / $500 / $1.6k-4.8k / $30k, which are OK).
+N4  Sec 11 B4-15 kill "steps base >= 1.30" (reasoned).
+N5  Sec 3 "realistic IBM ~3 s derived from Marshall et al." A4 l.81 gives an in-session ESTIMATE of 2-4 s and l.90 gives
+    2-3 s/step. Neither is tied explicitly to Marshall. Plausible, OK in spirit.
+N6  V13 "block heat-bath 10-1000x faster per second". D7 README l.7-9 gives 3-9x per step x 10-130x per move, i.e.
+    ~30-1200x combined. Derived, not stated. Acceptable, or write "30-1000x".
+N7  Sec 6 item 5 B5-08 "S* 1.3/8.5/40". Consistent with the C-row (t_E 0.4 s, F 0.2), but the optimistic 1.3 uses
+    Helios 0.1 s (see M2).
+
+C. OK (source found and matching; grouped)
+Sec 0: Layden repro 0.250/1.017/0.939 = A6 l.240 (0.2496/1.0166/0.9392); K0-K23 list (24 KNOWN in table).
+Sec 1 P1 (A1): Nature 619 282 (l.2); SI p = PDF+9 (l.11); gamma U[.25,.6] (l.33); "trial and error" (l.67); S40-S41
+  (l.127); "clearly breaks" (l.159); SI p.17-19/p.22 (l.103/173); k 0.264(4)/0.94(4)/0.948(7) Fig 2c (l.229); 500 inst
+  n=3-10 (l.192); T<~1 (l.341); uniform->1, quantum ~0.3 at high T (l.264-266); ibmq_mumbai 27q (l.269); "impractically
+  slow" SI p.20 (l.108-110); PT excluded, ICM SI p.14 (l.415); SW/Wolff/Houdayer on hw instances (l.302); no wall-clock (l.397).
+Sec 1 P2 (A2): PRR 7 013231 (l.20); Eq 13 (l.63); three strategies (l.138); T=1 exponents 0.97/0.92/0.335/0.64-0.77/0.50
+  (l.155-160, l.270); T=0.1 groups 1.27/1.1 > uniform 1.003 (l.155-159); T=10 0.087/0.26/0.341 (l.155-157); detailed
+  balance asserted Sec VI p11 (l.193); noise quote p10-11 (l.430-432); footnote [12] "quantum inspired" (l.385-388).
+  V02 TV 0.061 = B7-variants l.86.
+Sec 2: SK n=10 beta_c 0.411 [0.323-0.546]; EA 0.645; ferro 0.403/0.409 (D1 summary l.3-6); D8 Tc cuau 2.88-3.43,
+  coulomb 0.399-0.495, sk 0.680-0.841 (D8 README l.34-35); Nishimori overlap m=q 0.657/0.656 (D6 README l.56).
+Sec 3: D-Wave 16 ms + 10-20 ms (A4 l.304-306); IBM 2 s/sub-job (A4 l.18); Helios ~8 s at t=6 and BRIEF 0.1-0.5 s
+  optimistic (D4 README l.91-93); eps 2e-3 Heron (A4 l.339); 2,160 CZ and F 3e-3 (D4 l.66, see M1); 30 ns (A5 l.291,
+  bench); 0.15 ns / 2-3 ps (A5 l.27); 0.85 ms per chain-step and S* 3e4 (B7 l.38-39).
+  Arithmetic re-run: 2 s/30 ns = 6.7e7 (7e7 OK); 3 s/30 ns = 1e8 OK; 1e8/3e-3 = 3.3e10 OK; 0.03/30 ns = 1e6 OK;
+  0.5/30 ns = 1.7e7 OK; t_E = 1 s: (2+1)/1 = 3, (3+1)/1 = 4 OK; 0.85 ms/30 ns = 2.8e4 OK; Sec 8 1.005-8.5 for t_E 600-0.4 s
+  OK; (1-1e-4)^1e4 = 0.37 >= 0.3 OK.
+Sec 5: G2 5e-16 (D3 symmetry_checks.json 5.1e-16..7.9e-16; README l.81); G4 0.11-0.35 (D7 l.8); E2 852 cases 1.885,
+  quantum 0.721, systematic 2.24 (E2 README l.31-33); V01 TV 0.035/0.064 (B7 l.55), 924 CZ F 0.08 (D4 l.68); V03 TV 3.1e-3
+  (B7 V03); V05 6e-16 (D5 l.74,79); V07 TV 0.16 (B7 l.197); V08 TV 0.99 (B7 l.218); V09 TV 0.21 (B7 l.249); V10 TV 0.045
+  (B7 l.266), CZ 6.0-19.2x (D4 native_subset_summary), 1.67/0.91-1.11/4-5x (E3 README l.61-71); V11 8,682 CZ F 2e-10
+  (D4 l.74); V12 gauge ~30x (D3 README l.100: 0.096->0.0029); V13 0.6-0.8 ms, 15-18 ms (D7 l.43), 0/702 resolved (D7 l.12-13);
+  V14 Cui 2606.23350 (B7 l.350); V17 ~8 s (D4); V20 3e4 (B7); V22 TV 0.002-0.17 (D8 l.60-61), 717-975 CZ (D8 l.67),
+  ~2.2e4 (D8 l.68), 0.95-1.6 per proposal and 5-8x per round (D8 l.50-52); V24 <3e-17, 1.5x (D9 l.7, l.83); V25 3.5e-18 (B7 l.522).
+Sec 6: max likelihood 0.5% (B2-18; master_rows); $126, eps_half 0.39/N2q, 0.62-1.06, FakeMarrakesh 0.30-0.66 (E3 l.30-38,
+  l.86); 360 CZ F 0.31 (D4 l.72); B2-18 S* 3e1/3e2/2e3; B1-10 S* ~1 (1.00005/1.005); delayed acceptance ~100 steps (E2 c2);
+  0.3-0.5 s 1405.4213; LABS 1.34^N (C1-notes l.155), 1.4e4 CZ (C1 row); B5-12 1e8; B4-07 3e3/3e5/2e6; B3-09 4.28 at 1.1 Tc,
+  1.0-1.6 vs PT (coulomb 1.60/1.02), 5-8x, 2.2e4 (D8).
+Sec 7: D1 SK n=10 HIGH layden/bestmix 0.896; MED vs local/uniform 8.54/7.79, vs bestmix 3.01 (3-8x); LOW 9.85-24.6
+  (10-25x); k 0.347 vs 0.822; EA MED 0.424/0.571 (0.4-0.6); ferro ~0.03 (0.026-0.036); decohered matches on lattices only at
+  HIGH (D1 README l.66, 117); D2 vs PT HIGH 1.07-3.45, MED 3.74-5.86, LOW 7.91-17.7; E1 0.94-1.09, 2.34-4.05 at 1.47 beta_c;
+  table HIGH 0.9-1.3 (0.896/1.27).
+Sec 8: F >= 0.1 to SK n~7 IBM / ~11 Helios (D4 l.81,120); S ~10 vs PT n=12-14; ~300-900 CZ groups 8-12 (D4 CG k=8 924,
+  E3 637/819); 3e1-3e2 batched; QA-VMC 2502.20799.
+Sec 9: E1-A 0.17/0.20 (E1 README l.73), n=12 0.02/0.15 (l.60-61), 48/54 = 36/40+10/12+2/2 (l.74), 1-4 basins 2.5-4 flips
+  (l.65-66), Q/D 2.3-9.3 (l.61,75); E1-B 0.43, 0.94-1.09, 2.34-4.05 (l.94-108); E2-1 (see Sec 5); E2-2 180/89/4 of 182,
+  max 1.43 set B (c2_summary l.37-39); E2-3 0/80, 7-68x (E2 README l.92-93, c3_table); E3-1 0.39 (E3 l.30); E3-2 2.59-3.34,
+  1.67/1.68, 0.91/1.11, 4-5x (E3 l.58-71); E3-3 $126 sd 0.07-0.16, $1.6k-4.8k, ~$30k (E3 l.86-95).
+Sec 10: 144 rows, 24 KNOWN, 128/7/5/3/1 verdicts (recounted from master_rows.txt), 0.5% max, items 3-8 as above.
+Sec 12: 0.135 vs exact 0.056/0.075 (D3 README l.89-90).
+OVERRIDES/NEW_ROWS: B4-04 1.10/1.31, 0.67-0.94, 0.657/0.656 (D6 l.46-56, E1 summary l.43-44); B4-03 2.7-5.3 (D6 l.50) + E1
+  values; B6-01 1.13/0.98/0.64 (D6 l.59); B6-18 0.33 [0.24,0.54] (D6 l.62); B5-01 0.33; K14 0.14/0.10/2.1 (D6 l.64-65);
+  B3-07/K15 1.72, 0.95, 5-8x (D8); B3-09 4.28 [3.78,4.51], 91, 1.60, 1.02 (D8 l.40,50-51); B3-01 7.9-18/3.7-5.9/1.1-3.5 (D2);
+  B1-10 S_free 2.09-15.6 for beta*sigma>1.5 (D5 l.101-127), S_ext 0.04-0.6 (D5 l.139), 4/182 max 1.43 (E2); K0 0.90/3.0/9.9
+  (D1), 8-18, 4-6 (3.7-5.9), 1-3.5 (D2), 0.62-1.06, 0.30-0.66 (E3); B3-04 2.6-3.3x, 1.67x, 0.18-0.24, 0.91-1.11, 6-19x (D4, E3);
+  K3 $126/$30k (E3); N-S1 0/80, 7-68x, acc 0.04 -> 0 (E2 l.92-96); N-S2 0.77-1.31, 50% local 0.08-0.94, k 0.82 vs 1.00,
+  58% -> 14%, $1.6-11 at L=8192 (D9 l.51-85).
+
+D. S* SPOT-CHECK (task 2): 22 rows re-computed from the stated t_Q, t_C, F. These were all 17 non-KILL rows (B2-18, B1-10,
+   B5-08, B2-02, B4-15, B1-15, B6-07, B4-07, K0, B5-12, B3-09, K12, B1-18, B3-04, K4, K3) plus KILL rows B3-07, B1-08,
+   B6-03, B1-13, K21 (random). The arithmetic matches the row's own inputs in all 22 (e.g. B3-04 2/0.15 ns = 1.3e10,
+   3/0.15 ns = 2e10, F(880) = 0.17 -> 1.2e11; B4-15 F(1.4e4) = 7e-13 -> 1.4e20; B6-03 F(1836) = 0.025 -> 1.2e10).
+   The errors are in the inputs, not the arithmetic: M2 (stale Helios 0.1 s), M3 (K0), M4 (B3-09 internal), M5 (B3-07 CZ).
+
+E. REPRODUCTION (task 3; OMP_NUM_THREADS=2, run in a scratch copy so no repo files were touched)
+R1 pilot/pilot_sk_gap_vs_beta.py (~1-2 min): all 9 beta rows reproduce to printed precision. The only difference is
+   q/local at beta 2-3 in the 7th-9th digit (527435.56 vs .57; 684918649 vs 684921729), which is roundoff on gaps ~1e-9.
+R2 D8 analyze.py: S_table_n12.csv and pt_table.csv regenerated byte-identical (4.28, 1.60, 0.95 etc. reproduce).
+R3 D1 analyze.py: S_table.csv and scaling_fits.csv byte-identical. summary.txt is identical except that the saved file has
+   2 extra n6 cluster lines appended later (by run_sk_clusters.py), so 0.896/9.85/15.1/0.347/0.822 reproduce.
+
+F. STRUCTURE (task 4)
+- Master table in the review is identical to the generated _reports/master_rows.txt (145 lines = header + 144 rows,
+  re-run of assemble_master.py gives the same counts). Every row has 17 columns, IDs are unique, and all K0-K23 are present.
+- No markdown symbols (no #, backticks, bold, bullets-in-brackets). '*' appears only as S* / eps* / multiplication.
+- Executive summary: 10 numbered items but 15 physical lines (l.417-431). FAILS the "<= 10 lines" rule.
+
+G. REQUIRED FIXES (old -> new; review file unless noted)
+F1  l.112-113: "required ideal S = S*_realistic / F, F = (1-eps)^N_2q
+              with eps = 2e-3 (Heron median)"
+    -> "required ideal S = S*_realistic / F, F = D4 proxy (1-e2)^N_2q (1-e1)^N_1q (1-ro)^n
+              with e2 = 2e-3 (Heron median)"
+F2  Sec 3, add a line after l.117 ("S* ~ 3e4 for cheap energies [CALC, B7]."):
+    "Note: C1-C4 master-table rows computed the optimistic S* with the superseded Helios 0.1 s figure (e.g. 3e6 for 30 ns
+    energies, 28 rows) and pessimistic F as (1-2e-3)^N_2q; with the D4 values optimistic S* rises (IBM 7e7, D-Wave 1e6);
+    no verdict changes."
+F3  assemble_master.py OVERRIDES["K0"]: add "S*": "7e7/1e8/3e10 (IBM; D4 SK n=10 t=6 2,160 CZ, F 3e-3); D-Wave-class 1e6/1.7e7"
+F4  assemble_master.py OVERRIDES["B3-09"] Main risk: "S* 3e6/1e8/1e27 (D8 CZ count)"
+    -> "S* 1e5/3e6/3e25 (t_C ~1 us; D8 ~2.2e4 CZ per proposal, F ~1e-19)"; and add "S*": "1e5/3e6/3e25 (D8 ~2.2e4 CZ, F ~1e-19)"
+F5  assemble_master.py OVERRIDES["B3-07"] and ["K15"]: add "S*": "7e7/1e8/1e27 (D8: ~2.2e4 CZ per proposal, F ~1e-19)"
+F6  assemble_master.py OVERRIDES["B1-14"]: "tau ratio 0.58-0.73 at p_q=1" -> "tau ratio 0.58-0.89 at p_q=1 (1.13 at SK n=14 MEDIUM)"
+F7  l.297 V04: "best quantum fraction p_q = 0 for move cost >= 1e3 flips in every regime (D2)"
+    -> "best quantum fraction p_q = 0 for move cost >= 1e6 flips in every regime (at 1e3, 1 of 5 SK n=12 LOW instances prefers p_q = 0.01) (D2)";
+    assemble_master.py OVERRIDES["B3-01"]: "p_q = 0 for move cost R >= 1e3 flips" -> "p_q = 0 for move cost R >= 1e6 flips (one SK n=12 LOW instance 0.01 at 1e3)"
+F8  l.464: "local/uniform baselines inflate S by 3-1e6x (D1)" -> "local/uniform baselines inflate S by 1.4x-5e4x on SK n=10 and up to ~1e11x on lattices (D1)"
+F9  l.385: "where PT relaxation exceeds ~1e7 flips; C3 bound S*/2" -> "where PT relaxation exceeds ~5e7 flips; C3 bound S*/2"
+F10 l.299: "gain only 1.2-1.65x even with oracle tuning by exact gap" -> "gain only 1.2-1.6x even with oracle tuning by exact gap"
+F11 l.8: "every cut is listed in the experiment READMEs and in
+Section 8." -> "every cut is listed in the experiment READMEs."
+F12 Executive summary (l.417-431) to 10 lines, e.g.:
+1. 144 ideas (24 KNOWN): 128 KILL, 7 SIMULATE MORE, 5 QUANTUM-INSPIRED ONLY, 3 BUILD NOW (calibration), 1 WAIT; best wall-clock 0.5%.
+2. HIGH T: no quantum step advantage anywhere. MEDIUM T: parity with exact cluster moves on SK, losses on lattices.
+3. LOW T keeps a real step advantage (8-25x vs PT or best mixtures at n=10-14, ideal), consistent with P1.
+4. A quantum step is worth 1-20 classical flips (D2); break-even ~1e8 on IBM (2-3 s vs ~30 ns); optimal PT fraction is zero.
+5. Surrogate in U with the true energy in the accept is exact but beaten at n<=12 by classical delayed acceptance.
+6. Coarse-grained QeMCMC is capped at 2x classical block Gibbs per step (proved, sharp); measured 0.11-0.35x.
+7. Matched-temperature Bayesian inference sits on the Nishimori line: no glass phase, no advantage.
+8. Depolarizing slows without bias; T1/readout/non-palindromic compilation bias (twirl + palindrome fix); Heron noise kills n=6 gain.
+9. Useful now: the calibration study (K0/B3-04) and the correctness fixes (V02, V12) for anyone running QeMCMC.
+10. Main risk: the LOW-T gain needs ~100x deeper circuits than today's fidelity allows; it may wait for fault tolerance.
+After F3-F7: re-run python _reports/assemble_master.py and paste master_rows.txt into Section 4 (verdict counts unchanged).
+Optional: N1 cite "[P2 Table I, App B]" instead of "[P2 App B.3]"; N6 "10-1000x" -> "30-1000x".

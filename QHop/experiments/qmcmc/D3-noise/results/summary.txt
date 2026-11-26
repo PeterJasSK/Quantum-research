@@ -1,0 +1,208 @@
+REGIMES per instance (beta_c = specific-heat peak; beta_loc = local gap fell to half its max; LOW=3bc MEDIUM=bc HIGH=bc/3)
+  exactDM sk n=6 seed=100: beta_c=0.501 beta_loc=0.282 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.75'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=1.4e-15
+  exactDM sk n=6 seed=101: beta_c=0.794 beta_loc=0.282 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.75', 'LOW': 'mix0.75'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=8.8e-16
+  exactDM sk n=6 seed=102: beta_c=0.631 beta_loc=0.178 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.25', 'LOW': 'mix0.25'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=1.0e-15
+  exactDM sk n=6 seed=103: beta_c=0.501 beta_loc=0.178 best classical {'HIGH': 'uniform', 'MEDIUM': 'uniform', 'LOW': 'uniform'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=1.1e-15
+  exactDM sk n=6 seed=104: beta_c=0.708 beta_loc=0.282 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.5'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=1.1e-15
+  exactDM sk n=8 seed=100: beta_c=0.447 beta_loc=0.158 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'uniform'}  N2q per grid point [168, 168]  max|U-U^T|=8.7e-16
+  exactDM sk n=8 seed=101: beta_c=0.398 beta_loc=0.141 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [168, 168]  max|U-U^T|=7.8e-16
+  exactDM sk n=8 seed=102: beta_c=0.355 beta_loc=0.126 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.5'}  N2q per grid point [168, 168]  max|U-U^T|=7.3e-16
+  exactDM sk n=8 seed=103: beta_c=0.398 beta_loc=0.141 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [168, 168]  max|U-U^T|=7.2e-16
+  exactDM sk n=8 seed=104: beta_c=0.708 beta_loc=0.158 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [168, 168]  max|U-U^T|=7.7e-16
+  model sk n=6 seed=100: beta_c=0.501 beta_loc=0.282 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.75'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=nan
+  model sk n=6 seed=101: beta_c=0.794 beta_loc=0.282 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.75', 'LOW': 'mix0.75'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=nan
+  model sk n=6 seed=102: beta_c=0.631 beta_loc=0.178 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.25', 'LOW': 'mix0.25'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=nan
+  model sk n=6 seed=103: beta_c=0.501 beta_loc=0.178 best classical {'HIGH': 'uniform', 'MEDIUM': 'uniform', 'LOW': 'uniform'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=nan
+  model sk n=6 seed=104: beta_c=0.708 beta_loc=0.282 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.5'}  N2q per grid point [90, 210, 90, 210]  max|U-U^T|=nan
+  model sk n=8 seed=100: beta_c=0.447 beta_loc=0.158 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'uniform'}  N2q per grid point [168, 392, 168, 392]  max|U-U^T|=nan
+  model sk n=8 seed=101: beta_c=0.398 beta_loc=0.141 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [168, 392, 168, 392]  max|U-U^T|=nan
+  model sk n=8 seed=102: beta_c=0.355 beta_loc=0.126 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.5'}  N2q per grid point [168, 392, 168, 392]  max|U-U^T|=nan
+  model sk n=8 seed=103: beta_c=0.398 beta_loc=0.141 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [168, 392, 168, 392]  max|U-U^T|=nan
+  model sk n=8 seed=104: beta_c=0.708 beta_loc=0.158 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [168, 392, 168, 392]  max|U-U^T|=nan
+  model sk n=10 seed=100: beta_c=0.398 beta_loc=0.141 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.75', 'LOW': 'uniform'}  N2q per grid point [270, 630, 270, 630]  max|U-U^T|=nan
+  model sk n=10 seed=101: beta_c=0.355 beta_loc=0.126 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [270, 630, 270, 630]  max|U-U^T|=nan
+  model sk n=10 seed=102: beta_c=0.316 beta_loc=0.100 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.25', 'LOW': 'mix0.25'}  N2q per grid point [270, 630, 270, 630]  max|U-U^T|=nan
+  model sk n=10 seed=103: beta_c=0.355 beta_loc=0.126 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [270, 630, 270, 630]  max|U-U^T|=nan
+  model sk n=10 seed=104: beta_c=0.355 beta_loc=0.112 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.5', 'LOW': 'mix0.25'}  N2q per grid point [270, 630, 270, 630]  max|U-U^T|=nan
+  model ea n=9 seed=200: beta_c=0.708 beta_loc=0.200 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [108, 252, 108, 252]  max|U-U^T|=nan
+  model ea n=9 seed=201: beta_c=1.000 beta_loc=0.178 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [108, 252, 108, 252]  max|U-U^T|=nan
+  model ea n=9 seed=202: beta_c=0.562 beta_loc=0.200 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.25', 'LOW': 'mix0.25'}  N2q per grid point [108, 252, 108, 252]  max|U-U^T|=nan
+  model ea n=9 seed=203: beta_c=0.631 beta_loc=0.178 best classical {'HIGH': 'mix0.25', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [108, 252, 108, 252]  max|U-U^T|=nan
+  model ea n=9 seed=204: beta_c=0.794 beta_loc=0.224 best classical {'HIGH': 'mix0.5', 'MEDIUM': 'mix0.25', 'LOW': 'uniform'}  N2q per grid point [108, 252, 108, 252]  max|U-U^T|=nan
+
+IDEAL step advantage S = gap_q / gap_best_classical, median [IQR] over seeds
+  aer_boston sk n=6 ideal_t2: LOW 1.34 [1.23,1.44]  MEDIUM 1.19 [1.12,1.27]  HIGH 0.698 [0.628,0.767]
+  aer_marrakesh sk n=6 ideal_t2: LOW 1.14 [1.12,1.45]  MEDIUM 1.04 [1.04,1.34]  HIGH 0.738 [0.697,0.837]
+  exactDM sk n=6 P1_exact_m16: LOW 2.29 [1.13,2.4]  MEDIUM 1.12 [1.12,1.45]  HIGH 0.795 [0.771,0.941]
+  exactDM sk n=6 decohered_grid: LOW 0.37 [0.0785,0.526]  MEDIUM 0.428 [0.264,0.457]  HIGH 0.395 [0.385,0.434]
+  exactDM sk n=6 ideal: LOW 1.69 [1.39,2.3]  MEDIUM 1.44 [1.04,1.47]  HIGH 0.731 [0.712,0.896]
+  exactDM sk n=8 P1_exact_m16: LOW 4.04 [3.31,5.8]  MEDIUM 1.75 [1.38,1.86]  HIGH 0.837 [0.792,0.898]
+  exactDM sk n=8 decohered_grid: LOW 0.0232 [0.00681,0.0612]  MEDIUM 0.23 [0.206,0.235]  HIGH 0.306 [0.292,0.31]
+  exactDM sk n=8 ideal: LOW 1.26 [1.11,1.78]  MEDIUM 1.29 [1.13,1.39]  HIGH 0.762 [0.717,0.779]
+  model_global_dep ea n=9 ideal: LOW 2.45 [2.44,4.94]  MEDIUM 2.12 [2.08,2.13]  HIGH 1.05 [0.861,1.1]
+  model_global_dep sk n=6 ideal: LOW 1.69 [1.39,2.3]  MEDIUM 1.44 [1.04,1.47]  HIGH 0.731 [0.712,0.896]
+  model_global_dep sk n=8 ideal: LOW 2.81 [2.1,3.16]  MEDIUM 1.67 [1.3,1.83]  HIGH 0.806 [0.742,0.836]
+  model_global_dep sk n=10 ideal: LOW 4.5 [3.99,6.21]  MEDIUM 1.91 [1.72,2.33]  HIGH 0.861 [0.827,0.887]
+
+THRESHOLDS (median over seeds of S_plain(eps)); eps*=S drops to 1; epsU=row-TVD(Q,uniform)<0.1
+  eps = avg 2q gate infidelity (dep), per-gate dephasing prob (deph), per-gate damping gamma (ad*), readout flip prob (ro*)
+  exactDM          n= 6 ad        LOW    S_ideal=  1.69 eps*=0.0066             epsU=None  0.0001:1.68 0.0003:1.65 0.001:1.57 0.002:1.46 0.005:1.14 0.01:0.78
+  exactDM          n= 6 ad        MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0001:1.45 0.0003:1.45 0.001:1.47 0.002:1.46 0.005:1.38 0.01:1.12
+  exactDM          n= 6 ad        HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0001:0.74 0.0003:0.75 0.001:0.80 0.002:0.85 0.005:0.94 0.01:0.98
+  exactDM          n= 6 adgp      LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.0001:1.98 0.0003:1.65 0.001:1.88 0.002:1.48 0.005:1.52 0.01:1.07
+  exactDM          n= 6 adgp      MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0001:1.25 0.0003:1.46 0.001:1.29 0.002:1.38 0.005:1.32 0.01:1.14
+  exactDM          n= 6 adgp      HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0001:0.66 0.0003:0.75 0.001:0.72 0.002:0.86 0.005:0.89 0.01:1.07
+  exactDM          n= 6 adtw      LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.0003:1.65 0.002:1.48 0.01:1.07
+  exactDM          n= 6 adtw      MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0003:1.46 0.002:1.39 0.01:1.19
+  exactDM          n= 6 adtw      HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0003:0.75 0.002:0.86 0.01:1.05
+  exactDM          n= 6 dep       LOW    S_ideal=  1.69 eps*=0.0087             epsU=None  0.0001:1.67 0.0003:1.64 0.001:1.54 0.002:1.41 0.005:1.16 0.01:0.96
+  exactDM          n= 6 dep       MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0001:1.45 0.0003:1.45 0.001:1.40 0.002:1.33 0.005:1.25 0.01:1.09
+  exactDM          n= 6 dep       HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0001:0.74 0.0003:0.76 0.001:0.81 0.002:0.88 0.005:0.99 0.01:1.02
+  exactDM          n= 6 deph      LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.0001:1.99 0.0003:1.67 0.001:1.94 0.002:1.52 0.005:1.67 0.01:1.11
+  exactDM          n= 6 deph      MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0001:1.24 0.0003:1.45 0.001:1.25 0.002:1.43 0.005:1.22 0.01:1.15
+  exactDM          n= 6 deph      HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0001:0.65 0.0003:0.74 0.001:0.67 0.002:0.77 0.005:0.73 0.01:0.86
+  exactDM          n= 6 roasym    LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.001:1.69 0.003:1.68 0.01:1.64 0.02:1.59 0.05:1.45
+  exactDM          n= 6 roasym    MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.001:1.44 0.003:1.45 0.01:1.45 0.02:1.43 0.05:1.37
+  exactDM          n= 6 roasym    HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.001:0.73 0.003:0.74 0.01:0.76 0.02:0.79 0.05:0.87
+  exactDM          n= 6 rofix     LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.001:1.68 0.003:1.66 0.01:1.59 0.02:1.50 0.05:1.29
+  exactDM          n= 6 rofix     MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.001:1.45 0.003:1.45 0.01:1.43 0.02:1.38 0.05:1.24
+  exactDM          n= 6 rofix     HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.001:0.74 0.003:0.75 0.01:0.79 0.02:0.85 0.05:0.96
+  exactDM          n= 6 rosym     LOW    S_ideal=  1.69 eps*=never<=1 in range  epsU=None  0.001:1.69 0.003:1.68 0.01:1.64 0.02:1.59 0.05:1.45
+  exactDM          n= 6 rosym     MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.001:1.44 0.003:1.45 0.01:1.45 0.02:1.43 0.05:1.36
+  exactDM          n= 6 rosym     HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.001:0.73 0.003:0.74 0.01:0.76 0.02:0.79 0.05:0.87
+  exactDM          n= 8 ad        LOW    S_ideal=  1.26 eps*=never<=1 in range  epsU=None  0.002:1.80
+  exactDM          n= 8 ad        MEDIUM S_ideal=  1.29 eps*=never<=1 in range  epsU=None  0.002:1.28
+  exactDM          n= 8 ad        HIGH   S_ideal=  0.76 eps*=S<=1 already ideal epsU=None  0.002:0.86
+  exactDM          n= 8 dep       LOW    S_ideal=  1.26 eps*=0.0094             epsU=None  0.001:1.21 0.01:0.99
+  exactDM          n= 8 dep       MEDIUM S_ideal=  1.29 eps*=0.0097             epsU=None  0.001:1.29 0.01:1.00
+  exactDM          n= 8 dep       HIGH   S_ideal=  0.76 eps*=S<=1 already ideal epsU=None  0.001:0.82 0.01:0.96
+  exactDM          n= 8 roasym    LOW    S_ideal=  1.26 eps*=never<=1 in range  epsU=None  0.001:1.26 0.003:1.26 0.01:1.27 0.02:1.28 0.05:1.31
+  exactDM          n= 8 roasym    MEDIUM S_ideal=  1.29 eps*=never<=1 in range  epsU=None  0.001:1.30 0.003:1.30 0.01:1.32 0.02:1.34 0.05:1.38
+  exactDM          n= 8 roasym    HIGH   S_ideal=  0.76 eps*=S<=1 already ideal epsU=None  0.001:0.77 0.003:0.78 0.01:0.81 0.02:0.83 0.05:0.91
+  exactDM          n= 8 rofix     LOW    S_ideal=  1.26 eps*=never<=1 in range  epsU=None  0.001:1.25 0.003:1.24 0.01:1.21 0.02:1.16 0.05:1.06
+  exactDM          n= 8 rofix     MEDIUM S_ideal=  1.29 eps*=never<=1 in range  epsU=None  0.001:1.29 0.003:1.30 0.01:1.29 0.02:1.29 0.05:1.18
+  exactDM          n= 8 rofix     HIGH   S_ideal=  0.76 eps*=S<=1 already ideal epsU=None  0.001:0.77 0.003:0.78 0.01:0.82 0.02:0.87 0.05:0.95
+  exactDM          n= 8 rosym     LOW    S_ideal=  1.26 eps*=never<=1 in range  epsU=None  0.001:1.26 0.003:1.25 0.01:1.24 0.02:1.22 0.05:1.16
+  exactDM          n= 8 rosym     MEDIUM S_ideal=  1.29 eps*=never<=1 in range  epsU=None  0.001:1.29 0.003:1.30 0.01:1.30 0.02:1.30 0.05:1.27
+  exactDM          n= 8 rosym     HIGH   S_ideal=  0.76 eps*=S<=1 already ideal epsU=None  0.001:0.77 0.003:0.77 0.01:0.80 0.02:0.83 0.05:0.90
+  model_global_dep n= 6 gdepmodel LOW    S_ideal=  1.69 eps*=0.008              epsU=None  0.0001:1.68 0.0003:1.65 0.001:1.56 0.002:1.45 0.005:1.25 0.01:0.88
+  model_global_dep n= 6 gdepmodel MEDIUM S_ideal=  1.44 eps*=never<=1 in range  epsU=None  0.0001:1.44 0.0003:1.43 0.001:1.34 0.002:1.22 0.005:1.18 0.01:1.05
+  model_global_dep n= 6 gdepmodel HIGH   S_ideal=  0.73 eps*=S<=1 already ideal epsU=None  0.0001:0.74 0.0003:0.76 0.001:0.82 0.002:0.88 0.005:0.97 0.01:0.97
+  model_global_dep n= 8 gdepmodel LOW    S_ideal=  2.81 eps*=0.0098             epsU=0.0066  0.0001:2.76 0.0003:2.66 0.001:2.37 0.002:2.04 0.005:1.38 0.01:0.99
+  model_global_dep n= 8 gdepmodel MEDIUM S_ideal=  1.67 eps*=0.0049             epsU=0.0066  0.0001:1.65 0.0003:1.62 0.001:1.50 0.002:1.36 0.005:0.99 0.01:0.69
+  model_global_dep n= 8 gdepmodel HIGH   S_ideal=  0.81 eps*=S<=1 already ideal epsU=0.0066  0.0001:0.81 0.0003:0.82 0.001:0.83 0.002:0.82 0.005:0.80 0.01:0.71
+  model_global_dep n= 9 gdepmodel LOW    S_ideal=  2.45 eps*=never<=1 in range  epsU=None  0.0001:2.42 0.0003:2.35 0.001:2.15 0.002:1.91 0.005:1.48 0.01:1.23
+  model_global_dep n= 9 gdepmodel MEDIUM S_ideal=  2.12 eps*=never<=1 in range  epsU=None  0.0001:2.09 0.0003:2.05 0.001:1.92 0.002:1.76 0.005:1.43 0.01:1.14
+  model_global_dep n= 9 gdepmodel HIGH   S_ideal=  1.05 eps*=0.0073             epsU=None  0.0001:1.05 0.0003:1.06 0.001:1.08 0.002:1.08 0.005:1.04 0.01:0.96
+  model_global_dep n=10 gdepmodel LOW    S_ideal=  4.50 eps*=never<=1 in range  epsU=0.0043  0.0001:4.30 0.0003:3.95 0.001:3.00 0.002:2.21 0.005:1.43 0.01:1.16
+  model_global_dep n=10 gdepmodel MEDIUM S_ideal=  1.91 eps*=0.0031             epsU=0.0043  0.0001:1.86 0.0003:1.78 0.001:1.52 0.002:1.23 0.005:0.74 0.01:0.43
+  model_global_dep n=10 gdepmodel HIGH   S_ideal=  0.86 eps*=S<=1 already ideal epsU=0.0043  0.0001:0.87 0.0003:0.88 0.001:0.88 0.002:0.85 0.005:0.71 0.01:0.61
+
+BIAS of plain Metropolis (exact stationary distribution vs Boltzmann), median over seeds; Hastings chain bias = 0 by construction
+  exactDM n=6 ad      LOW    0.0001: asym 0.011 TVD 0.00026 KL 2.7e-06 | 0.0003: asym 0.032 TVD 0.00075 KL 2.2e-05 | 0.001: asym 0.1 TVD 0.0021 KL 0.00019 | 0.002: asym 0.19 TVD 0.0035 KL 0.00055 | 0.005: asym 0.41 TVD 0.0056 KL 0.0016 | 0.01: asym 0.67 TVD 0.007 KL 0.0029 |
+  exactDM n=6 ad      MEDIUM 0.0001: asym 0.011 TVD 0.0021 KL 1.2e-05 | 0.0003: asym 0.032 TVD 0.0062 KL 0.00011 | 0.001: asym 0.1 TVD 0.02 KL 0.0011 | 0.002: asym 0.19 TVD 0.041 KL 0.0044 | 0.005: asym 0.41 TVD 0.1 KL 0.027 | 0.01: asym 0.67 TVD 0.17 KL 0.098 |
+  exactDM n=6 ad      HIGH   0.0001: asym 0.011 TVD 0.0044 KL 6e-05 | 0.0003: asym 0.032 TVD 0.013 KL 0.00051 | 0.001: asym 0.1 TVD 0.039 KL 0.005 | 0.002: asym 0.19 TVD 0.071 KL 0.017 | 0.005: asym 0.41 TVD 0.15 KL 0.072 | 0.01: asym 0.67 TVD 0.23 KL 0.19 |
+  exactDM n=6 adgp    LOW    0.0001: asym 0.00011 TVD 7.3e-06 KL 2.2e-10 | 0.0003: asym 0.00044 TVD 9.7e-06 KL 3.8e-09 | 0.001: asym 0.0037 TVD 0.00051 KL 9.3e-07 | 0.002: asym 0.014 TVD 0.00028 KL 2.9e-06 | 0.005: asym 0.068 TVD 0.014 KL 0.00057 | 0.01: asym 0.21 TVD 0.0031 KL 0.00032 |
+  exactDM n=6 adgp    MEDIUM 0.0001: asym 0.00011 TVD 1.6e-05 KL 7.4e-10 | 0.0003: asym 0.00044 TVD 9.8e-05 KL 3e-08 | 0.001: asym 0.0037 TVD 0.0013 KL 4.7e-06 | 0.002: asym 0.014 TVD 0.0034 KL 3.2e-05 | 0.005: asym 0.068 TVD 0.023 KL 0.0016 | 0.01: asym 0.21 TVD 0.053 KL 0.0073 |
+  exactDM n=6 adgp    HIGH   0.0001: asym 0.00011 TVD 1.8e-05 KL 1.1e-09 | 0.0003: asym 0.00044 TVD 0.00012 KL 5.7e-08 | 0.001: asym 0.0037 TVD 0.0016 KL 8.4e-06 | 0.002: asym 0.014 TVD 0.0043 KL 7.8e-05 | 0.005: asym 0.068 TVD 0.028 KL 0.0025 | 0.01: asym 0.21 TVD 0.069 KL 0.016 |
+  exactDM n=6 adtw    LOW    0.0003: asym 0.0003 TVD 1.9e-06 KL 1.8e-10 | 0.002: asym 0.0016 TVD 9.2e-06 KL 4e-09 | 0.01: asym 0.0037 TVD 2.1e-05 KL 2e-08 |
+  exactDM n=6 adtw    MEDIUM 0.0003: asym 0.0003 TVD 1.9e-05 KL 1.1e-09 | 0.002: asym 0.0016 TVD 9.8e-05 KL 3.2e-08 | 0.01: asym 0.0037 TVD 0.0002 KL 2e-07 |
+  exactDM n=6 adtw    HIGH   0.0003: asym 0.0003 TVD 1.2e-05 KL 4.3e-10 | 0.002: asym 0.0016 TVD 7e-05 KL 1.5e-08 | 0.01: asym 0.0037 TVD 0.00022 KL 1.6e-07 |
+  exactDM n=6 dep     LOW    0.0001: asym 5.3e-16 TVD 0 KL 0 | 0.0003: asym 5.1e-16 TVD 0 KL 0 | 0.001: asym 4.7e-16 TVD 0 KL 0 | 0.002: asym 4.1e-16 TVD 0 KL 0 | 0.005: asym 3.1e-16 TVD 0 KL 0 | 0.01: asym 2.6e-16 TVD 0 KL 0 |
+  exactDM n=6 dep     MEDIUM 0.0001: asym 5.3e-16 TVD 0 KL 0 | 0.0003: asym 5.1e-16 TVD 0 KL 0 | 0.001: asym 4.7e-16 TVD 0 KL 0 | 0.002: asym 4.1e-16 TVD 0 KL 0 | 0.005: asym 3.1e-16 TVD 0 KL 0 | 0.01: asym 2.6e-16 TVD 0 KL 0 |
+  exactDM n=6 dep     HIGH   0.0001: asym 5.3e-16 TVD 0 KL 0 | 0.0003: asym 5.1e-16 TVD 0 KL 0 | 0.001: asym 4.7e-16 TVD 0 KL 0 | 0.002: asym 4.1e-16 TVD 0 KL 0 | 0.005: asym 3.1e-16 TVD 0 KL 0 | 0.01: asym 2.6e-16 TVD 0 KL 0 |
+  exactDM n=6 deph    LOW    0.0001: asym 4.5e-16 TVD 0 KL 0 | 0.0003: asym 4.2e-16 TVD 0 KL 0 | 0.001: asym 3.9e-16 TVD 0 KL 0 | 0.002: asym 3.4e-16 TVD 0 KL 0 | 0.005: asym 2.9e-16 TVD 0 KL 0 | 0.01: asym 2.4e-16 TVD 0 KL 0 |
+  exactDM n=6 deph    MEDIUM 0.0001: asym 4.5e-16 TVD 0 KL 0 | 0.0003: asym 4.2e-16 TVD 0 KL 0 | 0.001: asym 3.9e-16 TVD 0 KL 0 | 0.002: asym 3.4e-16 TVD 0 KL 0 | 0.005: asym 2.9e-16 TVD 0 KL 0 | 0.01: asym 2.4e-16 TVD 0 KL 0 |
+  exactDM n=6 deph    HIGH   0.0001: asym 4.5e-16 TVD 0 KL 0 | 0.0003: asym 4.2e-16 TVD 0 KL 0 | 0.001: asym 3.9e-16 TVD 0 KL 0 | 0.002: asym 3.4e-16 TVD 0 KL 0 | 0.005: asym 2.9e-16 TVD 0 KL 0 | 0.01: asym 2.4e-16 TVD 0 KL 0 |
+  exactDM n=6 roasym  LOW    0.001: asym 0.0042 TVD 6.4e-05 KL 1.5e-07 | 0.003: asym 0.013 TVD 0.00019 KL 1.4e-06 | 0.01: asym 0.041 TVD 0.0006 KL 1.4e-05 | 0.02: asym 0.081 TVD 0.0011 KL 5.2e-05 | 0.05: asym 0.19 TVD 0.0025 KL 0.00026 |
+  exactDM n=6 roasym  MEDIUM 0.001: asym 0.0042 TVD 0.001 KL 3.1e-06 | 0.003: asym 0.013 TVD 0.0031 KL 2.8e-05 | 0.01: asym 0.041 TVD 0.01 KL 0.00031 | 0.02: asym 0.081 TVD 0.021 KL 0.0012 | 0.05: asym 0.19 TVD 0.05 KL 0.0079 |
+  exactDM n=6 roasym  HIGH   0.001: asym 0.0042 TVD 0.0015 KL 6.6e-06 | 0.003: asym 0.013 TVD 0.0044 KL 5.9e-05 | 0.01: asym 0.041 TVD 0.015 KL 0.00063 | 0.02: asym 0.081 TVD 0.029 KL 0.0024 | 0.05: asym 0.19 TVD 0.068 KL 0.014 |
+  exactDM n=6 rofix   LOW    0.001: asym 7.2e-16 TVD 0 KL 0 | 0.003: asym 7.2e-16 TVD 0 KL 0 | 0.01: asym 6.6e-16 TVD 0 KL 0 | 0.02: asym 5.8e-16 TVD 0 KL 0 | 0.05: asym 4.6e-16 TVD 0 KL 0 |
+  exactDM n=6 rofix   MEDIUM 0.001: asym 7.2e-16 TVD 0 KL 0 | 0.003: asym 7.2e-16 TVD 0 KL 0 | 0.01: asym 6.6e-16 TVD 0 KL 0 | 0.02: asym 5.8e-16 TVD 0 KL 0 | 0.05: asym 4.6e-16 TVD 0 KL 0 |
+  exactDM n=6 rofix   HIGH   0.001: asym 7.2e-16 TVD 0 KL 0 | 0.003: asym 7.2e-16 TVD 0 KL 0 | 0.01: asym 6.6e-16 TVD 0 KL 0 | 0.02: asym 5.8e-16 TVD 0 KL 0 | 0.05: asym 4.6e-16 TVD 0 KL 0 |
+  exactDM n=6 rosym   LOW    0.001: asym 0.0021 TVD 1.4e-05 KL 8.8e-09 | 0.003: asym 0.0061 TVD 4e-05 KL 7.7e-08 | 0.01: asym 0.02 TVD 0.00013 KL 7.8e-07 | 0.02: asym 0.038 TVD 0.00024 KL 2.8e-06 | 0.05: asym 0.083 TVD 0.00051 KL 1.2e-05 |
+  exactDM n=6 rosym   MEDIUM 0.001: asym 0.0021 TVD 0.00013 KL 5.1e-08 | 0.003: asym 0.0061 TVD 0.00039 KL 4.6e-07 | 0.01: asym 0.02 TVD 0.0013 KL 4.9e-06 | 0.02: asym 0.038 TVD 0.0025 KL 1.9e-05 | 0.05: asym 0.083 TVD 0.0057 KL 9.5e-05 |
+  exactDM n=6 rosym   HIGH   0.001: asym 0.0021 TVD 8.1e-05 KL 2e-08 | 0.003: asym 0.0061 TVD 0.00024 KL 1.8e-07 | 0.01: asym 0.02 TVD 0.00079 KL 1.9e-06 | 0.02: asym 0.038 TVD 0.0015 KL 7.4e-06 | 0.05: asym 0.083 TVD 0.0036 KL 4.1e-05 |
+  exactDM n=8 ad      LOW    0.002: asym 0.28 TVD 0.022 KL 0.0019 |
+  exactDM n=8 ad      MEDIUM 0.002: asym 0.28 TVD 0.087 KL 0.022 |
+  exactDM n=8 ad      HIGH   0.002: asym 0.28 TVD 0.099 KL 0.031 |
+  exactDM n=8 dep     LOW    0.001: asym 3.1e-07 TVD 1e-08 KL 6.7e-15 | 0.01: asym 1.9e-07 TVD 1.6e-08 KL 8.8e-15 |
+  exactDM n=8 dep     MEDIUM 0.001: asym 3.1e-07 TVD 4.5e-08 KL 8e-15 | 0.01: asym 1.9e-07 TVD 3.8e-08 KL 4.5e-15 |
+  exactDM n=8 dep     HIGH   0.001: asym 3.1e-07 TVD 4.2e-08 KL 5.4e-15 | 0.01: asym 1.9e-07 TVD 2.7e-08 KL 2.3e-15 |
+  exactDM n=8 roasym  LOW    0.001: asym 0.0054 TVD 9.8e-05 KL 1.8e-07 | 0.003: asym 0.016 TVD 0.0003 KL 1.6e-06 | 0.01: asym 0.053 TVD 0.001 KL 1.8e-05 | 0.02: asym 0.1 TVD 0.0021 KL 7.3e-05 | 0.05: asym 0.24 TVD 0.0058 KL 0.00049 |
+  exactDM n=8 roasym  MEDIUM 0.001: asym 0.0054 TVD 0.0013 KL 6e-06 | 0.003: asym 0.016 TVD 0.0038 KL 5.3e-05 | 0.01: asym 0.053 TVD 0.013 KL 0.00058 | 0.02: asym 0.1 TVD 0.025 KL 0.0022 | 0.05: asym 0.24 TVD 0.058 KL 0.012 |
+  exactDM n=8 roasym  HIGH   0.001: asym 0.0054 TVD 0.0019 KL 1.1e-05 | 0.003: asym 0.016 TVD 0.0058 KL 0.0001 | 0.01: asym 0.053 TVD 0.019 KL 0.0011 | 0.02: asym 0.1 TVD 0.037 KL 0.0042 | 0.05: asym 0.24 TVD 0.087 KL 0.024 |
+  exactDM n=8 rofix   LOW    0.001: asym 9.7e-16 TVD 0 KL 0 | 0.003: asym 9.4e-16 TVD 0 KL 0 | 0.01: asym 8.6e-16 TVD 0 KL 0 | 0.02: asym 7.7e-16 TVD 0 KL 0 | 0.05: asym 5.5e-16 TVD 0 KL 0 |
+  exactDM n=8 rofix   MEDIUM 0.001: asym 9.7e-16 TVD 0 KL 0 | 0.003: asym 9.4e-16 TVD 0 KL 0 | 0.01: asym 8.6e-16 TVD 0 KL 0 | 0.02: asym 7.7e-16 TVD 0 KL 0 | 0.05: asym 5.5e-16 TVD 0 KL 0 |
+  exactDM n=8 rofix   HIGH   0.001: asym 9.7e-16 TVD 0 KL 0 | 0.003: asym 9.4e-16 TVD 0 KL 0 | 0.01: asym 8.6e-16 TVD 0 KL 0 | 0.02: asym 7.7e-16 TVD 0 KL 0 | 0.05: asym 5.5e-16 TVD 0 KL 0 |
+  exactDM n=8 rosym   LOW    0.001: asym 0.0026 TVD 4.5e-05 KL 1e-08 | 0.003: asym 0.0078 TVD 0.00014 KL 9.2e-08 | 0.01: asym 0.025 TVD 0.00046 KL 9.9e-07 | 0.02: asym 0.048 TVD 0.00093 KL 3.8e-06 | 0.05: asym 0.11 TVD 0.0024 KL 2e-05 |
+  exactDM n=8 rosym   MEDIUM 0.001: asym 0.0026 TVD 0.00016 KL 9.5e-08 | 0.003: asym 0.0078 TVD 0.00048 KL 8.4e-07 | 0.01: asym 0.025 TVD 0.0015 KL 8.6e-06 | 0.02: asym 0.048 TVD 0.0029 KL 3.1e-05 | 0.05: asym 0.11 TVD 0.0061 KL 0.00014 |
+  exactDM n=8 rosym   HIGH   0.001: asym 0.0026 TVD 0.0001 KL 3.8e-08 | 0.003: asym 0.0078 TVD 0.00031 KL 3.4e-07 | 0.01: asym 0.025 TVD 0.00098 KL 3.4e-06 | 0.02: asym 0.048 TVD 0.0018 KL 1.2e-05 | 0.05: asym 0.11 TVD 0.0038 KL 5e-05 |
+
+DEVICE-CALIBRATED (Aer density matrix, exact probabilities, n=6, grid gamma{0.3,0.5} x t=2), median [IQR] over seeds
+  aer_boston boston_RO: asym 0.0491 [0.0473,0.0509] TVD_ideal 0.13 [0.125,0.134] TVD_unif 0.372 [0.368,0.376] F_eff 0.705 [0.704,0.706] CZ/circuit 351
+      LOW    S_plain 1.12 [1.02,1.21] S_hast 1.12 [1.02,1.22] bias TVD 0.00646 [0.00336,0.00956] KL 0.000233 [0.00012,0.000346]
+      MEDIUM S_plain 1.17 [1.16,1.17] S_hast 1.15 [1.14,1.15] bias TVD 0.0153 [0.0135,0.0172] KL 0.000785 [0.000571,0.001]
+      HIGH   S_plain 0.886 [0.825,0.947] S_hast 0.859 [0.791,0.927] bias TVD 0.0206 [0.0179,0.0233] KL 0.00127 [0.000969,0.00158]
+  aer_boston boston_noRO: asym 0.043 [0.0413,0.0446] TVD_ideal 0.125 [0.121,0.13] TVD_unif 0.375 [0.371,0.379] F_eff 0.714 [0.713,0.715] CZ/circuit 351
+      LOW    S_plain 1.13 [1.03,1.22] S_hast 1.13 [1.03,1.23] bias TVD 0.00545 [0.00284,0.00806] KL 0.000169 [8.74e-05,0.000251]
+      MEDIUM S_plain 1.17 [1.16,1.18] S_hast 1.15 [1.15,1.16] bias TVD 0.0137 [0.0119,0.0156] KL 0.000611 [0.000436,0.000786]
+      HIGH   S_plain 0.88 [0.82,0.941] S_hast 0.857 [0.79,0.924] bias TVD 0.0181 [0.0156,0.0205] KL 0.000988 [0.000742,0.00123]
+  aer_boston ideal_t2: asym 6.87e-16 [6.55e-16,7.2e-16] TVD_ideal 0 [0,0] TVD_unif 0.486 [0.475,0.497] F_eff 1 [1,1] CZ/circuit nan
+      LOW    S_plain 1.34 [1.23,1.44] S_hast 1.34 [1.23,1.44] bias TVD 0 [0,0] KL 0 [0,0]
+      MEDIUM S_plain 1.19 [1.12,1.27] S_hast 1.19 [1.12,1.27] bias TVD 0 [0,0] KL 0 [0,0]
+      HIGH   S_plain 0.698 [0.628,0.767] S_hast 0.698 [0.628,0.767] bias TVD 0 [0,0] KL 0 [0,0]
+  aer_marrakesh ideal_t2: asym 7e-16 [6.92e-16,7.19e-16] TVD_ideal 0 [0,0] TVD_unif 0.475 [0.473,0.491] F_eff 1 [1,1] CZ/circuit nan
+      LOW    S_plain 1.14 [1.12,1.45] S_hast 1.14 [1.12,1.45] bias TVD 0 [0,0] KL 0 [0,0]
+      MEDIUM S_plain 1.04 [1.04,1.34] S_hast 1.04 [1.04,1.34] bias TVD 0 [0,0] KL 0 [0,0]
+      HIGH   S_plain 0.738 [0.697,0.837] S_hast 0.738 [0.697,0.837] bias TVD 0 [0,0] KL 0 [0,0]
+  aer_marrakesh marrakesh_RO: asym 0.0749 [0.074,0.0749] TVD_ideal 0.196 [0.192,0.203] TVD_unif 0.312 [0.304,0.315] F_eff 0.552 [0.551,0.553] CZ/circuit 351
+      LOW    S_plain 0.931 [0.83,1.11] S_hast 0.936 [0.824,1.12] bias TVD 0.000839 [0.000765,0.0175] KL 3.61e-05 [2.7e-05,0.000887]
+      MEDIUM S_plain 1.09 [0.942,1.14] S_hast 1.06 [0.925,1.12] bias TVD 0.0174 [0.0173,0.0198] KL 0.00128 [0.000895,0.00133]
+      HIGH   S_plain 0.92 [0.914,1.05] S_hast 0.906 [0.897,1.05] bias TVD 0.0263 [0.0248,0.0319] KL 0.00229 [0.00197,0.00297]
+  aer_marrakesh marrakesh_gp_RO: asym 0.0218 [0.0213,0.0219] TVD_ideal 0.195 [0.191,0.202] TVD_unif 0.31 [0.303,0.314] F_eff 0.553 [0.548,0.555] CZ/circuit 351
+      LOW    S_plain 0.911 [0.839,1.16] S_hast 0.91 [0.837,1.15] bias TVD 0.000362 [0.000113,0.00224] KL 4.33e-06 [8.85e-07,1.14e-05]
+      MEDIUM S_plain 1.07 [0.934,1.2] S_hast 1.07 [0.93,1.19] bias TVD 0.00451 [0.00364,0.00506] KL 5.81e-05 [4.13e-05,8.08e-05]
+      HIGH   S_plain 0.933 [0.913,1.03] S_hast 0.919 [0.9,1.02] bias TVD 0.0064 [0.00606,0.00672] KL 0.000123 [0.000122,0.000133]
+  aer_marrakesh marrakesh_gp_RO_mirror: asym 0.021 [0.0203,0.0217] TVD_ideal 0.201 [0.197,0.208] TVD_unif 0.306 [0.298,0.309] F_eff 0.539 [0.535,0.541] CZ/circuit 351
+      LOW    S_plain 0.901 [0.83,1.15] S_hast 0.9 [0.829,1.13] bias TVD 0.000398 [0.000117,0.00218] KL 5.34e-06 [9.78e-07,1.07e-05]
+      MEDIUM S_plain 1.06 [0.93,1.2] S_hast 1.06 [0.926,1.19] bias TVD 0.00468 [0.00365,0.0053] KL 6.17e-05 [4.17e-05,8.49e-05]
+      HIGH   S_plain 0.938 [0.915,1.04] S_hast 0.923 [0.902,1.03] bias TVD 0.0063 [0.00605,0.0068] KL 0.000122 [0.00012,0.000136]
+  aer_marrakesh marrakesh_gp_noRO: asym 0.0212 [0.0205,0.0221] TVD_ideal 0.189 [0.185,0.195] TVD_unif 0.315 [0.308,0.319] F_eff 0.567 [0.563,0.568] CZ/circuit 351
+      LOW    S_plain 0.92 [0.846,1.18] S_hast 0.92 [0.845,1.16] bias TVD 0.000386 [0.000119,0.00186] KL 5.29e-06 [9.99e-07,7.91e-06]
+      MEDIUM S_plain 1.08 [0.938,1.2] S_hast 1.08 [0.933,1.19] bias TVD 0.00476 [0.00401,0.00537] KL 6.39e-05 [4.8e-05,8.91e-05]
+      HIGH   S_plain 0.929 [0.912,1.03] S_hast 0.914 [0.897,1.02] bias TVD 0.00676 [0.00631,0.007] KL 0.000137 [0.000134,0.000145]
+  aer_marrakesh marrakesh_noRO: asym 0.0564 [0.0563,0.058] TVD_ideal 0.189 [0.185,0.196] TVD_unif 0.316 [0.308,0.319] F_eff 0.565 [0.565,0.567] CZ/circuit 351
+      LOW    S_plain 0.941 [0.837,1.14] S_hast 0.944 [0.832,1.15] bias TVD 0.000674 [0.000601,0.0116] KL 1.82e-05 [1.67e-05,0.000408]
+      MEDIUM S_plain 1.09 [0.944,1.16] S_hast 1.06 [0.93,1.15] bias TVD 0.0135 [0.0133,0.0136] KL 0.000641 [0.000489,0.000757]
+      HIGH   S_plain 0.921 [0.913,1.05] S_hast 0.91 [0.899,1.03] bias TVD 0.0214 [0.0186,0.0246] KL 0.00141 [0.0011,0.00174]
+
+FIT S_eff = 1 + (S_ideal-1) F^a  (least squares in log, points with 0.02<F<0.98 and S>1)
+  exactDM dep LOW: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.99; a (F_eff fitted from Q) = 1.35; points 23
+  exactDM dep MEDIUM: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.85; a (F_eff fitted from Q) = 1.16; points 20
+  exactDM dep HIGH: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = -0.35; a (F_eff fitted from Q) = -0.45; points 5
+  model_global_dep gdepmodel LOW: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 1.10; a (F_eff fitted from Q) = 1.17; points 97
+  model_global_dep gdepmodel MEDIUM: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 1.48; a (F_eff fitted from Q) = 1.55; points 79
+  model_global_dep gdepmodel HIGH: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.43; a (F_eff fitted from Q) = 0.44; points 12
+
+EPS_HALF (eps where median (S-1) falls to half of (S_ideal-1); None = not reached by eps=1e-2)
+  exactDM          n= 6 ad        LOW    S_ideal=1.69 eps_half=0.0028
+  exactDM          n= 6 ad        MEDIUM S_ideal=1.44 eps_half=0.0076
+  exactDM          n= 6 adgp      LOW    S_ideal=1.69 eps_half=0.0066
+  exactDM          n= 6 adgp      MEDIUM S_ideal=1.44 eps_half=0.0074
+  exactDM          n= 6 adtw      LOW    S_ideal=1.69 eps_half=0.0034
+  exactDM          n= 6 adtw      MEDIUM S_ideal=1.44 eps_half=0.0076
+  exactDM          n= 6 dep       LOW    S_ideal=1.69 eps_half=0.0026
+  exactDM          n= 6 dep       MEDIUM S_ideal=1.44 eps_half=0.0057
+  exactDM          n= 8 ad        LOW    S_ideal=1.26 eps_half=None
+  exactDM          n= 8 ad        MEDIUM S_ideal=1.29 eps_half=None
+  exactDM          n= 8 dep       LOW    S_ideal=1.26 eps_half=0.0023
+  exactDM          n= 8 dep       MEDIUM S_ideal=1.29 eps_half=0.0031
+  model_global_dep n= 6 gdepmodel LOW    S_ideal=1.69 eps_half=0.0033
+  model_global_dep n= 6 gdepmodel MEDIUM S_ideal=1.44 eps_half=0.002
+  model_global_dep n= 8 gdepmodel LOW    S_ideal=2.81 eps_half=0.0024
+  model_global_dep n= 8 gdepmodel MEDIUM S_ideal=1.67 eps_half=0.0022
+  model_global_dep n= 9 gdepmodel LOW    S_ideal=2.45 eps_half=0.003
+  model_global_dep n= 9 gdepmodel MEDIUM S_ideal=2.12 eps_half=0.0035
+  model_global_dep n=10 gdepmodel LOW    S_ideal=4.50 eps_half=0.0012
+  model_global_dep n=10 gdepmodel MEDIUM S_ideal=1.91 eps_half=0.0012

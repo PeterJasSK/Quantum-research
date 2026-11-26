@@ -1,0 +1,615 @@
+B3 REPORT: QeMCMC APPLICATION IDEAS IN PHYSICS, CHEMISTRY AND MATERIALS
+Sub-agent B3 (ideation), QHop QeMCMC applied review, 2026-11-20.
+Scope: 20 new ideas (B3-01 .. B3-20) plus 6 known project ideas (KNOWN-K0, K9, K15, K16, K17, K18).
+Effort weighted toward MEDIUM and HIGH temperature as requested.
+Labels used on claims: [P1] shown in P1, [P2] shown in P2, [PILOT] team pilot in BRIEF-common, [LIT Rn] literature (list at end),
+[OWN] own calculation or own argument, [SPEC] speculation. Ranges are labelled ranges, not measurements.
+
+
+======================================================================================================================
+PART 0. FOUR CROSS-CUTTING FINDINGS THAT DRIVE MOST VERDICTS BELOW (read these first)
+======================================================================================================================
+
+F1. The proposal is temperature-blind, so HIGH T is structurally the worst regime. [P1] the quantum gap stays ~0.3 at high T while
+the uniform-proposal gap goes to 1 (P1 Fig 2a). [PILOT] median gap ratio vs best of local/uniform at beta=0.1 is only 1.29x, at the
+critical beta=0.3 it is 2.8x. At high T any proposal that is not tuned to T wastes steps; single-spin Metropolis and heat-bath are
+already near-optimal per sweep. A HIGH-T quantum case therefore needs one of: expensive energy, constraint mixing, or a many-T trick.
+
+F2. "Expensive energy makes step advantage become wall-clock" is true but the right classical competitor then changes. [OWN] If a
+cheap surrogate E_s (cluster expansion, CE) exists, the classical practitioner does not run local Metropolis with DFT. They run a
+long, cheap, temperature-aware chain on E_s (PT on the CE if needed, nanoseconds per flip, 1e6-1e9 flips between expensive calls) and
+use its output as a proposal, correcting with acceptance min(1, exp(-beta[(E(s')-E_s(s')) - (E(s)-E_s(s))])). This is the
+surrogate-importance / delayed-acceptance family [LIT R15, R16]: Iftimie et al. report several orders of magnitude gain for DFT
+sampling with a molecular-mechanics guiding potential [LIT R16]. Detailed balance: holds exactly (standard MH with a proposal that is
+itself reversible w.r.t. pi_s; [OWN] derivation is the standard one). Consequence: putting the CE inside U and the DFT in the accept
+step (the "surrogate-driven quantum proposal") competes against a classical proposal that is ALREADY an (almost) independent draw from
+the surrogate Boltzmann distribution at the right T. The quantum proposal, being T-blind and only approximately Boltzmann-like, cannot
+beat that on acceptance. It can only win when the surrogate itself is classically hard to equilibrate (glassy at LOW T), which puts us
+back in P1's LOW-T cheap-energy regime with S* ~ 1e6-1e9. This kills most "DFT in the accept step" ideas at MEDIUM and HIGH T.
+
+F3. Energy cost is NOT symmetric between local and global moves when the energy model is local. [OWN] With CE, short-range MLIPs or
+lattice models, a single-site move needs only a local Delta E (O(neighbours)); a global quantum proposal that flips O(n) sites needs a
+full O(N) energy, or a full relaxation. The BRIEF's model (same t_energy in both chains) is optimistic for the quantum side by a factor
+~ N/(neighbourhood size) for local models. Only for genuinely non-local energies (DFT, Ewald) is t_energy ~ equal per move.
+
+F4. Gate-model QeMCMC does not need auxiliary spins for multi-body clusters, an annealer does. [OWN] A k-body CE term c Z_i Z_j ... Z_k
+is diagonal; exp(-i theta Z..Z) costs 2(k-1) CNOTs plus routing on a Trotterised gate device. Aux spins (Rosenberg-type reduction,
+~1 aux per reduced product) are needed only for 2-local hardware (annealers, Rydberg analog). Conservation laws (fixed composition,
+charge balance, ice rules) are best handled by a mixer that commutes with the conserved quantity: XY/SWAP mixers (Hamming weight),
+charge-neutral hop terms (charge), ring-exchange terms (ice rules). All of these are real symmetric in the Z basis, so H = a*H_prob +
+g*H_mix is real symmetric, U = U^T and the proposal is symmetric: detailed balance holds in the noiseless case by exactly P1's argument
+[P1 + OWN]. Noise breaks it (leakage out of the sector is rejected because pi=0 there, which is safe; in-sector asymmetry is a bias,
+needs twirling as in P1 SI) [P1 + OWN]. Postselection on the sector does not restore symmetry by itself under noise [OWN].
+
+
+======================================================================================================================
+PART 1. NEW IDEAS B3-01 .. B3-20
+======================================================================================================================
+
+----------------------------------------------------------------------------------------------------------------------
+B3-01  Cold-end injection: quantum proposals only in the lowest replicas of a parallel-tempering ladder (SK / EA spin glasses)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: a spin-glass physicist gets equilibrated low-T replicas (overlap distribution P(q), finite-T phase diagram) with fewer sweeps at
+  the bottleneck end of a PT ladder; this is the only fair way to test QeMCMC against the actual tool of the field.
+Regime: MEDIUM to LOW. PT already makes the high-T end mix; the bottleneck is the lowest replicas. [PILOT] gap ratio grows from 2.8x at
+  beta=0.3 to 25x at beta=1 vs weak baselines, so quantum steps are placed where their relative value is largest.
+Mapping/embedding: native Ising. SK: dense, n(n-1)/2 ZZ terms; EA 3D: 3n ZZ terms, 3D grid onto heavy-hex needs SWAP routing [OWN].
+Energy cost: cheap, local Delta E ~10-100 ns per flip on CPU [BRIEF range].
+Spins: full n=20-60 on device near term; coarse-grained group (P2) of ~sqrt(N) for N=512-4096 EA samples [P2 + SPEC].
+Mixing the bottleneck? Yes at the cold end; but PT + cluster moves already address it.
+Best classical: PT + Houdayer (2D) / isoenergetic cluster moves (ICM, any dimension, >=10x thermalisation speedup) [LIT R10, R11];
+  population annealing, about as efficient as PT [LIT R12]; dedicated FPGA (Janus) [LIT R17].
+Implementation: kernel = mixture: with prob p apply quantum proposal + Metropolis at replica T_k (k in cold set), else standard sweep;
+  replica swaps unchanged. Detailed balance: each component kernel is reversible w.r.t. its pi_k, a fixed-probability mixture of
+  reversible kernels is reversible [OWN, standard]. Must NOT choose p adaptively from chain history without care. Device: simulator
+  first (n<=24 statevector), then IBM Heron for n~20-30 with cached-shot offline chains as P1 did.
+Break-even: cheap energy, S* ~ 1e6-1e9 [BRIEF]. Even with only the cold replicas quantum, the PT ladder wall-clock is dominated by the
+  quantum steps unless p is tiny; with tiny p the benefit dilutes. Wall-clock win impossible on current latency [OWN].
+Kill risk: the measured advantage vs PT+ICM (not vs local/uniform) is ~1x; P1 tested Houdayer on 3 instances only [P1].
+Verdict: SIMULATE MORE (as the decisive fair-baseline experiment for the whole programme, not as an application). Likelihood that it
+  shows step advantage vs PT+ICM at n<=24: ~25% [SPEC]; wall-clock application: <2%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-02  de Almeida-Thouless line: spin glass in a longitudinal field (SK and 3D EA)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: a long-standing open question (does a dAT line exist in 3D?) [LIT R17]: Janus 2014 saw no transition with standard analysis;
+  2025-26 preprints argue for one (unreviewed) [LIT R17]. Answer is equilibrium P(q) at low T in field.
+Regime: LOW and MEDIUM (along the putative line); field kills the Z2 symmetry.
+Mapping: Ising + h terms; trivial. Embedding as B3-01.
+Energy cost: cheap local.
+Spins: L=8-16 3D EA = 512-4096 spins; only a coarse-grained group fits [P2-style, SPEC].
+Mixing the bottleneck? Yes, extremely (Janus needed FPGA hardware). But sizes needed for finite-size scaling are far beyond full QeMCMC.
+Best classical: PT on FPGA/GPU [LIT R17]; [OWN] Houdayer-type two-replica moves remain isoenergetic in a uniform field (field term
+  summed over both replicas is unchanged by swapping cluster spins), but their efficiency in field is not established here.
+Implementation: coarse-grained group proposals inside a PT/ICM code; group <= 30 qubits. Detailed balance: single random-group
+  proposals symmetric [P2]; fixed-order sequential sweeps NOT proven symmetric [P2], use random order.
+Break-even: S* ~ 1e6-1e9 vs Janus-class hardware (updates in the ~100 ps per spin class [LIT R17, order of magnitude not re-verified]).
+Kill risk: group of ~30 spins in a 4096-spin glass is a local move with extra steps; [P2] single-group exponents 0.64-0.77 at n<=10
+  (vs uniform 0.97) give no evidence at the sizes that matter. Also [P2] at small groups the move is classically simulable.
+Verdict: WAIT FOR HARDWARE (science interest real; nothing buildable that would change the field). ~5%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-03  Critical region of the 2D/3D EA spin glass in zero field (finite-T crossover, chi_SG peak)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: critical exponents of the EA universality class; mostly academic.
+Regime: MEDIUM. [PILOT] 2.8x at the SK specific-heat peak vs weak baselines only.
+Mapping: native; 2D EA embeds on a grid with SWAPs; heavy-hex degree 3 cannot host a square grid without routing [OWN].
+Energy cost: cheap.
+Spins: 1e3-1e5 for FSS.
+Mixing the bottleneck? Yes for 3D near/below Tc; for 2D, Tc=0, so "critical" means low T where Houdayer is efficient [LIT R11].
+Best classical: PT+Houdayer (2D), PT+ICM (3D) [LIT R10, R11], population annealing [LIT R12].
+Implementation: same as B3-01 with coarse-grained groups.
+Break-even: S* ~ 1e6-1e9; no path.
+Kill risk: classical tools are mature, cheap, and give exactly the observables needed; QeMCMC size limits.
+Verdict: KILL as application; covered scientifically by B3-01. ~1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-04  Hardware-native heavy-hex / Pegasus spin glass as an exactly checkable calibration bed
+----------------------------------------------------------------------------------------------------------------------
+Payoff: the team gets an instance family with no embedding overhead (one ZZ per physical coupler) and, in zero field on a planar graph,
+  an exact partition function (Pfaffian / Kasteleyn method, polynomial time) to validate stationarity and bias from noise [OWN; planarity
+  of heavy-hex is [OWN] reasoning: it is a decorated hexagonal lattice].
+Regime: all three; the point is calibration across T, including the high-T region where P1 predicts no gain.
+Mapping: native, zero SWAPs on IBM heavy-hex; 1D chains as in P1 are a subset [P1].
+Energy cost: cheap.
+Spins: 20-127+ physical qubits.
+Mixing the bottleneck? Not relevant; this is a measurement of the proposal, not an application.
+Best classical: for planar zero field, exact sampling is classically polynomial [OWN, standard planar-Ising result]; so any "advantage"
+  here is by construction not useful. That is the point: it is a fair-bias/noise testbed.
+Implementation: random +-J on the coupling map; ideal U by Trotter; measure TV distance of the empirical chain distribution against the
+  exact Boltzmann marginals; compare twirled vs non-twirled to quantify noise-induced bias [P1 SI noted bias]. Detailed balance:
+  ideal yes [P1]; noisy measured directly against exact answer [OWN design].
+Break-even: not applicable.
+Kill risk: a reviewer calls it a toy; mitigate by stating clearly it is calibration.
+Verdict: BUILD NOW (as calibration infrastructure, not as an application). ~80% that it yields a clean noise-bias measurement.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-05  Surrogate-in-U, DFT-in-accept for alloy order-disorder (CE inside H_prob, DFT energy in the Metropolis step)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: a materials engineer would get a DFT-exact (not CE-approximate) order-disorder temperature and SRO, removing CE fitting error.
+Regime: MEDIUM (order-disorder transitions) and HIGH (SRO above T_c), as requested.
+Mapping: CE with pairs, triplets, quadruplets -> diagonal multi-Z Hamiltonian; gate-model needs no aux spins (F4) [OWN].
+Energy cost: CE ~ tens of ns per local Delta E [OWN est.]; DFT single point on a ~50-200-atom metallic cell ~ minutes to hours per
+  configuration, plus relaxation [SPEC: practitioner range, not sourced here]; prior work stresses DFT cost becomes prohibitive for large
+  HEA supercells [LIT R23, R24].
+Spins: 32-256 sites per DFT cell (DFT limits the cell, so full QeMCMC on the cell is conceivable on 30-100 qubit devices) [OWN].
+Mixing the bottleneck? NO. The bottleneck is the number of DFT calls per independent sample.
+Best classical: surrogate-importance / delayed acceptance [LIT R15, R16]: run classical PT on the CE (free compared to DFT) and propose
+  its decorrelated output; accept with the residual exp(-beta Delta(E_DFT - E_CE)). Also active-learning on-lattice NN potentials
+  [LIT R27]. See F2.
+Implementation (as asked): U from CE couplings with P1 alpha scaling; measured s' is DFT-evaluated; accept min(1, exp(-beta Delta E_DFT)).
+  Detailed balance: holds for the DFT Boltzmann distribution because U is symmetric for any real H_prob [P1]; the CE only shapes the
+  proposal. Latency is irrelevant here (DFT dominates), so S = tau_C/tau_Q is wall-clock [BRIEF model].
+Break-even: S* ~ 1 (t_Q ~ t_C ~ t_DFT) [OWN]. This is the one place where the BRIEF's arithmetic is trivially satisfied.
+Kill risk (decisive): the classical surrogate-importance chain proposes from pi_CE at the right T, so its acceptance depends only on the
+  CE error; the quantum proposal is T-blind and accepts on the full Delta E_DFT, so at MEDIUM/HIGH T its acceptance is lower [OWN, F1+F2].
+  Quantum can only win if PT on the CE fails to equilibrate, which does not happen for typical binary/ternary CE at order-disorder T.
+Verdict: KILL (dominated by a free classical construction). Report it as a clear negative result. Likelihood of a real win: <3%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-06  MLIP-in-the-loop with lattice relaxation: HEA short-range order where CE fails because of relaxations
+----------------------------------------------------------------------------------------------------------------------
+Payoff: alloy designer gets SRO / Warren-Cowley parameters in size-mismatched HEAs where relaxations shift transitions (shown with
+  ML potentials for HEAs [LIT R23]); here a cheap rigid-lattice surrogate is poor, which weakens the F2 competitor.
+Regime: MEDIUM-HIGH (SRO at processing/annealing temperatures, around order-disorder).
+Mapping: k-component Potts on fixed lattice; one-hot (k qubits/site) with SWAP mixers, or binary ceil(log2 k) qubits/site with invalid
+  codes rejected (pi=0) [OWN]. H_prob = a rigid-lattice CE or pair-only surrogate.
+Energy cost: MACE-MPA-0 ~3 us per atom per optimisation step on H100 [LIT R22]. [OWN] 500-atom cell: ~1.5 ms per force call; a
+  50-300-step relaxation ~0.08-0.5 s. Rigid-lattice MLIP (low-rank potentials) is "extremely fast" [LIT R23], far below that.
+Spins: 100-1000 sites per cell; full QeMCMC infeasible; coarse-grained groups of 20-50 sites [P2-style, SPEC].
+Mixing the bottleneck? Partly: swaps between unlike species are rejected often near ordering; but per-sample cost is dominated by
+  relaxations.
+Best classical: canonical swap MC + PT with MLIP on GPU at scale (SMC-X: billion-atom HEA, >3e6 swap steps, checkerboard parallel)
+  [LIT R24]; surrogate-importance with an ML on-lattice surrogate retrained by active learning [LIT R27].
+Implementation: group proposal (P2) on a block of ~20-50 sites with the rigid-lattice surrogate in U; full MLIP relaxation + energy in
+  accept. Detailed balance: single random group = symmetric [P2] -> exact for the relaxed-MLIP Boltzmann distribution, provided the
+  relaxation is deterministic (same s -> same relaxed energy) [OWN; nondeterministic relaxation would add noise to pi].
+Break-even: t_C ~ t_Q ~ 0.1-1 s if every step relaxes [OWN] -> S* ~ 1-10. But F3: classical local swaps can use local relaxation
+  windows (cheaper), and SMC-X parallelises thousands of independent local swaps on one GPU; per-sample cost comparison then favours
+  classical by ~N_sites/block [OWN].
+Kill risk: parallel local swaps on GPU (SMC-X) give O(N) updates per energy evaluation; one quantum group proposal gives one block move.
+Verdict: SIMULATE MORE only if the team wants one expensive-energy case with S* ~ O(1-10); expectation low. ~8%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-07  Fixed-composition (Kawasaki) alloy sampling with a Hamming-weight-conserving XY/SWAP mixer: CuAu-type order-disorder
+----------------------------------------------------------------------------------------------------------------------
+Payoff: algorithmic: the first QeMCMC gap study under a conservation law on a physical alloy model (CuAu L1_0, ordering ~ 680 K
+  [SPEC: textbook value, not re-verified]); a materials engineer would get the canonical phase diagram.
+Regime: MEDIUM (first-order order-disorder; latent heat, two-phase coexistence).
+Mapping: binary site occupancy; X mixer would leave the composition sector and nearly every proposal would be rejected; XY mixer
+  sum (X_iX_j + Y_iY_j)/2 on lattice edges (or all-pair) conserves total Z [OWN]; XX+YY is real in the Z basis [OWN check: YY has real
+  entries], so H real symmetric -> symmetric proposal -> detailed balance [P1 argument + OWN]. Related prior art: QAOA with XY mixer as
+  surrogate-trained proposal for Kawasaki dynamics, 20.3x / 7.6x autocorrelation speedups on 3-regular graphs vs classical Kawasaki
+  [LIT R5]; QAOA-MC [LIT R6].
+Energy cost: CE cheap.
+Spins: 64-512 sites per cell; groups of 20-40 for near-term [SPEC].
+Mixing the bottleneck? At a first-order transition yes (tunnelling between ordered and disordered phases), and that is what
+  multicanonical/WL fix classically.
+Best classical: canonical swap MC (any-pair swaps, not only nearest neighbours: non-local Kawasaki is free classically) + PT;
+  Wang-Landau / multicanonical for first-order transitions [SPEC: standard methods; WL for alloys used widely]; independent swap
+  proposals parallelised on GPU [LIT R24].
+Implementation: Trotterised XY ring/all-to-all mixer; statevector up to 24 qubits, then group variant. Measure gap vs nonlocal swap MC,
+  not vs nearest-neighbour Kawasaki (the latter is a weak baseline, a trap present in R5's framing [OWN reading of R5 abstract]).
+Break-even: cheap energy, S* ~ 1e6-1e9.
+Kill risk: at a first-order transition the barrier is a surface free energy ~ L^(d-1); a T-blind proposal does not reduce it [SPEC];
+  WL/multicanonical does by design.
+Verdict: QUANTUM-INSPIRED ONLY (as an algorithm paper on conserving QeMCMC; no application value). ~15% to show a clean step-count gain
+  vs nonlocal swap + PT at n<=24.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-08  Multi-component high-entropy alloy (Potts, k=4-5 species) SRO across temperature
+----------------------------------------------------------------------------------------------------------------------
+Payoff: SRO maps for CrCoNi / MoNbTaW-type alloys; accuracy matters (EAM gives up to 25% error in Warren-Cowley parameters in CrCoNi
+  [LIT search summary of a 2024 MIT study, R23-family, not re-verified in detail]).
+Regime: HIGH (SRO well above any ordering) and MEDIUM (B2 / L1_2 ordering in refractory HEAs).
+Mapping/embedding: one-hot: k qubits/site, per-species conservation needs SWAP mixers between sites for each species (real symmetric
+  permutation matrices -> symmetric proposal) [OWN]. Binary: 3 qubits/site for 5 species, 3 invalid codes per site, composition
+  conservation hard to impose with simple mixers [OWN]. 5x qubit overhead (one-hot) [OWN].
+Energy cost: CE / rigid-lattice ML cheap; with relaxation see B3-06.
+Spins: 100-1000 sites x 3-5 qubits = 300-5000 qubits [OWN]; only small groups feasible.
+Mixing the bottleneck? At HIGH T no (F1). At ordering, moderately.
+Best classical: canonical multi-species swap MC + PT, GPU checkerboard at billion-atom scale [LIT R24]; Wang-Landau.
+Implementation: group of 6-8 sites x 5 qubits = 30-40 qubits with SWAP mixers; detailed balance as B3-07.
+Break-even: S* ~ 1e6-1e9.
+Kill risk: qubit overhead of the Potts encoding plus F1 at HIGH T.
+Verdict: KILL. ~1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-09  Long-range Coulomb (Ewald) ionic ordering with charge balance: disordered rocksalt (DRX) cathodes and mixed-valence oxides
+----------------------------------------------------------------------------------------------------------------------
+Payoff: battery materials scientist gets Li/TM/vacancy ordering, SRO and voltage curves in charge-decorated CE + Ewald models where
+  single-site moves are forbidden by charge balance [LIT R14] and Swendsen-Wang/Wolff-type cluster moves do not apply (frustrated,
+  long-range, multi-species) [OWN].
+Regime: MEDIUM (cation SRO/ordering at synthesis temperatures ~ 1000-1300 K [SPEC]) and LOW (glassy charge order). This is the
+  physically most SK-like model in B3's scope: dense, frustrated, long-range couplings, which is exactly where P1 measured k=0.264 vs
+  0.94 [P1] (SK, not Ewald: transfer is [SPEC]).
+Mapping: charge-decorated site occupancies (Potts-like, several species and valences); Ewald term = dense pair couplings J_ij on all
+  sites [LIT R14 uses Ewald with CE]. Constraint: total charge Q = sum q_i n_i must be conserved. Mixer must commute with Q: real
+  symmetric "neutral hop" terms that swap species with equal charge, plus coupled pair moves that exchange charge compensatingly (the
+  quantum analog of smol's table-exchange moves [LIT R14]) [OWN]. Embedding: dense ZZ on n qubits needs ~n(n-1)/2 two-qubit
+  interactions per Trotter step; with a SWAP network depth ~n layers [OWN].
+Energy cost: precomputed Ewald matrix: Delta E per single-site change O(N) multiply-adds -> ~1 us for N=1000 [OWN]; still cheap.
+Spins: 100-1000 sites, 2-3 qubits per site.
+Mixing the bottleneck? Yes, plausibly: charge balance restricts moves and long-range frustration produces many nearly degenerate states;
+  the classical fixes (table exchange, square-charge bias) are recent and specific [LIT R14].
+Best classical: canonical / charge-balanced semigrand MC with table exchange or square-charge bias, plus PT [LIT R14]; no general
+  cluster algorithm known to us for this case [OWN, not exhaustively searched].
+Implementation: (a) statevector study, n<=24 qubits (8-12 sites), measure gap vs table-exchange + PT; (b) group variant on device with
+  Ewald effective fields from frozen sites (P2 effective-field construction applies directly to dense couplings [P2]). Detailed
+  balance: real symmetric H with Q-commuting mixer -> symmetric within the charge sector [OWN]; noisy leakage to other sectors -> pi=0 ->
+  rejected, safe [OWN]; in-sector bias needs twirling [P1].
+Break-even: S* ~ 1e5-1e6 (dense O(N) energy raises t_C) [OWN]. No wall-clock path near term; dense ZZ circuits are also the worst case
+  for heavy-hex routing [OWN].
+Kill risk: the step advantage disappears once table-exchange + PT is the baseline; circuit depth for dense couplings.
+Verdict: SIMULATE MORE. Best scientific case in B3 for a genuine MEDIUM-regime step advantage over the BEST classical method, because
+  the best classical method here is comparatively weak. ~20% step win vs TE+PT at small n; wall-clock ~1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-10  Li/vacancy ordering vs chemical potential: voltage curves from semigrand ensembles (many-mu analogue of many-T)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: voltage-composition curve and ordering plateaus (e.g. Li ordering at x=1/2 in LixCoO2 [LIT R25]).
+Regime: MEDIUM (ordering at room temperature for intercalation compounds).
+Mapping: binary Li/vacancy Ising lattice gas with CE (pairs + triplets) + optional Ewald; semigrand -> no conservation, X mixer fine.
+Energy cost: CE cheap.
+Spins: 100-1000.
+Mixing the bottleneck? Rarely; ordered phases are simple superstructures, and a chemical-potential scan with hysteresis checks is
+  standard [LIT R25 method, CE + MC].
+Best classical: semigrand MC + free-energy integration, histogram reweighting [SPEC: standard].
+Implementation: H_prob does not contain mu if we follow P1 (proposal independent of T and mu) -> one compiled U for all mu values [OWN].
+Break-even: S* ~ 1e6-1e9.
+Kill risk: no mixing problem to solve.
+Verdict: KILL. <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-11  Frustrated triangular / kagome Ising antiferromagnets with further-neighbour couplings and field (plateau phases)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: phase diagrams of magnetization plateaus in frustrated rare-earth magnets; relevant to materials that realise kagome ice.
+Regime: MEDIUM (plateau order-disorder transitions) and LOW.
+Mapping: native 2-body; triangular degree 6, kagome degree 4: both need SWAP routing on heavy-hex [OWN]. Annealer: kagome ice realised
+  on D-Wave with 2742 qubits for 913 spins (3 physical per logical) [LIT R18].
+Energy cost: cheap.
+Spins: 1e2-1e4.
+Mixing the bottleneck? For nearest-neighbour models, worm/loop moves in the ground-state manifold mix fine; with further-neighbour
+  couplings loops are no longer zero-energy, and freezing is real [SPEC].
+Best classical: loop/worm + PT [LIT R8, R9 for ice-type loops]; tensor-network transfer matrices for 2D strips [SPEC].
+Implementation: as B3-01 with frustrated couplings; or annealer (but see B3-20 on non-symmetric annealer proposals).
+Break-even: S* ~ 1e6-1e9.
+Kill risk: 2D frustrated Ising with short-range couplings is classically well served.
+Verdict: QUANTUM-INSPIRED ONLY. ~3%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-12  Pyrochlore spin ice with an ice-rule-conserving quantum mixer (hexagon ring exchange = quantum spin ice as the proposal)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: a striking physics link: the proposal dynamics is quantum spin ice (U(1) spin liquid, emergent QED) [LIT R19], used to propose
+  moves for the classical (dipolar) spin ice Boltzmann distribution; a frustrated-magnet physicist gets an ice-manifold sampler that never
+  leaves the ice rules.
+Regime: LOW and MEDIUM (inside the ice manifold, approaching the dipolar ordering transition, which single-spin flips miss [LIT R8]).
+Mapping: X mixer violates the 2-in-2-out rule on most proposals (rejected or penalised). Replace with H_mix = sum over hexagons of
+  (S+S-S+S-S+S- + h.c.): real 0/1 matrix elements in the Z basis -> real symmetric -> U=U^T -> symmetric proposal, and it commutes with
+  every tetrahedron's ice-rule operator [OWN, follows from R19's construction]. Detailed balance holds in the noiseless case [OWN + P1].
+  Cost: each 6-body ring term needs a multi-controlled construction, tens of CNOTs per hexagon per Trotter step [OWN est.].
+Energy cost: nearest-neighbour cheap; dipolar (Ewald) O(N) per flip.
+Spins: 16-site cubic cell already contains hexagons; 128-1024 for physics [SPEC].
+Mixing the bottleneck? Within the ice manifold, classical loop moves (short/long loops) already work well [LIT R8, R9]; at the dipolar
+  ordering transition, loop moves enabled the first observation of the first-order transition [LIT R8].
+Best classical: Barkema-Newman / Melko-Gingras loop algorithms [LIT R8, R9]; spin-ice cluster algorithm (arXiv:1411.3807, seen in search,
+  not read).
+Implementation: statevector, 16-32 spins; compare to loop + PT. Annealers cannot do ring exchange directly (only transverse field;
+  ring exchange appears perturbatively) [LIT R18 context + SPEC].
+Break-even: S* ~ 1e6-1e9; no application path.
+Kill risk: loop moves are already near-ideal in the manifold; 6-body circuits are deep.
+Verdict: SIMULATE MORE as a physics/demo paper (conserving mixers are the honest way to handle hard constraints); application KILL.
+  ~30% for a clean "constraint-preserving QeMCMC" simulation result; <1% for useful advantage.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-13  Proton (H-bond) ordering in ice with DFT/MLIP energies: ice Ih -> ice XI ordering and proton order in high-pressure ices
+----------------------------------------------------------------------------------------------------------------------
+Payoff: proton-ordering transition temperatures and ordered structures, where energy differences between proton configurations are
+  small and need DFT-level accuracy; a hard constraint (ice rules) AND an expensive energy in one problem.
+Regime: LOW-MEDIUM (ordering transitions at tens of K [SPEC: ice XI ~72 K, not re-verified]).
+Mapping: bond-variable Ising (proton position per H-bond), ice rules = 2-in-2-out per oxygen; mixer = ring exchange on hexagonal rings
+  as in B3-12 [OWN]; energy = graph-invariant expansion fitted to DFT (cheap) or DFT/MLIP directly.
+Energy cost: graph-invariant surrogate cheap; DFT minutes-hours per cell [SPEC]; MLIP ms-s (R22 scaling).
+Spins: 96-384 bonds per DFT cell [SPEC].
+Mixing the bottleneck? Classical loop moves (Rahman-Stillinger, Barkema-Newman) sample the ice manifold efficiently [LIT R9];
+  mixing within the constraint is solved.
+Best classical: loop moves + surrogate (graph invariants) + surrogate-importance correction (F2).
+Implementation: B3-12 circuit with DFT in accept.
+Break-even: as B3-05: S* ~ 1 but dominated by classical surrogate-importance with loop moves.
+Kill risk: F2 + loop moves.
+Verdict: KILL (as application). ~2%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-14  HP lattice protein density of states with Wang-Landau acceptance and a symmetric quantum proposal
+----------------------------------------------------------------------------------------------------------------------
+Payoff: folding thermodynamics (specific heat, collapse and folding transitions) of HP sequences across all T from one g(E).
+Regime: all T (WL gives every temperature at once); medium-T collapse transition is the physics target.
+Mapping: turn encoding (2-3 qubits per bond) with self-avoidance and contacts as multi-body penalties; resource-efficient lattice folding
+  Hamiltonians scale O(N^4) terms, 22 qubits for 10 residues [LIT R20]. Self-avoidance as a penalty in H_prob is allowed (P1: wrong H_prob
+  still exact) and invalid conformations get pi=0 -> rejected [P1 + OWN].
+Energy cost: trivially cheap (contact count).
+Spins: 20-100 qubits for 10-30 residues [LIT R20 scaling + OWN]; benchmark sequences are 48-103 residues [LIT R13].
+Mixing the bottleneck? Yes for ground states of long sequences, but pull moves + bond rebridging + WL find all known putative ground states
+  and improved 3D103 [LIT R13].
+Best classical: WL with pull moves and bond-rebridging, replica-exchange WL [LIT R13].
+Implementation: symmetric quantum proposal plugged into WL acceptance min(1, g(E)/g(E')) — WL requires a symmetric proposal, which QeMCMC
+  provides [OWN]; WL itself is not stationary during the flat-histogram phase (standard caveat) [OWN].
+Break-even: cheap energy, S* ~ 1e6-1e9.
+Kill risk: most proposals violate self-avoidance (low acceptance); qubit count per residue; classical toolbox is excellent.
+Verdict: KILL. <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-15  Grand-canonical adsorbate lattice gas under reaction conditions (O, CO on Pt/Ru) with DFT-fitted lateral interactions
+----------------------------------------------------------------------------------------------------------------------
+Payoff: surface scientist gets coverage-dependent phase diagrams (p(2x2), (2x1) adlayers) at catalyst operating temperatures.
+Regime: MEDIUM (adlayer order-disorder at a few hundred K [SPEC]) and HIGH (disordered adlayer at operating T).
+Mapping: occupancy per site (1-3 species), multi-body lateral CE; grand canonical -> X mixer OK; canonical coverage -> XY mixer.
+Energy cost: CE cheap; DFT-in-loop is the F2 case.
+Spins: 100-1000 sites.
+Mixing the bottleneck? Rarely: simple ordered adlayers, 2D, short-range; histogram reweighting and WL handle transitions.
+Best classical: GCMC + WL; kinetic MC when rates matter (not equilibrium sampling) [SPEC: standard].
+Implementation: trivial mapping; no reason to build.
+Break-even: S* ~ 1e6-1e9.
+Kill risk: no mixing problem.
+Verdict: KILL. <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-16  Potts model of grain growth
+----------------------------------------------------------------------------------------------------------------------
+Payoff: none for QeMCMC. Potts grain-growth (Anderson, Srolovitz, Grest 1984) [LIT R26] is used as a KINETIC model: the Monte Carlo
+  step is a proxy for time and the observable is the coarsening path (grain size vs MCS), usually at low or zero T; n-fold way speeds it
+  up [LIT R26].
+Regime: LOW, non-equilibrium.
+Mapping: Q-state Potts (Q ~ 50-100 orientations) -> ceil(log2 Q) qubits/site.
+Energy cost: cheap.
+Mixing the bottleneck? No: equilibrium is a single grain; nobody wants to sample it.
+Best classical: n-fold way / rejection-free kinetic MC [LIT R26].
+Implementation: none: a non-local quantum proposal destroys the physical kinetics that is the whole point [OWN].
+Verdict: KILL (category error: kinetics, not equilibrium sampling). 0%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-17  Unfrustrated magnets near criticality (Ising/clock models of ferromagnets, Curie point)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: critical exponents / Curie temperatures.
+Regime: MEDIUM (critical).
+Mapping: native.
+Energy cost: cheap.
+Mixing the bottleneck? Critical slowing down is real for local moves, but cluster algorithms remove most of it.
+Best classical: Swendsen-Wang (1987) and Wolff (1989) cluster algorithms, small dynamic exponents for Ising-type ferromagnets [SPEC:
+  standard literature, not re-verified in this session].
+Implementation: none worthwhile.
+Break-even: S* ~ 1e6-1e9 vs an already near-ideal cluster method.
+Verdict: KILL. 0-1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-18  Lattice polymers and lattice-gas condensation (self-avoiding walks, coil-globule, liquid-gas in lattice gas)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: polymer scaling exponents, theta point.
+Regime: MEDIUM-HIGH (coil-globule at theta T; good-solvent high T).
+Mapping: occupancy + chain connectivity constraints -> same encoding pain as HP (B3-14).
+Energy cost: cheap.
+Mixing the bottleneck? Classical pivot algorithm (with efficient implementations) makes SAW sampling extremely fast [SPEC: Clisby's
+  pivot work, not re-verified]; lattice-gas condensation maps to Ising and gets cluster moves.
+Best classical: pivot + PERM / WL; Swendsen-Wang for lattice gas.
+Verdict: KILL. 0-1%.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-19  Temperature-independent proposal amortised over a whole temperature ladder (finite-T phase diagram in one compiled circuit family)
+----------------------------------------------------------------------------------------------------------------------
+Payoff: a phase-diagram user (any lattice model) needs 20-100 temperatures; since H_prob is not divided by T [P1], one compiled
+  parametric circuit family serves every replica; compile cost is amortised over the ladder.
+Regime: designed for MEDIUM+HIGH (the many-temperature need), where per-replica quantum value is lowest (F1).
+Mapping: any of the above.
+Energy cost: any.
+Mixing the bottleneck? At HIGH T no; the amortisation only helps a cost term (t_compile) that is already amortisable within one chain
+  (P1 used cached shots offline [P1]).
+Best classical: PT + multi-histogram reweighting / WL give the full T range from fewer runs [SPEC: standard].
+Implementation: batch submission of all replicas' current states in one job (one circuit per replica, same parameters drawn per step)
+  to amortise latency over the ladder; detailed balance per replica as in P1; replica swaps standard [OWN].
+Break-even: batching R replicas per job divides t_latency by R [OWN]; with R=50 and 1 s latency, t_Q ~ 20 ms + shot time per replica
+  step, still ~1e5-1e6 above a CPU spin flip [OWN].
+Kill risk: amortisation helps latency, not the T-blindness; high-T replicas get almost nothing (PILOT 1.29x).
+Verdict: QUANTUM-INSPIRED ONLY (the batching trick is worth using in B3-01 experiments). Useful engineering, ~0% standalone value.
+
+----------------------------------------------------------------------------------------------------------------------
+B3-20  Quantum annealer as proposal engine (QAEMCMC) on annealer-native lattices
+----------------------------------------------------------------------------------------------------------------------
+Payoff: thousands of physical qubits today (913-spin kagome ice on 2742 qubits [LIT R18]); QAEMCMC claims larger gaps and faster
+  convergence on SK [LIT R4, abstract only].
+Regime: LOW-MEDIUM.
+Mapping: native 2-body on Pegasus/Zephyr; multi-body CE needs aux spins (F4).
+Energy cost: cheap.
+Mixing the bottleneck? Yes at LOW T.
+Best classical: PT + ICM, which was explicitly shown on the chimera topology [LIT R10].
+Implementation and DETAILED BALANCE FLAG: a forward anneal returns s' from a distribution Q(s') that does not depend on s and is
+  unknown; annealer outputs are in general not Boltzmann and the effective temperature fluctuates between programming cycles
+  [LIT R21]. Metropolis acceptance min(1, pi(s')/pi(s)) is then WRONG (independence sampler needs Q(s)/Q(s') which is unknown) [OWN].
+  Reverse annealing from s gives an s-dependent proposal but no proof of symmetry Q(s'|s)=Q(s|s') on real hardware [OWN]. Unless R4
+  provides a symmetry argument valid on hardware (not checked; abstract only), stationarity is not guaranteed.
+Break-even: annealer latency per call is ms-scale plus job overhead [SPEC]; S* ~ 1e5-1e8.
+Kill risk: unverifiable detailed balance; classical PT+ICM on the same topology.
+Verdict: WAIT FOR HARDWARE (needs a symmetric, characterised annealer proposal). ~3%.
+
+
+======================================================================================================================
+PART 2. KNOWN PROJECT IDEAS
+======================================================================================================================
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K0  SK spin glass calibration
+----------------------------------------------------------------------------------------------------------------------
+Payoff: the team reproduces P1/P2 exponents and the PILOT temperature curve, then adds the missing baselines (PT, Houdayer/ICM,
+  population annealing, wall-clock); this is the reference every other idea is judged against.
+Regime: sweep LOW -> MEDIUM -> HIGH; PILOT already shows 39x -> 2.8x -> 1.29x vs weak baselines [PILOT].
+Mapping: native, dense; SK on hardware needs SWAP networks (P1 used 1D instances on hardware for this reason [P1]).
+Energy cost: cheap (O(n) per flip for dense SK).
+Spins: n=10-24 exact; 30-60 tensor-network / quantum-inspired [LIT R3: TN simulators, even unconverged, keep a scaling advantage over
+  standard samplers, abstract].
+Mixing the bottleneck? At LOW T, yes.
+Best classical: PT (+ICM is ill-defined for SK's complete graph; Houdayer-type moves need sparse graphs [LIT R10]) and population
+  annealing [LIT R12].
+Implementation: exact statevector gaps vs PT gap (PT as a joint-chain spectral gap at n<=12, or integrated autocorrelation of q for
+  larger n); add B3-04 hardware-native calibration; add B3-19 batching for hardware timing. Detailed balance: ideal yes [P1]; report
+  noisy bias with twirling vs not.
+Break-even: S* ~ 1e6-1e9; K0 is not meant to cross it.
+Kill risk: none as calibration; the risk is over-claiming from weak baselines.
+Verdict: BUILD NOW. ~90% to deliver a clean calibration including the PT comparison.
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K9  Binarised protein Potts / HP lattice protein
+----------------------------------------------------------------------------------------------------------------------
+Payoff: folding thermodynamics or contact-map Potts sampling.
+Regime: MEDIUM (collapse/folding transitions); Potts protein models (coevolution) are sampled at T=1 by construction.
+Mapping: HP as in B3-14 (turn encoding, O(N^4) terms, 22 qubits for 10 residues [LIT R20]); binarised 21-state Potts needs 5 qubits per
+  position (one-hot 21) [OWN].
+Energy cost: cheap.
+Spins: 100-1500 qubits for realistic proteins [OWN].
+Mixing the bottleneck? Classical pull moves + WL reach all known HP ground states [LIT R13]; Potts coevolution models are typically
+  sampled adequately by Gibbs MCMC [SPEC].
+Best classical: WL + pull/bond-rebridging moves, replica-exchange WL [LIT R13].
+Implementation: as B3-14; detailed balance holds with penalties since invalid states are rejected [P1 + OWN].
+Break-even: S* ~ 1e6-1e9.
+Kill risk: constraint violations dominate proposals; encoding overhead; excellent classical tools.
+Verdict: KILL. <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K15  Alloy and Li/vacancy ordering from cluster-expansion ECIs
+----------------------------------------------------------------------------------------------------------------------
+Payoff: phase diagrams, order-disorder temperatures, voltage curves [LIT R25].
+Regime: MEDIUM.
+Mapping: multi-body CE -> diagonal multi-Z terms, no aux spins on gate devices, 2(k-1) CNOT per k-body term + routing (F4) [OWN];
+  composition-conserving XY/SWAP mixers for canonical runs (B3-07); charge-conserving mixers if Ewald (B3-09).
+Energy cost: cheap (CE). The expensive-energy variant is B3-05/B3-06 and is dominated by F2.
+Spins: 100-1000; groups only.
+Mixing the bottleneck? Generally no for binary CE; yes for charge-balanced long-range (B3-09).
+Best classical: canonical/semigrand MC, PT, WL; charge-balanced TE/SCB moves [LIT R14]; GPU checkerboard at scale [LIT R24].
+Implementation: split into B3-07 (algorithmic conserving-mixer study) and B3-09 (the one subcase with a weak classical baseline).
+Break-even: S* ~ 1e6-1e9 (CE); ~1e5-1e6 with dense Ewald.
+Kill risk: binary CE has no mixing problem.
+Verdict: SIMULATE MORE only in the B3-09 (charge-balanced Ewald) form; KILL for plain binary alloys / Li-vacancy semigrand. ~15% / <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K16  Triangular / kagome / spin-ice patches
+----------------------------------------------------------------------------------------------------------------------
+Payoff: frustrated-magnet phase diagrams; ice-manifold sampling.
+Regime: LOW-MEDIUM.
+Mapping: native 2-body for triangular/kagome (B3-11); spin ice with ring-exchange mixer (B3-12).
+Energy cost: cheap (dipolar: O(N)).
+Spins: patches of 16-64 near term.
+Mixing the bottleneck? Inside the ice manifold, loop algorithms solve it [LIT R8, R9]; further-neighbour frustrated models are harder.
+Best classical: loop/worm + PT [LIT R8, R9].
+Implementation: B3-12 is the version worth building: constraint-preserving symmetric mixer (ring exchange), exact detailed balance [OWN].
+Break-even: S* ~ 1e6-1e9.
+Kill risk: patches are too small to say anything about bulk physics; loop algorithms already near-ideal.
+Verdict: SIMULATE MORE (B3-12 as a constraint-preserving-mixer demonstration); QUANTUM-INSPIRED ONLY for physics output. ~25% / <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K17  Adsorbates on catalyst surfaces
+----------------------------------------------------------------------------------------------------------------------
+Payoff: coverage phase diagrams under reaction conditions (B3-15).
+Regime: MEDIUM-HIGH.
+Mapping: lattice gas + lateral CE, X mixer (grand canonical) or XY (fixed coverage).
+Energy cost: cheap CE; DFT-in-loop dominated by F2.
+Mixing the bottleneck? No.
+Best classical: GCMC + WL / histogram reweighting; kMC for rates.
+Verdict: KILL. <1%.
+
+----------------------------------------------------------------------------------------------------------------------
+KNOWN-K18  Proton / H-bond ice rules
+----------------------------------------------------------------------------------------------------------------------
+Payoff: proton-ordering transitions (B3-13); demonstration of a hard-constraint-preserving mixer.
+Regime: LOW-MEDIUM.
+Mapping: bond Ising with ice rules; X mixer would violate the rules in nearly every proposal (penalty -> low acceptance); ring-exchange
+  mixer preserves them exactly and is real symmetric [OWN].
+Energy cost: cheap surrogate or expensive DFT (F2 applies).
+Mixing the bottleneck? No: loop algorithms (Rahman-Stillinger, Barkema-Newman) sample the manifold efficiently [LIT R9].
+Best classical: loop moves + surrogate-importance correction.
+Verdict: KILL as application; fold into the B3-12 constraint-mixer demo. ~2%.
+
+
+======================================================================================================================
+PART 3. SUMMARY TABLE (plain text)
+======================================================================================================================
+ID         Title (short)                                  Regime          Energy cost                 Verdict (likelihood)
+B3-01      Cold-end quantum injection in PT ladder        MEDIUM-LOW      cheap                       SIMULATE MORE (25% step; <2% wall)
+B3-02      dAT line, spin glass in field                  LOW-MEDIUM      cheap                       WAIT FOR HARDWARE (5%)
+B3-03      EA critical region zero field                  MEDIUM          cheap                       KILL (1%)
+B3-04      Heavy-hex native exact calibration bed         all             cheap                       BUILD NOW (80%, calibration)
+B3-05      CE-in-U, DFT-in-accept alloys                  MEDIUM-HIGH     DFT min-hours               KILL (<3%), dominated by F2
+B3-06      MLIP + relaxation HEA SRO                      MEDIUM-HIGH     MLIP ~0.1-1 s w/ relax      SIMULATE MORE (8%)
+B3-07      Kawasaki XY-mixer CuAu                         MEDIUM          cheap                       QUANTUM-INSPIRED ONLY (15%)
+B3-08      HEA Potts multi-species                        HIGH-MEDIUM     cheap                       KILL (1%)
+B3-09      Ewald ionic ordering, charge balance (DRX)     MEDIUM-LOW      O(N) dense, ~us             SIMULATE MORE (20% step; 1% wall)
+B3-10      Li/vacancy semigrand voltage curves            MEDIUM          cheap                       KILL (<1%)
+B3-11      Triangular/kagome further-neighbour            MEDIUM-LOW      cheap                       QUANTUM-INSPIRED ONLY (3%)
+B3-12      Spin ice with ring-exchange mixer              LOW-MEDIUM      cheap / dipolar O(N)        SIMULATE MORE (30% demo; <1% app)
+B3-13      Ice proton ordering with DFT/MLIP              LOW-MEDIUM      DFT / MLIP                  KILL (2%)
+B3-14      HP protein with WL acceptance                  all             cheap                       KILL (<1%)
+B3-15      Adsorbate GCMC                                 MEDIUM-HIGH     cheap / DFT                 KILL (<1%)
+B3-16      Potts grain growth                             LOW, kinetic    cheap                       KILL (0%, category error)
+B3-17      Ferromagnets at criticality                    MEDIUM          cheap                       KILL (0-1%)
+B3-18      Lattice polymers / lattice gas                 MEDIUM-HIGH     cheap                       KILL (0-1%)
+B3-19      T-blind proposal amortised over T ladder       MEDIUM-HIGH     any                         QUANTUM-INSPIRED ONLY (engineering trick)
+B3-20      Annealer as proposal engine                    LOW-MEDIUM      cheap                       WAIT FOR HARDWARE (3%), DB flag
+KNOWN-K0   SK calibration                                 all             cheap                       BUILD NOW (90%)
+KNOWN-K9   HP / binarised Potts protein                   MEDIUM          cheap                       KILL (<1%)
+KNOWN-K15  CE alloys and Li/vacancy                       MEDIUM          cheap                       SIMULATE MORE only as B3-09 (15%); else KILL
+KNOWN-K16  Triangular/kagome/spin-ice patches             LOW-MEDIUM      cheap                       SIMULATE MORE as B3-12 demo (25%)
+KNOWN-K17  Adsorbates                                     MEDIUM-HIGH     cheap / DFT                 KILL (<1%)
+KNOWN-K18  Ice rules                                      LOW-MEDIUM      cheap / DFT                 KILL as app; fold into B3-12 (2%)
+
+Strongest three (B3 view):
+1. B3-09 Ewald ionic ordering with a charge-conserving mixer: the only physics/materials case where (a) the model is dense and frustrated
+   like the SK instances where P1 saw its exponent gap, (b) cluster moves fail, (c) the best classical method (charge-balanced table
+   exchange + PT) is recent and comparatively weak, and (d) there is a real customer (cathode design). Step-count win is plausible;
+   wall-clock is not.
+2. B3-01 + KNOWN-K0 (cold-end injection vs PT+ICM, with B3-04 exact calibration): this is the fair-baseline experiment the whole
+   programme lacks; a clean negative is publishable and settles most other ideas.
+3. B3-12 (ring-exchange, ice-rule-conserving symmetric mixer): the honest, general way to put hard constraints into QeMCMC with exact
+   detailed balance; the same construction (conserving real-symmetric mixer) carries over to B3-07 (Kawasaki) and B3-09 (charge).
+Clear negative worth stating: B3-05 "surrogate in U, DFT in accept" is dominated by classical surrogate-importance sampling (F2),
+   which removes the main expensive-energy argument at MEDIUM and HIGH T.
+
+
+======================================================================================================================
+REFERENCES (verified by web search in this session unless marked "not re-verified")
+======================================================================================================================
+P1  Layden et al., Nature 619, 282 (2023), arXiv:2203.12497.
+P2  Ferguson & Wallden, Phys. Rev. Research 7, 013231 (2025), arXiv:2405.04247.
+R3  Christmann, Ivashkov, Chiurco, Mazzola, "From quantum enhanced to quantum inspired Monte Carlo", arXiv:2411.17821 (PRA 111, 042615
+    (2025)); abstract: optimal mixing strength, TN simulators keep scaling advantage over standard samplers.
+R4  Quantum annealing enhanced MCMC (QAEMCMC), arXiv:2502.08060 (abstract only read).
+R5  Kawamata, Nakano, Fujii, arXiv:2604.20701 (accepted Phys. Rev. Applied): QAOA with XY mixer + NN surrogates for Kawasaki dynamics,
+    20.3x / 7.6x autocorrelation speedups on 3-regular graphs (abstract/summaries).
+R6  Nakano et al., QAOA-MC, arXiv:2305.08789.
+R7  Marshall, Egger, et al., QeMCMC + PT for MIS, 117 qubits IBM, instances solved by CPLEX, arXiv:2602.06171.
+R8  Melko, den Hertog, Gingras, PRL 87, 067203 (2001), arXiv:cond-mat/0009225 (loop algorithm, dipolar spin ice).
+R9  Barkema & Newman, PRE 57, 1155 (1998), arXiv:cond-mat/9706190 (ice-model loop and cluster algorithms; Rahman-Stillinger origin).
+R10 Zhu, Ochoa, Katzgraber, PRL 115, 077201 (2015), arXiv:1501.05630 (ICM, any dimension, chimera).
+R11 Houdayer, arXiv:cond-mat/0101116 (2D spin-glass cluster algorithm).
+R12 Wang, Machta, Katzgraber, PRE 92, 013303 and 063307 (2015), arXiv:1412.2104, arXiv:1508.05647 (population annealing ~ PT).
+R13 Wuest & Landau, arXiv:1207.3974, arXiv:1503.04433 (WL + pull/bond-rebridging moves; all known HP ground states);
+    arXiv:1607.03253 (independent comparison).
+R14 Xie, Zhong, Barroso-Luque, Ouyang, Ceder, arXiv:2210.01165 (charge-balanced CE-MC: table exchange, square-charge bias);
+    smol, JOSS doi:10.21105/joss.04504.
+R15 Christen & Fox (2005) delayed acceptance, via Banterle et al. arXiv:1503.00996 (original not read).
+R16 Iftimie, Salahub, Wei, Schofield, J. Chem. Phys. 113, 4852 (2000) (classical potential as importance function for DFT sampling,
+    several orders of magnitude gain).
+R17 Janus Collaboration, arXiv:1403.2622 (3D EA in field, no transition in standard analysis); arXiv:2601.19192 (2026 preprint arguing
+    for a 3D dAT transition, unreviewed). Janus per-spin update rate: order of magnitude only, not re-verified.
+R18 King et al., "Kagome qubit ice", Nat. Commun. (2023), doi:10.1038/s41467-023-36760-1 (913-spin kagome ice on 2742 qubits).
+R19 Hermele, Fisher, Balents, PRB 69, 064404 (2004), arXiv:cond-mat/0305401 (pyrochlore U(1) spin liquid, ring exchange).
+R20 Robert, Barkoutsos, Woerner, Tavernelli, npj Quantum Inf. 7, 38 (2021), arXiv:1908.02163 (O(N^4) lattice folding, 22 qubits for
+    10 residues).
+R21 Marshall, Rieffel, Hen, PR Applied 8, 064025 (2017), arXiv:1703.03902 (annealer outputs generally not Boltzmann, fluctuating T_eff).
+R22 NVIDIA ALCHEMI performance docs (MACE-MPA-0, ~3.02 us/atom/step H100):
+    https://docs.nvidia.com/nim/alchemi/alchemi-bgr/latest/performance.html
+R23 Kostiuchenko et al., npj Comput. Mater. 5, 55 (2019), doi:10.1038/s41524-019-0195-y (low-rank potentials, HEA relaxations affect
+    transitions; title/attribution from search snippet, not fully re-read); also arXiv:2401.06622 (fast on-lattice LRP ensembles).
+R24 SMC-X, arXiv:2503.12591 / arXiv:2509.20949 (ML-accelerated scalable MC, billion-atom HEA, >3e6 swap steps).
+R25 Wolverton & Zunger, PRB 57, 2242 (1998) and PRL 81, 606 (1998) (CE + MC for LixCoO2); Van der Ven, Aydinol, Ceder, MRS Proc. (1998).
+R26 Anderson, Srolovitz, Grest, Acta Metall. 32 (1984) (Potts grain growth); Hassold & Holm, Computers in Physics (1993) (n-fold way).
+R27 On-lattice NN + active learning for configurational sampling, arXiv:2008.02572.
+Not re-verified in this session (standard literature): Swendsen & Wang PRL 58, 86 (1987); Wolff PRL 62, 361 (1989); Hadfield et al.
+    QAOA mixers arXiv:1709.03489; Clisby pivot algorithm; Claudon et al. trapped-ion QMCMC arXiv:2603.08395 (two-state chains, seen in
+    search only).

@@ -1,0 +1,60 @@
+QUANTUM ARTIFICIAL LIFE (artificial-life/) STUDY
+================================================
+
+
+WHAT THIS STUDY IS
+------------------
+We rebuild the quantum artificial life model of Alvarez-Rodriguez et al. (2018) - organisms with a genotype and
+phenotype that self-replicate, mutate, interact and die - as one circuit on IBM Heron, at far larger scale than
+the original 4 qubits. The only part that is genuinely quantum is the entanglement passed down a lineage; every
+count of who is alive, how long they live or how deep a lineage goes has an exact classical copy. The study asks
+how much Darwinian biology (reproduction, selection, metabolism, death, movement) can be added before that
+quantum signature collapses to classical.
+
+
+THE 3 METRICS
+-------------
+1. Entanglement depth W*
+   The largest lineage (number of generations W, 2 qubits each) whose genealogy witness <X^W> stays above the
+   classical separable bound by k sigma (k = 2, also reported at k = 3).
+
+2. Two-basis certificate
+   <XX> + <ZZ> on the germ line (separable bound 1, ideal 2). Unlike the single-basis witness it excludes
+   classically correlated mixtures, so it is the honest "this organism is quantum" test.
+
+3. Richness vs survival
+   For each biological process added (death, selection, metabolism, movement, collision), the depth at which the
+   witness is lost: the phase diagram of richness against quantum survival.
+
+
+RESULTS SO FAR AND POSSIBLE RESULTS
+-----------------------------------
+Measured:
+- Months 1-3 metric C(g) refuted: it is a diagonal quantity with an exact classical surrogate; teleport routing
+  lost to SWAP on Heron r2 (readout error now dominates two-qubit error), refuted twice.
+- Scale: W* = 24 generations = 48 qubits on ibm_kingston, about 6x the 2018 paper; W = 32 dead.
+- Moving organism (PJ2.4): reproduction, selection, metabolism and unitary death all act while it moves; the
+  two-basis GHZ certificate survived on ibm_marrakesh (<XX> + <ZZ> = 1.96 vs bound 1).
+- Open caveat: the W50 witness is single-basis, not genuine multipartite entanglement (fix planned).
+
+Possible:
+A. Richness map: each process has a measured cost in depth; a certified organism with the full biology at W > 24.
+B. Error mitigation (dynamical decoupling on the germ line, PJ2.5) pushes W* out.
+C. Null: every extra process costs so much that only the bare model stays certified; still a clean boundary.
+No speed advantage is claimed anywhere; the claim is faithfulness and certified scale.
+
+
+HOW TO VISUALIZE IT
+-------------------
+1. Interactive web vivarium (web/, research/pj2_vivarium/): organisms move, eat, reproduce and die on the chip
+   lattice; the certificate is shown next to them. Prior-art check: first interactive quantum-alife visualization.
+2. Figure: witness <X^W> vs W with the classical surrogate at about 0 and the k sigma band; W* marked.
+3. Figure: richness vs survival phase diagram (process added on one axis, surviving depth on the other).
+4. Figure: the 2018 model (4 qubits) vs this work (48 qubits) side by side.
+
+
+THESIS FIT
+----------
+Strong engineering (full model as one circuit, hardware driver, certification statistics, web vivarium) and an
+honest research question with measured hardware results. Basis of the own paper "evolution frontier"
+(THESIS/QuantumEvolutionFrontier/).

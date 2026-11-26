@@ -1,0 +1,486 @@
+B6 - IDEATION: QeMCMC IN MEDICAL IMAGING AND HEALTH
+Sub-agent B6, QeMCMC applied-review team. Date 2026-11-20. Plain text, per BRIEF-common.txt.
+
+LABELS USED
+  [P1]   shown in Layden et al., Nature 619, 282 (2023), arXiv:2203.12497
+  [P2]   shown in Ferguson & Wallden, PRR 7, 013231 (2025), arXiv:2405.04247
+  [PILOT] team pilot in BRIEF-common.txt (SK n=10, ideal, steps vs local/uniform only)
+  [A4]   team hardware scan, _reports/A4-hardware.txt (IBM ~2-5 s per sequential step realistic,
+         ~2 s floor; D-Wave ~0.03-1 s; batching K chains per job divides latency by K)
+  [lit]  literature, verified this session (URL or arXiv ID given)
+  [lit-m] literature cited from memory; the shared web-search budget ran out mid-task, so this
+         reference was NOT re-verified this session. Check before quoting.
+  [own]  own calculation or own reasoning
+  [spec] speculation
+
+PROJECT CONTEXT THAT SHAPES THIS REPORT
+- qh-17 "quantum-proposed tumour" (QHop/plans/study-idea-qh-17-quantum-proposed-tumour-CLOSED.md) is CLOSED.
+  Its own bear case was "fitted genotype Ising is weakly frustrated, local Metropolis mixes fine at n <= 40".
+  On 2026-11-19 quantum was dropped from the lung synthetic-tumour work because no genuine quantum point
+  was found. The KNOWN items K8-K14 below reproduce that diagnosis item by item: most data-fitted
+  health Ising models are HIGH-T or tiny (enumerable). Ideas that survive need either a physics-defined
+  frustrated energy (not a weakly-coupled data fit) or an expensive energy.
+- QeMCMC detailed balance, used throughout: ideal proposal Q(s'|s) is symmetric for ANY real
+  symmetric H_prob [P1], so Metropolis with the true energy gives exact Boltzmann stationarity even if
+  H_prob is a crude surrogate. Single random coarse-grained group: symmetric [P2; A2 report]. Fixed-order
+  multi-group sweep: not symmetric in general (A2 report) -> use random order or per-group accept.
+  Hardware noise breaks exact symmetry -> small bias unless twirled [P1 SI]. Binary encoding of
+  q-state Potts labels: assign infinite energy to unused codes; proposal stays symmetric over the
+  full 2^m register, so balance holds, at an acceptance cost [own].
+
+GENERAL BREAK-EVEN ARITHMETIC USED BELOW [own, using A4 numbers]
+  S* = t_Q / t_C. Cheap energies (incremental delta-E in ns-us): t_C ~ 1e-8 to 1e-6 s, t_Q ~ 2-5 s
+  (IBM, sequential) -> S* ~ 1e6 to 1e9. No idea with a cheap energy can break even this decade on
+  sequential cloud steps; batching K=1e3-1e4 chains per job [A4] lowers S* by K but classical chains
+  parallelise just as well on GPU.
+  Expensive energy t_E: S* = (t_lat + t_E)/(t_propC + t_E).
+    t_E = 10 s, t_lat = 3 s -> S* = 1.3. t_E = 1 s -> S* = 4. t_E = 0.1 s -> S* = 31. t_E = 1 ms -> 3000.
+  BUT for expensive energies the right classical competitor is NOT local/uniform: it is a surrogate-driven
+  proposal (delayed acceptance, Christen & Fox 2005, J. Comput. Graph. Stat. 14(4) [lit-m]) that runs a
+  long cheap classical chain on the same surrogate H_prob and proposes its end state. That costs
+  ~ms classically and gives an almost independent draw from the surrogate Boltzmann law. So in the
+  expensive-energy regime quantum only helps if the SURROGATE itself is hard to sample classically
+  (glassy at the needed temperature). This kills most "expensive energy" stories unless the surrogate is
+  LOW-T frustrated.
+  Asymmetry warning [own]: with a residual-based energy (CT, PET), a classical 1-pixel flip costs one
+  projector column update; a quantum proposal flipping k pixels costs k column updates. Per-step energy
+  cost is not equal in the two chains; the brief's "t_E cancels" assumption only holds for full re-evaluation.
+
+TEMPERATURE EVIDENCE FOR FITTED HEALTH ISING MODELS (decides the KNOWN items)
+- Neural populations (retina, N up to 160): fitted max-ent model at its native T=1 sits near a
+  specific-heat peak that sharpens with N; "poised near an unusual kind of critical point".
+  Tkacik et al., PNAS 112, 11508 (2015), arXiv:1407.5946 [lit]; Mora & Bialek, J Stat Phys 144, 268
+  (2011), arXiv:1012.2242 [lit]. => MEDIUM by the brief's definition.
+  Caveat: Nonnenmacher et al., PLoS Comput Biol 13, e1005718 (2017), arXiv:1603.00097 [lit]: the
+  specific-heat signature arises from random subsampling of any correlated population, so "near
+  critical" may be generic, not special. Simoes et al., arXiv:2511.14872 (2025) [lit]: max-ent
+  signatures appear for critical AND supercritical cultures.
+- Whole-brain fMRI (binarised ROIs): fitted models are "in the paramagnetic phase but close to the
+  boundary" with the spin-glass phase; individuals are "substantially off" criticality.
+  Ezaki et al., Commun Biol 3, 52 (2020), bioRxiv 10.1101/688655, N=264 ROIs, 138 adults [lit].
+  Typical energy-landscape analysis uses N ~ 10 (N=7 whole-brain example); exact gradient fit "slow
+  even with N=15 or 20". Masuda et al. tutorial, arXiv:2411.16979 (PLoS Complex Syst 2025) [lit].
+  Temperature fixed at 1 by construction (Watanabe et al., PMC4174295 [lit]). => HIGH-to-MEDIUM,
+  paramagnetic side; small N enumerable.
+- Symptom networks: IsingFit / eLasso (van Borkulo et al., Sci Rep 4, 5918 (2014)) [lit]; typical
+  N = 9-20 symptoms, largest 120 symptoms in 34,653 subjects (Boschloo et al.) [lit, via search
+  snippet]. "Network temperature" (Grimes, Epskamp et al., Nature Mental Health 2025,
+  doi 10.1038/s44220-025-00415-5) [lit]: low-temperature networks are bimodal (healthy vs depressed),
+  temperature decreases across adolescence. Couplings mostly positive (ferro). => LOW-T but
+  ferromagnetic two-well; unfrustrated, so cluster moves / exact enumeration work.
+- TCGA driver mutations: no published pairwise max-ent Ising fit of driver co-occurrence was found
+  [lit search negative this session]. Mutual exclusivity is often a subtype / mutation-load confound
+  (PMC6816465 review; DIALECT bioRxiv 2024) [lit]. Driver frequencies are low (most below ~10%, a few
+  like TP53/KRAS higher) [lit-m] -> strong negative fields, weak sparse couplings => HIGH-T, near
+  product distribution [own].
+- Protein Potts (DCA): Russ et al., Science 369, 440 (2020) designed functional chorismate mutases by
+  sampling the bmDCA Potts model at formal temperature T <= 1 to reach low energies [lit, from the
+  paper text]. Lower-T sampling improves design quality (arXiv:2204.07110) [lit]. => design regime is
+  BELOW the training temperature: LOW/MEDIUM.
+
+=====================================================================================================
+NEW IDEAS (B6-01 ... B6-20)
+=====================================================================================================
+
+B6-01  Few-view binary / label CT: Bayesian posterior sampling of discrete tomography
+  Payoff: uncertainty maps and multiple plausible reconstructions for limited-angle / few-view
+    imaging with discrete content (contrast-filled vessels in rotational angiography, bone vs soft
+    tissue, metal implants, dental), and for industrial NDT. Clinical CT is rarely truly binary; the
+    honest medical niche is small [own].
+  Regime: LOW at high SNR and few views. Why [own + lit-m]: with x in {0,1}^N and Gaussian noise,
+    E(x) = ||Ax - b||^2 / (2 sigma^2) + prior is EXACTLY quadratic -> Ising with J = A^T A / sigma^2.
+    Pixels on a common ray compete to explain the same ray sum -> antiferro-like, frustrated couplings.
+    Reconstruction of lattice sets from >=3 projection directions is NP-hard (Gardner, Gritzmann,
+    Prangenberg, Discrete Math 202 (1999) [lit-m]). Small sigma = low T; the many near-degenerate
+    "switching components" (ghost configurations invisible to the projections) are exactly the
+    separated basins local moves cannot cross [own]. This is the rare health case where the frustrated
+    energy is physics-defined, not a weak data fit.
+  Mapping: exact Ising (no surrogate). Coupling graph: long-range along rays; within a P2 patch of m
+    pixels nearly all-to-all. Embedding on heavy-hex: swap network, ~m(m-1)/2 ZZ per Trotter step,
+    m=20 -> 190 ZZ, roughly 400-600 CZ per Trotter step [own estimate].
+  Energy cost per step: incremental residual update O(k x V) per k flipped pixels and V views:
+    ~us. Cheap.
+  Spins: full 64x64 = 4096 to 512x512; coarse-grained group = 9-25 pixel patch (P2 sqrt-n style),
+    effective field from the frozen rest exactly as P2 Eq 14.
+  Mixing the bottleneck? Plausibly yes at few views and low noise (ghost-component degeneracy);
+    unknown whether parallel tempering already handles it at N ~ 1e3-1e4 [spec].
+  Best classical: DART (Batenburg & Sijbers, IEEE TIP 20, 2542 (2011)) [lit-m] for MAP; parallel
+    tempering / SA for posterior; QUBO-on-annealer CT already explored (Nau et al. J Imaging 2023,
+    arXiv:2212.01312; Jun, Sci Rep 2023; Dremel et al. IEEE TQE 2025; arXiv:2607.10566 finds classical
+    SA ~ D-Wave hybrid) [lit]. Note: these are optimisation, not posterior sampling -> sampling angle
+    is open.
+  Sketch: 16x16 binary phantoms, 2-4 views, sigma sweep; exact enumeration impossible (2^256) so
+    reference = long PT. Compare tau_int of patch-QeMCMC (statevector, m<=16) vs local, uniform-in-patch,
+    PT, and "switching-component" moves (classical swap of a known ghost pattern - the domain-specific
+    cluster move that may make quantum moot). Detailed balance: single random patch per step,
+    symmetric ideal proposal -> exact [P1, P2].
+  Break-even: cheap energy -> S* ~ 1e6+ on sequential cloud steps [own]; no wall-clock case today.
+    Value would be a step-count/scaling result on a physics-defined frustrated medical energy.
+  Kill risk: classical "ghost-swap" cluster moves or PT already mix; the patch group is small enough
+    to be classically simulable (P2's own "quantum inspired" footnote).
+  Verdict: SIMULATE MORE. Likelihood of a defensible step-scaling result vs PT: ~20-25% [spec].
+
+B6-02  Surrogate-driven QeMCMC for expensive nonlinear forward models (polychromatic CT, MR
+       fingerprinting dictionary-free fits, Monte Carlo scatter/dose), discrete parameter maps
+  Payoff: posterior over label/tissue-class maps when each true-likelihood call is a costly
+    simulation (Monte Carlo photon transport, Bloch simulation).
+  Regime: depends on surrogate; LOW only if label prior + few data. Why: the brief's only HIGH/any-T
+    route to wall-clock is expensive energy [own].
+  Mapping: H_prob = linearised quadratic surrogate (Gauss-Newton A^T A around current estimate) +
+    Potts prior; true energy used only in accept. Proposal stays symmetric for any H_prob [P1] ->
+    detailed balance exact with the true energy.
+  Energy cost per step: 0.1-10 s per true evaluation [spec; depends on simulator].
+  Spins: 10-30 qubits per group (label patch), rest frozen.
+  Mixing the bottleneck? The bottleneck is the NUMBER of true evaluations; the question is
+    acceptance per true call.
+  Best classical: delayed-acceptance / two-stage MCMC with a classical chain on the same surrogate
+    (Christen & Fox 2005 [lit-m]); multilevel MCMC. These propose a near-independent draw from the
+    surrogate Boltzmann law for ~ms classical cost.
+  Sketch: compare acceptance-per-true-call of QeMCMC vs delayed acceptance on identical surrogates.
+  Break-even [own]: t_E = 1-10 s, IBM t_lat 2-5 s -> S* ~ 1.3-6 vs local. But vs delayed acceptance
+    the step advantage is ~1 unless the surrogate is LOW-T glassy (then classical inner chain also
+    fails to give independent draws).
+  Kill risk: surrogate is easy (smooth, near-convex) -> delayed acceptance wins outright.
+  Verdict: SIMULATE MORE (only if B6-01 shows surrogate-level glassiness). ~10-15%.
+
+B6-03  Posterior label-map sampling for segmentation uncertainty (Potts MRF, brain MRI tissue / tumour)
+  Payoff: calibrated per-voxel uncertainty, volume error bars.
+  Regime: HIGH to MEDIUM. Strong data term acts as large external field; Potts beta usually estimated
+    or set below the lattice critical value beta_c = ln(1+sqrt q) [lit-m].
+  Mapping: Potts, q = 3-5 labels, 2-3 qubits per voxel binary encoding, nearest-neighbour grid ->
+    heavy-hex friendly for small 2D patches.
+  Energy cost: local, ~ns per site. Spins: 1e5-1e7 voxels; group = 3x3 to 5x5 patch.
+  Mixing bottleneck? Mostly no: Gibbs mixes except along ambiguous boundaries; single-site Gibbs is
+    known to mix poorly in hidden Potts models (arXiv:1602.03048) [lit], but cluster and exact
+    samplers below already fix that.
+  Best classical: Swendsen-Wang cuts (Barbu & Zhu, IEEE TPAMI 27, 1239 (2005)) [lit]; perfect MCMC
+    (coupling-from-the-past) for MRF segmentation UQ, Med Image Anal 2019, PubMed 31085445 [lit]; deep
+    probabilistic segmentation (ensembles, probabilistic U-Net) [lit-m].
+  Break-even: S* ~ 1e7+ [own]. Kill risk: exact perfect sampling already exists. Detailed balance: fine
+    but irrelevant.
+  Verdict: KILL. <3%.
+
+B6-04  Synthetic texture phantoms from ferromagnetic Ising/Potts fields (lung parenchyma, GGO texture)
+  Payoff: training/validation data for detection AI (the lung project's current classical path).
+  Regime: chosen by designer; natural-looking textures sit near criticality (MEDIUM) [spec].
+  Mapping: nearest-neighbour Potts, unfrustrated.
+  Energy cost: ns. Spins: 1e4-1e6.
+  Mixing bottleneck? Critical slowing down yes for local moves, but Swendsen-Wang/Wolff remove it for
+    unfrustrated ferro models (Swendsen & Wang PRL 58, 86 (1987)) [lit-m]; GPU checkerboard produces
+    millions of samples per second.
+  Kill risk: certain. Verdict: KILL. <2%.
+
+B6-05  Frustrated-texture phantoms (competing-interaction / ANNNI-like priors giving labyrinthine,
+       fibrotic or honeycomb patterns)
+  Payoff: same as B6-04 with patterns ferro fields cannot produce.
+  Regime: MEDIUM/LOW; frustrated, so cluster moves lose their guarantee [lit-m].
+  Mapping: 2D grid with nn ferro + nnn antiferro; fits heavy-hex poorly (diagonals) -> extra SWAPs.
+  Energy cost: ns. Spins: 1e4+; group 9-25.
+  Mixing bottleneck? Yes in principle, but the user does not need equilibrium: any visually plausible
+    texture suffices, so a quenched or approximate sampler is fine [own].
+  Best classical: PT, Kawasaki/cluster variants, or simply reaction-diffusion / GAN texture generators.
+  Kill risk: no one needs exact Boltzmann textures. Verdict: QUANTUM-INSPIRED ONLY (demo value). ~5%.
+
+B6-06  Low-count PET/SPECT discrete reconstruction (lesion-present labels, activity levels as Potts)
+  Payoff: lesion-detection posterior probability in very low-dose scans.
+  Regime: HIGH. Low counts -> broad Poisson posterior -> weak effective couplings [own].
+  Mapping: Poisson log-likelihood is not quadratic -> needs quadratic surrogate H_prob (fine for
+    detailed balance [P1]). Energy: projector column updates, us-ms.
+  Spins: 1e5+ voxels; group 10-30.
+  Best classical: MLEM/OSEM + MAP priors, Gibbs/Langevin, learned reconstructions [lit-m].
+  Break-even: S* ~ 1e4-1e6 [own]. Kill risk: HIGH T -> local mixes. Verdict: KILL. <3%.
+
+B6-07  Protein-family sequence design from bmDCA Potts models (Russ 2020 style), sampled at T < 1
+  Payoff: functional enzyme/protein variants; experimentally validated pipeline exists [lit].
+  Regime: LOW/MEDIUM. Designs are drawn at T <= 1 below the training temperature (Russ et al.,
+    Science 369, 440 (2020)) [lit]; multimodal subfamily structure makes low-T Gibbs slow [spec].
+  Mapping: Potts q=21, L=60-300 positions -> 5 qubits per site binary (11 unused codes = infinite
+    energy), 300-1500 qubits full; couplings dense (all position pairs nonzero in bmDCA). Group = 3-4
+    contact positions = 15-20 qubits, effective field from the rest.
+  Energy cost: O(L) per site change, ~us. Cheap.
+  Mixing bottleneck? Not for practice: autoregressive arDCA (Trinquier et al., Nat Commun 2021
+    [lit-m]) and protein language models give i.i.d. samples with no Markov chain at all; adabmDCA
+    already tracks MCMC mixing time via autocorrelation (arXiv:2109.04105, 2501.18456) [lit].
+  Best classical: arDCA (exact ancestral sampling), Gibbs + PT, PLMs.
+  Break-even: S* ~ 1e6+ [own].
+  Kill risk: ancestral samplers make mixing irrelevant. Verdict: QUANTUM-INSPIRED ONLY. ~5-8%.
+
+B6-08  Antibody CDR-H3 design with an expensive affinity oracle (surrogate Potts proposal, oracle accept)
+  Payoff: Boltzmann-weighted diverse binders under a physics/ML affinity score (developability).
+  Regime: LOW on the surrogate (design wants high-affinity tail) [spec].
+  Mapping: L = 10-20 CDR positions, q = 20 -> 50-100 qubits binary, or restricted alphabets
+    (q = 4-8 per position -> 2-3 qubits) to fit 20-40 qubits. H_prob = Potts fitted to oracle scores
+    (pairwise). Proposal symmetric -> detailed balance with the oracle energy exact [P1].
+  Energy cost per step: 0.1 s (ML scorer) to minutes (docking / FEP) [spec].
+  Mixing bottleneck? The bottleneck is oracle calls per accepted, decorrelated sample.
+  Best classical: delayed acceptance on the same Potts surrogate; Bayesian optimisation; generative
+    language models; D-Wave peptide design already shown as optimisation (Meuser et al.
+    arXiv:2503.05458; Mulligan et al. bioRxiv 752485) [lit].
+  Break-even [own]: t_E >= 10 s -> S* <= 1.3 vs local. Against delayed acceptance, quantum needs the
+    q=20, L=15 Potts surrogate to be glassy; it may be, as protein Potts at T<1 is multimodal [spec].
+  Kill risk: oracle noise dominates, surrogate easy, or design is optimisation not sampling (then
+    QeMCMC is the wrong algorithm).
+  Verdict: SIMULATE MORE (couple to B6-02). ~10%.
+
+B6-09  Read-based haplotype phasing posterior (per-sample, MEC energy)
+  Payoff: phasing uncertainty for compound heterozygosity calls.
+  Regime: LOW (reads impose hard-ish constraints) but the coupling graph is near 1D (reads span few
+    adjacent het sites) [own].
+  Mapping: one spin per het site, couplings from read fragments; Max-Cut/QUBO mapping exists (QHap
+    arXiv:2603.25762 uses quantum-inspired simulated bifurcation; D-Wave haplotype inference
+    PAR NSF 10546294) [lit].
+  Energy: ns. Mixing bottleneck? No: near-1D graphs admit exact dynamic programming / forward
+    sampling (WhatsHap, HapCUT2) [lit-m].
+  Kill risk: exact DP. Verdict: KILL. <2%.
+
+B6-10  Population genotype imputation
+  Payoff: huge clinically (biobanks), but
+  Regime: n/a. Modern imputation/phasing uses Li-Stephens HMMs with exact forward-backward
+    (Beagle 5.x, SHAPEIT, Minimac; Beagle >20x faster than SHAPEIT on TOPMed per search snippet) [lit].
+    No MCMC mixing problem to solve.
+  Verdict: KILL. <1%.
+
+B6-11  Boltzmann-machine learning loop for large neural / fMRI max-ent models (QeMCMC as the moment
+       estimator inside fitting, N = 100-1000+)
+  Payoff: faster, less biased fitting of large pairwise/K-pairwise models (modern recordings reach
+    1e3 neurons; Meshulam et al. 2019 [lit-m]).
+  Regime: MEDIUM: fitted models sit near the specific-heat peak at T=1 (Tkacik 2015 [lit]) with
+    mixed-sign couplings, so Wolff/SW lose their guarantee [own]. Closest health analogue to the
+    PILOT's beta 0.3 SK point (2.8x steps vs weak baselines) [PILOT].
+  Mapping: all-to-all Ising, N spins; group 10-30 neurons.
+  Energy cost: O(N) per flip, ns-us. Cheap.
+  Mixing bottleneck? Partly: each gradient step needs equilibrated moments; persistent chains and
+    pseudo-likelihood / minimum-probability-flow avoid most sampling [lit-m].
+  Best classical: persistent contrastive divergence, PT, pseudo-likelihood, GPU Gibbs.
+  Break-even: S* ~ 1e6+ [own]; and fitting tolerates biased short chains, so exactness is not the
+    payoff.
+  Kill risk: pseudo-likelihood removes the sampler from the loop; MEDIUM gives only ~3x steps vs weak
+    baselines [PILOT], likely ~1x vs PT [spec].
+  Verdict: QUANTUM-INSPIRED ONLY. ~8%.
+
+B6-12  Clinical-trial rerandomization: sampling balanced treatment allocations
+  Payoff: exact design-based inference with very tight covariate balance; small trials (n = 20-200)
+    where imbalance hurts most.
+  Regime: LOW. Imbalance = ||X^T w||^2 with w in {+1,-1}^n is a dense Mattis-sum Ising, i.e. a
+    multi-dimensional number-partitioning energy (known golf-course landscape at tight thresholds)
+    [own]. Morgan & Rubin rerandomization (Ann Stat 2012, arXiv:1207.5625) accepts assignments below a
+    Mahalanobis threshold; optimal acceptance probabilities can be "astronomically small" with many
+    covariates (arXiv:2602.07613, MH rerandomization) [lit]; FastRerandomize arXiv:2501.07642 [lit].
+  Mapping: QUBO with J = X X^T (rank p, dense), plus equal-arm constraint (penalty or fixed-weight
+    subspace). Ties to the repo's number-partitioning epic. All-to-all -> swap network.
+  Energy cost: O(p) incremental per flip, ns. Spins: n = 20-200; group = whole trial for n <= 30.
+  Mixing bottleneck? Yes at extreme thresholds (rejection sampling dies; local MH swaps slow) [lit,
+    arXiv:2602.07613 motivates MH for exactly this reason].
+  Best classical: MH rerandomization (arXiv:2602.07613), GPU rejection (2501.07642), Kallus optimal
+    a priori balance via MIP (arXiv:1312.0531) [lit]; pair matching.
+  Detailed balance: target is uniform on {w : imbalance < a}; with symmetric QeMCMC proposal and
+    accept = indicator, stationary law is exactly uniform on the set [own, from P1 symmetry].
+  Break-even: one trial needs ~1e3-1e4 allocations once, offline; seconds of classical time suffice
+    [own]. Wall-clock payoff ~ nil; value is a clean LOW-T, dense, small-n, real-world energy for a
+    step-scaling study.
+  Kill risk: nobody needs it faster; regulators prefer simple minimisation/stratification.
+  Verdict: SIMULATE MORE (as a benchmark instance family, not a product). ~10%.
+
+B6-13  Radiotherapy beam-angle set sampling (diverse near-optimal beam sets)
+  Payoff: give planners several Boltzmann-weighted near-optimal angle sets.
+  Regime: LOW (near-optimal tail) [own].
+  Mapping: one-hot / k-of-M selection over M = 36-72 candidate angles, k = 5-9; pairwise QUBO
+    surrogate from beam-pair scores; true energy = inner fluence-map optimisation.
+  Energy cost per step: seconds to minutes per inner FMO solve [spec] -> expensive energy.
+  Mixing bottleneck? This is optimisation; samples are a nice-to-have.
+  Best classical: column generation, iCycle, GA/SA, quantum-inspired MIP (Shinde et al., Med Phys
+    2025, arXiv:2504.07844) [lit]; QUBO FMO on annealers (TNO; Nazareth & Spaans PMB 2015) [lit].
+  Break-even [own]: t_E ~ 10-60 s -> S* ~ 1.05-1.3 vs local; vs surrogate-driven classical proposal ~1
+    unless the beam-pair surrogate is glassy (k-of-M with smooth pair scores is probably not) [spec].
+  Kill risk: optimisation problem dressed as sampling. Verdict: KILL for QeMCMC (fine for QAOA/annealing
+    folks). ~3%.
+
+B6-14  Epidemic source / hidden-infection-state inference on contact networks
+  Payoff: outbreak source and unobserved infection maps (hospital wards).
+  Regime: posterior over binary infection states; the generative model is non-equilibrium SIR, so the
+    energy is a likelihood requiring trajectory integration [own].
+  Mapping: not pairwise Ising; surrogate needed.
+  Best classical: belief propagation for epidemic inference (Altarelli et al., PRL 112, 118701 (2014))
+    [lit-m]; particle MCMC.
+  Kill risk: BP is near-exact on sparse contact networks. Verdict: KILL. <3%.
+
+B6-15  Polypharmacy / drug-regimen selection with pairwise adverse-interaction couplings
+  Payoff: sample safe regimens for multimorbid patients.
+  Regime: n = 10-30 candidate drugs per patient -> 2^30 enumerable or constraint-solvable; pairwise
+    adverse interactions sparse. Higher-order drug interactions are common and tend to antagonism
+    (Tekin et al. style, PubMed 30181902 / PMC6119685) [lit], so a pairwise Ising misdescribes them.
+  Best classical: exact enumeration / ILP. Verdict: KILL. <2%.
+
+B6-16  Disease co-occurrence (multimorbidity) Ising from EHR as a virtual-patient generator
+  Payoff: synthetic EHR cohorts preserving comorbidity structure.
+  Regime: HIGH. Low prevalences = strong negative fields, mostly positive (ferro) couplings [own; cf.
+    phenotypic disease networks, Hidalgo et al. PLoS Comput Biol 2009 [lit-m]].
+  Spins: 50-500 diagnoses. Energy: ns.
+  Best classical: Gibbs (mixes), autoregressive / tabular generative models (exact ancestral sampling).
+  Verdict: KILL. <2%.
+
+B6-17  Discrete MRF deformable registration uncertainty (displacement labels per control point)
+  Payoff: registration error maps for radiotherapy contour propagation.
+  Regime: MEDIUM; many labels (q = 100s), smoothness pairwise terms, strong data term [lit-m].
+  Mapping: q in the hundreds -> 7-9 qubits per node; grid graph.
+  Best classical: FastPD / TRW-S for MAP (Glocker et al. 2008 [lit-m]); sampling via Gibbs or
+    perturb-and-MAP; deep registration with probabilistic outputs.
+  Verdict: KILL. <3%.
+
+B6-18  GWAS fine-mapping: posterior over causal-SNP configurations in high-LD loci
+  Payoff: credible sets that drive which variant gets functional follow-up; mis-assigned causality in
+    high-LD regions is a known practical problem [lit-m].
+  Regime: LOW/MEDIUM effective. Strong LD makes SNPs near-interchangeable -> near-degenerate,
+    well-separated modes (swap causal SNP A for its LD partner B requires two coordinated flips through
+    a low-probability state) [own].
+  Mapping: one spin per SNP indicator (gamma_j); energy = -log marginal likelihood (needs k x k solves
+    for k causal; NOT pairwise) -> quadratic surrogate H_prob from the LD matrix (z^T R^-1 z style
+    approximation) [own]. Detailed balance with the exact energy holds for any symmetric surrogate [P1].
+  Energy cost: O(k^3) with k <= 5-10 -> us-ms. Spins: locus of 100-5000 SNPs; group = one LD block of
+    10-30 SNPs.
+  Mixing bottleneck? Yes for naive MCMC; but best tools sidestep it: FINEMAP shotgun stochastic search,
+    SuSiE variational, CAVIAR/DAP-G exhaustive up to small k, and LD-aware swap moves [lit-m].
+  Best classical: FINEMAP (Benner et al., Bioinformatics 2016), SuSiE (Wang et al., JRSS-B 2020)
+    [lit-m]; PT with swap moves.
+  Break-even: S* ~ 1e3-1e6 [own].
+  Kill risk: the dedicated "swap" move (replace causal SNP with LD partner) is a classical cluster move
+    that solves exactly the hard transition; sparsity (k small) makes the space searchable.
+  Verdict: SIMULATE MORE (cheap to test on simulated LD blocks; good honest negative if swap moves
+    win). ~10%.
+
+B6-19  Bayesian network / causal DAG structure sampling for clinical data
+  Payoff: posterior over causal graphs for treatment-effect reasoning.
+  Regime: LOW-ish multimodal; but acyclicity is a global hard constraint, not an Ising energy.
+  Mapping: edges as spins -> most proposals cyclic -> near-zero acceptance [own].
+  Best classical: order MCMC (Friedman & Koller 2003), partition MCMC, DiBS [lit-m].
+  Verdict: KILL. <2%.
+
+B6-20  Spatial-transcriptomics cell-type maps with a Potts prior (BayesSpace-style MCMC)
+  Payoff: tumour-microenvironment clone/cell-type maps with uncertainty (closest live analogue to the
+    qh-17 clone-map layer).
+  Regime: HIGH-to-MEDIUM. BayesSpace (Zhao et al., Nat Biotech 2021 [lit-m]) uses a Potts smoothing
+    prior with a Gibbs sampler; strong expression data term dominates [lit-m].
+  Mapping: Potts on hexagonal spot lattice (Visium ~4,000 spots), q = 5-15 -> 3-4 qubits per spot;
+    hex lattice is not heavy-hex native but low degree [own].
+  Energy: local, ns-us. Mixing bottleneck? No in practice; frustration only if competing-clone
+    antiferro couplings are imposed (qh-17's condition), which data do not support [own].
+  Verdict: KILL. <3%.
+
+=====================================================================================================
+KNOWN PROJECT IDEAS
+=====================================================================================================
+
+KNOWN-K8  TCGA driver-mutation co-occurrence / mutual-exclusivity Ising (virtual-patient genotypes)
+  Payoff: synthetic genotypes for virtual tumour cohorts (qh-17 layer G).
+  Regime: HIGH. Why: no published max-ent fit found [lit search]; with ~500 tumours per cancer type,
+    regularised fits give strong negative fields (low driver frequencies) and few, weak couplings;
+    mutual exclusivity is often a subtype/mutation-load confound (PMC6816465; DIALECT 2024) [lit]. A
+    handful of antiferro pairs (e.g. KRAS-EGFR in LUAD) on a sparse graph is hardly frustrated [own].
+  Mapping: Ising, n = 12-40 genes, sparse after pruning; heavy-hex fit OK with SWAPs.
+  Energy: ns. Spins: 12-40 full; no coarse-graining needed.
+  Mixing bottleneck? No. n <= ~25 enumerable exactly; sparse/tree-like graphs -> junction tree exact
+    sampling; local Gibbs mixes at HIGH T [own].
+  Best classical: exact enumeration / junction-tree ancestral sampling; or skip Ising and resample real
+    TCGA genotypes.
+  Break-even: none possible (S* ~ 1e8, and exact samplers exist) [own].
+  Kill risk: already realised (qh-17 bear case). Verdict: KILL. <2%.
+
+KNOWN-K10  Resistance-gene co-occurrence or drug-synergy Ising
+  Payoff: predict resistance gene combinations / synergistic drug sets.
+  Regime: HIGH for gene co-occurrence (plasmid linkage = ferro clusters, strong population-structure
+    confounds) [own]; drug sets n = 5-20 -> enumerable. Higher-order drug interactions are prevalent and
+    tend to antagonism (PMC6119685) [lit], while pairwise models still predict up to 10-drug combos
+    (Katzir et al., PMC6370231) [lit] - either way a dose model, not a Boltzmann-sampling problem.
+  Mapping: Ising n = 5-40. Energy: ns.
+  Best classical: exhaustive ranking of combinations (PMC6695482 TB example) [lit].
+  Verdict: KILL. <2%.
+
+KNOWN-K11  fMRI energy-landscape analysis (Watanabe / Ezaki; basins = brain states)
+  Payoff: brain-state basins, transition rates, clinical biomarkers (autism, ageing, IQ).
+  Regime: fitted at T = 1 by construction; whole-brain N=264 fits sit in the PARAMAGNETIC phase near
+    (but "substantially off") the spin-glass boundary (Ezaki et al. 2020) [lit] -> HIGH-to-MEDIUM,
+    paramagnetic side. Standard analyses use N ~ 7-15 ROIs (Masuda et al. arXiv:2411.16979) [lit].
+  Mapping: all-to-all Ising; N = 7-15 (standard) or 264 (phase-diagram work, pseudo-likelihood).
+  Energy: ns. Spins: 7-15 -> 2^15 = 32,768 states: exhaustive enumeration of basins and disconnectivity
+    graphs is the method itself.
+  Mixing bottleneck? No. Small N is enumerated; large N is paramagnetic, so local MC mixes.
+  Best classical: exact enumeration + Dijkstra on the state graph (standard ELA), pseudo-likelihood +
+    Metropolis for N=264.
+  Break-even: none [own]. Only the artificial spin-glass side of the phase diagram (raising sigma beyond
+    the data) is LOW-T - that is a generic SK study, not a medical one.
+  Verdict: KILL. <3%.
+
+KNOWN-K12  Neuron-population max-ent Ising (Schneidman 2006; Tkacik)
+  Payoff: generative model of population codes; sampling for entropy/thermodynamics estimates.
+  Regime: MEDIUM. Fitted retina models (N up to 160) sit near the specific-heat peak at T = 1, peak
+    sharpening with N (Tkacik et al. PNAS 2015; Mora & Bialek 2011) [lit]. Caveat: subsampling alone
+    produces this signature (Nonnenmacher et al. 2017) [lit]. Schneidman et al., Nature 440, 1007
+    (2006): N = 40 salamander retina, weak pairwise correlations imply strongly collective states [lit].
+  Mapping: all-to-all Ising with mixed-sign couplings; N = 40-160 (retina) to 1e3 (Neuropixels).
+    Group 10-30.
+  Energy: O(N) ns-us. Spins: 40-1000.
+  Mixing bottleneck? Moderate: near the specific-heat peak local moves slow down; mixed signs block
+    clean Wolff/SW use; PT works well at N ~ 100 [lit-m]. Retina models are dominated by a ferro-like
+    "number of active cells" mode, i.e. weakly frustrated [spec].
+  Best classical: PT, GPU Gibbs, pseudo-likelihood / MPF for fitting (sampling avoided).
+  Break-even: S* ~ 1e6+ [own]. PILOT at the critical (MEDIUM) point gives ~2.8x steps vs local/uniform
+    only [PILOT]; vs PT probably ~1x [spec].
+  Verdict: QUANTUM-INSPIRED ONLY (best of the KNOWN items, still weak). ~8%.
+
+KNOWN-K13  Symptom / comorbidity networks (IsingFit)
+  Payoff: simulate symptom dynamics, "tipping" into depression, intervention targets.
+  Regime: LOW-T in a ferromagnetic two-well sense: low "network temperature" networks are bimodal
+    (healthy vs depressed state) and temperature falls across adolescence (Grimes, Epskamp et al., Nature
+    Mental Health 2025) [lit]. Couplings mostly positive -> unfrustrated.
+  Mapping: Ising N = 9-20 (up to 120 in the largest study [lit]).
+  Energy: ns. Spins: <= 20 typical -> exact enumeration of 2^20 = 1e6 states takes milliseconds.
+  Mixing bottleneck? Two-well ferro: tunnelling between wells is slow for local moves, but a global
+    spin-flip / Wolff-with-ghost-spin move or enumeration solves it [own].
+  Best classical: exact enumeration; Wolff with ghost spin; PT.
+  Verdict: KILL. <2%.
+
+KNOWN-K14  MRF segmentation lens as easy contrast
+  Payoff: a deliberate negative control for the team.
+  Regime: HIGH (data-term dominated). Binary submodular MAP is exactly solvable by graph cuts
+    (Boykov, Veksler, Zabih, IEEE TPAMI 23, 1222 (2001)) [lit-m]; sampling via Swendsen-Wang cuts
+    (Barbu & Zhu 2005) [lit] or perfect MCMC (PubMed 31085445) [lit].
+  Mapping: grid Potts/Ising, nearest neighbour -> heavy-hex friendly 3x4 lens (12 qubits).
+  Energy: ns. Spins: 12-qubit lens of a 1e6-pixel image.
+  Mixing bottleneck? No.
+  Use: keep it as the negative control: QeMCMC step ratio should be ~1 (or below, PILOT beta 0.1 gives
+    only 1.29x vs weak baselines) and below SW. If it is not, the harness is suspect.
+  Verdict: KILL as application; KEEP as control. Application value <1%.
+
+=====================================================================================================
+SYNTHESIS
+=====================================================================================================
+1. The qh-17 closure generalises [own]: data-fitted health Ising/Potts models (genotypes, symptoms,
+   comorbidity, fMRI, segmentation, spatial omics) are HIGH-T, ferromagnetic, or small enough to
+   enumerate. Fitting at T = 1 to finite, sparse clinical data with regularisation pushes models toward
+   the paramagnetic side. The one partial exception is neural populations (MEDIUM, near a specific-heat
+   peak), and even there the signature may be a subsampling artefact.
+2. Where frustration is real in health, it comes from PHYSICS or DESIGN, not from data fits:
+   few-view discrete tomography (J = A^T A, NP-hard), tight-balance rerandomization (number-partitioning
+   energy), LD-degenerate fine-mapping, low-T protein/antibody Potts design.
+3. Every candidate has cheap energy except B6-02/08/13. Expensive energies make S* ~ 1-30 against local
+   moves, but the honest competitor is classical delayed acceptance on the same surrogate, which
+   reduces the quantum case to "is the surrogate glassy?".
+4. Nothing here is BUILD NOW. Nothing reaches wall-clock break-even on sequential cloud hardware
+   (A4: ~2-5 s per IBM step).
+
+TOP 3 (for the team lead)
+  1. B6-01 few-view discrete tomography posterior: physics-defined frustrated LOW-T energy, exact
+     quadratic (no surrogate), natural P2 patch groups, open sampling angle (prior quantum CT work only
+     optimises). Test vs PT and ghost-swap cluster moves.
+  2. B6-02 + B6-08 expensive-energy family (nonlinear imaging forward models, antibody oracle): the only
+     route where S* drops to ~1-6 at today's latency; succeeds only if the surrogate is glassy, so run
+     it after B6-01 measures glassiness.
+  3. B6-18 GWAS fine-mapping in high-LD blocks (or B6-12 rerandomization as a clean LOW-T dense
+     benchmark): real decision value, cheap to simulate, and a well-defined classical cluster move
+     (causal-SNP swap) to beat, so a negative result is still clean.
+  Best KNOWN item: K12 neural max-ent (MEDIUM), QUANTUM-INSPIRED ONLY.
+
+NOTE ON SOURCES: the session-wide web-search budget ran out mid-task. References marked [lit-m]
+(Gardner et al. 1999, DART 2011, Christen & Fox 2005, Boykov et al. 2001, Swendsen & Wang 1987, arDCA
+2021, FINEMAP, SuSiE, BayesSpace, Altarelli 2014, Glocker 2008, Hidalgo 2009, Meshulam 2019) are from
+memory and must be checked before citation.

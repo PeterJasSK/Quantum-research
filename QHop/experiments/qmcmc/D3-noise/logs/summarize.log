@@ -1,0 +1,13 @@
+      HIGH   S_plain 0.929 [0.912,1.03] S_hast 0.914 [0.897,1.02] bias TVD 0.00676 [0.00631,0.007] KL 0.000137 [0.000134,0.000145]
+  aer_marrakesh marrakesh_noRO: asym 0.0564 [0.0563,0.058] TVD_ideal 0.189 [0.185,0.196] TVD_unif 0.316 [0.308,0.319] F_eff 0.565 [0.565,0.567] CZ/circuit 351
+      LOW    S_plain 0.941 [0.837,1.14] S_hast 0.944 [0.832,1.15] bias TVD 0.000674 [0.000601,0.0116] KL 1.82e-05 [1.67e-05,0.000408]
+      MEDIUM S_plain 1.09 [0.944,1.16] S_hast 1.06 [0.93,1.15] bias TVD 0.0135 [0.0133,0.0136] KL 0.000641 [0.000489,0.000757]
+      HIGH   S_plain 0.921 [0.913,1.05] S_hast 0.91 [0.899,1.03] bias TVD 0.0214 [0.0186,0.0246] KL 0.00141 [0.0011,0.00174]
+
+FIT S_eff = 1 + (S_ideal-1) F^a  (least squares in log, points with 0.02<F<0.98 and S>1)
+  exactDM dep LOW: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.99; a (F_eff fitted from Q) = 1.35; points 23
+  exactDM dep MEDIUM: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.85; a (F_eff fitted from Q) = 1.16; points 20
+  exactDM dep HIGH: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = -0.35; a (F_eff fitted from Q) = -0.45; points 5
+  model_global_dep gdepmodel LOW: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 1.10; a (F_eff fitted from Q) = 1.17; points 97
+  model_global_dep gdepmodel MEDIUM: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 1.48; a (F_eff fitted from Q) = 1.55; points 79
+  model_global_dep gdepmodel HIGH: a (F proxy (1-eps)^N2q (1-eps/10)^N1q) = 0.43; a (F_eff fitted from Q) = 0.44; points 12

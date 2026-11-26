@@ -1,0 +1,485 @@
+A1 REPORT -- P1: Layden, Mazzola, Mishmash, Motta, Wocjan, Kim, Sheldon,
+"Quantum-enhanced Markov chain Monte Carlo", Nature 619, 282-287 (2023), arXiv:2203.12497
+Reviewer: sub-agent A1. Date: 2026-11-20.
+=====================================================================================
+
+SOURCE AND HOW IT WAS READ
+--------------------------
+- Local PDF: QHop/plans/papers/Layden_Quantum-enhanced-MCMC_2023.pdf, 49 pages. All 49 pages were read.
+  It is the arXiv v1 preprint (stamp "arXiv:2203.12497v1 [quant-ph] 23 Mar 2022"), NOT the typeset Nature
+  article. It has the 9-page main text (PDF pp.1-9) and the full 40-page Supplementary Information
+  (PDF pp.10-49, numbered SI p.1-40). So SI page N = PDF page N+9.
+- arXiv abs page checked 2026-11-20: only [v1] exists. It links the Nature DOI 10.1038/s41586-023-06095-4.
+- CAVEAT: I did not read the Nature 2023 typeset version. Wording, figure numbering or extra data may differ
+  between arXiv v1 and the Nature version (Nature moves parts of the SI into "Methods"). All locations below
+  refer to arXiv v1. Any difference is "not verified".
+- Labels: [P1: loc] = shown in P1 at that location. [INF] = my inference. "not in P1" = absent.
+  Numbers read off plots (not printed in the text) are marked "~, read from figure".
+
+=====================================================================================
+1. EXACT ALGORITHM
+=====================================================================================
+
+1.1 Target and classical model
+- Ising energy E(s) = - sum_{j>k} J_jk s_j s_k - sum_j h_j s_j, s in {1,-1}^n; mu(s) = exp(-E(s)/T)/Z.
+  [P1: main Eq.(1), p.1]
+- Spectral gap: delta = 1 - max_{lambda != 1}|lambda| of the 2^n x 2^n transition matrix P. Mixing-time bound
+  (delta^-1 - 1) ln(1/(2 eps)) <= tau_eps <= delta^-1 ln(1/(eps min_s mu(s))). [P1: Eq.(9), p.3]
+
+1.2 Full loop (Algorithm S1) [P1: SI Sec. II, Algorithm S1, SI p.2]
+  1  s = initial spin configuration (often uniformly random)
+  2  while not converged:
+  3    Propose jump (quantum step 1)
+  4    gamma = random.uniform(0.25, 0.6)
+  5    t = random.uniform(2, 20)
+  6    |psi> = exp[-i H(gamma) t] |s> on the quantum device
+  7    s' = result of measuring |psi> in the computational basis
+  8    Accept/reject (classical step 2)
+  9    A = min(1, e^{[E(s)-E(s')]/T})
+  10   if A >= random.uniform(0,1): s = s'
+- State prep: the computational basis state |s> (s_j = +-1 = Z_j eigenvalue). [P1: p.2, "Step 1"]
+- Measurement: every qubit in the Z basis, giving s'. [P1: p.2]
+- Accept rule: Metropolis-Hastings Eq.(3) with Q(s|s')/Q(s'|s) = 1 because of the symmetry, so
+  A = min(1, mu(s')/mu(s)). [P1: Eq.(3), p.2; Alg. S1 line 9; on hardware "set Q(s|s')/Q(s'|s) = 1 in the
+  acceptance probability", p.5]. Gibbs/Glauber acceptance A_G (Eq. S8) also tested: "little impact". [P1: SI
+  Sec. III C3, SI p.8]
+
+1.3 Hamiltonian -- form verified
+- H = (1 - gamma) alpha H_prob + gamma H_mix   [P1: Eq.(5), p.2]
+- H_prob = - sum_{j>k} J_jk Z_j Z_k - sum_j h_j Z_j = sum_s E(s)|s><s|   [P1: Eq.(6), p.3]
+- H_mix = sum_{j=1}^n X_j   [P1: Eq.(7), p.3]
+- alpha = ||H_mix||_F / ||H_prob||_F = sqrt(n) / sqrt( sum_{j>k} J_jk^2 + sum_j h_j^2 )   [P1: Eq.(8), p.3]
+  (||M||_F = tr(M^dag M)^{1/2}, the Frobenius norm.) Quote: "which -- crucially -- can be computed in O(n^2) time."
+  Purpose: "so that both terms of H share a common scale regardless of {J_jk, h_j}". [P1: p.3]
+- gamma in [0,1]. alpha multiplies ONLY H_prob, and H_prob is NOT divided by T. So the quantum proposal Q(s'|s)
+  does not depend on T. [P1: Fig. 5 caption, "none depend on T or on the choice of acceptance probability"]
+- SI Sec. III B shows how alpha scales: <alpha> ~ sqrt(2)/(sigma sqrt(n)) for fully connected instances (Eq. S6)
+  and ~ 1/(sigma sqrt 2) for 1D chains (Eq. S7). So "the 1/sqrt(n) scaling of the original S-K model arises
+  naturally in the quantum part of our algorithm". [P1: SI p.5]
+- More general allowed H_mix: "arbitrary weighted sums and products of X_j and Y_jY_k terms" (keeps H real
+  symmetric). [P1: p.3]
+- Not adiabatic: "Note that we do not invoke adiabatic quantum evolution in any way ... the relative weights of
+  H_prob and H_mix are held fixed throughout each quantum step." [P1: p.3]
+
+1.4 How gamma and t are drawn
+- In the algorithm as stated: gamma ~ U[0.25, 0.6], t ~ U[2, 20], drawn fresh each MCMC iteration.
+  [P1: Alg. S1 lines 4-5; SI p.2; main p.3 "picking gamma and t uniformly at random in each iteration"]
+- How they were chosen: "We settled on these ad hoc distributions through trial and error on a small number of
+  fully-connected random model instances, and found them to be robust across a wide range of instances for
+  various n and model connectivities." [P1: SI p.2]
+- Numerics actually used a discrete gamma: 20 midpoints of [0.25,0.6], Delta-gamma = 0.0175 (Eq. S3); the t
+  integral was done analytically as a channel average (Eq. S2). [P1: SI Sec. III A, SI p.4]
+- Hardware used gamma in Gamma = 10 midpoints, Delta-gamma = 0.035 (Eq. S17), and t in
+  T = {r*Dt | 2 <= r <= 25} = {1.6, 2.4, 3.2, ..., 19.2, 20} with Dt = 0.8 (Eq. S18). That is 10 x 24 = 240
+  (gamma,t) settings. [P1: SI Sec. IV A3, SI pp.19-20]
+- t is not scaled with n: "t did not depend on the problem size n in our implementation, although in some
+  settings it should grow with n if the qubits are all to remain within each others' light cones." [P1: p.7]
+
+1.5 Trotterization on hardware [P1: SI Sec. IV A1, SI pp.15-17; main p.5]
+- Split H = H1 + H2:
+  H1 = -(1-gamma) alpha sum_j h_j Z_j + gamma sum_j X_j   (1-body)   [Eq. S13]
+  H2 = -(1-gamma) alpha sum_{j>k} J_jk Z_j Z_k            (2-body)   [Eq. S14]
+- Order: 2nd-order product formula V = (e^{-iH2 Dt/2} e^{-iH1 Dt} e^{-iH2 Dt/2})^r, Dt = t/r. [Eq. S15]
+- The first and last half-steps of e^{-iH2} are diagonal, so they do not change computational-basis
+  statistics and are dropped. What was run is
+  V~ = e^{-iH1 Dt} (e^{-iH2 Dt} e^{-iH1 Dt})^{r-1} [Eq. S16]. This is "a 2nd-order r-step PF (or equivalently,
+  a 1st-order r-step PF [21]) using only r-1 applications of the entangling Trotter step". [SI p.16]
+- Step size: "We used a Trotter timestep of Dt = 0.8 for all experiments in this work", picked as a good
+  trade-off between Trotter and gate error, independent of t, gamma and instance. [SI p.16]
+- Gates: e^{-iH1 Dt} = parallel single-qubit exp[-i(a_j X_j + b_j Z_j)], a_j = gamma Dt, b_j = -(1-gamma) alpha
+  h_j Dt, done as Qiskit "U" gates (two X90 pulses + virtual Z). e^{-iH2 Dt} = R_ZZ(theta_jk),
+  theta_jk = -2 J_jk (1-gamma) alpha Dt, in two layers of parallel R_ZZ on a 1D chain (Fig. S8).
+  R_ZZ is built as H.R_ZX.H with pulse-efficient (scaled cross-resonance) R_ZX, angle folded into
+  [-pi/2, pi/2] (Figs. S9, S10). So each R_ZZ costs "a fraction of a CNOT rather than two CNOTs". [SI pp.16-17]
+- Depth: "a randomly-compiled second-order Trotter-Suzuki product formula ... with up to 48 layers of
+  pulse-efficient 2-qubit gates acting on up to 5 pairs of qubits in parallel". [P1: main p.5]
+  Consistent with r_max = 25: 24 entangling steps x 2 layers = 48. [INF]
+- Gate counts: no total gate count is printed. [not in P1]. [INF] For n=10 on a 1D chain each entangling step has
+  9 R_ZZ (5+4), so the deepest circuit (r=25) has 24 x 9 = 216 pulse-efficient R_ZX gates, plus 25 layers of
+  1-qubit U gates. The shallowest (t=1.6, r=2) has 1 entangling step (9 R_ZX).
+- 1D only on hardware: "we implemented our algorithm exclusively for 1D problem instances in order to avoid SWAP
+  gates". [SI p.16; main p.5]
+- Noise tailoring, used in all experiments: SPAM twirling (random key c, prepare |s XOR c>, flip signs of
+  J,h, XOR the output; Fig. S11) and gate twirling (random Paulis around each R_ZX; Fig. S12). [SI pp.17-19]
+- Experiment layout: H^{(x)n} on |0>^n, measure to get a random s, then the Trotter circuit, then measure s'
+  (Fig. S13). Each of the 240 (gamma,t) settings x N_twirl random twirls was run for N_shots shots.
+  [SI pp.19-20]
+- NOT run online: "We did not experimentally implement our MCMC algorithm 'online' by alternating between
+  quantum and classical steps in real time. Doing so would have been impractically slow due to limitations in
+  the classical infrastructure around our quantum processor." Chains were built offline from a cache of
+  measured transitions ("Markov chain subsampling", sampling without replacement). [SI Sec. IV B1, pp.20-21]
+- The hardware "delta" is inferred: estimate Q-hat(j|k) from counts (Eq. S20), build P-hat with the exact
+  classical M-H acceptance (Eqs. S21-S22), then diagonalize. [SI Sec. IV B, p.20]. [INF] This needs the full
+  2^n x 2^n matrix, so it is a small-n validation method, not a scalable one (the authors say this too, sec. 7).
+
+=====================================================================================
+2. SYMMETRY / DETAILED-BALANCE ARGUMENT
+=====================================================================================
+
+2.1 What is required [P1: Eq.(4), p.2]
+- Constraint: |<s'|U|s>| = |<s|U|s'>| for all s, s'. Then Q(s'|s) = |<s'|U|s>|^2 = Q(s|s'), and the
+  intractable Q ratio in Eq.(3) is 1. Quote: "While computing Q(s'|s) and Q(s|s') may take exponential (in n)
+  time in general, there is no need to do so: Eq. (3) depends only on their ratio, which equals 1 since
+  Q(s'|s) = |<s'|U|s>|^2 = Q(s|s') due to (4)." [p.2]
+- The quantum step is only the proposal. Detailed balance comes from the classical M-H acceptance; convergence
+  to mu also needs irreducibility and aperiodicity. [p.2; SI Sec. II A, p.3]
+
+2.2 Why U satisfies it [P1: p.3; SI Sec. V C, Eqs. S40-S41, SI p.37]
+- Real symmetric H gives U = U^T: "These produce a symmetric H and therefore U = U^T (although U != U^dag
+  generically), thus satisfying condition (4)." [p.3]
+- SI version: with <k|H_mix|j> real, "H is real and symmetric (not just Hermitian), so it has real eigenvalues
+  ... and a set of real orthonormal eigenvectors", so U^T = sum e^{-i lambda t}|l><l|^T = U (Eq. S41). [SI p.37]
+- So the condition is: real H in the computational basis (= H^T), equivalently built from Z, X, YY-type real
+  terms. A Y_j single term would break it. [INF from the stated allowed set "X_j and Y_jY_k terms"]
+- Time-dependent H: a sufficient condition is H(t)^T = H(t) and H(t) = H(tau - t) (palindromic schedule),
+  proved in SI Eqs. S42-S46. Used to justify reverse annealing (Eq. S47) as a valid proposal. [SI pp.37-38]
+- Random mixtures: "instead of applying the same U in every iteration ... one could equally well pick U at random
+  in each iteration from an ensemble {U1, U2, ...} of unitaries, each satisfying condition (4)." [p.3]
+  As stated, P1 asks that EACH member be symmetric. [INF] Mathematically only the averaged Q has to be symmetric.
+  P1 points at this only in the noise context ("symmetry on average", p.7) and does not state it as a theorem.
+- Irreducibility/aperiodicity: sufficient if Q(s'|s) > 0 for all s,s'. Formally guaranteed by mixing in a
+  uniform proposal with probability eps, but "In practice, however, we found no need for this formality. Absent
+  some special symmetry, no s -> s' quantum transition should be completely forbidden. Considering also
+  experimental noise, Q(s'|s) > 0 for all s and s' is all-but formally assured". [SI p.3]
+
+2.3 Does it survive Trotterization?
+- P1 does not explicitly prove that the Trotter circuit is symmetric. [not in P1 as an explicit statement]
+- [INF] It does survive. Every factor is a transpose-symmetric matrix: e^{-iH1 Dt} is a product of single-qubit
+  exp[-i(aX+bZ)] (X, Z are real symmetric), and e^{-iH2 Dt} is diagonal. The 2nd-order palindrome V = ABA gives
+  V^T = A^T B^T A^T = V, and V^r is symmetric too. The implemented V~ = e^{-iH1}(e^{-iH2}e^{-iH1})^{r-1} is also a
+  palindrome in the factors, so V~^T = V~. Dropping the diagonal end layers only changes phases. A NON-palindromic
+  ordering of non-commuting real factors (e.g. ABC with A != C) is generally not transpose-symmetric. That would
+  break Eq.(4) unless it is fixed by randomizing the ordering.
+- Twirled circuits: the SPAM-twirled circuit "do[es] not implement the same unitary" but gives the same
+  transition probabilities after XOR post-processing. [SI p.17-18]
+
+2.4 Noise and correctness -- what the authors say
+- "(We emphasize that quantum errors do not necessarily bias our MCMC algorithm, i.e., cause it to converge to the
+  wrong distribution. Rather, it is asymmetry in the quantum errors that can have this effect.)" [SI p.17]
+- "We found that implementing bare Trotter circuits like that in Fig. S8 clearly breaks this symmetry, which could
+  bias our algorithm. We attribute this to biased errors in the two-qubit gates and the readout". Fix: SPAM +
+  gate twirling. [SI p.17]
+- Symmetry was tested with Bowker's test on IID subsamples (200 subsamples, 1% threshold) [SI Sec. IV B2, pp.21-22]:
+    n=10: <p_sym> traditional 36.7%, modified 25.1% [Fig. S15]
+    n=9 : 12.7% / 12.7% [Fig. S20]
+    n=8 : 41.4% / 41.4% [Fig. S27]
+  All are above 1%, so the data are consistent with symmetry.
+- Honesty caveat: "Note that exact Q(s|s') = Q(s'|s) symmetry is impossible in a complex engineered system like
+  a quantum computer ... we do not claim that any of our experiments realized a Q that was exactly symmetric,
+  only that it was symmetric enough for practical purposes." A wrong ratio "may converge to a slightly different
+  distribution than intended [41], which may slightly bias thermal average estimates ... We could not resolve any
+  such biases in our experiments." Rule of thumb: "if the (potential) asymmetry in Q is too small to detect from
+  the data at hand, it is probably too small to make much difference in your MCMC results ... long Markov chains
+  are more sensitive to such asymmetry." [SI p.22]
+- Main-text robustness claim: "if an error occurs in the quantum processor while a jump is being proposed, the
+  proposal will be accepted/rejected as usual, and the Markov chain can still converge to the target distribution
+  provided such errors do not break the Q(s'|s) = Q(s|s') symmetry on average [11]. Rather than produce the wrong
+  result, we found that such errors merely slow the convergence at low T by making our algorithm more classical.
+  Indeed, in the limit of fully depolarizing noise, our algorithm reduces to MCMC with a uniform proposal." [p.7]
+- [INF] No quantitative bound links measured asymmetry to bias in mu. The only check is the Bowker test plus
+  magnetization traces that converge "with no discernible bias" (p.6).
+
+=====================================================================================
+3. INSTANCE FAMILIES, n, COUNTS, TEMPERATURES
+=====================================================================================
+
+3.1 Simulation ensembles (exact, noiseless)
+- Fully connected "SK-like": J_jk, h_j IID N(0,1), all couplings nonzero (almost surely). It differs from SK
+  because (i) it adds random fields h_j and (ii) it uses variance 1 rather than 1/n (no 1/sqrt(n)).
+  "it would be trivial to introduce this 1/sqrt(n) scaling into our results by simply rescaling the temperature
+  as T -> T/sqrt(n)." [P1: p.4; SI Sec. III B, SI pp.4-5]
+- 1D open chain: J_{j+1,j}, h_j ~ N(0,1), all other J = 0. [SI Sec. III C1, SI p.5; Fig. S1]
+- n = 3..10, 500 random instances per n, for each family. [p.4 "500 random spin glass instances"; Fig. 2,
+  Fig. S1 captions]. The same instances were reused for Figs. S2-S7.
+- Mismatched-quantum control: same distribution, but the quantum step uses a different random (J~, h~). [p.4]
+- Simulations cover only n <= 10. No fully connected simulation at larger n. [not in P1]
+
+3.2 Hardware instances (illustrative, hand-picked)
+- Three 1D instances, n = 10 (main text), n = 9 and n = 8 (SI). Coefficients are printed in Eqs. S26, S29, S30.
+- Selection: "We generated random model instances and picked illustrative ones whose lowest-E configurations
+  include several near-degenerate local minima" [p.5]. For n=10: "the six lowest-E configurations are all local
+  minima, and the two lowest have an energy difference of just |DE| = 0.05". [p.5]
+- One instance per n on hardware. No ensemble on hardware. [P1: SI Sec. IV C]
+
+3.3 Temperatures
+- delta vs T sweeps go continuously over T = 0, 10^-3 ... 10^3, and T = infinity (Figs. 2a, 3, S1a, S2, S4, S6,
+  S16, S17, S21, S22, S28, S29).
+- Scaling fits are at T = 10^-2, 10^-1, 0.5, 1, 5, 10, 10^2 (Fig. 2b at T=1; Fig. S3; Tables S1-S3).
+- Magnetization/trajectory experiments use only T = 0.1 (Figs. 4, S23, S30).
+- How T = 0.1 was chosen: "This T is therefore sufficiently high that sampling from mu is not simply an
+  optimization problem (where <m>_mu depends overwhelmingly on the ground configuration), but sufficiently low
+  that <m>_mu is mostly determined by a few low-E configurations out of 2^n = 1024." [p.5]
+  Boltzmann weights at T=0.1:
+    n=10: ground, 1st, 2nd, 3rd excited ~ 43%, 26%, 19%, 12%; <m>_mu ~ 0.15 [p.5]
+    n=9 : ~ 37%, 36%, 27%; <m>_mu ~ 0.35 [SI p.27]
+    n=8 : ~ 39%, 32%, 26%; <m>_mu ~ -0.16 [SI pp.31-32]
+- Stated focus: "For small but non-zero T, sampling from mu requires finding several of the lowest-energy
+  configurations, which may be far apart, not just the ground configuration(s). This hard regime will be our main
+  focus." [p.1]
+
+=====================================================================================
+4. EVERY REPORTED NUMBER
+=====================================================================================
+
+4.1 Spectral-gap scaling fits <delta> ~ 2^{-k n}, n = 3..10, 500 instances per n, least squares weighted by
+standard error of the mean. Uncertainties are from the fit covariance. "Quantum enhancement" = k_classical_best /
+k_quantum.
+
+(a) Fully connected, M-H, T = 1 [P1: Fig. 2c, p.4]
+    Quantum k = 0.264(4); Mismatched quantum k = 0.76(1); Local k = 0.94(4); Uniform k = 0.948(7);
+    Quantum enhancement factor in k: 3.6(1).
+(b) 1D, M-H, T = 1 [P1: Fig. S1c, SI p.6]
+    Quantum 0.198(5); Mismatched 0.440(9); Local 0.49(3); Uniform 0.743(4); enhancement 2.5(2).
+(c) Fully connected, M-H, Table S1 [SI p.8] (cells marked "-" = no reasonable fit; bold = best classical)
+    T      Quantum    Mismatched  Local     Uniform     Enhancement
+    1e-2   0.299(3)   0.806(9)    -         0.9999(2)*  3.35(3)
+    1e-1   0.293(2)   0.803(8)    -         0.995(3)*   3.39(3)
+    0.5    0.275(4)   0.792(9)    1.31(4)   0.981(4)*   3.57(6)
+    5      0.147(6)   -           0.42(1)*  0.53(2)     2.8(1)
+    10     0.064(4)   -           0.25(2)*  0.31(1)     3.9(4)
+    1e2    -          -           -         -           -
+    (T=1 is in Fig. 2c, see (a).)
+(d) Fully connected, Gibbs-sampler acceptance, Table S2 [SI p.10]
+    1e-2   0.299(3)   0.806(9)    -         1*          3.34(3)
+    1e-1   0.298(3)   0.803(9)    -         0.9989(4)*  3.35(3)
+    0.5    0.288(3)   0.79(1)     1.32(4)   0.983(2)*   3.42(3)
+    1      0.273(4)   0.75(1)     0.94(4)*  0.940(7)    3.4(1)
+    5      0.114(8)   -           0.43(2)*  0.46(2)     3.8(3)
+    10     -          -           -         -           -
+(e) Fully connected, lazy M-H, Table S3 [SI p.12]
+    1e-2   0.299(3)   0.806(9)    -         0.9999(2)*  3.35(3)
+    1e-1   0.293(2)   0.803(8)    -         0.995(3)*   3.39(3)
+    0.5    0.275(4)   0.792(9)    1.31(4)   0.981(4)*   3.57(6)
+    1      0.264(4)   0.76(1)     0.94(4)*  0.948(7)    3.6(1)
+    5      0.147(6)   0.30(3)     0.45(2)*  0.53(2)     3.0(2)
+    10     0.064(4)   -           0.34(2)   0.31(1)*    4.9(4)
+- Headline wording: "These values depend on T, but their ratios suggest a roughly cubic/quartic enhancement at
+  low temperatures regardless of the exact T [11]." [p.4]. "Our algorithm appears to give an average-case
+  polynomial enhancement in delta over the local and uniform proposals". [p.4]
+- [INF, important] The exponent ratio is a statement about SLOPE only. At T = 5 and T = 10 the quantum proposal
+  has a smaller ABSOLUTE <delta> than uniform/local at small n (Fig. S3, T=5 and T=10 panels). The "enhancement"
+  there is extrapolated from crossing lines. ~ read from Fig. S3: at T=10, quantum ~0.25 -> ~0.17 and uniform
+  ~0.6 -> ~0.15-0.2 for n = 3 -> 10, so they cross only near n ~ 9-10; at T=5 the crossing is near n ~ 5.
+- Absolute delta levels (~, read from figures; not printed numbers):
+  Fig. 2a (n=10, fully connected, M-H): at low T, quantum <delta> ~ 2x10^-2 (band ~1e-2 to ~6e-2); uniform
+  ~1e-3; mismatched ~1-2e-3; local -> far below 1e-3 at T -> 0. At T -> infinity: uniform -> 1, quantum plateaus
+  ~0.3, local falls (the M-H eigenvalue-near-minus-1 artifact).
+
+4.2 Hardware results [P1: main pp.4-6; SI Sec. IV C]
+- Device: ibmq_mumbai, 27 fixed-frequency transmon qubits, heavy-hex lattice. [SI p.15]
+- n=10 (main text): spins on qubits 4..25. CNOT error mean 0.66%, worst 0.98%; readout assignment error mean
+  2.06%, worst 4.94% (Fig. S14). N_twirl = 6, N_shots = 4x10^4, total 5.76x10^7 shots (Fig. S15).
+  TV error (avg over columns, theory vs experiment Q) = 0.206. For comparison, TV distance from Q_exp to the
+  uniform proposal = 0.259, to local = 0.953, to identity = 0.987. [SI p.24]
+- n=9: qubits 7..25. CNOT 0.71% / 0.88%; readout 1.97% / 4.53%. N_twirl 4, N_shots 3x10^4, total 2.88x10^7.
+  TV error 0.189 (vs uniform 0.233, local 0.935, identity 0.980). [SI pp.27-28; Figs. S19, S20]
+- n=8: qubits 10..25. CNOT 0.70% / 0.88%; readout 2.05% / 4.53%. N_twirl 4, N_shots 1e4, total 9.6x10^6.
+  TV error 0.177 (vs uniform 0.238, local 0.911, identity 0.971). [SI p.31; Figs. S26, S27]
+- [INF, important] The hardware proposal is only a little closer to the ideal quantum proposal (TV ~0.18-0.21)
+  than it is to the plain uniform proposal (TV ~0.23-0.26).
+- Spectral gap vs T, n=10 (Fig. 3): "At low T, the inferred delta is smaller than the theoretical value due to
+  experimental imperfections, but still significantly larger than that of either the local or uniform
+  alternative. This constitutes an experimental quantum enhancement in MCMC convergence on current quantum
+  hardware. At high T, the experimental delta is larger than the theoretical value for our quantum algorithm,
+  which we attribute to noise in the quantum processor mimicking the uniform proposal to a degree." [p.5]
+  ~ read from Fig. 3: low-T delta experiment ~1e-2, theory ~3e-2, uniform ~1e-3, local much lower. That is about
+  10x over uniform at low T on hardware, and about 3x below the ideal value. 99% bootstrap CIs (200 resamples,
+  "basic" method). [SI Sec. IV B3]
+- n=9 and n=8 (Figs. S21, S28): "there is a significant quantum enhancement in delta at low T". ~ read from
+  figures: n=9 experiment ~2-3e-2 vs uniform ~1-2e-3; n=8 experiment ~3e-2 vs uniform ~4e-3.
+- Magnetization (Fig. 4, n=10, T=0.1): 10 independent chains per strategy, up to ~1000 iterations, no burn-in,
+  no thinning. "Our quantum algorithm converges to the true value of <m>_mu, with no discernible bias,
+  substantially faster than the two classical alternatives despite experimental imperfections." [p.6]
+  No autocorrelation time, effective sample size or mixing-time number is reported. [not in P1]
+  Hardware chains are 1000 iterations long, limited by the cached data (SI p.21). The inset extends to 10^7
+  iterations; ~ from the figure, only the classical chains continue that far. [INF]
+- Mechanism (Fig. 5, n=10; also S24, S31): proposals are spread in Hamming distance like uniform, and
+  concentrated at small |DE| (more than local in theory). "The DE distribution from the experimental realization
+  of our algorithm, however, lies between those of the local and uniform proposal strategies, due to experimental
+  imperfections." [p.6]
+
+4.3 Cluster-algorithm comparison (illustrative 1D instances only)
+- Swendsen-Wang (ghost-spin and accept/reject variants), Wolff (both variants), and Houdayer (R=2 replicas,
+  single T) on the n=10, 9, 8 hardware instances [Figs. S16, S21, S28; SI Sec. III D]. "These are substantially
+  more complicated than the local and uniform proposals, both conceptually and practically, but offer almost no
+  delta enhancement in this setting compared to the simpler classical alternatives, so we do not focus on them
+  here." [p.5]. "Despite their relative complexity, these cluster algorithms perform comparably to M-H with a
+  local or uniform proposal, and converge especially slowly in the low-T regime of interest." [SI p.15]
+- Lazy chains and Gibbs acceptance were checked to rule out a trivial eigenvalue-near-minus-1 artifact: "it is
+  not ... the only setting where lazy chains enhance delta is for the local proposal at high T." [SI p.11;
+  Figs. S6, S7, S17, S22, S29]
+
+=====================================================================================
+5. SIMULATION vs HARDWARE vs ARGUED
+=====================================================================================
+- Exact (noiseless, exact diagonalization of 2^n x 2^n P), 500-instance ensembles, n = 3..10:
+  delta vs T, k-scaling, mismatched control, 1D vs fully connected, M-H/Gibbs/lazy variants. [Figs. 2, S1-S7,
+  Tables S1-S3]
+- Classical simulation of cluster algorithms (S-W/Wolff by sampling 10^5 moves per T; Houdayer by sparse
+  eigensolver): only on the 3 illustrative 1D instances. [SI Sec. III D]
+- Hardware (ibmq_mumbai): 3 hand-picked 1D instances (n=8, 9, 10). Proposal matrix Q estimated, delta inferred
+  vs T, Bowker symmetry tests, offline MCMC trajectories at T=0.1. Not fully connected. Not online. [Sec.
+  "Experimental Implementation"; SI Sec. IV]
+- Argued / heuristic only:
+  * that the enhancement persists at larger n. "should it persist at larger n" [p.7]
+  * Q > 0 everywhere, hence irreducibility, under noise. "all-but formally assured" [SI p.3]
+  * the mechanism (perturbative Dyson/Magnus, eigenvector-overlap argument; refs [49-51]). [SI Sec. V A]
+  * QPE and reverse-annealing variants are valid symmetric proposals (proved symmetric) but not evaluated. [SI
+    Sec. V B, V C]
+  * the "modest fault-tolerant" advantage. [p.7]
+
+=====================================================================================
+6. TEMPERATURE DEPENDENCE -- EVERYTHING
+=====================================================================================
+- YES, there are explicit plots of advantage vs T: Fig. 2a (n=10 average), Fig. S2 (n=4..9), Fig. S1a (1D), Fig.
+  S4/S6 (Gibbs/lazy), Fig. 3 and S16/S21/S28 (hardware instances, delta vs T from 0 to infinity), and Tables
+  S1-S3 (k vs T).
+- Key quotes:
+  * "At high T, where mu is nearly uniform, the uniform proposal produces a fast-converging Markov chain with delta
+    near 1, as shown in Fig. 2a. However, both the uniform and local proposals suffer a sharp decrease in delta at
+    lower T. This slow-down is much less pronounced for our quantum algorithm, which gives a substantially better
+    delta on average than either classical alternative for T <~ 1." [p.4]
+  * Fig. 2a caption: "The slow-down of each strategy at low T. For the local proposal strategy, delta -> 0 also at
+    high T because an eigenvalue of its transition matrix approaches -1. This artifact can be easily be remedied by
+    using a lazy chain or the Gibbs sampler acceptance probability; the same is not true at low T, however [11]."
+  * "These values depend on T, but their ratios suggest a roughly cubic/quartic enhancement at low temperatures
+    regardless of the exact T [11]." [p.4]
+  * SI: "Each panel of Fig. S2 ... show a growing separation in delta with increasing n at low T between our
+    quantum algorithm and the purely classical Markov chains. Similarly, the panels of Fig. S3 show the onset of an
+    apparent scaling advantage of delta with n ... which gets increasingly pronounced as T decreases." [SI p.6]
+  * Hardware: "At high T, the experimental delta is larger than the theoretical value ..., which we attribute to
+    noise in the quantum processor mimicking the uniform proposal to a degree." [p.5]
+  * Motivation: Eq.(3)'s ratio "is exponentially small in DE/T ... Such proposals are frequently rejected ... This
+    makes it difficult for Markov chains to explore rugged energy landscapes at low T". [p.2]
+- What the curves show (~ read from Fig. 2a/S2):
+  * Low T (T <~ 0.1): every strategy's delta reaches a T-independent floor. Quantum's floor is about 1-2 decades
+    above uniform's. Local goes toward 0.
+  * Crossover T ~ 1: at n=10 the quantum curve rises to its plateau, while uniform/local rise much more steeply.
+  * High T (T >~ few): uniform delta -> 1, far above quantum's plateau (~0.3 at n=10). Quantum is WORSE than
+    uniform in absolute delta at high T, at all n shown. At T = 10^2 no exponential fits are reasonable (Table S1
+    "-"); the quantum and uniform deltas are flat in n (Fig. S3, T=10^2 panel).
+  * [INF] The quantum high-T plateau is below 1 because Q(s|s) (no-move) and the shape of Q are T-independent.
+    The proposal is not uniform, so even at mu ~ uniform the quantum chain mixes more slowly than uniform proposals.
+- Phase transition / critical temperature: P1 says NOTHING about a spin-glass transition, a critical T, or
+  behaviour "near" any transition. [not in P1]. [INF] At n <= 10 there is no sharp transition. In P1's units
+  (J variance 1, no 1/sqrt(n)), the standard SK T_c = 1 would map to T ~ sqrt(n) (~3.2 at n=10) via the stated
+  T -> T/sqrt(n) rescaling, ignoring the random fields, which in the infinite-size SK model remove a sharp
+  transition (AT-line physics). The paper's crossover near T ~ 1 has not been compared to any such scale.
+- How T was chosen: there is no principled choice. Sweeps cover all T; T=0.1 for trajectories is justified as
+  "not pure optimization, but few low-E states dominate" (quote in 3.3). [p.5]
+
+=====================================================================================
+7. LIMITATIONS, CAVEATS, FUTURE DIRECTIONS, BASELINES
+=====================================================================================
+7.1 Stated limitations / caveats (quotes)
+- Partly heuristic: "In this sense our algorithm is partially heuristic, like most classical MCMC algorithms: the
+  eventual result is theoretically guaranteed, while fast convergence is established empirically." [p.6]
+- Scaling with n unknown under noise: "Our simulations suggest that the quantum speedup increases with the
+  problem size n. However, we also expect the quantum noise to increase with n, in the absence of error
+  correction, as the number of potential errors grows. The combined effect of these competing factors at larger n
+  is currently unknown." [p.7]
+- Fault-tolerant outlook is conditional: "the cubic/quartic speedup we observed, should it persist at larger n,
+  might give a quantum advantage on a modest fault-tolerant quantum computer despite the error correction overhead
+  [34, 47]." [p.7]
+- delta is not measurable at scale: "a Markov chain's absolute spectral gap is a broad and unambiguous figure of
+  merit, but it is not feasible to measure for large instances ... a more fruitful approach may be to focus
+  directly on how well our algorithm performs in various applications, such as in simulated annealing ..., for
+  estimating thermal averages ..., or for training and sampling from (classical) Boltzmann machines". [p.7]
+- Computing delta is not the same as running MCMC: "(Note that computing delta is different -- and much more
+  demanding -- than simply running MCMC.)" [p.3]
+- Exact symmetry is impossible; there is a possible small bias (SI p.22, quoted in 2.4).
+- The bare circuits broke symmetry; twirling is required (SI p.17).
+- Offline, not real-time; "impractically slow" with the current classical control stack (SI p.20).
+- gamma, t not optimized; "ad hoc distributions through trial and error" (SI p.2).
+- Hardware is 1D only (no SWAPs); the scaling claim is for fully connected instances in simulation.
+- Cluster algorithms are compared only on illustrative instances, and "not designed for spin glasses" (SI p.13).
+
+7.2 Cost per step / wall-clock
+- No wall-clock comparison, no time-per-iteration, no cost-per-step accounting (quantum circuit time + latency
+  vs a classical move). [not in P1]
+- The only cost statements: alpha costs O(n^2) (p.3); the M-H ratio costs O(n^2) (p.2); circuit depth up to 48
+  2-qubit layers (p.5); t is independent of n in their runs (p.7); the experiment structure trades fewer circuit
+  loads for more shots (SI p.19).
+- [INF] All speedup claims are in iterations (spectral gap / mixing time per MCMC step), not in time. A
+  classical local or uniform M-H step is O(n) to O(n^2) arithmetic, while each quantum step is a full circuit
+  execution plus readout. The paper does not argue that the per-step overhead is covered.
+
+7.3 Baselines -- what was and was NOT compared
+- Compared: M-H local (single spin flip), M-H uniform (independent random), "mismatched quantum" control, the
+  Gibbs/Glauber acceptance variants, lazy chains, Swendsen-Wang (2 variants), Wolff (2 variants), and Houdayer
+  (R=2, single T) on illustrative instances.
+- NOT compared: parallel tempering / replica exchange (explicitly excluded: "these steps are often wrapped in a
+  parallel tempering scheme ... our quantum algorithm could also be wrapped in similar ways, although such
+  generalizations are beyond the scope of this initial work. To allow a fair comparison, then, we use only two
+  replicas at a single temperature T. (Note that this restriction to a single T precludes comparison with another
+  cluster algorithm called isoenergetic cluster moves [18].)" [SI p.14]). Also not compared: isoenergetic cluster
+  moves, population annealing, simulated annealing, tensor-network or exact-enumeration samplers, neural
+  samplers, multi-spin/Kawasaki moves, or a classically simulated version of the same quantum proposal as a
+  baseline. [not in P1]
+- PT is framed as a future composite: "for instance, by running several local M-H chains in parallel at different
+  temperatures and occasionally swapping them [18, 19, 45]. Our quantum algorithm may provide a potent new
+  ingredient for such composite algorithms in the near term." [p.6]
+- [INF] Classical simulability: P1 says the chain is "hard to mimic classically, provided it is classically hard
+  to sample the measurement outcomes of U|s>" (p.2). It gives no hardness evidence for the specific
+  low-depth 1D circuits used. 1D n<=10 circuits are trivially simulable classically.
+
+7.4 Future directions stated
+- Better choice of gamma, t ("a more targeted method of picking the parameters gamma and t could further
+  accelerate convergence [46]"). [p.7]
+- Other hardware, e.g. quantum annealers, "perhaps without needing to discretize the Hamiltonian dynamics". [p.7]
+- Composite algorithms (PT, etc.). [p.6]
+- Applications: simulated annealing, thermal averages, Boltzmann machines. [p.7]
+- Alternative proposals: QPE-based (Fig. S33). Judged of "little practical appeal ... the only difference
+  between this QPE method and the random-t method ... is the set of possible values from which t is drawn"
+  [SI pp.36-37]. Also reverse annealing with a palindromic schedule (Eq. S47). [SI Sec. V C]
+- Online implementation awaits dynamic-circuit infrastructure [36, 37]. [SI p.20]
+
+=====================================================================================
+8. HEURISTIC THEORY OF WHY IT WORKS
+=====================================================================================
+- Main-text intuition: with a dense H_mix and gamma << 1, perturbation theory shows that quantum proposals
+  "exhibit a remarkable combination of features that suggest fast MCMC convergence: Like local proposals, their
+  absolute energy change |DE| = |E(s') - E(s)| is typically small, meaning they are likely to be accepted even if
+  DE > 0. However, like uniform or cluster proposals, s and s' are typically far in Hamming distance". Similar
+  behaviour for H_mix = sum X_j and larger gamma is cited from refs [21-23] (Baldwin-Laumann; Smelyanskiy et al.).
+  [p.3]
+- SI Sec. V A (perturbative, interaction picture w.r.t. alpha H_prob):
+  * Dyson to leading order: Pr(j->k) = gamma^2 t^2 sinc^2(t alpha DE / 2) |<k|H_mix|j>|^2 + O(gamma^3)
+    [Eq. S35]. "The sinc-squared factor above acts as a bandpass filter for DE". With a dense H_mix (Grover-like,
+    |<k|H_mix|j>| = 1) and t = 2 pi / (alpha eps), transitions occur mainly when |DE| <~ eps. [SI p.35]
+  * Magnus/rotating-wave version: an effective Hamiltonian couples mainly near-degenerate states. [Eq. S36]
+  * Long random t (t ~ U[0,t'], t' -> infinity): Pr(j->k) = sum_l |<k|l><l|j>|^2 (Eq. S37). With
+    non-degenerate perturbation theory, Pr(j->k) = 2 (gamma/(alpha DE))^2 |<k|H_mix|j>|^2 + O(gamma^3) (Eq. S39),
+    which is "the same DE^-2 scaling". The role of eigenvectors of H overlapping both |j> and |k> when
+    E(j) ~ E(k). [SI p.36]
+  * [INF] With H_mix = sum X_j, <k|H_mix|j> is nonzero only at Hamming distance 1. So the leading-order
+    perturbative picture yields only LOCAL energy-conserving moves. The far-in-Hamming behaviour relies on the
+    non-perturbative regime (gamma in [0.25, 0.6]). P1 says this: "(i) H_mix can be sparse ... quantum transitions
+    can occur with high probability between states |j> and |k> even if <k|H_mix|j> = 0. (ii) Trivial |j> -> |j>
+    'transitions' need not dominate ... (iii) The resulting dynamics can be hard to simulate classically. However,
+    it is not clear a priori how the results of Refs. [49-51] translate into MCMC performance." [SI p.36]
+  * Disclaimer: "We therefore view the perturbative calculations above, and Refs. [49-52], as providing
+    motivation for our algorithm -- which we then evaluate empirically -- rather than any formal guarantee of
+    performance." [SI p.36]
+- Empirical mechanism evidence: Fig. 5c-d (Hamming distance spread like uniform; |DE| concentrated more than
+  local in theory). Mismatched-quantum control: k = 0.76(1), about the same as uniform, so "the delta enhancement
+  in our algorithm indeed arises from exploring the classical energy landscape E in quantum superposition to
+  propose moves." [p.4]
+- Why random (gamma, t) works: "some fraction of the moves will be particularly good, which proves sufficient for
+  a quantum enhancement" [SI p.3]; "not every jump needs to be especially good for the algorithm to work well.
+  (This is why picking gamma and t at random works well: good values arise often enough.)" [p.7]
+
+=====================================================================================
+QUICK "NOT IN P1" LIST
+=====================================================================================
+- Any n > 10 (simulation or hardware). Any fully connected hardware instance.
+- Wall-clock / time-to-solution / per-step cost comparison.
+- Integrated autocorrelation times, ESS, or quantitative mixing-time measurements from trajectories.
+- Comparison vs parallel tempering, ICM, population annealing, simulated annealing (as sampler), or a strong
+  tuned classical sampler.
+- Any statement about phase transitions / critical temperature.
+- A formal bound linking measured Q-asymmetry to bias.
+- An explicit proof that the Trotterized circuit is transpose-symmetric (it is, by palindromic structure --
+  my inference).
+- Total gate counts per circuit (only "up to 48 layers of 2-qubit gates, up to 5 pairs in parallel").
+- Optimization of (gamma, t), or how the gamma/t ranges should scale with n.

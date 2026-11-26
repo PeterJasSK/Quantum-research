@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a7aa27a1-cf7e-4d5c-aae3-e779ddff3eda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PeterJasIndex/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/PeterJasIndex/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PeterJasIndex/scene.js" beforeDir="false" afterPath="$PROJECT_DIR$/PeterJasIndex/scene.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PeterJasIndex/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/PeterJasIndex/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/study-ideas/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/study-ideas/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +50,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/peter/PycharmProjects/Quantum-research/QHop/plans/papers&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
@@ -63,11 +61,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/QHop/plans/papers" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/study-ideas/QuantumAlgorithmsExplained" />
       <recent name="$PROJECT_DIR$/artificial-life/web" />
       <recent name="$PROJECT_DIR$/THESIS" />
-      <recent name="$PROJECT_DIR$/number-partitioning/plans" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/artificial-life/research/backlogWEB" />
@@ -214,7 +212,13 @@
       <workItem from="1793807870919" duration="11617000" />
       <workItem from="1794139314646" duration="46696000" />
       <workItem from="1794512018415" duration="3493000" />
-      <workItem from="1794640551157" duration="52785000" />
+      <workItem from="1794640551157" duration="54127000" />
+      <workItem from="1794932725399" duration="598000" />
+      <workItem from="1794995480667" duration="599000" />
+      <workItem from="1795025727404" duration="11502000" />
+      <workItem from="1795202610490" duration="19423000" />
+      <workItem from="1795700922163" duration="86000" />
+      <workItem from="1795701022247" duration="35000" />
     </task>
     <servers />
   </component>

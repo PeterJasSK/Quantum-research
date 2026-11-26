@@ -1,0 +1,300 @@
+C3 SCREENING NOTES: B3 PHYSICS / CHEMISTRY / MATERIALS IDEAS (B3-01..B3-20, KNOWN K0, K9, K15..K18)
+Screening agent C3, QHop QeMCMC applied review, Wave 3. Plain text. Rows are in C3-rows.txt (26 rows, 17 columns each).
+Labels: [P1], [P2], [PILOT], [LIT + URL/arXiv], [OWN] own calculation, [SPEC] speculation.
+
+======================================================================================================================
+0. CONVENTIONS USED IN EVERY ROW (from BRIEF-screening)
+======================================================================================================================
+Per-step classical cost t_C (best classical method for the row):
+  dense cheap Ising / CE with cached local fields, n<=100: 30 ns [A5 bench]
+  sparse lattice, multispin CPU: 0.15 ns per flip [A5, Isakov arXiv:1401.1084]
+  GPU Swendsen-Wang: 2.5 ns per flip [A5, arXiv:1202.0635]
+  loop move in spin ice: ~10 ns per loop update [OWN estimate: loop of ~10-50 sites, ns per site]
+  dense Ewald with cached potentials, N~1000: ~1 us (O(N) field update after an accepted swap) [OWN]
+  HP pull move + contact count: ~100 ns [OWN]; SAW pivot: <~1 us [SPEC, Clisby-type implementations]
+  DFT single point: 1e2-1e4 s [SPEC practitioner range]; MLIP relaxation (500 atoms, 50-300 steps): 0.1-0.5 s, take 0.3 s
+  [OWN from NVIDIA ALCHEMI ~3 us/atom/step, https://docs.nvidia.com/nim/alchemi/alchemi-bgr/latest/performance.html]
+Per-step quantum cost t_Q: optimistic 0.1 s (Helios in-program loop, estimate) for gate-model dense/all-to-all problems,
+  2 s (IBM best) where heavy-hex native is the point, 0.03 s (D-Wave) where annealer-native; realistic 3 s (IBM Heron
+  session) or 0.5 s (D-Wave, annealer-native rows); pessimistic = realistic / F, F = (1-2e-3)^N_2q.
+Fidelity proxy values used [OWN, computed]: N_2q 800 -> F 0.20; 880 -> 0.17; 2,000 -> 0.018; 2,500 -> 6.7e-3;
+  3,000 -> 2.5e-3; 3,700 -> 6.1e-4; 4,000 -> 3.3e-4; 4,400 -> 1.5e-4; 5,000 -> 4.5e-5; 1.2e4 -> 3.7e-11; 1.5e4 -> 9.1e-14;
+  3e4 -> 8e-27.
+N_2q estimation rule [OWN, from repo]: QuantumPhantoms/plans/relatedPapers/reverse-engineering/B_mapping/src/qemcmc.py:98 builds a
+  second-order Trotter circuit with r = round(2t) steps, t~U[2,20] -> mean r ~22 steps. 5-spin SK (10 pairs) transpiles to 823 CZ,
+  i.e. ~82 CZ per coupled pair per proposal. Dense n=10: 45 pairs -> ~3,700 CZ; n=12: 66 pairs -> ~5,400; 24 qubits dense:
+  276 pairs -> ~2.3e4 (I use 1.5e4 for B3-09 as a lower estimate). The brief default N_2q 800 (F 0.2) for 10-12 dense spins is
+  therefore OPTIMISTIC by ~4-7x in gate count; I keep 800 where the brief says "unknown" for comparability and give the
+  repo-scaled value in the note. Under strong noise the proposal degrades towards uniform (still roughly symmetric), so the
+  /F rule is a convention, not a physical law [OWN].
+Break-even S* = t_Q / t_C. Wall-clock speedup requires measured S = tau_C / tau_Q > S*.
+
+======================================================================================================================
+1. THE THREE SPECIAL-ATTENTION QUESTIONS
+======================================================================================================================
+
+(a) B3-09 Ewald ionic ordering: is the classical competitor really weak?  ANSWER: NO. Verdict changed SIMULATE MORE -> KILL.
+  Verified literature:
+  - Xie, Zhong, Barroso-Luque, Ouyang, Ceder, "Grand-canonical Monte-Carlo simulation methods for charge-decorated cluster
+    expansions", arXiv:2210.01165, https://arxiv.org/abs/2210.01165 (PDF https://ceder.berkeley.edu/publications/2022_xie_charge-balanced_sgc.pdf).
+    VERIFIED: table-exchange (TE, small charge-conserving multi-site excitations drawn from an exchange table) and square-charge
+    bias (SCB, temporary drift from neutrality) are proposed for the GRAND-/SEMI-GRAND-canonical ensemble. The paper states that
+    a canonical run fixes each species' composition and uses two-site swaps. No quantitative speedup vs a named baseline in the
+    abstract.
+  - smol implements it as the "table-flip" step with an Ewald-including CE: https://cedergrouphub.github.io/smol/notebooks/running-charge-balanced-gcmc.html
+    and JOSS doi:10.21105/joss.04504 (canonical and semigrand MC).
+  - Realistic DRX SRO practice: "Short-Range Order and LixTM4-x Probability Maps for Disordered Rocksalt Cathodes",
+    arXiv:2508.08112, https://arxiv.org/html/2508.08112v1 . VERIFIED: canonical MC (ATAT emc2), 32^3 = 32,768-site cells,
+    1e4 flips/site equilibration + 1e4 averaging, fine T grid 0.8-1.2 Tc, reported at T/Tc = 1.1, heating/cooling hysteresis
+    checks; no general slow-mixing complaint (only a 50/50 choice between layered and spinel-like LRO below Tc for some J ratios,
+    a degeneracy issue). That paper's CE has no explicit Ewald term; Ewald CEs are standard in the Ceder group (Ji et al., Nat.
+    Commun. 10, 592 (2019), https://www.nature.com/articles/s41467-019-08490-w, CE-MC, Ewald use not confirmed by me).
+  Reasoning [OWN]:
+  - In the canonical ensemble every two-site swap conserves composition and therefore total charge. Charge balance is a problem
+    only for the semigrand ensemble (voltage curves), and there TE/SCB exist and work in a released code. So "single-site moves
+    forbidden" does not make the canonical competitor weak; any-pair swaps + PT is the baseline, same as B3-07.
+  - Frustration: Ewald-dominated cation SRO at synthesis temperature (MEDIUM-HIGH, T/Tc~1.1, which is what sets the quenched SRO
+    that controls Li percolation) is routinely equilibrated at 3e4 sites. The glassy LOW-T Coulomb regime where SK-like gap
+    transfer [SPEC] might matter is not what the battery engineer needs.
+  - Quantum side: 8-12 sites x 2-3 qubits = 24 qubits dense; ~1.5e4-2.3e4 CZ per proposal (repo scaling) -> F ~ 1e-13; even on
+    Helios (8e-4 2q error) F = (1-8e-4)^1.5e4 ~ 6e-6 [OWN]. Toy only (hardware fit 1).
+  Break-even: t_C 1 us; S* = 0.1/1e-6 = 1e5 (Helios opt) / 3/1e-6 = 3e6 (IBM real) / 3e6/9.1e-14 = 3e19 (pess, N_2q 1.5e4).
+  Likelihood: wall 0.1% (0-0.5) / steps 5% (1-12). The only residual question (do conserving mixers give a sector gap advantage on
+  dense frustrated couplings?) is folded into the B3-07 Wave 4 experiment, which includes a dense Ewald-like instance.
+
+(b) B3-01 cold-end quantum moves inside PT: cost-weighted mixture ratio.  [OWN derivation, standard Dirichlet-form facts]
+  Kernel at a cold replica: P_p = p Q + (1-p) L, Q = quantum proposal + Metropolis, L = classical single-proposal update (PT
+  sweeps decomposed per proposal), both reversible w.r.t. pi_k. Detailed balance: fixed-p mixture of reversible kernels is
+  reversible; PT swaps unchanged; p must not be adapted from chain history.
+  Dirichlet forms are linear in the kernel: E_P(f) = p E_Q(f) + (1-p) E_L(f). Hence
+     gap(P_p) >= p gap_Q + (1-p) gap_L            (mixture never hurts per step)
+     gap(P_p) <= p E_Q(f_L)/Var(f_L) + (1-p) gap_L <= 2p + (1-p) gap_L   (f_L = slowest mode of L; spectrum of Q in [-1,1]).
+  Cost per step c(p) = p t_Q + (1-p) t_C. Time efficiency eta(p) = gap/c is bounded by a linear-fractional function of p, which
+  is maximised at an endpoint:  eta(p) <= max( gap_L / t_C , 2 / t_Q ).
+  So the mixture beats pure classical in wall-clock ONLY IF 2/t_Q > gap_L/t_C, i.e. tau_L = 1/gap_L > R/2, R = t_Q/t_C, AND
+  only if a single quantum move nearly fully decorrelates the classical slow mode (Rayleigh quotient O(1)).
+  Numbers: one quantum move costs R = 3 s / 30 ns = 1e8 proposal-equivalents (IBM realistic, dense n<=100), 3.3e6 (Helios opt);
+  the brief's "1e7-1e8 classical flips" is the right range. To keep the quantum share of wall-clock <= 50% requires
+  p <= 1/R ~ 1e-8 (one quantum move per 1e6 sweeps at n=100). PT equilibrates SK up to N=4096 at T>=0.4 [A5, arXiv:1003.6086];
+  at n=100 that is of order 1e4-1e6 sweeps = 1e6-1e8 proposals = 0.03-3 s of CPU, i.e. comparable to ONE quantum step.
+  Required condition tau_PT > 5e7 proposals essentially never holds where the quantum circuit can be run (n<=30), and at n=100
+  the P1 fit extrapolates to gap_Q ~ 2^(-0.264*100) ~ 1.1e-8 per step [SPEC extrapolation], so Q itself is nowhere near an
+  independent sample. Wall-clock: no regime. Steps-only (ignoring cost) the mixture is the fair test the programme lacks; keep
+  as SIMULATE MORE merged with K0 (Wave 4 nomination 1).
+  S* row values: 3.3e6 / 1e8 / 5e8 (N_2q 800; repo-scaled n=10, 3,700 CZ -> 1.6e11).
+
+(c) Conserved-quantity mixers (XY, ring exchange): symmetry and Trotter cost.  [OWN, checked against repo code]
+  Exact unitary: XX+YY = 2(s+s- + s-s+) has real 0/1 entries in the Z basis; H_prob diagonal real; ring exchange
+  (S+S-S+S-S+S- + h.c.) real 0/1. So H is real symmetric, U = exp(-iHt), U^T = exp(-i H^T t) = U, and
+  Q(s->s') = |<s'|U|s>|^2 = |<s|U|s'>|^2 = Q(s'->s). Exact symmetry within the conserved sector, P1's argument carries over.
+  Trotterised circuit: each factor exp(-i theta G_k) with real symmetric G_k is transpose-invariant, so the transpose of a
+  product is the REVERSED product. The circuit proposal is exactly symmetric iff the gate sequence is palindromic (or the
+  palindromic structure survives up to commuting reorderings). The repo trotter_circuit (qemcmc.py:98) uses D/2 M D/2 blocks:
+  palindromic because all diagonal terms commute and the RX layer commutes. With an XY mixer, XY terms on edges sharing a site do
+  NOT commute, so the mixer layer itself must be palindromic, e.g. ring: M_even(dt/2) M_odd(dt) M_even(dt/2) (~1.5x gates);
+  all-to-all with an n-1 colour edge colouring: palindromic colour order (~2x gates).
+  IBM native gates RZ (diagonal), SX = (1/2)[[1+i,1-i],[1-i,1+i]] (symmetric), X, CZ (diagonal) are each transpose-invariant, so
+  the compiled circuit's transpose is the reversed compiled circuit. Transpiler optimisation and SWAP routing generally destroy
+  palindromy -> Q != Q^T even without noise (the repo already has asymmetry() to measure this). Cheap exact fix: with
+  probability 1/2 run the circuit, with 1/2 run its reverse: Q_mix(s->s') = (|U_s's|^2 + |U_ss'|^2)/2 is symmetric for ANY
+  compiled order in the noiseless case [OWN]. Under noise the reversed circuit's channel is not the transpose of the forward one,
+  so a residual bias remains; Pauli twirling as in P1 SI. Leakage out of the sector: pi = 0 there, rejected, safe; but it lowers
+  acceptance. Postselecting on the sector does not restore symmetry under noise.
+  Cost [OWN]: XX+YY gate = 2 CZ; fused with ZZ on the same edge, a generic 2q gate <= 3 CZ.
+   - XY ring n=12 (heavy-hex has 12-qubit cycles, so a ring embeds natively): per Trotter step ~36 CZ (XY, palindromic) +
+     24-48 CZ (CE pairs) ~ 90 CZ; x 22 steps ~ 2,000 CZ -> F 0.018.
+   - XY all-to-all n=12: 66 pairs x 3 CZ (+ fused SWAP network) ~ 200-400 CZ/step -> 4,400-8,800 CZ -> F 1.5e-4 to 2e-8.
+   - Ring exchange hexagon: CNOT ladder (~10 CNOT) maps it to an RX on one qubit controlled on 5 qubits matching a pattern;
+     5-control RX without ancilla ~40-60 CNOT -> ~50-70 CZ per hexagon per step. Pyrochlore with N sites has N hexagons (each
+     site in 6 hexagons of 6 sites), so a 16-site cell has 16 hexagons ~1,000 CZ/step, x1.5-2 palindromic, x2 routing ~3,000/step,
+     x10 steps ~3e4 CZ -> F ~ 8e-27. Unrunnable; hardware fit 0.
+  Conclusion: conserving mixers are the correct, exactly reversible way to impose hard constraints in QeMCMC (method note
+  worth keeping), but the only cheap one (XY) is the one whose classical competitor (any-pair swap) is also free.
+
+======================================================================================================================
+2. PER-ROW ARITHMETIC AND JUSTIFICATION
+======================================================================================================================
+
+K0 SK calibration. t_C 30 ns. S* 0.1/30e-9 = 3.3e6 (Helios) / 3/30e-9 = 1e8 / 1e8/0.2 = 5e8 (N_2q 800; repo n=10 3,700 CZ:
+  1e8/6.1e-4 = 1.6e11). S: [PILOT] 1.3x / 3-8x / 25-40x vs local+uniform; vs PT UNKNOWN. Hardware fit 1 (dense SK needs SWAP
+  networks; P1 used 1D instances on hardware). Christmann et al. arXiv:2411.17821 (classical TN emulation keeps the advantage at
+  n<=9) means small-n results are quantum-inspired-reproducible. Verdict BUILD NOW kept (calibration, not application). Steps
+  15% (5-30): probability that QeMCMC beats tuned PT per proposal at n<=12 low T; wall 0%.
+
+B3-01 cold-end mixture. Same S* as K0, plus the mixture bound in 1(b): wall-clock requires tau_PT > S*/2 = 5e7 proposals.
+  Verdict SIMULATE MORE kept, explicitly as the fair-baseline experiment merged with K0. Ideation 25% step likelihood lowered
+  to 15%: at n<=12 PT is already fast, so even a real per-proposal win would be small; wall 0.3% (0-1).
+
+B3-02 dAT line. t_C 0.15 ns sparse (Janus-class ~2 ps would make it 75x worse). S* 0.1/1.5e-10 = 6.7e8 / 3/1.5e-10 = 2e10 /
+  2e10/2.5e-3 = 8e12 (30-spin group, ~45 edges x 2 CZ x 22 steps + routing ~3,000 CZ). Changed WAIT FOR HARDWARE -> KILL: the
+  obstacle is the algorithm (gap 2^(-0.264 N) [P1 fit] -> 2^-1081 at N=4096; coarse groups are local moves, P2 single-group
+  exponents 0.64-0.77), so no roadmapped hardware rescues it.
+
+B3-03 EA critical region. Same S* as B3-02 (6.7e8/2e10/8e12). KILL kept. Classical: PT+Houdayer / PT+ICM (Zhu-Ochoa-Katzgraber
+  arXiv:1501.05630, 2^16 vs 2^25 sweeps 2D N=1024 [A5]).
+
+B3-04 heavy-hex calibration bed. Heavy-hex is a decorated hexagonal lattice: planar [OWN]; zero-field planar Ising has a
+  polynomial exact partition function (Kasteleyn/Pfaffian) [OWN, standard]. Best classical is exact, so "beats" = N by
+  construction. S*: IBM is the device that defines the graph: 2/1.5e-10 = 1.3e10 / 3/1.5e-10 = 2e10 / 2e10/0.17 = 1.2e11
+  (n=20 patch, ~20 edges x 2 CZ x 22 steps = 880 CZ). Batched: 4,000 circuits/s -> 0.25 ms per chain-step -> 1.7e6. At n=127,
+  ~144 edges -> ~6,300 CZ -> F 3e-6: only small patches are informative. Verdict BUILD NOW kept as calibration infrastructure
+  (exact TV-bias measurement vs twirling / palindromic order), ~80% to deliver; application likelihoods 0%/0%.
+
+B3-05 CE-in-U, DFT-in-accept. t_E 1e2-1e4 s; t_C = t_E. S* (0.1+100)/100 = 1.001 / (3+100)/100 = 1.03 / 1.03/3.7e-11 = 2.8e10
+  (32-site fcc cell: 32x6 = 192 nn pairs x 2 CZ x 22 steps ~8,400 + routing ~1.2e4 CZ). The break-even is trivially met on
+  latency, but the competitor changes (F2): surrogate-importance / delayed acceptance with the SAME CE proposing near-independent
+  pi_CE samples at the right T. VERIFIED: Iftimie, Salahub, Wei, Schofield, J. Chem. Phys. 113, 4852 (2000), doi:10.1063/1.1289534,
+  https://www.chem.utoronto.ca/jmschofi/papers/impSampling.pdf : molecular-mechanics importance function improves DFT sampling
+  efficiency "by several orders of magnitude". Delayed acceptance (Christen & Fox 2005, via Banterle et al. arXiv:1503.00996)
+  not re-read: LITERATURE label kept, original not verified. Against an exact pi_CE draw a T-blind proposal has S <= 1 at
+  MEDIUM/HIGH T [OWN]. KILL kept.
+
+B3-06 MLIP relaxation HEA. t_E 0.3 s; S* (0.1+0.3)/0.3 = 1.33 / (3+0.3)/0.3 = 11 / 11/3.3e-4 = 3.3e4 (30-site group, ~4,000 CZ).
+  F3: classical local swaps relax only a local window and SMC-X (arXiv:2503.12591, arXiv:2509.20949, not re-verified by me)
+  parallelises many local swaps per GPU pass -> effective S* another x10-50 higher [OWN]. Changed SIMULATE MORE -> KILL: the
+  ideation argument "the rigid-lattice surrogate is poor, so F2 is weak" cuts both ways; the quantum U is built from the same poor
+  surrogate, and a classical group proposal sampled from pi_surrogate at the right T (exact enumeration / PT on a 30-site group is
+  cheap) dominates the T-blind quantum group proposal [OWN].
+
+B3-07 Kawasaki XY mixer. t_C 30 ns (any-pair swap with cached fields). S* 3.3e6 / 1e8 / 1e8/0.018 = 5.6e9 (ring XY n=12, 2,000 CZ;
+  all-to-all 4,400-8,800 CZ -> 6.7e11 to 5e15). VERIFIED: Kawamata, Nakano, Fujii arXiv:2604.20701, https://arxiv.org/abs/2604.20701 :
+  QAOA with XY mixer on subgraphs trains Hamming-weight-conditioned neural surrogates; autocorrelation speedup ~14.0x vs local and
+  ~7.7x vs global Kawasaki on 3-regular graphs, numerical. CORRECTION to B3's citation: B3 quoted 20.3x / 7.6x; the current abstract
+  says 14.0x / 7.7x (likely a version change). No PT baseline; the proposing object at run time is a classical network
+  (quantum-inspired). First-order transitions: classical answer is VC-SGC / WL. VERIFIED: Sadigh & Erhart, Phys. Rev. B 86,
+  134204 (2012), arXiv:1111.1880, https://link.aps.org/doi/10.1103/PhysRevB.86.134204 (variance-constrained semi-grand-canonical
+  ensemble enables sampling inside miscibility gaps). Changed QUANTUM-INSPIRED ONLY -> SIMULATE MORE, but only as the cheap
+  decisive test that settles every conserved-mixer row (B3-07, B3-08, B3-09, K15) in one experiment (Wave 4 nomination 3); no
+  application value. Steps 10% (3-20), wall 0.1%.
+
+B3-08 HEA Potts. S* 3.3e6 / 1e8 / 1e8/4.5e-5 = 2.2e12 (6-8 sites x 5 one-hot qubits, per-species SWAP mixers, ~5,000 CZ). KILL kept.
+
+B3-09: see 1(a). S* 1e5 / 3e6 / 3e19. KILL (changed).
+
+B3-10 Li/vacancy semigrand. S* 3.3e6 / 1e8 / 5e8 (N_2q 800). KILL kept; ordered superstructures, no mixing problem.
+
+B3-11 triangular/kagome further-neighbour. t_C 0.15 ns. S* 6.7e8 / 2e10 / 2e10/6.7e-3 = 3e12 (n=12 triangular, 36 edges + routing
+  ~2,500 CZ). D-Wave route (King et al., kagome ice 913 spins on 2742 qubits, doi:10.1038/s41467-023-36760-1, cited by B3): 0.03 s ->
+  2e8, but inherits the B3-20 detailed-balance problem. Classical: dual-worm algorithm for triangular/kagome Ising AFMs with up to
+  3rd-neighbour couplings, "efficient across the relevant T range" (Rakala & Damle arXiv:1612.00851, via A5, label [S] there; not
+  re-read by me). Changed QUANTUM-INSPIRED ONLY -> KILL: QUANTUM-INSPIRED requires a real gain, none is shown or expected.
+
+B3-12 spin ice ring exchange. t_C ~10 ns per loop move. S* 0.1/1e-8 = 1e7 / 3/1e-8 = 3e8 / 3e8/8e-27 > 1e30 (see 1(c), 3e4 CZ).
+  Loop algorithms (Barkema & Newman arXiv:cond-mat/9706190; Melko, den Hertog, Gingras arXiv:cond-mat/0009225) are rejection-free
+  moves with O(1) decorrelation in the nn ice manifold, so there is nothing to beat; at the dipolar first-order transition the
+  barrier is a surface free energy that a T-blind proposal does not lower [SPEC]. Changed SIMULATE MORE -> KILL; the conserving
+  real-symmetric mixer construction survives as a method note (section 1(c)).
+
+B3-13 ice proton ordering DFT/MLIP. S* DFT (0.1+100)/100 ~1.0, (3+100)/100 = 1.03; MLIP (3+0.3)/0.3 = 11; pess >1e30 (ring-exchange
+  circuit). KILL kept: loops + F2.
+
+B3-14 HP protein + WL. t_C 100 ns. S* 0.1/1e-7 = 1e6 / 3/1e-7 = 3e7 / 3e7/3.7e-11 = 8e17 (22+ qubits with O(N^4) multi-body terms,
+  ~1.2e4 CZ, Robert et al. arXiv:1908.02163). Note WL acceptance requires a symmetric proposal and QeMCMC supplies one [OWN]. KILL kept.
+
+B3-15 adsorbates. S* 3.3e6 / 1e8 / 5e8. KILL kept.
+
+B3-16 grain growth. Category error (kinetic observable). S* n/a. KILL kept.
+
+B3-17 ferromagnets at criticality. t_C 2.5 ns (GPU SW). S* 0.1/2.5e-9 = 4e7 / 3/2.5e-9 = 1.2e9 / 1.2e9/0.2 = 6e9. Hardware fit 2
+  (square lattice native on Nighthawk; D-Wave). SW z~0.22-0.25 vs Metropolis 2.17 [A5, Nightingale-Bloete cond-mat/9601059]. KILL kept.
+
+B3-18 lattice polymers. t_C ~1 us (pivot). S* 1e5 / 3e6 / 3e6/3.7e-11 = 8e16 (HP-like encoding ~1.2e4 CZ). KILL kept.
+
+B3-19 T-ladder amortisation. Batched: throughput floor 4,000 circuits/s -> 0.25 ms per replica-step -> S* 0.25e-3/30e-9 = 8.3e3
+  (optimistic, fully throughput-bound); latency-bound R=50 replicas per 3 s job -> 60 ms -> 2e6 (realistic); /0.2 -> 1e7 (pess).
+  Changed QUANTUM-INSPIRED ONLY -> KILL as a standalone idea (it is a latency trick, not a gain; high-T replicas get ~1.3x
+  [PILOT]); the batching technique is used in Wave 4 nominations 1 and 2.
+
+B3-20 annealer proposal. t_C 0.15 ns. S* 0.03/1.5e-10 = 2e8 / 0.5/1.5e-10 = 3.3e9 / undefined; with 100+ parallel embeddings per
+  QMI (A4, arXiv:2512.19685) 1-10 ms per chain-step -> 6.7e6-6.7e7. Arai & Kadowaki arXiv:2502.08060 (QAEMCMC) is closed-system
+  QuTiP simulation at N~10 [A3, A4]; no hardware. Closed-system evolution under a time-symmetric (palindromic) reverse-anneal
+  schedule would give U^T = U [OWN, same transpose argument as 1(c); cf. the time-symmetric ramp in Hsieh-Orfi-Sels
+  arXiv:2603.28076], but real annealers are open systems with fluctuating effective temperature (Marshall-Rieffel-Hen
+  arXiv:1703.03902, cited by B3), so Q(s' given s) is neither symmetric nor known and min(1, pi'/pi) is not exact. Classical PT+ICM
+  was shown on the same (chimera) topology [Zhu et al. arXiv:1501.05630]. Changed WAIT FOR HARDWARE -> KILL: hardware exists today;
+  what is missing is a characterised symmetric proposal. Optional cheap check if anyone wants it: measure Q asymmetry for
+  palindromic reverse anneals on n<=8 native embeddings.
+
+K9 binarised Potts / HP. As B3-14: S* 1e6 / 3e7 / 8e17. KILL kept.
+
+K15 CE alloys / Li-vacancy. CE: 3.3e6 / 1e8 / 5.6e9 (XY ring 2,000 CZ); Ewald: 1e5 / 3e6 / 3e19. Changed "SIMULATE MORE as B3-09"
+  -> KILL, consistent with 1(a); algorithm question kept in B3-07.
+
+K16 triangular/kagome/spin-ice patches. 2-body 6.7e8 / 2e10 / 3e12; ring exchange >1e30. Changed SIMULATE MORE -> KILL (B3-11, B3-12).
+
+K17 adsorbates. 3.3e6 / 1e8 / 5e8. KILL kept.
+
+K18 ice rules. DFT 1.0 / 1.03 / >1e30. KILL kept.
+
+======================================================================================================================
+3. VERDICT COUNTS AND CHANGES VS IDEATION (B3)
+======================================================================================================================
+Counts (26 rows): BUILD NOW 2 (K0, B3-04); SIMULATE MORE 2 (B3-01, B3-07); WAIT FOR HARDWARE 0; QUANTUM-INSPIRED ONLY 0; KILL 22.
+Changes (10 rows): B3-02 WAIT -> KILL; B3-06 SIMULATE MORE -> KILL; B3-07 QUANTUM-INSPIRED -> SIMULATE MORE (as test only);
+  B3-09 SIMULATE MORE -> KILL; B3-11 QUANTUM-INSPIRED -> KILL; B3-12 SIMULATE MORE -> KILL; B3-19 QUANTUM-INSPIRED -> KILL;
+  B3-20 WAIT -> KILL; K15 SIMULATE MORE -> KILL; K16 SIMULATE MORE -> KILL. (B3-01 kept but steps likelihood 25% -> 15%.)
+Citation correction: Kawamata et al. 2604.20701 speedups are 14.0x (local) / 7.7x (global Kawasaki) in the current abstract, not
+  20.3x / 7.6x as written in B3.
+Ranking (decision value): 1 K0, 2 B3-01 (merged with K0 in Wave 4), 3 B3-04, 4 B3-07, 5 B3-09 (killed, but its residual question is
+  inside nomination 3). Wall-clock likelihood is <=0.5% for every row; no physics/materials idea has a wall-clock path in 3 years.
+  The only rows where S* ~ 1-10 (B3-05, B3-06, B3-13) are killed by the surrogate-importance competitor (F2), not by latency.
+
+======================================================================================================================
+4. WAVE 4 NOMINATIONS (max 3)
+======================================================================================================================
+
+N1. K0 + B3-01: QeMCMC vs tuned parallel tempering, and the cold-end mixture, on SK.
+  Instances: SK, J_ij, h_i ~ N(0,1) unscaled (as pilot), n = 8, 10, 12, 10 instances per n (seeded).
+  Temperatures: target beta in {0.1, 0.3, 0.5, 1.0, 3.0}; PT ladder R = 8 geometric from beta 0.1 to target, swap attempt every sweep.
+  Proposals: (i) local single-flip Metropolis; (ii) uniform; (iii) P1 quantum, exact unitary, gamma~U[0.25,0.6], t~U[2,20], realised
+    by precomputing Q matrices on a grid of 50 (gamma,t) pairs (2^12-dim expm, minutes); (iv) PT with local sweeps; (v) PT with the
+    quantum move mixed in at the coldest 2 replicas with fixed p in {0.01, 0.1, 1}.
+  Observables: exact spectral gap for (i)-(iii); for (iv)-(v) integrated autocorrelation time of E and of the two-replica overlap q at
+    the target replica, in single-proposal units, from >=200 independent runs; report per-proposal ratio tau_PT / tau_PT+Q and the
+    cost-weighted ratio with R = 1e8 (bound of section 1(b)).
+  Kill: median tau_PT / tau_(PT+Q, p=0.1) < 2 at beta = 1, n = 12, OR no growth of that ratio from n = 8 to 12 -> retire every
+    cheap-energy "step advantage" claim in the programme to "vs weak baselines only".
+  Confirm: ratio >= 5 at beta >= 1 and growing with n (fitted exponent difference >= 0.1 per spin) -> proceed to tensor-network check
+    (Christmann-style) to decide quantum vs quantum-inspired.
+  Detailed balance: fixed-p mixture of reversible kernels; PT swaps standard.
+
+N2. B3-04: heavy-hex exact calibration bed for noise-induced bias.
+  Instances: +-J random couplings on a 12-qubit and a 20-qubit connected subgraph of the FakeMarrakesh coupling map (repo
+    QuantumPhantoms/code/common/targets.py:83), zero field; exact Boltzmann by enumeration (4096 and ~1e6 states).
+  Temperatures: beta in {0.3, 1, 3} (couplings +-1).
+  Proposals: local, uniform, ideal Trotter QeMCMC (repo trotter_circuit, r = round(2t)), and noisy FakeMarrakesh versions:
+    (a) transpiled optimisation level 1, (b) palindromic-preserving layout (no optimisation), (c) forward/reverse randomisation
+    (section 1(c)), each with and without Pauli twirling. Q estimated from shots for every basis input at n = 12.
+  Observables: proposal asymmetry ||Q - Q^T|| (repo asymmetry()), TV distance between the stationary distribution of the
+    resulting MH chain and exact Boltzmann, spectral gap noisy vs ideal vs local/uniform; CZ count and F per variant.
+  Kill: twirled + randomised noisy chain has stationary TV bias > 0.02 at n = 12, or noisy gap <= uniform gap at beta = 3 -> any
+    hardware QeMCMC demonstration on Heron is noise-dominated; stop hardware runs.
+  Confirm: TV bias < 0.01 and noisy gap >= 2x local at beta = 3 -> hardware arm is credible for K0-scale runs.
+
+N3. B3-07 (absorbs B3-09, K15, B3-08 algorithm question): conserved-quantity XY mixer vs any-pair swap + PT.
+  Instances: n = 12 binary sites at half filling (Hamming weight 6, 924 states): (a) CuAu-like fcc nn CE on a 12-site cluster;
+    (b) dense frustrated Ewald-like couplings (random +-q point charges on 12 sites, screened 1/r, plus N(0,1) SK term), 5 instances
+    each.
+  Temperatures: canonical specific-heat peak defines Tc per instance; T/Tc in {1.1 (DRX synthesis analogue), 0.9, 0.5}.
+  Proposals: nn Kawasaki; any-pair swap; PT (R = 8) with any-pair swaps; quantum with XY ring mixer and XY all-to-all mixer, exact
+    unitary, plus 2nd-order Trotter palindromic vs non-palindromic (to measure the symmetry error of section 1(c)).
+  Observables: exact sector spectral gap (924 states) for single-proposal chains; tau_int of E and of the SRO parameter for PT;
+    asymmetry ||Q - Q^T|| for Trotter variants; CZ count.
+  Kill: quantum / any-pair-swap gap ratio < 2 at T/Tc = 1.1 AND < 1.5x vs PT per proposal at T/Tc = 0.5 -> kill all conserved-mixer
+    applications (alloys, cathodes) definitively.
+  Confirm: >= 5x vs any-pair swap at T/Tc <= 0.9 AND > 1.5x vs PT per proposal on the dense Ewald-like instances -> reopen B3-09 as
+    a quantum-inspired (classically emulated) proposal study, still no wall-clock claim.
+
+======================================================================================================================
+5. SOURCES VERIFIED IN THIS SESSION
+======================================================================================================================
+arXiv:2210.01165 Xie et al. charge-balanced semigrand MC (TE, SCB): https://arxiv.org/abs/2210.01165
+Ceder group PDF of the same: https://ceder.berkeley.edu/publications/2022_xie_charge-balanced_sgc.pdf
+smol table-flip notebook: https://cedergrouphub.github.io/smol/notebooks/running-charge-balanced-gcmc.html ; JOSS https://joss.theoj.org/papers/10.21105/joss.04504.pdf
+arXiv:2508.08112 DRX SRO probability maps (canonical MC, 32^3 sites, 1e4 flips/site): https://arxiv.org/html/2508.08112v1
+Ji et al. Nat. Commun. 2019 (title/abstract only): https://www.nature.com/articles/s41467-019-08490-w
+arXiv:2604.20701 Kawamata, Nakano, Fujii (14.0x / 7.7x): https://arxiv.org/abs/2604.20701
+Sadigh & Erhart PRB 86, 134204 (2012) VC-SGC: https://link.aps.org/doi/10.1103/PhysRevB.86.134204 , arXiv:1111.1880
+Iftimie et al. JCP 113, 4852 (2000): https://www.chem.utoronto.ca/jmschofi/papers/impSampling.pdf
+Taken from team scans without re-reading (labels inherited): A3/A4/A5 items (1003.6086, 1501.05630, 1612.00851, 2411.17821,
+  2502.08060, 2512.19685, 2603.28076, 1401.1084, 1202.0635, cond-mat/9601059); B3 references R8, R9, R18, R20, R21, R24 not re-verified.

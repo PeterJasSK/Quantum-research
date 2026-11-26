@@ -1,0 +1,106 @@
+(a) n=6 a=0.99: eps_half(F only)=4.78e-03  D3 LOW=2.6e-03  ln2/<N2q>=4.62e-03
+(a) n=6 a=1.35: eps_half(F only)=3.45e-03  D3 LOW=2.6e-03  ln2/<N2q>=4.62e-03
+(a) n=8 a=0.99: eps_half(F only)=4.06e-03  D3 LOW=2.3e-03  ln2/<N2q>=4.13e-03
+(a) n=8 a=1.35: eps_half(F only)=2.98e-03  D3 LOW=2.3e-03  ln2/<N2q>=4.13e-03
+(b) {'n': 6, 'seed': 100, 'regime': 'LOW', 'beta': 1.504, 'S_vs_mix': 2.281, 'best_mix_w_local': 0.9, 'S_vs_pairHB': 1.21, 'S_vs_tripleHB': 0.623, 'S_vs_best': 0.623, 'rU': 0.13, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.529, 'S_dep0.005_vs_best': 0.413, 'S_dep0.01_vs_best': 0.297, 'S_marrakesh_vs_mix': 1.095, 'S_marrakesh_vs_best': 0.299}
+(b) {'n': 6, 'seed': 100, 'regime': 'MEDIUM', 'beta': 0.501, 'S_vs_mix': 1.017, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.838, 'S_vs_tripleHB': 0.533, 'S_vs_best': 0.533, 'rU': 0.37, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.604, 'S_dep0.005_vs_best': 0.645, 'S_dep0.01_vs_best': 0.62, 'S_marrakesh_vs_mix': 1.122, 'S_marrakesh_vs_best': 0.588}
+(b) {'n': 6, 'seed': 100, 'regime': 'HIGH', 'beta': 0.167, 'S_vs_mix': 0.565, 'best_mix_w_local': 0.2, 'S_vs_pairHB': 0.533, 'S_vs_tripleHB': 0.44, 'S_vs_best': 0.44, 'rU': 0.716, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.556, 'S_dep0.005_vs_best': 0.666, 'S_dep0.01_vs_best': 0.754, 'S_marrakesh_vs_mix': 0.855, 'S_marrakesh_vs_best': 0.666}
+(b) {'n': 6, 'seed': 101, 'regime': 'LOW', 'beta': 2.383, 'S_vs_mix': 1.448, 'best_mix_w_local': 0.7, 'S_vs_pairHB': 0.652, 'S_vs_tripleHB': 0.274, 'S_vs_best': 0.274, 'rU': 0.053, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.235, 'S_dep0.005_vs_best': 0.189, 'S_dep0.01_vs_best': 0.139, 'S_marrakesh_vs_mix': 0.861, 'S_marrakesh_vs_best': 0.163}
+(b) {'n': 6, 'seed': 101, 'regime': 'MEDIUM', 'beta': 0.794, 'S_vs_mix': 1.465, 'best_mix_w_local': 0.8, 'S_vs_pairHB': 0.746, 'S_vs_tripleHB': 0.363, 'S_vs_best': 0.363, 'rU': 0.101, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.33, 'S_dep0.005_vs_best': 0.282, 'S_dep0.01_vs_best': 0.223, 'S_marrakesh_vs_mix': 1.09, 'S_marrakesh_vs_best': 0.27}
+(b) {'n': 6, 'seed': 101, 'regime': 'HIGH', 'beta': 0.265, 'S_vs_mix': 0.896, 'best_mix_w_local': 0.5, 'S_vs_pairHB': 0.703, 'S_vs_tripleHB': 0.466, 'S_vs_best': 0.466, 'rU': 0.375, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.53, 'S_dep0.005_vs_best': 0.561, 'S_dep0.01_vs_best': 0.541, 'S_marrakesh_vs_mix': 1.071, 'S_marrakesh_vs_best': 0.557}
+(b) {'n': 6, 'seed': 102, 'regime': 'LOW', 'beta': 1.893, 'S_vs_mix': 2.498, 'best_mix_w_local': 0.2, 'S_vs_pairHB': 2.306, 'S_vs_tripleHB': 2.041, 'S_vs_best': 2.041, 'rU': 0.557, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 1.686, 'S_dep0.005_vs_best': 1.343, 'S_dep0.01_vs_best': 1.043, 'S_marrakesh_vs_mix': 1.168, 'S_marrakesh_vs_best': 0.955}
+(b) {'n': 6, 'seed': 102, 'regime': 'MEDIUM', 'beta': 0.631, 'S_vs_mix': 1.887, 'best_mix_w_local': 0.3, 'S_vs_pairHB': 1.553, 'S_vs_tripleHB': 0.992, 'S_vs_best': 0.992, 'rU': 0.358, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.888, 'S_dep0.005_vs_best': 0.763, 'S_dep0.01_vs_best': 0.627, 'S_marrakesh_vs_mix': 1.222, 'S_marrakesh_vs_best': 0.642}
+(b) {'n': 6, 'seed': 102, 'regime': 'HIGH', 'beta': 0.21, 'S_vs_mix': 1.062, 'best_mix_w_local': 0.3, 'S_vs_pairHB': 0.897, 'S_vs_tripleHB': 0.665, 'S_vs_best': 0.665, 'rU': 0.53, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.704, 'S_dep0.005_vs_best': 0.704, 'S_dep0.01_vs_best': 0.669, 'S_marrakesh_vs_mix': 1.046, 'S_marrakesh_vs_best': 0.655}
+(b) {'n': 6, 'seed': 103, 'regime': 'LOW', 'beta': 1.504, 'S_vs_mix': 1.691, 'best_mix_w_local': 0.0, 'S_vs_pairHB': 2.045, 'S_vs_tripleHB': 1.942, 'S_vs_best': 1.691, 'rU': 1.0, 'best_kind': 'mix', 'S_dep0.002_vs_best': 1.414, 'S_dep0.005_vs_best': 1.156, 'S_dep0.01_vs_best': 0.961, 'S_marrakesh_vs_mix': 0.733, 'S_marrakesh_vs_best': 0.733}
+(b) {'n': 6, 'seed': 103, 'regime': 'MEDIUM', 'beta': 0.501, 'S_vs_mix': 1.427, 'best_mix_w_local': 0.1, 'S_vs_pairHB': 1.404, 'S_vs_tripleHB': 1.207, 'S_vs_best': 1.207, 'rU': 0.836, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 1.194, 'S_dep0.005_vs_best': 1.046, 'S_dep0.01_vs_best': 0.909, 'S_marrakesh_vs_mix': 0.93, 'S_marrakesh_vs_best': 0.787}
+(b) {'n': 6, 'seed': 103, 'regime': 'HIGH', 'beta': 0.167, 'S_vs_mix': 0.714, 'best_mix_w_local': 0.1, 'S_vs_pairHB': 0.682, 'S_vs_tripleHB': 0.594, 'S_vs_best': 0.594, 'rU': 0.812, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.713, 'S_dep0.005_vs_best': 0.803, 'S_dep0.01_vs_best': 0.828, 'S_marrakesh_vs_mix': 0.892, 'S_marrakesh_vs_best': 0.742}
+(b) {'n': 6, 'seed': 104, 'regime': 'LOW', 'beta': 2.124, 'S_vs_mix': 0.996, 'best_mix_w_local': 0.5, 'S_vs_pairHB': 0.68, 'S_vs_tripleHB': 0.321, 'S_vs_best': 0.321, 'rU': 0.076, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.317, 'S_dep0.005_vs_best': 0.286, 'S_dep0.01_vs_best': 0.226, 'S_marrakesh_vs_mix': 0.931, 'S_marrakesh_vs_best': 0.3}
+(b) {'n': 6, 'seed': 104, 'regime': 'MEDIUM', 'beta': 0.708, 'S_vs_mix': 0.925, 'best_mix_w_local': 0.6, 'S_vs_pairHB': 0.62, 'S_vs_tripleHB': 0.359, 'S_vs_best': 0.359, 'rU': 0.148, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.369, 'S_dep0.005_vs_best': 0.356, 'S_dep0.01_vs_best': 0.312, 'S_marrakesh_vs_mix': 0.89, 'S_marrakesh_vs_best': 0.345}
+(b) {'n': 6, 'seed': 104, 'regime': 'HIGH', 'beta': 0.236, 'S_vs_mix': 0.706, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.588, 'S_vs_tripleHB': 0.444, 'S_vs_best': 0.444, 'rU': 0.464, 'best_kind': 'tripleHB', 'S_dep0.002_vs_best': 0.525, 'S_dep0.005_vs_best': 0.584, 'S_dep0.01_vs_best': 0.602, 'S_marrakesh_vs_mix': 0.912, 'S_marrakesh_vs_best': 0.574}
+(b) {'n': 8, 'seed': 100, 'regime': 'LOW', 'beta': 1.34, 'S_vs_mix': 3.46, 'best_mix_w_local': 0.0, 'S_vs_pairHB': 3.943, 'S_vs_tripleHB': 1.863, 'S_vs_best': 1.863, 'rU': 0.538, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 1.145}
+(b) {'n': 8, 'seed': 100, 'regime': 'MEDIUM', 'beta': 0.447, 'S_vs_mix': 1.535, 'best_mix_w_local': 0.6, 'S_vs_pairHB': 1.017, 'S_vs_tripleHB': 0.684, 'S_vs_best': 0.684, 'rU': 0.226, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.504}
+(b) {'n': 8, 'seed': 100, 'regime': 'HIGH', 'beta': 0.149, 'S_vs_mix': 0.762, 'best_mix_w_local': 0.5, 'S_vs_pairHB': 0.622, 'S_vs_tripleHB': 0.494, 'S_vs_best': 0.494, 'rU': 0.433, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.592}
+(b) {'n': 8, 'seed': 101, 'regime': 'LOW', 'beta': 1.194, 'S_vs_mix': 0.726, 'best_mix_w_local': 0.2, 'S_vs_pairHB': 0.72, 'S_vs_tripleHB': 0.703, 'S_vs_best': 0.703, 'rU': 0.308, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.65}
+(b) {'n': 8, 'seed': 101, 'regime': 'MEDIUM', 'beta': 0.398, 'S_vs_mix': 0.957, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.712, 'S_vs_tripleHB': 0.548, 'S_vs_best': 0.548, 'rU': 0.236, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.559}
+(b) {'n': 8, 'seed': 101, 'regime': 'HIGH', 'beta': 0.133, 'S_vs_mix': 0.653, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.538, 'S_vs_tripleHB': 0.426, 'S_vs_best': 0.426, 'rU': 0.493, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.639}
+(b) {'n': 8, 'seed': 102, 'regime': 'LOW', 'beta': 1.064, 'S_vs_mix': 1.646, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 1.207, 'S_vs_tripleHB': 1.061, 'S_vs_best': 1.061, 'rU': 0.155, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.798}
+(b) {'n': 8, 'seed': 102, 'regime': 'MEDIUM', 'beta': 0.355, 'S_vs_mix': 1.134, 'best_mix_w_local': 0.5, 'S_vs_pairHB': 0.823, 'S_vs_tripleHB': 0.618, 'S_vs_best': 0.618, 'rU': 0.157, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.51}
+(b) {'n': 8, 'seed': 102, 'regime': 'HIGH', 'beta': 0.118, 'S_vs_mix': 0.717, 'best_mix_w_local': 0.5, 'S_vs_pairHB': 0.586, 'S_vs_tripleHB': 0.462, 'S_vs_best': 0.462, 'rU': 0.404, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.604}
+(b) {'n': 8, 'seed': 103, 'regime': 'LOW', 'beta': 1.194, 'S_vs_mix': 1.225, 'best_mix_w_local': 0.2, 'S_vs_pairHB': 1.168, 'S_vs_tripleHB': 1.049, 'S_vs_best': 1.049, 'rU': 0.248, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.827}
+(b) {'n': 8, 'seed': 103, 'regime': 'MEDIUM', 'beta': 0.398, 'S_vs_mix': 1.26, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 1.009, 'S_vs_tripleHB': 0.77, 'S_vs_best': 0.77, 'rU': 0.285, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.674}
+(b) {'n': 8, 'seed': 103, 'regime': 'HIGH', 'beta': 0.133, 'S_vs_mix': 0.766, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.658, 'S_vs_tripleHB': 0.529, 'S_vs_best': 0.529, 'rU': 0.541, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.713}
+(b) {'n': 8, 'seed': 104, 'regime': 'LOW', 'beta': 2.124, 'S_vs_mix': 1.114, 'best_mix_w_local': 0.0, 'S_vs_pairHB': 1.197, 'S_vs_tripleHB': 1.171, 'S_vs_best': 1.114, 'rU': 1.0, 'best_kind': 'mix', 'S_dep0.01_vs_best': 0.822}
+(b) {'n': 8, 'seed': 104, 'regime': 'MEDIUM', 'beta': 0.708, 'S_vs_mix': 1.368, 'best_mix_w_local': 0.3, 'S_vs_pairHB': 1.095, 'S_vs_tripleHB': 0.911, 'S_vs_best': 0.911, 'rU': 0.419, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.654}
+(b) {'n': 8, 'seed': 104, 'regime': 'HIGH', 'beta': 0.236, 'S_vs_mix': 1.012, 'best_mix_w_local': 0.4, 'S_vs_pairHB': 0.811, 'S_vs_tripleHB': 0.637, 'S_vs_best': 0.637, 'rU': 0.4, 'best_kind': 'tripleHB', 'S_dep0.01_vs_best': 0.603}
+SUM n6_LOW_S_vs_mix median 1.69 IQR [1.45, 2.28] N=5
+SUM n6_LOW_S_vs_pairHB median 1.21 IQR [0.68, 2.05] N=5
+SUM n6_LOW_S_vs_tripleHB median 0.623 IQR [0.321, 1.94] N=5
+SUM n6_LOW_S_vs_best median 0.623 IQR [0.321, 1.69] N=5
+SUM n6_LOW_rU median 0.13 IQR [0.0761, 0.557] N=5
+SUM n6_LOW_S_dep0.002_vs_best median 0.529 IQR [0.317, 1.41] N=5
+SUM n6_LOW_S_dep0.005_vs_best median 0.413 IQR [0.286, 1.16] N=5
+SUM n6_LOW_S_dep0.01_vs_best median 0.297 IQR [0.226, 0.961] N=5
+SUM n6_LOW_S_marrakesh_vs_mix median 0.931 IQR [0.861, 1.1] N=5
+SUM n6_LOW_S_marrakesh_vs_best median 0.3 IQR [0.299, 0.733] N=5
+SUM n6_LOW_tilt_z0.02 median 0.00056 IQR [0.000525, 0.014] N=5
+SUM n6_LOW_tilt_z0.05 median 0.00136 IQR [0.00127, 0.0343] N=5
+SUM n6_LOW_tilt_z0.1 median 0.00259 IQR [0.00243, 0.0667] N=5
+SUM n6_LOW_tilt_z0.2 median 0.00474 IQR [0.00446, 0.126] N=5
+SUM n6_MEDIUM_S_vs_mix median 1.43 IQR [1.02, 1.47] N=5
+SUM n6_MEDIUM_S_vs_pairHB median 0.838 IQR [0.746, 1.4] N=5
+SUM n6_MEDIUM_S_vs_tripleHB median 0.533 IQR [0.363, 0.992] N=5
+SUM n6_MEDIUM_S_vs_best median 0.533 IQR [0.363, 0.992] N=5
+SUM n6_MEDIUM_rU median 0.358 IQR [0.148, 0.37] N=5
+SUM n6_MEDIUM_S_dep0.002_vs_best median 0.604 IQR [0.369, 0.888] N=5
+SUM n6_MEDIUM_S_dep0.005_vs_best median 0.645 IQR [0.356, 0.763] N=5
+SUM n6_MEDIUM_S_dep0.01_vs_best median 0.62 IQR [0.312, 0.627] N=5
+SUM n6_MEDIUM_S_marrakesh_vs_mix median 1.09 IQR [0.93, 1.12] N=5
+SUM n6_MEDIUM_S_marrakesh_vs_best median 0.588 IQR [0.345, 0.642] N=5
+SUM n6_MEDIUM_tilt_z0.02 median 0.012 IQR [0.0112, 0.0177] N=5
+SUM n6_MEDIUM_tilt_z0.05 median 0.0297 IQR [0.0285, 0.0439] N=5
+SUM n6_MEDIUM_tilt_z0.1 median 0.0589 IQR [0.0581, 0.0883] N=5
+SUM n6_MEDIUM_tilt_z0.2 median 0.126 IQR [0.111, 0.189] N=5
+SUM n6_HIGH_S_vs_mix median 0.714 IQR [0.706, 0.896] N=5
+SUM n6_HIGH_S_vs_pairHB median 0.682 IQR [0.588, 0.703] N=5
+SUM n6_HIGH_S_vs_tripleHB median 0.466 IQR [0.444, 0.594] N=5
+SUM n6_HIGH_S_vs_best median 0.466 IQR [0.444, 0.594] N=5
+SUM n6_HIGH_rU median 0.53 IQR [0.464, 0.716] N=5
+SUM n6_HIGH_S_dep0.002_vs_best median 0.556 IQR [0.53, 0.704] N=5
+SUM n6_HIGH_S_dep0.005_vs_best median 0.666 IQR [0.584, 0.704] N=5
+SUM n6_HIGH_S_dep0.01_vs_best median 0.669 IQR [0.602, 0.754] N=5
+SUM n6_HIGH_S_marrakesh_vs_mix median 0.912 IQR [0.892, 1.05] N=5
+SUM n6_HIGH_S_marrakesh_vs_best median 0.655 IQR [0.574, 0.666] N=5
+SUM n6_HIGH_tilt_z0.02 median 0.0188 IQR [0.0182, 0.0195] N=5
+SUM n6_HIGH_tilt_z0.05 median 0.0475 IQR [0.0453, 0.0494] N=5
+SUM n6_HIGH_tilt_z0.1 median 0.0965 IQR [0.0901, 0.101] N=5
+SUM n6_HIGH_tilt_z0.2 median 0.197 IQR [0.177, 0.207] N=5
+SUM n8_LOW_S_vs_mix median 1.22 IQR [1.11, 1.65] N=5
+SUM n8_LOW_S_vs_pairHB median 1.2 IQR [1.17, 1.21] N=5
+SUM n8_LOW_S_vs_tripleHB median 1.06 IQR [1.05, 1.17] N=5
+SUM n8_LOW_S_vs_best median 1.06 IQR [1.05, 1.11] N=5
+SUM n8_LOW_rU median 0.308 IQR [0.248, 0.538] N=5
+SUM n8_LOW_S_dep0.01_vs_best median 0.822 IQR [0.798, 0.827] N=5
+SUM n8_LOW_tilt_z0.02 median 0.00369 IQR [0.000895, 0.00792] N=5
+SUM n8_LOW_tilt_z0.05 median 0.00966 IQR [0.00217, 0.0201] N=5
+SUM n8_LOW_tilt_z0.1 median 0.0211 IQR [0.00412, 0.0412] N=5
+SUM n8_LOW_tilt_z0.2 median 0.0516 IQR [0.0075, 0.0866] N=5
+SUM n8_MEDIUM_S_vs_mix median 1.26 IQR [1.13, 1.37] N=5
+SUM n8_MEDIUM_S_vs_pairHB median 1.01 IQR [0.823, 1.02] N=5
+SUM n8_MEDIUM_S_vs_tripleHB median 0.684 IQR [0.618, 0.77] N=5
+SUM n8_MEDIUM_S_vs_best median 0.684 IQR [0.618, 0.77] N=5
+SUM n8_MEDIUM_rU median 0.236 IQR [0.226, 0.285] N=5
+SUM n8_MEDIUM_S_dep0.01_vs_best median 0.559 IQR [0.51, 0.654] N=5
+SUM n8_MEDIUM_tilt_z0.02 median 0.0171 IQR [0.0161, 0.0197] N=5
+SUM n8_MEDIUM_tilt_z0.05 median 0.0419 IQR [0.0403, 0.048] N=5
+SUM n8_MEDIUM_tilt_z0.1 median 0.0808 IQR [0.0806, 0.0918] N=5
+SUM n8_MEDIUM_tilt_z0.2 median 0.16 IQR [0.15, 0.167] N=5
+SUM n8_HIGH_S_vs_mix median 0.762 IQR [0.717, 0.766] N=5
+SUM n8_HIGH_S_vs_pairHB median 0.622 IQR [0.586, 0.658] N=5
+SUM n8_HIGH_S_vs_tripleHB median 0.494 IQR [0.462, 0.529] N=5
+SUM n8_HIGH_S_vs_best median 0.494 IQR [0.462, 0.529] N=5
+SUM n8_HIGH_rU median 0.433 IQR [0.404, 0.493] N=5
+SUM n8_HIGH_S_dep0.01_vs_best median 0.604 IQR [0.603, 0.639] N=5
+SUM n8_HIGH_tilt_z0.02 median 0.0222 IQR [0.0222, 0.0231] N=5
+SUM n8_HIGH_tilt_z0.05 median 0.056 IQR [0.056, 0.058] N=5
+SUM n8_HIGH_tilt_z0.1 median 0.114 IQR [0.114, 0.115] N=5
+SUM n8_HIGH_tilt_z0.2 median 0.23 IQR [0.223, 0.233] N=5

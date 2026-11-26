@@ -1,0 +1,118 @@
+CLAIM A (D6 overloaded CDMA window, alpha=0.5, dense) - relaxation-gap ratios, median [IQR] over instance x SNR cells
+
+ n=8: 240 rows
+  beta/bm=0.5: S_D6(vs L,U,LU)=2.53 [1.92,3.92] N=40 | S_vs_best_no_modehop=0.593 [0.353,1.21] N=40 | S_vs_best_realisable=0.38 [0.166,0.754] N=40 | Q/D=2.18 [1.76,3.48] N=40
+  beta/bm=0.71: S_D6(vs L,U,LU)=2.74 [1.96,4.15] N=40 | S_vs_best_no_modehop=0.496 [0.23,1.29] N=40 | S_vs_best_realisable=0.263 [0.0802,0.72] N=40 | Q/D=2.3 [1.82,4.15] N=40
+  beta/bm=1.0: S_D6(vs L,U,LU)=3.47 [1.98,4.39] N=40 | S_vs_best_no_modehop=0.345 [0.172,1.33] N=40 | S_vs_best_realisable=0.167 [0.066,0.577] N=40 | Q/D=2.35 [1.82,4.81] N=40
+  beta/bm=1.41: S_D6(vs L,U,LU)=3.58 [1.98,4.59] N=40 | S_vs_best_no_modehop=0.274 [0.167,0.978] N=40 | S_vs_best_realisable=0.139 [0.0614,0.377] N=40 | Q/D=2.29 [1.72,4.79] N=40
+  beta/bm=2.0: S_D6(vs L,U,LU)=3.7 [1.88,5] N=40 | S_vs_best_no_modehop=0.233 [0.152,0.609] N=40 | S_vs_best_realisable=0.0748 [0.0511,0.256] N=40 | Q/D=2.37 [1.62,4.91] N=40
+  beta/bm=4.0: S_D6(vs L,U,LU)=3.68 [2.07,5.48] N=40 | S_vs_best_no_modehop=0.216 [0.112,0.34] N=40 | S_vs_best_realisable=0.0688 [0.038,0.124] N=40 | Q/D=2.4 [1.54,5.38] N=40
+  matched beta, by SNR:
+   SNR  3.0: S_D6=2.23 S_noMODE=0.63 S_best=0.49 frac(S_best>1)=0.20 best={'MODE': 7, 'MF': 3} | Q/MODEall=0.56 Q/EXMARG=0.45 | P(q12<.5)=0.27 basins>5%=2.5 dH(top2)=3.0 minima=4 found=3
+   SNR  6.0: S_D6=3.12 S_noMODE=0.36 S_best=0.35 frac(S_best>1)=0.20 best={'MODE': 5, 'MF': 4, 'L+Pw+U': 1} | Q/MODEall=0.52 Q/EXMARG=0.58 | P(q12<.5)=0.16 basins>5%=2.0 dH(top2)=2.5 minima=4 found=2
+   SNR 10.0: S_D6=3.61 S_noMODE=0.39 S_best=0.16 frac(S_best>1)=0.00 best={'MODE': 8, 'MF': 2} | Q/MODEall=0.21 Q/EXMARG=0.54 | P(q12<.5)=0.04 basins>5%=1.5 dH(top2)=2.5 minima=4 found=4
+   SNR 14.0: S_D6=4.56 S_noMODE=0.21 S_best=0.06 frac(S_best>1)=0.00 best={'MODE': 10} | Q/MODEall=0.06 Q/EXMARG=0.70 | P(q12<.5)=0.00 basins>5%=1.0 dH(top2)=2.5 minima=4 found=4
+  matched beta: median gap Q / each classical kernel: L=301 U=4.41 LU=3.47 PTmulti=2.34 L+Pw=2.12 L+Pw+U=1.94 L+HM0.15=5.88 L+HM0.3=4.24 L+HM0.5=3.28 MODE=0.253 MF=0.345 ST=7.97 MODEall=0.251 EXMARG=0.494 D=2.35
+  ST exact target IAT / charged bound K*tau(gap): 0.334 [0.128,0.722] N=120
+  ST charged gap / quantum gap: 0.124 [0.0929,0.171] N=120; uncharged ST gap / Q: 0.377 [0.282,0.53] N=120
+
+ n=10: 36 rows
+  beta/bm=0.5: S_D6(vs L,U,LU)=2.63 [2.2,8.37] N=12 | S_vs_best_no_modehop=1.17 [0.714,1.67] N=12 | S_vs_best_realisable=0.537 [0.13,1.05] N=12 | Q/D=2.13 [1.67,3.99] N=12
+  beta/bm=1.0: S_D6(vs L,U,LU)=3.9 [2.78,10.2] N=12 | S_vs_best_no_modehop=1.46 [0.649,1.61] N=12 | S_vs_best_realisable=0.199 [0.0404,0.713] N=12 | Q/D=2.7 [1.51,4.74] N=12
+  beta/bm=2.0: S_D6(vs L,U,LU)=6.97 [3.71,11.2] N=12 | S_vs_best_no_modehop=1.13 [0.215,1.64] N=12 | S_vs_best_realisable=0.0442 [0.0271,0.284] N=12 | Q/D=3.74 [1.81,5.74] N=12
+  matched beta, by SNR:
+   SNR  3.0: S_D6=2.72 S_noMODE=1.52 S_best=1.04 frac(S_best>1)=0.67 best={'MODE': 3} | Q/MODEall=1.04 Q/EXMARG=1.45 | P(q12<.5)=0.66 basins>5%=4.0 dH(top2)=4.0 minima=9 found=6
+   SNR  6.0: S_D6=4.22 S_noMODE=0.69 S_best=0.69 frac(S_best>1)=0.00 best={'MF': 2, 'MODE': 1} | Q/MODEall=0.54 Q/EXMARG=1.41 | P(q12<.5)=0.51 basins>5%=3.0 dH(top2)=3.0 minima=8 found=4
+   SNR 10.0: S_D6=9.64 S_noMODE=1.55 S_best=0.04 frac(S_best>1)=0.00 best={'MODE': 3} | Q/MODEall=0.04 Q/EXMARG=0.97 | P(q12<.5)=0.23 basins>5%=3.0 dH(top2)=3.0 minima=7 found=7
+   SNR 14.0: S_D6=14.94 S_noMODE=1.51 S_best=0.03 frac(S_best>1)=0.00 best={'MODE': 3} | Q/MODEall=0.03 Q/EXMARG=0.24 | P(q12<.5)=0.03 basins>5%=1.0 dH(top2)=3.0 minima=7 found=5
+  matched beta: median gap Q / each classical kernel: L=1.63e+03 U=5.9 LU=4.18 PTmulti=2.81 L+Pw=4.06 L+Pw+U=2.85 L+HM0.15=5.82 L+HM0.3=3.1 L+HM0.5=2.97 MODE=0.199 MF=1.46 ST=7.95 MODEall=0.108 EXMARG=1.19 D=2.7
+
+ n=12: 2 rows
+  beta/bm=1.0: S_D6(vs L,U,LU)=13.3 [11.1,15.5] N=2 | S_vs_best_no_modehop=0.112 [0.0934,0.13] N=2 | S_vs_best_realisable=0.087 [0.056,0.118] N=2 | Q/D=6.89 [4.46,9.31] N=2
+  matched beta, by SNR:
+   SNR 10.0: S_D6=13.34 S_noMODE=0.11 S_best=0.09 frac(S_best>1)=0.00 best={'MODE': 1, 'MF': 1} | Q/MODEall=0.05 Q/EXMARG=19.37 | P(q12<.5)=0.01 basins>5%=1.5 dH(top2)=2.5 minima=13 found=8
+  matched beta: median gap Q / each classical kernel: L=8.78e+04 U=15.8 LU=16.2 PTmulti=3.55 L+Pw=27.1 MODE=0.217 MF=0.112 MODEall=0.0504 EXMARG=19.4 D=6.89
+
+ Multimodality vs S in D6's own data (matched beta; var_q12 = Var of two-replica overlap):
+  exp1_dense_n8 alpha=0.5: median var_q12=0.089 median S=1.88
+  exp1_dense_n8 alpha=1.0: median var_q12=0.081 median S=1.29
+  exp1_dense_n8 alpha=1.5: median var_q12=0.041 median S=0.78
+  exp1_dense_n8 alpha=2.0: median var_q12=0.052 median S=0.87
+  exp1_dense_n10_a0.5 alpha=0.5: median var_q12=0.094 median S=3.31
+  exp1_dense_n10_a1 alpha=1.0: median var_q12=0.030 median S=1.34
+  exp1_dense_n10_a1.5 alpha=1.5: median var_q12=0.042 median S=0.94
+  exp1_dense_n10_a2 alpha=2.0: median var_q12=0.021 median S=0.67
+  Spearman(var_q12, S) over all n=8 matched cells: rho=0.37 (p=3.0e-09, N=240)
+
+
+CLAIM B (SK, J,h~N(0,1), D1 instances seed 1000n+i): EXACT SW/Wolff (ghost spin, subset DP) at MEDIUM beta/bc in {0.68,1,1.47}
+ ratio = absolute-gap ratio (D1 convention); per instance geometric mean over the 3 MEDIUM points, then median [IQR]
+
+ n=6 (10 inst, beta_c median 0.500)
+   layden/mixbest               1.18 [1.01,1.41] N=10
+   layden/SW                    0.803 [0.538,1.83] N=10
+   layden/Wolff                 0.46 [0.308,1.03] N=10
+   layden/best(mix,SW,Wolff)    0.458 [0.308,0.863] N=10
+   decohered/best               0.264 [0.21,0.314] N=10
+   tuned/best(mix,SW,Wolff)     0.668 [0.438,1.04] N=10
+   tuned/layden                 1.35 [1.3,1.45] N=10
+   layden/best relaxation-gap   0.458 [0.308,0.863] N=10
+   at beta/bc=0.68: layden/best=0.212  SW/mix=2.73  Wolff/mix=4.22  gaps(med) mix=0.112 SW=0.29 Wolff=0.446 layden=0.0999
+   at beta/bc=1.00: layden/best=0.384  SW/mix=1.79  Wolff/mix=3.11  gaps(med) mix=0.0721 SW=0.129 Wolff=0.223 layden=0.0856
+   at beta/bc=1.47: layden/best=1.19  SW/mix=0.684  Wolff/mix=1.28  gaps(med) mix=0.053 SW=0.0348 Wolff=0.0662 layden=0.0825
+   max SW asym 1.2e-15, max rowsum err 1.6e-15
+   tuned cell alpha-multiplier counts: {'a1.0': 7, 'a2.0': 15, 'a0.5': 8}
+
+ n=8 (10 inst, beta_c median 0.493)
+   layden/mixbest               2.23 [1.97,2.47] N=10
+   layden/SW                    2.25 [1.09,4.62] N=10
+   layden/Wolff                 1.22 [0.616,2.45] N=10
+   layden/best(mix,SW,Wolff)    0.956 [0.602,1.46] N=10
+   decohered/best               0.29 [0.159,0.417] N=10
+   tuned/best(mix,SW,Wolff)     1.22 [0.712,1.49] N=10
+   tuned/layden                 1.17 [1.15,1.24] N=10
+   layden/best relaxation-gap   0.956 [0.602,1.46] N=10
+   at beta/bc=0.68: layden/best=0.301  SW/mix=2.7  Wolff/mix=4.63  gaps(med) mix=0.0519 SW=0.142 Wolff=0.235 layden=0.0806
+   at beta/bc=1.00: layden/best=0.923  SW/mix=1.17  Wolff/mix=2.2  gaps(med) mix=0.0255 SW=0.0294 Wolff=0.0545 layden=0.0596
+   at beta/bc=1.47: layden/best=2.43  SW/mix=0.244  Wolff/mix=0.478  gaps(med) mix=0.0144 SW=0.00294 Wolff=0.00574 layden=0.0492
+   max SW asym 7.5e-16, max rowsum err 2.2e-15
+   tuned cell alpha-multiplier counts: {'a1.0': 11, 'a2.0': 19}
+
+ n=9 (10 inst, beta_c median 0.432)
+   layden/mixbest               2.36 [1.82,2.74] N=10
+   layden/SW                    2.8 [1.58,6.56] N=10
+   layden/Wolff                 1.56 [0.861,3.59] N=10
+   layden/best(mix,SW,Wolff)    1.2 [0.795,1.67] N=10
+   decohered/best               0.352 [0.268,0.53] N=10
+   layden/best relaxation-gap   1.2 [0.795,1.67] N=10
+   at beta/bc=0.68: layden/best=0.377  SW/mix=2.64  Wolff/mix=4.26  gaps(med) mix=0.0489 SW=0.132 Wolff=0.223 layden=0.0682
+   at beta/bc=1.00: layden/best=1.19  SW/mix=1.1  Wolff/mix=2.04  gaps(med) mix=0.0257 SW=0.0272 Wolff=0.0509 layden=0.0531
+   at beta/bc=1.47: layden/best=3.95  SW/mix=0.223  Wolff/mix=0.438  gaps(med) mix=0.0137 SW=0.00285 Wolff=0.00558 layden=0.0499
+   max SW asym 1.0e-15, max rowsum err 4.0e-15
+
+ n=10 (6 inst, beta_c median 0.398)
+   layden/mixbest               2.71 [2.29,3.04] N=6
+   layden/SW                    2.06 [1.77,4.47] N=6
+   layden/Wolff                 1.17 [0.974,2.48] N=6
+   layden/best(mix,SW,Wolff)    1.02 [0.773,1.51] N=6
+   decohered/best               0.333 [0.217,0.347] N=6
+   tuned/best(mix,SW,Wolff)     1.2 [0.933,1.75] N=6
+   tuned/layden                 1.21 [1.18,1.25] N=6
+   layden/best relaxation-gap   1.02 [0.773,1.51] N=6
+   at beta/bc=0.68: layden/best=0.274  SW/mix=2.96  Wolff/mix=4.7  gaps(med) mix=0.0401 SW=0.145 Wolff=0.239 layden=0.0684
+   at beta/bc=1.00: layden/best=0.833  SW/mix=1.23  Wolff/mix=2.23  gaps(med) mix=0.0196 SW=0.0269 Wolff=0.0499 layden=0.0507
+   at beta/bc=1.47: layden/best=4.56  SW/mix=0.252  Wolff/mix=0.49  gaps(med) mix=0.011 SW=0.00233 Wolff=0.00457 layden=0.045
+   max SW asym 1.0e-15, max rowsum err 5.8e-15
+   tuned cell alpha-multiplier counts: {'a2.0': 16, 'a1.0': 2}
+
+ n=11 (3 inst, beta_c median 0.341)
+   layden/mixbest               2.92 [2.5,3.37] N=3
+   layden/SW                    2.37 [1.61,2.43] N=3
+   layden/Wolff                 1.31 [0.894,1.33] N=3
+   layden/best(mix,SW,Wolff)    1.13 [0.803,1.19] N=3
+   decohered/best               0.169 [0.148,0.228] N=3
+   layden/best relaxation-gap   1.13 [0.803,1.19] N=3
+   at beta/bc=0.68: layden/best=0.272  SW/mix=4.5  Wolff/mix=7.59  gaps(med) mix=0.036 SW=0.166 Wolff=0.268 layden=0.0604
+   at beta/bc=1.00: layden/best=0.964  SW/mix=1.97  Wolff/mix=3.71  gaps(med) mix=0.0173 SW=0.0323 Wolff=0.0599 layden=0.0377
+   at beta/bc=1.47: layden/best=5.52  SW/mix=0.402  Wolff/mix=0.794  gaps(med) mix=0.00975 SW=0.00317 Wolff=0.00623 layden=0.0309
+   max SW asym 5.3e-16, max rowsum err 6.9e-15

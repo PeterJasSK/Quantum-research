@@ -1,0 +1,39 @@
+cuau: Tc per seed 2.96, 2.88, 2.98, 3.15, 3.43
+  T/Tc=0.5 vs swap: best=nn_kawasaki gap=0.00371 | q_grid=10.41[8.68,10.94] q_ring=9.89[8.87,10.05] q_complete=5.77[5.11,6.01] deco_grid=1.84[1.73,1.97] deco_complete=1.33[1.29,1.39] q_best=10.41[8.87,10.94]
+  T/Tc=0.5 vs all: best=uniform gap=0.00606 | q_grid=6.84[5.99,6.85] q_ring=6.29[6.12,6.55] q_complete=3.76[3.52,3.80] deco_grid=1.15[1.14,1.15] deco_complete=0.81[0.79,0.81] q_best=6.84[6.12,6.90]
+  T/Tc=1.1 vs swap: best=nn_kawasaki gap=0.0231 | q_grid=1.68[1.61,1.87] q_ring=1.72[1.66,1.93] q_complete=0.86[0.81,0.98] deco_grid=1.13[1.10,1.13] deco_complete=0.96[0.96,0.97] q_best=1.72[1.68,1.93]
+  T/Tc=1.1 vs all: best=nn_kawasaki gap=0.0231 | q_grid=1.68[1.61,1.87] q_ring=1.72[1.66,1.93] q_complete=0.86[0.81,0.98] deco_grid=1.13[1.10,1.13] deco_complete=0.96[0.96,0.97] q_best=1.72[1.68,1.93]
+  T/Tc=3.0 vs swap: best=mix_nn_anypair gap=0.0962 | q_grid=1.14[1.03,1.21] q_ring=1.24[1.07,1.28] q_complete=0.53[0.50,0.56] deco_grid=1.69[1.68,1.71] deco_complete=1.58[1.57,1.60] q_best=1.24[1.07,1.28]
+  T/Tc=3.0 vs all: best=uniform gap=0.143 | q_grid=0.75[0.70,0.83] q_ring=0.81[0.72,0.87] q_complete=0.35[0.34,0.39] deco_grid=1.13[1.13,1.13] deco_complete=1.06[1.06,1.06] q_best=0.81[0.72,0.87]
+coulomb: Tc per seed 0.495, 0.399, 0.428, 0.438, 0.408
+  T/Tc=0.5 vs swap: best=nn_kawasaki gap=0.000308 | q_grid=90.72[73.70,105.27] q_ring=82.41[61.75,95.48] q_complete=61.63[54.24,66.50] deco_grid=9.17[7.15,11.62] deco_complete=6.46[4.52,6.57] q_best=90.72[82.41,105.62]
+  T/Tc=0.5 vs all: best=uniform gap=0.00433 | q_grid=10.06[7.47,10.62] q_ring=8.10[7.23,9.13] q_complete=6.35[3.91,10.09] deco_grid=0.88[0.84,0.90] deco_complete=0.60[0.53,0.63] q_best=10.09[8.10,10.62]
+  T/Tc=1.1 vs swap: best=nn_kawasaki gap=0.0121 | q_grid=4.28[3.52,4.51] q_ring=3.78[3.78,4.11] q_complete=2.64[1.73,3.22] deco_grid=1.01[0.96,1.08] deco_complete=0.81[0.73,0.81] q_best=4.28[3.78,4.51]
+  T/Tc=1.1 vs all: best=nn_kawasaki gap=0.0121 | q_grid=4.28[3.52,4.51] q_ring=3.78[3.78,4.11] q_complete=2.64[1.73,3.22] deco_grid=1.01[0.96,1.08] deco_complete=0.81[0.73,0.81] q_best=4.28[3.78,4.51]
+  T/Tc=3.0 vs swap: best=nn_kawasaki gap=0.0733 | q_grid=2.00[1.85,2.22] q_ring=1.94[1.85,2.20] q_complete=1.06[0.82,1.25] deco_grid=1.36[1.25,1.46] deco_complete=1.17[1.17,1.29] q_best=2.00[1.94,2.22]
+  T/Tc=3.0 vs all: best=uniform gap=0.0767 | q_grid=2.00[1.66,2.03] q_ring=1.85[1.74,1.94] q_complete=1.06[0.74,1.14] deco_grid=1.21[1.20,1.22] deco_complete=1.06[1.05,1.07] q_best=2.00[1.74,2.03]
+sk: Tc per seed 0.774, 0.68, 0.841, 0.817, 0.767
+  T/Tc=0.5 vs swap: best=anypair_swap gap=0.000123 | q_grid=322.83[309.58,374.39] q_ring=173.18[94.76,206.17] q_complete=214.56[190.76,245.56] deco_grid=17.77[16.40,18.19] deco_complete=18.62[18.47,19.88] q_best=322.83[309.58,374.39]
+  T/Tc=0.5 vs all: best=uniform gap=0.00388 | q_grid=9.81[6.95,13.09] q_ring=4.45[3.73,4.49] q_complete=6.04[4.62,6.42] deco_grid=0.44[0.41,0.52] deco_complete=0.59[0.45,0.60] q_best=9.81[6.95,13.09]
+  T/Tc=1.1 vs swap: best=anypair_swap gap=0.00407 | q_grid=11.53[10.06,11.62] q_ring=6.99[5.90,7.82] q_complete=6.14[4.40,6.31] deco_grid=2.01[1.95,2.47] deco_complete=2.15[1.92,3.00] q_best=11.53[10.06,11.62]
+  T/Tc=1.1 vs all: best=uniform gap=0.00903 | q_grid=5.30[4.18,5.42] q_ring=3.30[2.24,3.68] q_complete=2.55[2.46,2.85] deco_grid=0.91[0.86,0.99] deco_complete=0.97[0.96,1.07] q_best=5.30[4.18,5.42]
+  T/Tc=3.0 vs swap: best=anypair_swap gap=0.0448 | q_grid=2.47[2.32,3.11] q_ring=2.32[1.83,2.53] q_complete=1.35[1.11,1.43] deco_grid=1.85[1.83,2.21] deco_complete=1.89[1.82,2.36] q_best=2.47[2.32,3.11]
+  T/Tc=3.0 vs all: best=uniform gap=0.0717 | q_grid=1.42[1.13,1.79] q_ring=1.15[0.99,1.66] q_complete=0.62[0.61,0.87] deco_grid=1.06[1.02,1.14] deco_complete=1.09[1.09,1.12] q_best=1.42[1.13,1.79]
+PT cuau T/Tc=1.1: S_vs_PT per-proposal 0.95[0.84,0.97]  per-round 0.12[0.10,0.12] (min over E,SRO,q)
+PT cuau T/Tc=0.5: S_vs_PT per-proposal 1.47[1.37,1.53]  per-round 0.18[0.17,0.19] (min over E,SRO,q)
+PT coulomb T/Tc=1.1: S_vs_PT per-proposal 1.60[1.57,1.72]  per-round 0.20[0.20,0.22] (min over E,SRO,q)
+PT coulomb T/Tc=0.5: S_vs_PT per-proposal 1.02[0.66,1.07]  per-round 0.13[0.08,0.13] (min over E,SRO,q)
+PT sk T/Tc=1.1: S_vs_PT per-proposal 1.48[1.32,1.55]  per-round 0.19[0.16,0.19] (min over E,SRO,q)
+PT sk T/Tc=0.5: S_vs_PT per-proposal 0.93[0.90,1.62]  per-round 0.12[0.11,0.20] (min over E,SRO,q)
+  xcheck coulomb T/Tc=1.1 q_complete: sim IAT E 189 vs exact 188; q 24.3 vs 33.7
+  xcheck coulomb T/Tc=1.1 anypair_swap: sim IAT E 79.1 vs exact 81.7; q 154 vs 153
+  xcheck coulomb T/Tc=0.5 q_complete: sim IAT E 309 vs exact 305; q 5.07 vs 7.43
+  xcheck coulomb T/Tc=0.5 anypair_swap: sim IAT E 222 vs exact 485; q 1.57e+04 vs 1.19e+04
+  xcheck cuau T/Tc=1.1 q_complete: sim IAT E 92 vs exact 91.2; q 13.6 vs 17
+  xcheck cuau T/Tc=1.1 anypair_swap: sim IAT E 40.1 vs exact 40.3; q 56.8 vs 55.4
+  xcheck cuau T/Tc=0.5 q_complete: sim IAT E 97 vs exact 88.4; q 5.63 vs 6.89
+  xcheck cuau T/Tc=0.5 anypair_swap: sim IAT E 51.4 vs exact 52.6; q 230 vs 323
+  xcheck sk T/Tc=1.1 q_complete: sim IAT E 68 vs exact 71.1; q 33.4 vs 33.1
+  xcheck sk T/Tc=1.1 anypair_swap: sim IAT E 51.5 vs exact 53.3; q 55.7 vs 54.1
+  xcheck sk T/Tc=0.5 q_complete: sim IAT E 59 vs exact 64.3; q 13.9 vs 16
+  xcheck sk T/Tc=0.5 anypair_swap: sim IAT E 80.1 vs exact 85.4; q 69.4 vs 83.8

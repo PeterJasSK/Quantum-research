@@ -1,0 +1,62 @@
+D9 V24 mask-library summary (own simulation, ideal/noiseless, exact transition matrices).
+Instances: ea n=12: 3, sk n=6: 10, sk n=8: 10, sk n=10: 10
+beta_c (specific-heat peak) median [min,max]: ea n=12: 0.998 [0.706,1.119]; sk n=6: 0.561 [0.354,0.792]; sk n=8: 0.500 [0.316,0.792]; sk n=10: 0.449 [0.251,0.792]
+local minima (greedy basins) median: ea n=12: 10; sk n=6: 2; sk n=8: 4; sk n=10: 6
+
+FITTED k (gap ~ 2^-kn, SK, median over instances, 95% bootstrap CI), infinite libraries, pure mask moves:
+ beta=0.1 (HIGH): qFull_P1 0.06[0.01,0.17] | qA_unifref 0.31[0.22,0.47] | qC_piref 0.30[0.19,0.42] | qD_decoh 0.25[0.16,0.36] | cE_DEpi 0.35[0.28,0.50] | cF_basin inf[inf,inf] | cG_perc 0.22[0.16,0.30] | cH_wtmatch 0.33[0.24,0.50] | uniform 0.38[0.28,0.53] | local 0.30[0.18,0.34]
+ beta=0.3 (MEDIUM): qFull_P1 0.21[0.10,0.35] | qA_unifref 0.67[0.49,0.81] | qC_piref 0.51[0.37,0.63] | qD_decoh 0.55[0.32,0.72] | cE_DEpi 0.47[0.35,0.55] | cF_basin inf[inf,inf] | cG_perc 0.97[0.63,1.35] | cH_wtmatch 0.68[0.51,0.84] | uniform 0.78[0.60,1.08] | local 0.49[0.28,0.71]
+ beta=0.5 (MEDIUM): qFull_P1 0.28[0.09,0.39] | qA_unifref 0.73[0.54,0.88] | qC_piref 0.49[0.35,0.56] | qD_decoh 0.63[0.44,0.93] | cE_DEpi 0.47[0.28,0.86] | cF_basin inf[inf,inf] | cG_perc 1.75[1.16,2.47] | cH_wtmatch 0.75[0.58,0.91] | uniform 0.96[0.74,1.12] | local 0.61[0.40,1.16]
+ beta= bc (MEDIUM): qFull_P1 0.26[0.07,0.38] | qA_unifref 0.63[0.48,0.76] | qC_piref 0.42[0.36,0.51] | qD_decoh 0.58[0.34,0.67] | cE_DEpi 0.26[0.22,0.30] | cF_basin inf[inf,inf] | cG_perc 1.20[0.22,1.58] | cH_wtmatch 0.58[0.46,0.77] | uniform 0.78[0.57,0.88] | local 0.41[0.14,0.67]
+ beta=  1 (LOW): qFull_P1 0.25[0.11,0.41] | qA_unifref 0.82[0.59,0.97] | qC_piref 0.47[0.41,0.53] | qD_decoh 0.83[0.53,1.08] | cE_DEpi 0.79[0.25,1.77] | cF_basin inf[inf,inf] | cG_perc inf[inf,inf] | cH_wtmatch 0.72[0.56,0.96] | uniform 1.00[0.85,1.15] | local 0.99[0.50,2.43]
+ beta=  3 (LOW): qFull_P1 0.22[0.03,0.43] | qA_unifref 0.81[0.60,1.01] | qC_piref 0.50[0.38,0.58] | qD_decoh 0.94[0.58,1.44] | cE_DEpi 2.36[0.55,4.61] | cF_basin inf[inf,inf] | cG_perc inf[inf,inf] | cH_wtmatch 0.79[0.65,1.00] | uniform 1.03[0.90,1.09] | local 2.69[0.05,6.14]
+Same, 50% local + 50% mask mixtures:
+ beta=0.1 (HIGH): qA_unifref 0.23[0.13,0.31] | qC_piref 0.23[0.13,0.30] | qD_decoh 0.25[0.13,0.30] | cE_DEpi 0.23[0.14,0.32] | cF_basin 0.08[0.01,0.24] | cG_perc 0.18[0.14,0.23] | cH_wtmatch 0.24[0.12,0.31] | uniform 0.24[0.15,0.33]
+ beta=0.3 (MEDIUM): qA_unifref 0.48[0.28,0.65] | qC_piref 0.42[0.28,0.55] | qD_decoh 0.47[0.31,0.65] | cE_DEpi 0.38[0.31,0.46] | cF_basin 0.24[0.14,0.35] | cG_perc 0.50[0.38,0.63] | cH_wtmatch 0.49[0.30,0.62] | uniform 0.49[0.31,0.62]
+ beta=0.5 (MEDIUM): qA_unifref 0.52[0.39,0.74] | qC_piref 0.45[0.35,0.60] | qD_decoh 0.58[0.43,0.99] | cE_DEpi 0.43[0.32,0.54] | cF_basin 0.23[0.16,0.33] | cG_perc 0.50[0.36,0.66] | cH_wtmatch 0.53[0.41,0.73] | uniform 0.54[0.42,0.71]
+ beta= bc (MEDIUM): qA_unifref 0.46[0.32,0.55] | qC_piref 0.39[0.30,0.47] | qD_decoh 0.50[0.25,0.62] | cE_DEpi 0.27[0.17,0.38] | cF_basin 0.19[0.14,0.32] | cG_perc 0.43[0.30,0.61] | cH_wtmatch 0.47[0.32,0.55] | uniform 0.46[0.31,0.56]
+ beta=  1 (LOW): qA_unifref 0.64[0.43,0.89] | qC_piref 0.48[0.37,0.68] | qD_decoh 0.79[0.51,1.27] | cE_DEpi 0.81[0.29,1.31] | cF_basin 0.23[0.09,0.33] | cG_perc 0.70[0.38,1.02] | cH_wtmatch 0.67[0.43,0.84] | uniform 0.65[0.44,0.86]
+ beta=  3 (LOW): qA_unifref 0.81[0.54,1.16] | qC_piref 0.49[0.35,0.63] | qD_decoh 0.99[0.58,1.52] | cE_DEpi 2.80[-0.26,3.72] | cF_basin 0.27[0.15,0.32] | cG_perc 2.22[0.74,2.64] | cH_wtmatch 0.87[0.51,1.25] | uniform 0.91[0.57,1.32]
+k of quantum library qA vs L (pure / mixed), per beta:
+ beta=0.1: L=1024 mix=0 k=0.32 (n 6-10) | L=1024 mix=1 k=0.23 (n 6-10) | L=128 mix=0 k=0.32 (n 6-10) | L=128 mix=1 k=0.24 (n 6-10) | L=32 mix=0 k=0.29 (n 6-10) | L=32 mix=1 k=0.23 (n 6-10) | L=8192 mix=0 k=0.32 (n 6-10) | L=8192 mix=1 k=0.23 (n 6-10) | L=inf mix=0 k=0.31 (n 6-10) | L=inf mix=1 k=0.23 (n 6-10)
+ beta=0.3: L=1024 mix=0 k=0.67 (n 6-10) | L=1024 mix=1 k=0.48 (n 6-10) | L=128 mix=0 k=0.70 (n 6-10) | L=128 mix=1 k=0.49 (n 6-10) | L=32 mix=0 k=0.92 (n 6-10) | L=32 mix=1 k=0.51 (n 6-10) | L=8192 mix=0 k=0.67 (n 6-10) | L=8192 mix=1 k=0.48 (n 6-10) | L=inf mix=0 k=0.67 (n 6-10) | L=inf mix=1 k=0.48 (n 6-10)
+ beta= bc: L=1024 mix=0 k=0.66 (n 6-10) | L=1024 mix=1 k=0.45 (n 6-10) | L=128 mix=0 k=0.88 (n 6-10) | L=128 mix=1 k=0.50 (n 6-10) | L=32 mix=0 k=1.12 (n 6-10) | L=32 mix=1 k=0.47 (n 6-10) | L=8192 mix=0 k=0.62 (n 6-10) | L=8192 mix=1 k=0.46 (n 6-10) | L=inf mix=0 k=0.63 (n 6-10) | L=inf mix=1 k=0.46 (n 6-10)
+ beta=  1: L=1024 mix=0 k=0.85 (n 6-10) | L=1024 mix=1 k=0.68 (n 6-10) | L=128 mix=0 k=1.31 (n 6-10) | L=128 mix=1 k=0.64 (n 6-10) | L=32 mix=0 k=3.02 (n 6-10) | L=32 mix=1 k=1.11 (n 6-10) | L=8192 mix=0 k=0.81 (n 6-10) | L=8192 mix=1 k=0.65 (n 6-10) | L=inf mix=0 k=0.82 (n 6-10) | L=inf mix=1 k=0.64 (n 6-10)
+ beta=  3: L=1024 mix=0 k=0.93 (n 6-10) | L=1024 mix=1 k=0.84 (n 6-10) | L=128 mix=0 k=3.17 (n 6-10) | L=128 mix=1 k=0.79 (n 6-10) | L=32 mix=0 k=inf (n 6-10) | L=32 mix=1 k=3.24 (n 6-10) | L=8192 mix=0 k=0.78 (n 6-10) | L=8192 mix=1 k=0.82 (n 6-10) | L=inf mix=0 k=0.81 (n 6-10) | L=inf mix=1 k=0.81 (n 6-10)
+
+S = gap(quantum library qA, uniform refs) / gap(best classical at equal L incl. uniform/local), median [IQR], most-frequent winner
+ SK vs classical set incl. DE-from-pi (circular):
+  mix=0 beta=0.1 n=6: L=32: 0.84 [0.79,0.92] uniform | L=128: 0.98 [0.96,0.99] uniform | L=1024: 0.99 [0.97,0.99] cH_wtmatch | L=8192: 1.00 [0.97,1.01] cH_wtmatch | L=inf: 0.99 [0.98,1.01] cH_wtmatch
+  mix=0 beta=0.1 n=8: L=32: 0.89 [0.83,0.97] uniform | L=128: 0.96 [0.92,1.01] cG_perc | L=1024: 0.95 [0.90,1.00] cG_perc | L=8192: 0.93 [0.91,0.99] cG_perc | L=inf: 0.94 [0.92,1.00] cG_perc
+  mix=0 beta=0.1 n=10: L=32: 0.88 [0.80,0.92] cG_perc | L=128: 0.81 [0.72,0.88] cG_perc | L=1024: 0.77 [0.74,0.82] cG_perc | L=8192: 0.79 [0.74,0.88] cG_perc | L=inf: 0.79 [0.74,0.88] cG_perc
+  mix=0 beta=0.3 n=6: L=32: 0.77 [0.65,0.91] uniform | L=128: 0.86 [0.72,0.92] cE_DEpi | L=1024: 0.87 [0.72,0.91] cE_DEpi | L=8192: 0.86 [0.72,0.90] cE_DEpi | L=inf: 0.87 [0.73,0.92] cE_DEpi
+  mix=0 beta=0.3 n=8: L=32: 0.67 [0.57,0.77] cE_DEpi | L=128: 0.70 [0.64,0.78] cE_DEpi | L=1024: 0.72 [0.66,0.80] cE_DEpi | L=8192: 0.71 [0.66,0.79] cE_DEpi | L=inf: 0.72 [0.68,0.80] cE_DEpi
+  mix=0 beta=0.3 n=10: L=32: 0.30 [0.27,0.42] cE_DEpi | L=128: 0.48 [0.35,0.56] cE_DEpi | L=1024: 0.48 [0.38,0.58] cE_DEpi | L=8192: 0.50 [0.43,0.64] cE_DEpi | L=inf: 0.50 [0.44,0.61] cE_DEpi
+  mix=0 beta=0.5 n=6: L=32: 0.66 [0.44,0.95] cE_DEpi | L=128: 0.77 [0.71,0.85] cE_DEpi | L=1024: 0.84 [0.80,0.89] cE_DEpi | L=8192: 0.85 [0.77,0.87] cE_DEpi | L=inf: 0.84 [0.79,0.88] cE_DEpi
+  mix=0 beta=0.5 n=8: L=32: 0.23 [0.23,0.29] cE_DEpi | L=128: 0.39 [0.33,0.52] cE_DEpi | L=1024: 0.46 [0.44,0.74] cE_DEpi | L=8192: 0.48 [0.40,0.64] cE_DEpi | L=inf: 0.48 [0.42,0.66] cE_DEpi
+  mix=0 beta=0.5 n=10: L=32: 0.06 [0.05,0.11] cE_DEpi | L=128: 0.19 [0.12,0.60] cE_DEpi | L=1024: 0.37 [0.28,0.68] cE_DEpi | L=8192: 0.46 [0.30,0.93] cE_DEpi | L=inf: 0.48 [0.29,0.85] cE_DEpi
+  mix=0 beta= bc n=6: L=32: 0.63 [0.38,0.91] cE_DEpi | L=128: 0.84 [0.64,0.90] cE_DEpi | L=1024: 0.83 [0.75,0.91] cE_DEpi | L=8192: 0.91 [0.76,0.92] cE_DEpi | L=inf: 0.91 [0.77,0.95] cE_DEpi
+  mix=0 beta= bc n=8: L=32: 0.27 [0.18,0.30] cE_DEpi | L=128: 0.38 [0.30,0.50] cE_DEpi | L=1024: 0.46 [0.43,0.72] cE_DEpi | L=8192: 0.46 [0.40,0.61] cE_DEpi | L=inf: 0.48 [0.40,0.63] cE_DEpi
+  mix=0 beta= bc n=10: L=32: 0.12 [0.08,0.24] cE_DEpi | L=128: 0.16 [0.13,0.39] cE_DEpi | L=1024: 0.29 [0.22,0.36] cE_DEpi | L=8192: 0.32 [0.26,0.42] cE_DEpi | L=inf: 0.33 [0.25,0.42] cE_DEpi
+  mix=0 beta=  1 n=6: L=32: 0.61 [0.20,1.17] uniform | L=128: 1.06 [0.93,1.17] cH_wtmatch | L=1024: 1.15 [0.98,1.18] cH_wtmatch | L=8192: 1.19 [1.01,1.24] cH_wtmatch | L=inf: 1.18 [1.01,1.26] cH_wtmatch
+  mix=0 beta=  1 n=8: L=32: 0.12 [0.02,0.28] uniform | L=128: 0.39 [0.26,1.17] cE_DEpi | L=1024: 1.10 [0.75,1.35] cH_wtmatch | L=8192: 1.11 [0.75,1.35] cH_wtmatch | L=inf: 1.14 [0.79,1.36] cH_wtmatch
+  mix=0 beta=  1 n=10: L=32: 0.00 [0.00,0.01] uniform | L=128: 0.24 [0.06,1.03] uniform | L=1024: 0.94 [0.75,1.33] cH_wtmatch | L=8192: 1.18 [0.93,1.45] cH_wtmatch | L=inf: 1.24 [1.11,1.32] cH_wtmatch
+  mix=0 beta=  3 n=6: L=32: 0.53 [0.00,1.34] cH_wtmatch | L=128: 1.02 [0.87,1.55] uniform | L=1024: 1.14 [1.02,1.47] cH_wtmatch | L=8192: 1.30 [1.06,1.44] cH_wtmatch | L=inf: 1.29 [1.05,1.42] cH_wtmatch
+  mix=0 beta=  3 n=8: L=32: 0.00 [0.00,0.00] uniform | L=128: 0.24 [0.01,1.46] uniform | L=1024: 1.45 [1.13,1.57] cH_wtmatch | L=8192: 1.18 [1.05,1.41] cH_wtmatch | L=inf: 1.32 [1.05,1.45] cH_wtmatch
+  mix=0 beta=  3 n=10: L=32: 0.00 [0.00,0.00] uniform | L=128: 0.00 [0.00,0.19] uniform | L=1024: 1.03 [0.97,1.59] cH_wtmatch | L=8192: 1.11 [0.98,1.66] cH_wtmatch | L=inf: 1.31 [1.10,1.47] cH_wtmatch
+  mix=1 beta=0.1 n=6: L=32: 0.88 [0.78,0.91] uniform | L=128: 0.92 [0.90,0.98] uniform | L=1024: 0.93 [0.90,0.96] uniform | L=8192: 0.93 [0.91,0.96] uniform | L=inf: 0.93 [0.91,0.96] cE_DEpi
+  mix=1 beta=0.1 n=8: L=32: 0.93 [0.91,0.95] uniform | L=128: 0.97 [0.94,0.98] uniform | L=1024: 0.95 [0.93,0.97] cE_DEpi | L=8192: 0.96 [0.92,0.98] cE_DEpi | L=inf: 0.96 [0.93,0.98] cE_DEpi
+  mix=1 beta=0.1 n=10: L=32: 0.89 [0.85,0.93] uniform | L=128: 0.93 [0.90,0.97] cG_perc | L=1024: 0.93 [0.89,0.96] cG_perc | L=8192: 0.94 [0.90,0.97] cG_perc | L=inf: 0.94 [0.90,0.97] cG_perc
+  mix=1 beta=0.3 n=6: L=32: 0.79 [0.70,0.94] cE_DEpi | L=128: 0.80 [0.75,0.95] cE_DEpi | L=1024: 0.81 [0.77,0.94] cE_DEpi | L=8192: 0.82 [0.79,0.94] cE_DEpi | L=inf: 0.83 [0.78,0.94] cE_DEpi
+  mix=1 beta=0.3 n=8: L=32: 0.78 [0.72,0.89] cE_DEpi | L=128: 0.81 [0.74,0.85] cE_DEpi | L=1024: 0.84 [0.72,0.86] cE_DEpi | L=8192: 0.84 [0.72,0.87] cE_DEpi | L=inf: 0.84 [0.72,0.87] cE_DEpi
+  mix=1 beta=0.3 n=10: L=32: 0.59 [0.39,0.73] cF_basin | L=128: 0.71 [0.47,0.79] cE_DEpi | L=1024: 0.76 [0.51,0.79] cF_basin | L=8192: 0.76 [0.51,0.79] cE_DEpi | L=inf: 0.77 [0.51,0.80] cE_DEpi
+  mix=1 beta=0.5 n=6: L=32: 0.70 [0.55,0.93] cE_DEpi | L=128: 0.74 [0.64,0.93] cE_DEpi | L=1024: 0.78 [0.59,0.96] cE_DEpi | L=8192: 0.77 [0.61,0.94] cE_DEpi | L=inf: 0.79 [0.62,0.94] cE_DEpi
+  mix=1 beta=0.5 n=8: L=32: 0.49 [0.41,0.64] cE_DEpi | L=128: 0.53 [0.48,0.61] cE_DEpi | L=1024: 0.59 [0.45,0.68] cE_DEpi | L=8192: 0.60 [0.42,0.66] cE_DEpi | L=inf: 0.59 [0.42,0.67] cE_DEpi
+  mix=1 beta=0.5 n=10: L=32: 0.30 [0.11,0.48] cF_basin | L=128: 0.49 [0.24,0.63] cF_basin | L=1024: 0.53 [0.25,0.56] cF_basin | L=8192: 0.53 [0.26,0.59] cF_basin | L=inf: 0.54 [0.26,0.60] cF_basin
+  mix=1 beta= bc n=6: L=32: 0.71 [0.51,0.98] cE_DEpi | L=128: 0.69 [0.60,0.92] cE_DEpi | L=1024: 0.74 [0.55,1.00] cE_DEpi | L=8192: 0.74 [0.58,0.99] cE_DEpi | L=inf: 0.75 [0.58,0.99] cE_DEpi
+  mix=1 beta= bc n=8: L=32: 0.38 [0.27,0.65] cE_DEpi | L=128: 0.44 [0.34,0.63] cE_DEpi | L=1024: 0.45 [0.39,0.70] cE_DEpi | L=8192: 0.45 [0.37,0.70] cE_DEpi | L=inf: 0.45 [0.38,0.69] cE_DEpi
+  mix=1 beta= bc n=10: L=32: 0.36 [0.25,0.48] cF_basin | L=128: 0.49 [0.33,0.63] cF_basin | L=1024: 0.54 [0.38,0.57] cF_basin | L=8192: 0.54 [0.38,0.59] cF_basin | L=inf: 0.55 [0.37,0.60] cF_basin
+  mix=1 beta=  1 n=6: L=32: 0.49 [0.26,0.82] cF_basin | L=128: 0.57 [0.36,0.95] cF_basin | L=1024: 0.57 [0.37,1.00] cF_basin | L=8192: 0.61 [0.40,0.98] cF_basin | L=inf: 0.64 [0.40,0.99] cF_basin
+  mix=1 beta=  1 n=8: L=32: 0.17 [0.08,0.35] cF_basin | L=128: 0.31 [0.14,0.41] cF_basin | L=1024: 0.32 [0.21,0.50] cF_basin | L=8192: 0.31 [0.19,0.47] cF_basin | L=inf: 0.32 [0.20,0.47] cF_basin
+  mix=1 beta=  1 n=10: L=32: 0.04 [0.01,0.18] cF_basin | L=128: 0.19 [0.10,0.34] cF_basin | L=1024: 0.19 [0.14,0.31] cF_basin | L=8192: 0.22 [0.14,0.34] cF_basin | L=inf: 0.23 [0.14,0.34] cF_basin
+  mix=1 beta=  3 n=6: L=32: 0.26 [0.19,0.47] cF_basin | L=128: 0.28 [0.16,0.82] cF_basin | L=1024: 0.36 [0.24,0.77] cF_basin | L=8192: 0.35 [0.24,0.76] cF_basin | L=inf: 0.36 [0.26,0.75] cF_basin

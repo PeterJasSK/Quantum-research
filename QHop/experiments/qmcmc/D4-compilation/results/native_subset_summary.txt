@@ -1,0 +1,14 @@
+SK n=8: 5 instances, kept edges 7/28, kept J^2 fraction median 0.70, max asymmetry native Q 9.8e-17
+  beta=0.1: gap native/full median 1.06 IQR [1.02,1.06] | full/best(local,uniform) 0.84 | native/best 0.87 IQR [0.85,0.89] | native-decohered/best 0.95
+  beta=0.3: gap native/full median 0.89 IQR [0.85,0.94] | full/best(local,uniform) 2.16 | native/best 1.89 IQR [1.64,1.90] | native-decohered/best 1.18
+  beta=1.0: gap native/full median 0.46 IQR [0.38,0.72] | full/best(local,uniform) 6.19 | native/best 3.34 IQR [3.16,3.61] | native-decohered/best 0.99
+SK n=10: 5 instances, kept edges 9/45, kept J^2 fraction median 0.56, max asymmetry native Q 1.1e-16
+  beta=0.1: gap native/full median 1.01 IQR [1.01,1.03] | full/best(local,uniform) 1.19 | native/best 1.20 IQR [1.17,1.31] | native-decohered/best 1.19
+  beta=0.3: gap native/full median 0.64 IQR [0.60,0.88] | full/best(local,uniform) 2.93 | native/best 1.59 IQR [1.59,2.72] | native-decohered/best 1.40
+  beta=1.0: gap native/full median 0.35 IQR [0.24,0.40] | full/best(local,uniform) 13.91 | native/best 2.59 IQR [2.35,4.89] | native-decohered/best 1.04
+heavy-hex per diagonal layer n=8: dense best 84 CZ vs native subset 7 edges -> ~14 CZ (x6.0 fewer; native subset has 7/28 couplings)
+heavy-hex per diagonal layer n=10: dense best 135 CZ vs native subset 9 edges -> ~18 CZ (x7.5 fewer; native subset has 9/45 couplings)
+heavy-hex per diagonal layer n=12: dense best 198 CZ vs native subset 12 edges -> ~24 CZ (x8.2 fewer; native subset has 12/66 couplings)
+heavy-hex per diagonal layer n=16: dense best 360 CZ vs native subset 15 edges -> ~30 CZ (x12.0 fewer; native subset has 15/120 couplings)
+heavy-hex per diagonal layer n=20: dense best 570 CZ vs native subset 19 edges -> ~38 CZ (x15.0 fewer; native subset has 19/190 couplings)
+heavy-hex per diagonal layer n=27: dense best 1001 CZ vs native subset 26 edges -> ~52 CZ (x19.2 fewer; native subset has 26/351 couplings)

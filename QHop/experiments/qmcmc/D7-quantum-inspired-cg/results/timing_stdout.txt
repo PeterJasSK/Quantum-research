@@ -1,0 +1,67 @@
+sk32_s1 done
+sk64_s1 done
+sk128_s1 done
+ea8_s1 done
+ea12_s1 done
+ea16_s1 done
+sk32_s1 metro_sweep 0 1.42 us cheb 0
+sk32_s1 hb 4 1.29 us cheb 0
+sk32_s1 hb 8 8.46 us cheb 0
+sk32_s1 hb 12 113.91 us cheb 0
+sk32_s1 q 4 13.83 us cheb 85
+sk32_s1 q 8 483.02 us cheb 131
+sk32_s1 q 12 15937.81 us cheb 178
+sk32_s1 dec 4 229.03 us cheb 1367
+sk32_s1 dec 8 10154.58 us cheb 1589
+sk32_s1 dec 12 134911.38 us cheb 1327
+sk64_s1 metro_sweep 0 4.06 us cheb 0
+sk64_s1 hb 4 1.36 us cheb 0
+sk64_s1 hb 8 9.44 us cheb 0
+sk64_s1 hb 12 138.10 us cheb 0
+sk64_s1 q 4 16.37 us cheb 85
+sk64_s1 q 8 514.35 us cheb 130
+sk64_s1 q 12 19759.75 us cheb 169
+sk64_s1 dec 4 250.36 us cheb 1355
+sk64_s1 dec 8 5786.50 us cheb 1498
+sk64_s1 dec 12 140196.98 us cheb 1538
+sk128_s1 metro_sweep 0 11.62 us cheb 0
+sk128_s1 hb 4 1.44 us cheb 0
+sk128_s1 hb 8 8.20 us cheb 0
+sk128_s1 hb 12 109.18 us cheb 0
+sk128_s1 q 4 19.88 us cheb 85
+sk128_s1 q 8 502.41 us cheb 128
+sk128_s1 q 12 16223.73 us cheb 171
+sk128_s1 dec 4 288.70 us cheb 1365
+sk128_s1 dec 8 7476.09 us cheb 1458
+sk128_s1 dec 12 195030.75 us cheb 1609
+ea8_s1 metro_sweep 0 2.47 us cheb 0
+ea8_s1 hb 4 1.75 us cheb 0
+ea8_s1 hb 8 8.82 us cheb 0
+ea8_s1 hb 12 137.93 us cheb 0
+ea8_s1 q 4 19.25 us cheb 86
+ea8_s1 q 8 650.55 us cheb 132
+ea8_s1 q 12 17947.87 us cheb 170
+ea8_s1 dec 4 274.17 us cheb 1369
+ea8_s1 dec 8 6828.22 us cheb 1436
+ea8_s1 dec 12 170186.90 us cheb 1576
+ea12_s1 metro_sweep 0 5.30 us cheb 0
+ea12_s1 hb 4 1.58 us cheb 0
+ea12_s1 hb 8 11.80 us cheb 0
+ea12_s1 hb 12 168.05 us cheb 0
+ea12_s1 q 4 23.45 us cheb 86
+ea12_s1 q 8 710.64 us cheb 131
+ea12_s1 q 12 20331.53 us cheb 162
+ea12_s1 dec 4 275.23 us cheb 1361
+ea12_s1 dec 8 7773.00 us cheb 1496
+ea12_s1 dec 12 168554.39 us cheb 1742
+ea16_s1 metro_sweep 0 8.41 us cheb 0
+ea16_s1 hb 4 1.55 us cheb 0
+ea16_s1 hb 8 10.52 us cheb 0
+ea16_s1 hb 12 150.05 us cheb 0
+ea16_s1 q 4 18.51 us cheb 86
+ea16_s1 q 8 634.13 us cheb 130
+ea16_s1 q 12 19846.71 us cheb 167
+ea16_s1 dec 4 283.13 us cheb 1360
+ea16_s1 dec 8 7809.45 us cheb 1464
+ea16_s1 dec 12 132866.48 us cheb 1189
+[{'k': 4, 'scipy_expm_multiply_us': 11882.718580000073, 'scipy_dense_eigh_us': 2516.5631999996663}, {'k': 8, 'scipy_expm_multiply_us': 35422.112419999794, 'scipy_dense_eigh_us': 31641.733800000085}, {'k': 12, 'scipy_expm_multiply_us': 294879.8065999995, 'scipy_dense_eigh_us': 32953480.478000004}]

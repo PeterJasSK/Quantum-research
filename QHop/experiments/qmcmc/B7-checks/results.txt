@@ -1,0 +1,222 @@
+V01 coarse-grained group selection (SK n=6, beta=1, groups = 6 cyclic triples)
+  uniform random group (P2 style), plain Metropolis          err=5.55e-17  TV(stat,pi)=0.00e+00 
+  coupling-strength weighted (state-independent) group       err=2.22e-16  TV(stat,pi)=0.00e+00 
+  frustration-selected lam=1.0, plain Metropolis (naive)     err=6.10e-03  TV(stat,pi)=3.49e-02 
+  frustration-selected lam=1.0, Hastings p(g|s')/p(g|s)      err=5.20e-18  TV(stat,pi)=0.00e+00 gap=0.0213 vs uniform-group 0.0258
+  frustration-selected lam=3.0, plain Metropolis (naive)     err=1.60e-02  TV(stat,pi)=6.44e-02 
+  frustration-selected lam=3.0, Hastings p(g|s')/p(g|s)      err=5.55e-17  TV(stat,pi)=0.00e+00 gap=0.0108 vs uniform-group 0.0258
+  [v01 done in 0.1 s]
+
+V02 multi-group sweep (SK n=6, beta=1, groups {0,1,2},{3,4,5})
+  asymmetry max|Q-Q^T|: fixed order 1.074e-01, fwd/rev mixture 8.327e-17
+  P2 fixed order g1->g2, one Metropolis at end               err=1.96e-02  TV(stat,pi)=6.08e-02 
+  random forward/reverse order, one Metropolis at end        err=1.11e-16  TV(stat,pi)=0.00e+00 gap=0.0593
+  per-group Metropolis, systematic scan P1 P2                err=1.11e-16  TV(stat,pi)=0.00e+00 gap(nonrev)=0.0740
+  per-group Metropolis, random scan (P1+P2)/2                err=1.73e-18  TV(stat,pi)=0.00e+00 gap=0.0319
+  3 overlapping groups, uniformly random order (closed under reversal) err=1.11e-16  TV(stat,pi)=0.00e+00 
+  [v02 done in 0.0 s]
+
+V03 parallel QPUs on disjoint groups (SK n=6, beta=1, g1={0,1}, g2={3,4}, frozen {2,5})
+  simultaneous (Jacobi) fields from old state, plain Metropolis err=4.26e-04  TV(stat,pi)=3.09e-03 
+  decoupled surrogate (inter-group J dropped in U), true-E accept err=5.55e-17  TV(stat,pi)=0.00e+00 gap=0.0295
+  [v03 done in 0.1 s]
+
+V04 mixture w*Quantum + (1-w)*Local, cost-weighted (SK n=8)
+  beta=1.0: gap local=1.187e-03 quantum=3.791e-02; err(mix w=0.1)=1.1e-16
+   w      gap(w)     gap/(w gq+(1-w)gl)
+   0      1.187e-03    1.00
+   0.0001 1.196e-03    1.00
+   0.001  1.279e-03    1.05
+   0.01   2.102e-03    1.35
+   0.03   3.912e-03    1.71
+   0.1    1.004e-02    2.07
+   0.3    2.562e-02    2.10
+   1      3.791e-02    1.00
+   cost ratio t_Q/t_C=100: best w=0, gap-per-time gain over pure local=1.000
+   cost ratio t_Q/t_C=10000: best w=0, gap-per-time gain over pure local=1.000
+   cost ratio t_Q/t_C=1e+08: best w=0, gap-per-time gain over pure local=1.000
+  beta=0.3: gap local=3.706e-02 quantum=7.225e-02; err(mix w=0.1)=1.4e-17
+   w      gap(w)     gap/(w gq+(1-w)gl)
+   0      3.706e-02    1.00
+   0.0001 3.709e-02    1.00
+   0.001  3.727e-02    1.00
+   0.01   3.909e-02    1.04
+   0.03   4.297e-02    1.13
+   0.1    5.474e-02    1.35
+   0.3    7.425e-02    1.56
+   1      7.225e-02    1.00
+   cost ratio t_Q/t_C=100: best w=0, gap-per-time gain over pure local=1.000
+   cost ratio t_Q/t_C=10000: best w=0, gap-per-time gain over pure local=1.000
+   cost ratio t_Q/t_C=1e+08: best w=0, gap-per-time gain over pure local=1.000
+  [v04 done in 1.6 s]
+
+V05 surrogate H_prob inside U, true E in accept (SK n=8, beta=1)
+  baselines: gap local=1.187e-03 uniform=4.349e-03
+  exact E                                        corr= 1.00 asym=1.4e-17 err=1.1e-16 acc=0.022 gap=3.791e-02
+  E + 0.3 sd noise                               corr= 0.96 asym=2.8e-17 err=2.2e-16 acc=0.018 gap=4.286e-02
+  E + 1.0 sd noise                               corr= 0.73 asym=2.8e-17 err=2.2e-16 acc=0.015 gap=2.350e-02
+  E + 3.0 sd noise                               corr= 0.24 asym=2.8e-17 err=1.1e-16 acc=0.004 gap=9.114e-03
+  line-only couplings (hardware-native subset)   corr= 0.62 asym=2.1e-17 err=1.1e-16 acc=0.015 gap=1.306e-02
+  fields only (J=0)                              corr= 0.29 asym=4.2e-17 err=1.1e-16 acc=0.014 gap=3.303e-03
+  independent random SK instance                 corr= 0.18 asym=5.6e-17 err=6.9e-18 acc=0.004 gap=4.149e-03
+  [v05 done in 10.7 s]
+
+V06 temperature-aware gamma/t/alpha (SK n=8, 2 instances); gap ratios vs P1 default
+  seed 21 beta=0.1: P1 gap=2.376e-01; best ('norm', 0.6, (0.5, 2.0)) gap=3.027e-01 (1.27x); fixed grid mixture 0.97x; local 1.30e-01 uniform 2.31e-01
+  seed 21 beta=0.3: P1 gap=7.225e-02; best ('norm', 0.45, (20.0, 60.0)) gap=8.508e-02 (1.18x); fixed grid mixture 0.89x; local 3.71e-02 uniform 2.83e-02
+  seed 21 beta=1.0: P1 gap=3.791e-02; best ('norm', 0.45, (2.0, 20.0)) gap=5.271e-02 (1.39x); fixed grid mixture 0.89x; local 1.19e-03 uniform 4.35e-03
+  seed 21 beta=3.0: P1 gap=4.053e-02; best ('norm', 0.45, (2.0, 20.0)) gap=6.673e-02 (1.65x); fixed grid mixture 0.94x; local 5.55e-08 uniform 3.91e-03
+  seed 22 beta=0.1: P1 gap=2.585e-01; best ('norm', 0.6, (2.0, 20.0)) gap=3.371e-01 (1.30x); fixed grid mixture 0.98x; local 1.35e-01 uniform 2.61e-01
+  seed 22 beta=0.3: P1 gap=1.173e-01; best ('norm', 0.45, (2.0, 20.0)) gap=1.313e-01 (1.12x); fixed grid mixture 0.75x; local 4.49e-02 uniform 4.69e-02
+  seed 22 beta=1.0: P1 gap=5.799e-02; best ('norm', 0.45, (2.0, 20.0)) gap=6.740e-02 (1.16x); fixed grid mixture 0.66x; local 3.98e-03 uniform 8.75e-03
+  seed 22 beta=3.0: P1 gap=6.241e-02; best ('norm', 0.3, (20.0, 60.0)) gap=8.268e-02 (1.32x); fixed grid mixture 0.53x; local 2.51e-05 uniform 4.96e-03
+  [v06 done in 403.8 s]
+
+V07 Rydberg analog proposal used for an SK n=5 target (beta=1); Rydberg H acts as a surrogate
+  constant pulse (Om=1, De=0.5)                              err=1.11e-16  TV(stat,pi)=0.00e+00 asym=2.4e-15
+  constant pulse with laser phase 0.7                        err=5.55e-17  TV(stat,pi)=0.00e+00 asym=8.6e-16
+  one-way detuning sweep -2 -> +2 (non-palindromic)          err=3.72e-03  TV(stat,pi)=1.59e-01 asym=1.3e-01
+  palindromic sweep -2 -> +2 -> -2                           err=6.94e-17  TV(stat,pi)=0.00e+00 asym=1.1e-15
+  50/50 mixture of sweep and its time reverse                err=3.47e-17  TV(stat,pi)=0.00e+00 asym=1.7e-15
+  [v07 done in 6.4 s]
+
+V08 D-Wave-style reverse anneal (SK n=5, target beta=1); closed part + thermal part
+  closed-system palindromic reverse anneal, plain Metropolis err=4.98e-15  TV(stat,pi)=0.00e+00 
+  thermal frac 0.1, plain Metropolis                         err=1.08e-02  TV(stat,pi)=6.61e-02 
+  thermal frac 0.1, Gibbs-corrected (known beta_phys, H)     err=1.35e-01  TV(stat,pi)=9.91e-01 
+  thermal frac 0.1, exact Hastings (needs Q values)          err=2.78e-17  TV(stat,pi)=0.00e+00 
+  thermal frac 0.5, plain Metropolis                         err=5.38e-02  TV(stat,pi)=2.47e-01 
+  thermal frac 0.5, Gibbs-corrected (known beta_phys, H)     err=7.48e-02  TV(stat,pi)=9.76e-01 
+  thermal frac 0.5, exact Hastings (needs Q values)          err=2.78e-17  TV(stat,pi)=0.00e+00 
+  thermal frac 1.0, plain Metropolis                         err=1.08e-01  TV(stat,pi)=4.15e-01 
+  thermal frac 1.0, Gibbs-corrected (known beta_phys, H)     err=2.78e-17  TV(stat,pi)=0.00e+00 
+  thermal frac 1.0, exact Hastings (needs Q values)          err=2.78e-17  TV(stat,pi)=0.00e+00 
+  pure thermal on ICE-perturbed H (3% sd), Gibbs-corrected nominal err=1.02e-02  TV(stat,pi)=5.30e-02 
+  [v08 done in 0.0 s]
+
+V09 shot batching: multiple-try Metropolis K=2 and Tjelmeland/Calderhead hub (SK n=4, beta=1)
+  plain QeMCMC (1 circuit, 1 shot)                           err=2.78e-17  TV(stat,pi)=0.00e+00 gap=0.1063; two steps=0.2014
+  MTM K=2 (2 circuits: K shots at x, K-1 at y)               err=5.55e-17  TV(stat,pi)=0.00e+00 gap=0.1730
+  naive best-of-2 + plain Metropolis (no reference set)      err=2.57e-02  TV(stat,pi)=2.10e-01 
+  hub GMH: z~Q(.|x), N=2 shots from z, pick prop. to pi      err=6.94e-18  TV(stat,pi)=0.00e+00 gap=0.1951
+  [v09 done in 0.7 s]
+
+V10 shallow circuits: Trotter / QAOA-layer symmetry (SK n=6, beta=1)
+  first-order Trotter r= 1: asym=5.6e-17 err=3.5e-18 gap=0.0209
+  first-order Trotter r= 2: asym=4.2e-17 err=5.6e-17 gap=0.0384
+  first-order Trotter r= 4: asym=5.6e-17 err=1.1e-16 gap=0.0366
+  first-order Trotter r= 8: asym=6.9e-17 err=1.1e-16 gap=0.0296
+  first-order Trotter r=32: asym=1.1e-16 err=1.7e-18 gap=0.0459
+  exact exp(-iHt): gap=0.0469; local=0.0096
+  QAOA p=3 random (non-palindromic) angles                   err=2.55e-03  TV(stat,pi)=4.52e-02 asym=3.0e-02
+  palindromic B A B' A B angles                              err=1.73e-18  TV(stat,pi)=0.00e+00 asym=7.6e-17
+  [v10 done in 0.3 s]
+
+V11 Potts q=3 on a triangle (27 feasible states), beta=1
+  one-hot + X mixer: infeasible outcome = reject (stay)      err=5.55e-17  TV(stat,pi)=0.00e+00 leak(pi-avg)=0.734 gap=0.0321
+  one-hot + X mixer: resample until feasible (renormalise)   err=3.23e-03  TV(stat,pi)=3.07e-02 
+  one-hot + XY mixer per site: infeasible outcome = reject (stay) err=5.55e-17  TV(stat,pi)=0.00e+00 leak(pi-avg)=-0.000 gap=0.1114
+  binary log2(q) encoding, invalid code = reject             err=5.55e-17  TV(stat,pi)=0.00e+00 leak=0.123 gap=0.0886
+  local Potts move (recolour 1 site) gap=0.1221
+  [v11 done in 36.9 s]
+
+V12 noise and symmetrisation (SK n=4, beta=1, Lindblad exact)
+  unital Pauli Lindblad noise (X,Y,Z), constant rate         err=1.39e-17  TV(stat,pi)=0.00e+00 asym=6.9e-17
+  amplitude damping T1 (rate 0.01/unit time)                 err=5.57e-03  TV(stat,pi)=5.16e-02 asym=4.9e-02
+  amplitude damping + full spin-reversal gauge average (16)  err=3.52e-05  TV(stat,pi)=3.12e-04 asym=6.9e-04
+  amplitude damping rate 0.05, no gauge                      err=1.62e-02  TV(stat,pi)=1.39e-01 
+  amplitude damping rate 0.05 + gauge average                err=3.83e-04  TV(stat,pi)=2.98e-03 asym=6.9e-03
+  ideal U + symmetric readout flips eps=0.02 at end (Q B)    err=3.85e-04  TV(stat,pi)=2.38e-03 
+  ideal U + readout flips + matched random input flips (B Q B) err=2.78e-17  TV(stat,pi)=0.00e+00 
+  global-depolarising model Q_F = F Q + (1-F) uniform, SK n=8:
+   beta=3.0: gap(F=1)=4.053e-02 best classical(local/uniform)=3.907e-03 gap(F=0.1)=7.575e-03 gap(F=0.5)=2.223e-02; F for 2x over best classical=0.11 -> max CZ at eps2q=2e-3: 1103
+   beta=1.0: gap(F=1)=3.791e-02 best classical(local/uniform)=4.349e-03 gap(F=0.1)=8.051e-03 gap(F=0.5)=2.192e-02; F for 2x over best classical=0.12 -> max CZ at eps2q=2e-3: 1059
+   beta=0.3: gap(F=1)=7.225e-02 best classical(local/uniform)=3.706e-02 gap(F=0.1)=3.469e-02 gap(F=0.5)=5.493e-02; F for 2x over best classical=nan -> max CZ at eps2q=2e-3: inf
+  [v12 done in 260.1 s]
+
+V13 quantum-inspired: classical statevector cost of ONE group proposal (Trotter r=40, t=10)
+  k= 8 qubits:     17.52 ms per proposal (1 core, numpy, 320 RX + 40 diagonal layers)
+  k=12 qubits:     31.59 ms per proposal (1 core, numpy, 480 RX + 40 diagonal layers)
+  k=16 qubits:    452.12 ms per proposal (1 core, numpy, 640 RX + 40 diagonal layers)
+  k=20 qubits:  27360.98 ms per proposal (1 core, numpy, 800 RX + 40 diagonal layers)
+  k=22 qubits: 124650.24 ms per proposal (1 core, numpy, 880 RX + 40 diagonal layers)
+  [v13 done in 158.0 s]
+
+V14 lifted non-reversible QeMCMC (direction = sign of dE), SK n=6
+  beta=1.0 lifted on energy       : err=2.6e-18  t_mix(TV<.01)=204 vs reversible QeMCMC t_mix=106
+  beta=1.0 lifted on magnetisation: err=1.7e-18  t_mix(TV<.01)=210 vs reversible QeMCMC t_mix=106
+  beta=1.0 classical: local t_mix=492, lifted-local(magnetisation) t_mix=883
+  beta=0.3 lifted on energy       : err=2.8e-17  t_mix(TV<.01)=89 vs reversible QeMCMC t_mix=46
+  beta=0.3 lifted on magnetisation: err=1.4e-17  t_mix(TV<.01)=92 vs reversible QeMCMC t_mix=46
+  beta=0.3 classical: local t_mix=59, lifted-local(magnetisation) t_mix=108
+  [v14 done in 14.1 s]
+
+V15 adiabatic-dressed (ramp) proposals, SK n=8 beta=1 and 3
+  beta=1.0 quench (P1)                      asym=5.6e-17 err=1.1e-16 gap=3.950e-02 acc=0.035
+  beta=1.0 palindromic ramp up-hold-down    asym=1.0e-15 err=1.1e-16 gap=1.863e-03 acc=0.054
+  beta=1.0 one-way ramp up-hold             asym=8.9e-02 err=1.8e-03 TV=4.58e-02 acc=0.045
+  beta=1.0 local gap=1.187e-03
+  beta=3.0 quench (P1)                      asym=5.6e-17 err=1.1e-16 gap=3.679e-02 acc=0.000
+  beta=3.0 palindromic ramp up-hold-down    asym=1.0e-15 err=1.1e-16 gap=1.644e-03 acc=0.000
+  beta=3.0 one-way ramp up-hold             asym=8.9e-02 err=2.8e-06 TV=6.45e-05 acc=0.000
+  beta=3.0 local gap=5.548e-08
+  [v15 done in 96.9 s]
+
+V16 delayed acceptance (surrogate screen, then expensive E) with quantum proposal, SK n=8 beta=1
+  surrogate noise 0.1 sd: err=2.2e-16 expensive evals per step=0.032 gap ratio DA/plain=0.592
+  surrogate noise 0.5 sd: err=2.1e-17 expensive evals per step=0.038 gap ratio DA/plain=0.026
+  surrogate noise 1.0 sd: err=1.1e-16 expensive evals per step=0.338 gap ratio DA/plain=0.000
+  [v16 done in 9.2 s]
+
+V18 partial readout (measure qubits {0,1,2} only, keep rest = s), SK n=6 beta=1
+  partial readout (+50% local), plain Metropolis             err=8.28e-04  TV(stat,pi)=9.48e-03 asym=8.4e-02
+  partial readout (+50% local), exact Hastings (needs marginals) err=5.55e-17  TV(stat,pi)=0.00e+00 
+  [v18 done in 0.1 s]
+
+V19 energy-window filter on proposals, SK n=8 beta=1, window |dE|<=w
+  w=0.5 sd: out-of-window -> reject (stay)                   err=1.73e-18  TV(stat,pi)=0.00e+00 gap/plain=0.000
+  w=0.5 sd: resample until in window (post-select)           err=8.34e-04  TV(stat,pi)=1.02e-01 
+  w=1.0 sd: out-of-window -> reject (stay)                   err=6.94e-18  TV(stat,pi)=0.00e+00 gap/plain=0.860
+  w=1.0 sd: resample until in window (post-select)           err=5.82e-04  TV(stat,pi)=1.01e-02 
+  w=2.0 sd: out-of-window -> reject (stay)                   err=1.11e-16  TV(stat,pi)=0.00e+00 gap/plain=0.999
+  w=2.0 sd: resample until in window (post-select)           err=6.36e-04  TV(stat,pi)=1.36e-02 
+  [v19 done in 8.3 s]
+
+V21 quantum proposal over fixed block (super-spin) flips, SK n=6 beta=1, blocks {01}{23}{45}
+  block-flip quantum move (3 qubits for 6 spins)             err=4.51e-17  TV(stat,pi)=0.00e+00 asym=8.9e-15
+  gaps: block alone=-0.0000 (not ergodic alone if 0), block+local 50/50=0.0569, full quantum=0.0469, local=0.0096
+  [v21 done in 0.3 s]
+
+V22 XY (Kawasaki-like) mixer, fixed weight 4 of n=8 (70 states), SK couplings, beta=1 and 3
+  beta=1.0 XY ring                                           err=8.67e-19  TV(stat,pi)=0.00e+00 leak=1.5e-14 gap=2.410e-02
+  beta=1.0 XY all-to-all                                     err=1.11e-16  TV(stat,pi)=0.00e+00 leak=4.7e-15 gap=2.018e-02
+   beta=1.0 Kawasaki pair-exchange gap=7.178e-04
+  beta=3.0 XY ring                                           err=1.11e-16  TV(stat,pi)=0.00e+00 leak=1.5e-14 gap=2.007e-02
+  beta=3.0 XY all-to-all                                     err=2.22e-16  TV(stat,pi)=0.00e+00 leak=4.7e-15 gap=2.244e-02
+   beta=3.0 Kawasaki pair-exchange gap=3.364e-08
+  [v22 done in 14.1 s]
+
+V24 latency-hiding mask donation: move s -> s XOR m, m from a quantum run on a reference r (SK n=8)
+  beta=1.0: quantum gap=3.791e-02 local=1.187e-03 uniform=4.349e-03
+   reference r ~ pi (independent replica): err=4.4e-16 gap=2.873e-02
+   reference r uniform: err=1.1e-16 gap=1.212e-02
+  beta=0.3: quantum gap=7.225e-02 local=3.706e-02 uniform=2.829e-02
+   reference r ~ pi (independent replica): err=2.8e-17 gap=5.325e-02
+   reference r uniform: err=2.8e-17 gap=4.336e-02
+  [v24 done in 7.5 s]
+
+V25 quantum Houdayer move on replica-difference clusters (ring n=5, replicas beta 1.0 and 0.5)
+  quantum Houdayer (difference set invariant), joint target piA*piB err=3.47e-18  TV(stat,pi)=0.00e+00 
+  [v25 done in 1.2 s]
+
+V24 latency-hiding mask donation: move s -> s XOR m, m from a quantum run on a reference r (SK n=8)
+  beta=1.0: quantum gap=3.791e-02 local=1.187e-03 uniform=4.349e-03
+   reference r ~ pi (independent replica): err=4.4e-16 gap=2.873e-02
+   reference r uniform: err=1.1e-16 gap=1.212e-02
+   CLASSICAL differential-evolution mask r1 XOR r2 (r1,r2 ~ pi): err=2.1e-17 gap=6.733e-04
+  beta=0.3: quantum gap=7.225e-02 local=3.706e-02 uniform=2.829e-02
+   reference r ~ pi (independent replica): err=2.8e-17 gap=5.325e-02
+   reference r uniform: err=2.8e-17 gap=4.336e-02
+   CLASSICAL differential-evolution mask r1 XOR r2 (r1,r2 ~ pi): err=2.8e-17 gap=6.117e-02
+  [v24 done in 165.6 s]
+

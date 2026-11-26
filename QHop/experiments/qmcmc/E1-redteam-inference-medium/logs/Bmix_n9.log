@@ -1,0 +1,13 @@
+0 r0.68:lay/clmix=0.51(Wolff0.75+mix(u=0.5)),gain=0.84 r1.00:lay/clmix=1.54(Wolff0.75+mix(u=0.5)),gain=0.93 r1.47:lay/clmix=4.79(Wolff0.25+mix(u=0.5)),gain=0.94
+1 r0.68:lay/clmix=0.54(Wolff0.75+mix(u=0.5)),gain=0.95 r1.00:lay/clmix=1.63(Wolff0.25+mix(u=0.5)),gain=1.22 r1.47:lay/clmix=4.96(Wolff0.25+mix(u=0.5)),gain=0.88
+2 r0.68:lay/clmix=0.17(Wolff0.75+mix(u=0.5)),gain=0.82 r1.00:lay/clmix=0.30(Wolff0.75+mix(u=0.1)),gain=0.88 r1.47:lay/clmix=0.89(Wolff0.5+mix(u=0.3)),gain=1.35
+3 r0.68:lay/clmix=0.25(Wolff0.75+mix(u=0.5)),gain=0.83 r1.00:lay/clmix=0.64(Wolff0.75+mix(u=0.5)),gain=0.93 r1.47:lay/clmix=2.76(Wolff0.75+mix(u=0.5)),gain=1.46
+4 r0.68:lay/clmix=0.53(Wolff0.75+mix(u=0.5)),gain=0.91 r1.00:lay/clmix=1.41(Wolff0.25+mix(u=0.0)),gain=1.59 r1.47:lay/clmix=2.40(Wolff0.25+mix(u=0.0)),gain=1.81
+5 r0.68:lay/clmix=0.32(Wolff0.75+mix(u=0.5)),gain=0.83 r1.00:lay/clmix=0.88(Wolff0.75+mix(u=0.0)),gain=0.94 r1.47:lay/clmix=2.15(Wolff0.25+mix(u=0.1)),gain=1.11
+6 r0.68:lay/clmix=0.64(Wolff0.75+mix(u=0.5)),gain=0.88 r1.00:lay/clmix=2.26(Wolff0.5+mix(u=0.5)),gain=1.19 r1.47:lay/clmix=6.03(Wolff0.25+mix(u=0.5)),gain=0.90
+7 r0.68:lay/clmix=0.19(SW+Wolff),gain=0.83 r1.00:lay/clmix=0.36(Wolff0.75+mix(u=0.0)),gain=0.89 r1.47:lay/clmix=1.06(Wolff0.25+mix(u=0.0)),gain=1.10
+8 r0.68:lay/clmix=0.38(Wolff0.75+mix(u=0.5)),gain=0.86 r1.00:lay/clmix=0.98(Wolff0.75+mix(u=0.0)),gain=0.96 r1.47:lay/clmix=3.36(Wolff0.25+mix(u=0.5)),gain=0.96
+9 r0.68:lay/clmix=1.41(Wolff0.5+mix(u=0.5)),gain=1.12 r1.00:lay/clmix=2.86(Wolff0.25+mix(u=0.5)),gain=0.89 r1.47:lay/clmix=5.59(Wolff0.25+mix(u=0.5)),gain=0.69
+/home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/E1-redteam-inference-medium/claimB_mix.py:50: RuntimeWarning: All-NaN slice encountered
+  f" tuned/best {np.nanmedian(gt):.3g}")
+n=9 MEDIUM layden/best(incl cluster mixtures) median 1.14 IQR [0.783,1.61] tuned/best nan

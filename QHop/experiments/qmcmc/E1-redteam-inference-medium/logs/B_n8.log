@@ -1,0 +1,11 @@
+n=8 inst=0 bc=0.450 tq=1s t=2s r0.68:lay/SW=0.65,lay/W=0.39,lay/mix=1.62,asym=3.2e-16 r1.00:lay/SW=2.68,lay/W=1.44,lay/mix=2.56,asym=2.8e-16 r1.47:lay/SW=31.48,lay/W=16.01,lay/mix=4.04,asym=2.3e-16
+n=8 inst=1 bc=0.510 tq=3s t=4s r0.68:lay/SW=0.57,lay/W=0.34,lay/mix=1.57,asym=3.3e-16 r1.00:lay/SW=1.98,lay/W=1.07,lay/mix=2.49,asym=4.4e-16 r1.47:lay/SW=14.71,lay/W=7.54,lay/mix=4.11,asym=3.9e-16
+n=8 inst=2 bc=0.602 tq=4s t=6s r0.68:lay/SW=1.05,lay/W=0.59,lay/mix=1.75,asym=4.6e-16 r1.00:lay/SW=4.00,lay/W=2.07,lay/mix=2.20,asym=2.4e-16 r1.47:lay/SW=27.87,lay/W=14.04,lay/mix=2.78,asym=1.5e-16
+n=8 inst=3 bc=0.387 tq=7s t=8s r0.68:lay/SW=0.28,lay/W=0.18,lay/mix=1.51,asym=2.6e-16 r1.00:lay/SW=0.57,lay/W=0.32,lay/mix=2.39,asym=4.2e-16 r1.47:lay/SW=2.04,lay/W=1.07,lay/mix=3.49,asym=3.3e-16
+n=8 inst=4 bc=0.628 tq=9s t=10s r0.68:lay/SW=3.77,lay/W=2.09,lay/mix=2.18,asym=2.8e-16 r1.00:lay/SW=35.40,lay/W=18.31,lay/mix=3.23,asym=2.7e-16 r1.47:lay/SW=937.20,lay/W=471.93,lay/mix=4.50,asym=8.8e-17
+n=8 inst=5 bc=0.805 tq=11s t=13s r0.68:lay/SW=1.33,lay/W=0.74,lay/mix=1.86,asym=7.2e-16 r1.00:lay/SW=6.31,lay/W=3.30,lay/mix=2.23,asym=7.5e-16 r1.47:lay/SW=68.31,lay/W=34.66,lay/mix=2.63,asym=4.0e-16
+n=8 inst=6 bc=0.476 tq=14s t=16s r0.68:lay/SW=0.38,lay/W=0.24,lay/mix=1.18,asym=2.8e-16 r1.00:lay/SW=0.97,lay/W=0.53,lay/mix=1.50,asym=4.3e-16 r1.47:lay/SW=4.69,lay/W=2.44,lay/mix=1.88,asym=3.8e-16
+n=8 inst=7 bc=0.628 tq=17s t=18s r0.68:lay/SW=0.46,lay/W=0.26,lay/mix=1.21,asym=2.7e-16 r1.00:lay/SW=1.49,lay/W=0.78,lay/mix=1.61,asym=2.2e-16 r1.47:lay/SW=10.73,lay/W=5.42,lay/mix=2.23,asym=1.0e-16
+n=8 inst=8 bc=0.414 tq=19s t=21s r0.68:lay/SW=0.35,lay/W=0.22,lay/mix=1.42,asym=4.0e-16 r1.00:lay/SW=0.81,lay/W=0.44,lay/mix=2.26,asym=1.9e-16 r1.47:lay/SW=4.18,lay/W=2.15,lay/mix=3.47,asym=1.8e-16
+n=8 inst=9 bc=0.476 tq=22s t=24s r0.68:lay/SW=0.27,lay/W=0.17,lay/mix=1.22,asym=5.6e-16 r1.00:lay/SW=0.60,lay/W=0.33,lay/mix=1.92,asym=6.1e-16 r1.47:lay/SW=2.20,lay/W=1.13,lay/mix=2.90,asym=4.6e-16
+done 23.716500759124756

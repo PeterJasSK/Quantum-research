@@ -1,0 +1,576 @@
+B7 IMPLEMENTATION VARIANTS OF QeMCMC (applied review, Wave 3)
+==============================================================
+Author: sub-agent B7. Date 2026-11-21. Plain text.
+Check code: QHop/experiments/qmcmc/B7-checks/b7_checks.py (sections v01..v25), outputs in B7-checks/results.txt;
+preliminary scaling of V24 in B7-checks/b7_mask_scaling.py -> mask_scaling.txt.
+All numbers marked SIM are own exact calculations with common/qmc.py (exact transition matrices), single SK instances
+(J,h ~ N(0,1) unscaled) unless stated, n<=8 for most checks (n=4 for Lindblad / MTM enumerations). They are
+small-n illustrations, not scaling evidence.
+
+STATIONARITY METRIC. err = max_s |(pi P)(s) - pi(s)| for the exact chain matrix P and Boltzmann pi. err ~1e-16 =
+exact. When err > 1e-10 I also give TV = total variation between the chain's actual stationary distribution and pi
+(the size of the bias). For variants that never move some spins, I mixed 50/50 with single-spin local moves so the
+stationary distribution is unique (stated where used).
+
+TWO GENERAL RESULTS USED THROUGHOUT (own derivation, checked numerically)
+G1. "Surrogate theorem" (proved). Take any real diagonal H_prob, any real symmetric mixer (sum X, XY hopping, a
+   shift on qudits), and any time-dependent schedule that is PALINDROMIC (H(t) = H(T-t)). Then U^T = U (the product of
+   symmetric matrices in mirrored order), so |<b|U|a>|^2 = |<a|U|b>|^2. The proposal is symmetric, and Metropolis with
+   the TRUE energy gives exact Boltzmann stationarity. This holds even when H_prob is not the target energy. A
+   constant laser phase (Y terms) is also harmless: it is a diagonal-unitary conjugation and leaves |amplitudes|
+   unchanged. Consequence: hardware-native coupling subsets, Rydberg geometry, surrogates, decoupled groups and
+   shallow Trotter circuits are all EXACT as long as they are ideal and palindromic. Mixtures of symmetric kernels are
+   symmetric. A non-palindromic schedule is NOT symmetric (counterexamples V07, V10, V15).
+G2. Noise theorem (proved). Take a Lindbladian with real H and Hermitian Pauli jump operators (X, Y, Z dephasing or
+   flips, i.e. unital Pauli noise) and a time-symmetric rate profile. Let T be the transpose map. Then
+   T L T = -L_H + D = L^dagger, so Q(a|b) = Q(b|a) exactly. Non-unital noise (amplitude damping T1, leakage, atom
+   loss, thermalisation) breaks the symmetry. So does any noise placed non-palindromically, e.g. readout error only at
+   the end. SIM n=4: Pauli Lindblad err 1.4e-17 (V12).
+G3. Quantum output probabilities Q(s'|s) are NOT computable, either classically (that is the point) or from few shots
+   (a specific outcome has probability ~2^-n). So every correction that needs Q values (Hastings for an asymmetric
+   kernel, generalized MH with arbitrary kernels, Rao-Blackwell weights) is infeasible beyond toy n. Only schemes where
+   Q cancels by symmetry, or where the asymmetry comes from a CLASSICAL computable factor (group-selection
+   probabilities), are usable.
+
+COST NUMBERS USED (from BRIEF / A4 / A5): t_Q per sequential step ~2-3 s on IBM (2 s sub-job floor), 30-50 ms best on
+D-Wave, 0.1-5 s on Helios (ESTIMATE), 1-10 s+ on neutral atoms; t_C ~30 ns per dense local proposal (n<=100). Break-even
+S* ~7e7 (IBM), ~1e6 (D-Wave). IBM batched throughput ~4,000 circuits/s (2 s + 0.35 ms per execution).
+Own calc: with N=4,000 chains per job, the cost per chain-step is (2 + 1.4)/4000 ~ 0.85 ms, so S* per chain-step
+~0.85 ms / 30 ns ~ 3e4. Batching cuts S* by ~2,000x, but only for many independent chains.
+RE-B circuit count: 5-spin SK -> 823 CZ (BRIEF), i.e. ~80 CZ per coupled pair at that Trotter depth.
+
+=====================================================================================================================
+V01  Hardware-tuned coarse-grained groups (size, selection rule)
+=====================================================================================================================
+Change vs P1: quantum proposal on a group g of k spins only. The rest is frozen into an effective field (P2). New
+here: k is chosen from the device, and g is chosen (a) uniformly, (b) with state-independent weights (coupling
+strength, community/cluster structure, random bond percolation on |J_ij|), or (c) depending on the state (frustration
+of the current configuration, Wolff/FK clusters).
+Why/regimes: fewer qubits and shallower circuits -> lower noise. Value is LOW T (P2: group exponent 0.64-0.77 vs
+local 0.92, T=1). MEDIUM/HIGH: no case (local mixes fast enough).
+Detailed balance:
+ (a),(b) PROVED. The group's H is real symmetric and depends only on the frozen spins, which are the same in s and s',
+   and p(g) does not depend on the state. SIM n=6, beta=1: uniform groups err 5.6e-17; coupling-weighted err 2.2e-16.
+ (c) BROKEN if plain Metropolis is used. SIM: frustration-weighted selection p(g|s) ~ exp(lam*F_g(s)): lam=1 err 6.1e-3,
+   TV 0.035; lam=3 err 1.6e-2, TV 0.064.
+   CORRECTED: treat g as a labelled component and accept with
+       A = min(1, [pi(s') p(g|s')] / [pi(s) p(g|s)]).
+   The group kernel is symmetric, so the quantum factor cancels. p(g|s') is a cheap classical function, so the
+   correction is COMPUTABLE. SIM: err 5e-18 (lam=1), 5.6e-17 (lam=3). But the gap got WORSE: 0.021 and 0.011 vs
+   0.026 for uniform groups. Targeting frustrated spins did not help on this instance.
+ Wolff/FK-cluster groups: the probability of growing a given cluster C, P(C|s), is a sum over spanning subgraphs
+   (reliability-polynomial type, #P-hard in general), so it is not computable. A computable variant uses the bond set
+   B as the auxiliary variable: P(B|s) = product over bonds. But P(B|s') = 0 as soon as the quantum move unsatisfies a
+   bond inside B, and an internal quantum move does that almost always. Then everything is rejected except global
+   cluster flips, which is just Wolff. Verdict: FK-state-dependent groups are effectively useless. Use
+   state-independent percolation on |J| instead: exact, and it captures the "strong-coupling cluster" intuition.
+Group size from hardware (own calc, rough): V12 gives a fidelity budget of ~1,100 CZ for a 2x step gain at n=8
+   (eps2q = 2e-3, global depolarising model). At ~41 k^2 CZ for all-to-all k-spin SK (823/20 per k^2 at k=5), that
+   allows k ~ 5 on heavy-hex before SWAP routing, maybe 5-7 on Nighthawk square. V13 then shows k<=16 is classically
+   emulated in <0.3 s, which is cheaper than ONE IBM step. So hardware-sized groups are quantum-inspired by
+   construction (P2 already says this for small k).
+Resources: k qubits, depth ~ r*k^2 two-qubit gates (all-to-all), 1 circuit per step.
+Hardware fit: IBM heavy-hex (k<=6), Nighthawk square (k<=8), Helios all-to-all (k up to ~20 by fidelity).
+Evidence: PAPER (P2) + SIMULATED (own).  Verdict: QUANTUM-INSPIRED ONLY (for hardware-feasible k).
+Main risk: at feasible k the move is classically simulable faster than the QPU latency.
+
+=====================================================================================================================
+V02  Valid multi-group sweep (fix of P2's fixed-order sequential sweep)
+=====================================================================================================================
+Change: P2 Alg. 4 updates groups g1..gm in a FIXED order, with the field updated between groups, and does ONE
+Metropolis test at the end. Fixes: (i) pick the forward or reverse order with probability 1/2 each (more generally,
+any order distribution closed under reversal, e.g. a uniformly random permutation), then one Metropolis test; (ii) a
+separate Metropolis test after each group (Metropolis-within-Gibbs).
+Regimes: LOW T (P2 multi-sample exponent 0.50).
+Detailed balance: P2 fixed order is BROKEN. Q_fwd = Q1 Q2 has transpose Q2 Q1, which is not equal to Q1 Q2.
+   SIM n=6, beta=1: max|Q-Q^T| = 0.107, err 2.0e-2, TV 0.061 (a 6% bias in the distribution).
+   Fix (i) PROVED: (Q1 Q2 ... Qm)^T = Qm ... Q1, so the fwd/rev mixture is symmetric. SIM asym 8e-17, err 1.1e-16.
+   Uniform random order over 3 overlapping groups: err 1.1e-16.
+   Fix (ii) PROVED (each factor is reversible and preserves pi; the composition is not reversible). SIM err 1.1e-16.
+   Gaps (n=6): fwd/rev with one test 0.059; systematic per-group test P1P2 0.074 (non-reversible |lambda2| gap);
+   random-scan per-group 0.032. Per-group tests give the best gap AND need no change in circuits. Recommended fix:
+   per-group Metropolis.
+Resources: m sequential circuits per sweep (m ~ sqrt(n)), so the latency cost is m x t_Q per sweep.
+Evidence: SIMULATED + REASONED.  Verdict: BUILD NOW (as the correct baseline for any CG study; it is a one-line change).
+Main risk: none for validity. The m-fold latency per sweep worsens S*.
+
+=====================================================================================================================
+V03  Several QPUs proposing on disjoint groups in parallel
+=====================================================================================================================
+Change: groups g1, g2 (disjoint) get proposals at the same time on different QPUs (or different qubit regions of one
+chip), with fields from the current state.
+Regimes: LOW T. Parallelism hides latency only if the groups are fully independent.
+Detailed balance: naive (Jacobi fields from the old state, one joint test) is BROKEN. The field on g1 contains s_g2,
+   which changes in s'. SIM n=6 (+50% local moves for irreducibility): err 4.3e-4, TV 3.1e-3.
+   CORRECTED by G1, the "decoupled surrogate": drop the couplings BETWEEN the active groups from the H_prob inside each
+   circuit (keep the frozen-spin fields) and accept with the TRUE energy. Each group kernel then depends only on
+   frozen spins, so the product kernel is symmetric. SIM err 5.6e-17, gap 0.030. Bonus: with the decoupled surrogate
+   you can also run SEPARATE sequential Metropolis tests per group on proposals made in parallel. g2's proposal does
+   not depend on g1's spins, so it is not stale when g1 has already moved. Exact.
+   Alternative without surrogate error: choose groups with no couplings between them (graph colouring). That only
+   works on sparse graphs.
+Resources: m QPUs x k qubits, 1 parallel round per sweep.
+Hardware fit: one large chip partitioned into regions (IBM 156 q, Nighthawk 120 q) is the cheapest "several QPUs".
+Evidence: SIMULATED.  Verdict: SIMULATE MORE (acceptance loss from the dropped couplings vs the parallel gain).
+Main risk: on dense SK the dropped inter-group couplings are most of the energy, so acceptance collapses. Useful only on
+sparse/lattice problems, where classical cluster/PT methods are strongest.
+
+=====================================================================================================================
+V04  Quantum move as one move type in a classical sampler (mixture, composition, PT cold replicas)
+=====================================================================================================================
+Change: P = w P_quantum + (1-w) P_local (mixture), or K local sweeps then 1 quantum move (composition), or quantum
+moves only in the coldest PT replicas, where local moves and swaps fail.
+Detailed balance: PROVED. A mixture or composition of pi-invariant kernels is pi-invariant, and PT stays exact if every
+   replica kernel preserves its pi_beta. SIM n=8: mixture w=0.1 err 1.1e-16.
+Superadditivity (SIM n=8, beta=1): gap(w)/(w g_q + (1-w) g_l) peaks at 2.07-2.10 for w = 0.1-0.3 (1.56 at beta=0.3).
+   Local moves (inside a valley) and quantum moves (between valleys) complement each other.
+Best ratio, cost-weighted (own calc): maximise gap(w)/(w R + 1 - w), with R = t_Q/t_C. SIM n=8: for R = 1e2, 1e4, 1e8
+   the optimum is w = 0 at both beta=1 and beta=0.3. At small n the local chain is fast enough that ANY quantum
+   fraction costs more than it gains.
+   General rule: when local moves cannot cross the barrier, gap(w) ~ w g_eff for small w, so the gap per unit time
+   ~ g_eff/(R + 1/w). Quantum moves pay off only once g_eff > R g_local, i.e. the same break-even S*. Choose
+   w ~ 1/R (spend comparable wall time on both). How to find it in practice: measure the IAT of the slowest
+   observable per unit wall time on a w grid in a pilot run.
+   Crossover with P1 exponents (k_q 0.264, k_local 0.94, prefactors ignored): n* = log2(S*)/0.676 = 39 (IBM,
+   S*=7e7), 30 (D-Wave, 1e6), 22 (batched IBM, 3e4). n=39 full-register QeMCMC needs ~41 n^2 ~ 6e4 CZ, far beyond
+   the ~1e3 CZ budget (V12).
+   Latency trick (exact): speculative execution. While the QPU processes the proposal from s0, precompute the
+   local-move continuation of the reject branch from s0, using independent random numbers. If the quantum move is
+   rejected (most of the time at low T: acceptance ~2% in SIM), keep that continuation.
+PT placement: the quantum move goes only to the replicas whose local+swap IAT is the bottleneck (lowest T). Cost is
+   then t_Q per cold-replica step only.
+Regimes: LOW T only. At MEDIUM T PT+cluster already mixes. At HIGH T w*=0.
+Evidence: SIMULATED + REASONED.  Verdict: BUILD NOW (simulation harness: this is the honest way to deploy any quantum
+   move). On hardware: WAIT FOR HARDWARE.
+Main risk: the cost-weighted optimum is w=0 at every size where hardware is usable.
+
+=====================================================================================================================
+V05  Surrogate-driven proposals (cheap H_prob inside U, true energy in the accept step)
+=====================================================================================================================
+Change: H_prob = a cheap Ising/QUBO surrogate (fit, truncated couplings, hardware-native subset). The true, expensive
+energy is evaluated only in the accept step.
+Detailed balance: PROVED by G1 (any real diagonal H_prob gives symmetric U). SIM n=8, beta=1, err <=2.2e-16 for every
+   surrogate. Quality model (SIM, one instance; acceptance and gap vs correlation rho(surrogate, E)):
+     exact E          rho 1.00  acc .022  gap 3.8e-2
+     +0.3 sd noise    rho 0.96  acc .018  gap 4.3e-2
+     +1 sd noise      rho 0.73  acc .015  gap 2.4e-2
+     +3 sd noise      rho 0.24  acc .004  gap 9.1e-3
+     line-only J      rho 0.62  acc .015  gap 1.3e-2 (hardware-native subset)
+     fields only      rho 0.29  acc .014  gap 3.3e-3
+     unrelated SK     rho 0.18  acc .004  gap 4.1e-3   (local 1.2e-3, uniform 4.3e-3)
+   The gap degrades smoothly with rho. An uncorrelated surrogate falls back to uniform-proposal quality.
+Classical analogue that may dominate: the "surrogate transition method" (Liu 2001, Monte Carlo Strategies, ch. 9;
+   Christen & Fox 2005, J. Comput. Graph. Stat. 14:795). Propose by running ANY reversible classical chain (even PT)
+   on pi_surrogate. Its kernel is reversible w.r.t. pi~, so the exact acceptance is
+   min(1, pi(s') pi~(s) / (pi(s) pi~(s'))), which is computable. In one QPU latency (~2 s) a CPU runs ~7e7 surrogate
+   flips, so the classical surrogate chain can fully equilibrate on the surrogate. The quantum version wins only
+   where the surrogate itself is classically hard to sample AND correlates with E. That is a narrow window.
+Regimes: the only HIGH-T rationale (expensive energy, t_energy dominates both chains). LOW T for gap.
+Resources: as P1, with fewer 2q gates when the surrogate is sparse.
+Evidence: SIMULATED + LITERATURE.  Verdict: BUILD NOW (simulation, cheap, and the needed head-to-head vs the
+   surrogate-transition method).
+Main risk: the classical surrogate-transition MCMC dominates at equal wall time.
+
+=====================================================================================================================
+V06  Temperature-aware tuning of gamma, t, alpha
+=====================================================================================================================
+Change: P1 draws gamma ~ U[0.25,0.6], t ~ U[2,20] regardless of T. Use a per-beta setting instead. Valid adaptation:
+tune during burn-in and freeze, or diminishing adaptation (Roberts & Rosenthal 2007), or a FIXED random mixture over a
+grid (always valid by G1).
+Detailed balance: PROVED for any fixed choice and any fixed mixture. Frozen-after-burn-in is exact. Online adaptation
+   needs diminishing adaptation + containment. A beta-scaled alpha keeps H real symmetric, so it is exact.
+SIM (n=8, 2 SK instances, grid 5 gamma x 3 t-windows x {normalised alpha, beta-scaled alpha}): the best fixed setting
+   per beta beats the P1 default by 1.27x/1.30x (beta 0.1), 1.18x/1.12x (0.3), 1.39x/1.16x (1.0), 1.65x/1.32x (3.0).
+   The best gamma is mostly 0.45 (consistent with Christmann et al. 2411.17821, gamma ~0.45). The beta-scaled alpha
+   was NEVER best. The fixed grid mixture reached 0.53-0.98x of P1 (valid but worse).
+Regimes: all, but the gains are <2x, which does not move a break-even of 1e4-1e8.
+Evidence: SIMULATED.  Verdict: BUILD NOW as standard practice (tune per beta in burn-in, freeze). Not a research line.
+Main risk: none for validity. The gain is too small to matter for wall clock.
+
+=====================================================================================================================
+V07  Analog neutral-atom (Rydberg) quench as proposal
+=====================================================================================================================
+Change: U from H = Omega/2 sum X - Delta sum n + sum V_ij n_i n_j (geometry-fixed couplings). The device Hamiltonian
+is not the target energy.
+Detailed balance: by G1 the Rydberg H is just a surrogate, so the ideal dynamics are EXACT for ANY target energy if
+   the pulse is palindromic. SIM n=5 (SK target, beta=1): constant pulse err 1.1e-16; constant laser phase 0.7 err
+   5.6e-17; one-way detuning sweep (standard adiabatic-prep pulse) BROKEN err 3.7e-3, TV 0.16; palindromic sweep
+   err 6.9e-17; 50/50 mixture of a sweep and its time reverse err 3.5e-17.
+   Real device: Rydberg decay and atom loss are non-unital (G2) and the detection errors are asymmetric, so the kernel
+   is asymmetric with no computable correction (G3). Partial fix: random gauge (V12) does not apply, because blockade
+   physics is not spin-flip symmetric. Bias is unquantified.
+Resources: n atoms, 1 task per start state (new programmed initial pattern; A4: <10 shots/s, 1-10 s best per step).
+Hardware fit: QuEra Aquila, Pasqal. The geometry restricts the surrogate to unit-disk-like couplings (low rho for spin
+   glasses: V05 says rho ~0.3-0.6 gives 3-10x lower gap).
+Evidence: SIMULATED (ideal) + LITERATURE (Wilson et al. 2407.13830, simulation only; no hardware QeMCMC found).
+Verdict: WAIT FOR HARDWARE (needs per-shot programmable initial states and loss-free detection). KILL for
+   cheap-energy problems (S* >1e8).
+Main risk: an uncorrectable bias from non-unital noise, plus a 1-10 s latency.
+
+=====================================================================================================================
+V08  D-Wave reverse annealing proposal (start in s, anneal back to s_p, pause, return)
+=====================================================================================================================
+Change: the proposal is a reverse anneal with the initial state programmed to s.
+Detailed balance: closed-system palindromic reverse anneal is EXACT (G1; SIM n=5 err 5e-15). Open system: model
+   Q = (1-lam) Q_closed + lam G^n, with G = Glauber heat bath at beta_phys = 2 on the programmed H (thermalisation
+   toward low energy).
+     lam   plain Metropolis       "Gibbs-corrected" A=min(1,pi' pi_phys/(pi pi_phys'))   exact Hastings (needs Q)
+     0.1   err 1.1e-2 TV 0.066    err 0.135 TV 0.99 (WORSE)                              err 3e-17
+     0.5   err 5.4e-2 TV 0.25     err 0.075 TV 0.98 (WORSE)                              err 3e-17
+     1.0   err 0.11   TV 0.42     err 3e-17 (exact only if the kernel is purely thermal)  err 3e-17
+   With purely thermal sampling but a 3% (of sd) programming error (ICE), the Gibbs correction with the nominal H gives
+   TV 0.053.
+   So the correction needed is Q(s|s')/Q(s'|s). It is exact only if the device kernel is reversible w.r.t. a KNOWN
+   Gibbs state, which is never exactly true (mixed coherent + thermal, freeze-out at s* where H(s*) has a transverse
+   field, ICE errors). A partial correction can be much worse than none.
+   Estimating the ratio from shots: a given s' has probability ~2^-n, so ~2^n shots per pair are needed
+   (exponential). A pseudo-marginal rescue would need unbiased estimators placed inside an extended target. I know no
+   worked construction for estimated PROPOSAL densities (speculation: possible in principle via a random-weight
+   extended space, but at the same exponential shot cost).
+Resources: n qubits (embedding chains for dense problems), ~30-50 ms per step best, ~80 us per extra sample.
+Evidence: SIMULATED (toy open-system model) + LITERATURE (Arai & Kadowaki 2502.08060: simulation only; no D-Wave
+   hardware QeMCMC found by A3).
+Verdict: KILL for exact Boltzmann sampling. A heuristic optimiser use is outside the scope of this review.
+Main risk: unknown, uncorrectable bias, the same as using the annealer as a Gibbs sampler.
+
+=====================================================================================================================
+V09  Shot-level batching: multiple-try Metropolis and multi-proposal (hub) schemes
+=====================================================================================================================
+Change: extra shots from the SAME circuit are almost free (0.35 ms each on IBM vs the 2 s floor). Use K shots per step.
+ (a) MTM (Liu, Liang & Wong 2000, JASA 95:121). Draw y1..yK ~ Q(.|x) (one circuit, K shots). Select yj with
+     probability ~ pi(yj): for symmetric Q take lambda = 1/Q, so the weights are w = pi and no Q values are needed.
+     Draw K-1 reference points ~ Q(.|yj) (a SECOND circuit from yj), add x, and accept with
+     min(1, sum pi(y) / sum pi(x*)).
+ (b) Hub multi-proposal (Tjelmeland 2004; Calderhead 2014, PNAS 111:17408). Draw z ~ Q(.|x) (circuit 1), then
+     y1..yN ~ Q(.|z) (circuit 2, N shots). The joint Q(x|z) prod Q(yi|z) is exchangeable in {x, y} because Q is
+     symmetric. Choose the next state among {x, y1..yN} with probability ~ pi. No Q values are needed.
+ (c) Naive best-of-K (pick the lowest energy among K shots, then plain Metropolis): BROKEN.
+Detailed balance (SIM n=4, beta=1, exact enumeration K=N=2): MTM err 5.6e-17; hub err 6.9e-18; naive best-of-2 err
+   2.6e-2, TV 0.21. Calderhead-type GMH with an arbitrary kernel needs Q values, so it is infeasible (G3).
+Efficiency (SIM): gap per step: plain 0.106; MTM 0.173; hub 0.195. Both use 2 sequential circuits, and 2 plain steps
+   give 0.201. At equal circuit count there is no gain at K=2. The open question is larger K, where shots are cheap,
+   plus the hub's free Rao-Blackwellised estimates over all N+1 points.
+Resources: 2 sequential circuit executions per step (2 x latency) + K shots.
+Evidence: SIMULATED + LITERATURE.  Verdict: SIMULATE MORE (K = 8-1000; cost = 2 latencies + K shot times).
+Main risk: the second sequential circuit doubles the latency, which dominates the cost.
+
+=====================================================================================================================
+V10  Shallow hardware-native circuits (Trotter depth, native coupling subsets, QAOA-like layers)
+=====================================================================================================================
+Change: replace exp(-iHt) with r first-order Trotter steps, p-layer QAOA-type circuits, or only native couplings.
+Detailed balance: PROVED for first-order Trotter with equal steps. U = (D B)^r with D diagonal. The leftmost D only
+   multiplies output amplitudes by phases, and the rest, B D B ... D B, is palindromic with symmetric factors, so the
+   proposal is symmetric. Second-order splitting is symmetric too. A QAOA circuit with arbitrary angles is BROKEN
+   unless the angle sequence is palindromic (Nakano et al. 2305.08789 impose this). Native coupling subsets are
+   exact by G1. Gate compilation changes nothing (same unitary).
+   SIM n=6, beta=1: Trotter r=1,2,4,8,32: asym <=1.1e-16, err <=1.1e-16. Random-angle p=3 QAOA: err 2.6e-3, TV 0.045.
+   Palindromic B A B' A B: err 1.7e-18.
+Proposal quality vs depth (SIM n=6): gap r=1 0.021, r=2 0.038, r=4 0.037, r=8 0.030, r=32 0.046, exact 0.047, local
+   0.0096. Even r=1 (a single "QAOA layer") is 2.2x local here. Line-only couplings retain ~1/3 of the gap (V05).
+Resources: r x |E| ZZ gates (|E| = number of native couplings), with no SWAPs if native couplings only.
+Hardware fit: IBM heavy-hex (native subset = heavy-hex subgraph), Nighthawk square lattice, Helios (all-to-all).
+Evidence: SIMULATED.  Verdict: SIMULATE MORE (gap vs r and vs native fraction, scaling in n; noisy at FakeNighthawk).
+Main risk: the shallow circuit's gain may come from short-range moves that classical cluster moves also provide.
+
+=====================================================================================================================
+V11  Potts / multi-valued variables (one-hot, binary, qudit; mixer choice)
+=====================================================================================================================
+Change: q-state variables encoded as one-hot (q qubits/site), binary (ceil log2 q), or qudits.
+Detailed balance (SIM q=3 Potts on a triangle, 27 feasible states, beta=1):
+   one-hot + X mixer, infeasible outcome -> REJECT (stay): exact, err 5.6e-17. But 73% of proposals leak out and are
+     wasted (gap 0.032).
+   one-hot + X mixer, RESAMPLE until feasible (post-select): BROKEN, err 3.2e-3, TV 0.031 (the normalisation Z(s) is
+     state-dependent and not computable).
+   one-hot + XY mixer per site (real symmetric hopping, conserves one-hot exactly): exact, err 5.6e-17, zero leakage,
+     gap 0.111 (3.5x the X mixer).
+   binary encoding, invalid code -> reject: exact, 12% leakage, gap 0.089.
+   qudit with a real symmetric shift mixer (X_q + X_q^T): exact by G1 (reasoned).
+   For reference, a classical single-site recolouring move has gap 0.122. It beats all of them at this toy size.
+Resources: one-hot n q qubits + XY gates (3 CNOT each); binary n log2 q qubits with multi-qubit diagonal terms.
+Hardware fit: XY mixer on Helios/IBM; qudits on trapped-ion/qudit devices.
+Evidence: SIMULATED.  Verdict: SIMULATE MORE (XY one-hot only). Do not use the X mixer or post-selection.
+Main risk: no application need demonstrated. The classical heat-bath Potts update is very strong.
+
+=====================================================================================================================
+V12  Error mitigation vs none: twirling, gauge averaging, symmetric sandwich
+=====================================================================================================================
+Detailed balance under noise (SIM n=4 SK, beta=1, exact Lindblad, rate in 1/(time unit), t ~ U[2,20]):
+   unital Pauli X,Y,Z noise, constant rate:             err 1.4e-17 (EXACT, proved in G2)
+   amplitude damping (T1) rate 0.01:                    asym 4.9e-2, err 5.6e-3, TV 0.052
+   AD 0.01 + full spin-reversal gauge average (16):     asym 6.9e-4, err 3.5e-5, TV 3.1e-4  (~170x smaller, NOT zero)
+   AD 0.05 no gauge / with gauge:                       TV 0.139 / TV 3.0e-3
+   ideal U + symmetric readout flips eps=0.02 at the end only (Q B):     err 3.9e-4, TV 2.4e-3 (BROKEN)
+   same + matched random INPUT flips with the same eps (B Q B):          err 2.8e-17 (EXACT)
+Answer to "does gauge averaging restore exact symmetry?": NO. Counterexample: the gauge-averaged readout noise is a
+   symmetric bit-flip channel B, but it acts only at the end, and (Q B)^T = B Q is not equal to Q B. SIM TV 2.4e-3 at
+   eps=2% (Heron median readout error ~1.7%, A4). Gauge averaging of T1 also leaves an O(rate^>1) residual (the
+   average of e^{t L_g} over gauges is not e^{t <L_g>}).
+   Exact fixes: (1) symmetric sandwich: add classical random input flips at the measured readout rate, giving B Q B;
+   (2) Pauli twirling makes noise Pauli/unital, but it is exactly symmetric only if the noise profile is palindromic
+   (G2). Twirl the forward and mirror halves identically, or use a palindromic circuit layout. Residual non-unital T1
+   stays at second order after gauge + twirl.
+Where noise turns the move into a uniform jump (own calc, global-depolarising model Q_F = F Q + (1-F) uniform, SK n=8):
+   gap(F) is ~linear in F. Keeping a 2x step gain over the best of local/uniform needs F >= 0.11-0.12 at beta = 1-3.
+   That is <=1,100 CZ at eps2q = 2e-3. At beta=0.3 (MEDIUM) a 2x gain is never reached, even at F=1. Scaling: the
+   advantage factor is ~F g_q/g_u, and g_q/g_u ~ 2^(0.68 n) (P1 exponents), so a 2x gain needs N_CZ < ~0.68 n ln2 /
+   eps ~ 240 n. Full-register SK needs ~41 n^2 CZ, so this caps n at ~6 (all-to-all, before routing). P1 measured a 3x
+   gap loss on ibmq_mumbai at n<=10 with 1D instances (fewer gates).
+Evidence: SIMULATED + REASONED (proofs).  Verdict: BUILD NOW (B Q B sandwich + Pauli twirl + palindromic layout are
+   cheap and should be default in any hardware run).
+Main risk: T1/leakage residual bias; the fidelity budget caps n far below the break-even n*.
+
+=====================================================================================================================
+V13  Quantum-inspired classical versions (exact statevector / tensor-network group proposals)
+=====================================================================================================================
+Change: simulate the k-qubit group proposal classically and use it as a classical move.
+Detailed balance: identical to the quantum version (exact; V01/V02).
+Cost (SIM, this machine, 1 core, naive numpy, Trotter r=40, t=10, one proposal): k=8: 12 ms; 12: 25 ms; 16: 0.29 s;
+   20: 9.4 s; 22: 49 s. This is an upper bound: optimised simulators/GPU are typically 10-100x faster (speculation,
+   not measured). Compared with an IBM step (2-3 s, A4): classical emulation is CHEAPER per proposal for k<=~16-18 on
+   one core, and roughly break-even near k~20.
+   Tensor networks: Christmann et al. 2411.17821 reproduce the scaling gain with bond dimension 4 (n<=9). Chen et al.
+   2509.23945 show TN collective proposals sampling 3D EA up to 64^3 on one CPU.
+Evidence: SIMULATED + LITERATURE.  Verdict: QUANTUM-INSPIRED ONLY. It is the correct baseline that every hardware
+   CG variant must beat.
+Main risk (for the quantum case): for every hardware-feasible k, this classical version is faster.
+
+=====================================================================================================================
+V14  Non-reversible / lifted QeMCMC   [NEW]
+=====================================================================================================================
+Change: augment the state with a direction sigma in {+,-} and an observable O (energy or magnetisation). From
+(s, sigma), draw s' ~ Q. If O(s') - O(s) has sign sigma, do a Metropolis test; on any non-move (wrong direction or
+rejection) flip sigma.
+Detailed balance: the lifted chain satisfies SKEW detailed balance. PROVED: pi(s') Q(s|s') A(s',s) =
+   pi(s) Q(s'|s) A(s,s') with Q symmetric, so the inflow to (s, sigma) equals pi(s)/2 without knowing Q. This
+   construction needs NO Q values (unlike the minimal-flip-rate Turitsyn-Chertkov-Vucelja lift, which needs
+   sum_s' T(s'|s) and is infeasible by G3). Ties in O are treated as non-moves.
+   SIM n=6: err 2.6e-18 (energy), 1.7e-18 (magnetisation).
+Efficiency (SIM): mixing time t_mix(TV<0.01): beta=1: lifted 204-210 vs reversible QeMCMC 106 (2x WORSE); beta=0.3: 89-92
+   vs 46. The classical lifted local move is also worse (883 vs 492). With acceptance ~2-4%, sigma flips almost every
+   step and half the proposals are discarded. Cui et al. 2606.23350 report polynomial gains with a different
+   construction (lifted flows over quantum-generated candidate paths), which I did not replicate.
+Regimes: LOW T claimed by Cui (sim T=0.1; hardware n=3 at T=10).
+Evidence: SIMULATED (our generic lift) + LITERATURE (Cui).  Verdict: KILL our generic lift. SIMULATE MORE only as an
+   exact replication of Cui's construction.
+Main risk: lifting needs high acceptance, and QeMCMC acceptance is low.
+
+=====================================================================================================================
+V15  Adiabatic-dressed proposals (time-symmetric ramp)   [NEW]
+=====================================================================================================================
+Change: ramp gamma 0 -> gamma_f, hold, ramp back (Hsieh, Orfi & Sels 2603.28076 report SK k 0.614 -> 0.146 at low T).
+Detailed balance: palindromic ramp EXACT (G1; SIM n=8 err 1.1e-16). One-way ramp (up then measure) BROKEN: beta=1 err
+   1.8e-3, TV 0.046.
+Efficiency (SIM n=8, our naive linear ramp, T_r = 10, 20 slices): gap beta=1 1.9e-3 vs quench 3.9e-2 (20x worse); beta=3
+   1.6e-3 vs 3.7e-2. An adiabatic up-and-down ramp returns close to the start state, so acceptance rises
+   (0.054 vs 0.035) but moves are short. This is NOT their protocol. Replication needed.
+Resources: extra depth 2 T_r per step, so more noise (V12 budget).
+Evidence: LITERATURE + SIMULATED (naive).  Verdict: SIMULATE MORE (exact replication of 2603.28076 first).
+Main risk: longer circuits eat the ~1,100-CZ budget; the gain is protocol-sensitive.
+
+=====================================================================================================================
+V16  Delayed acceptance with quantum proposal (surrogate screen, then expensive energy)   [NEW]
+=====================================================================================================================
+Change: stage 1 accepts with min(1, pi~(s')/pi~(s)) using a cheap surrogate. Only survivors get the expensive energy,
+with stage 2 min(1, pi(s') pi~(s) / (pi(s) pi~(s'))) (Christen & Fox 2005).
+Detailed balance: PROVED (standard DA with a symmetric proposal). SIM n=8 beta=1: err <=2.2e-16.
+Efficiency (SIM): surrogate noise 0.1 sd: expensive evaluations on only 3.2% of proposals, gap 0.59x of plain; 0.5 sd:
+   3.8%, gap 0.026x; 1 sd: 34%, gap ~0. DA saves energy evaluations, not QPU calls.
+Regimes: HIGH T with expensive energy (the only HIGH-T rationale). But DA works equally well for the classical chain,
+   so it does not change the ratio between quantum and classical.
+Evidence: SIMULATED + LITERATURE.  Verdict: QUANTUM-INSPIRED ONLY (a generic classical tool; include it in the classical
+   baseline instead).
+Main risk: neutral for quantum advantage; it just lowers t_energy for both sides.
+
+=====================================================================================================================
+V17  In-device accept loop with mid-circuit measurement (Quantinuum Helios)   [NEW]
+=====================================================================================================================
+Change: the whole chain runs in one program. Measure, compute dE in the real-time classical engine, draw a uniform with
+the on-device RNG, conditionally re-prepare |s'> with X gates on reused qubits, repeat.
+Detailed balance: same as P1 if the logic is correct (REASONED). New noise: reset/re-preparation and mid-circuit
+   measurement errors act at BOTH ends of each step, but not identically, so they are asymmetric. Fix: per-step random
+   gauge mask from the device RNG + matched input flips (V12 sandwich). Needs real-time evaluation of dE (dense SK:
+   n multiply-adds per spin flip set; feasibility on the controller is unverified).
+Resources: n qubits all-to-all. A4 ESTIMATE 0.1-0.5 s per step for small problems, 1-5 s at 20-50 spins; shot and HQC
+   limits per job (10,000 shots, 500,000 HQC).
+Evidence: REASONED + hardware documentation (A4).  Verdict: SIMULATE MORE (emulator program first), then WAIT FOR
+   HARDWARE. It is the only stack where a true sequential chain is not latency-bound, but S* is still ~3e6-2e8
+   versus 30 ns flips.
+Main risk: the cost per step stays >=1e6 classical flips; it is an engineering demo, not an advantage.
+
+=====================================================================================================================
+V18  Partial readout (measure only some qubits = implicit coarse-graining)   [NEW]
+=====================================================================================================================
+Change: evolve all n qubits but read only a subset S; keep the unmeasured spins equal to s.
+Detailed balance: BROKEN. Q(s'_S | s) = sum_x |<s'_S x|U|s>|^2 marginalises over the outcomes on the other qubits, and
+   the reverse marginal starts from a different full state. SIM n=6, S = 3 qubits (+50% local moves): asym 0.084, err
+   8.3e-4, TV 9.5e-3. Exact Hastings would need the marginals (G3), so it is not computable.
+   Correct alternative: do not touch the unread qubits, i.e. real coarse-graining (V01).
+Evidence: SIMULATED.  Verdict: KILL.
+Main risk: silent bias if someone measures a subset to save readout.
+
+=====================================================================================================================
+V19  Energy-window filter on proposals (post-select by |dE| <= w)   [NEW]
+=====================================================================================================================
+Detailed balance: "out-of-window counts as a rejection" is EXACT (the window is symmetric in dE). SIM n=8 err <=1.1e-16,
+   but the gap only goes down: 0.86x at w = 1 sd, ~0 at w = 0.5 sd. "Repeat until a shot lands in the window" is
+   BROKEN (a state-dependent normaliser): err 6-8e-4, TV 0.010-0.10.
+   The reject version also needs the true energy to apply the window, so it saves nothing.
+Evidence: SIMULATED.  Verdict: KILL.
+Main risk: none (do not build it).
+
+=====================================================================================================================
+V20  Many chains per job; population annealing with quantum moves   [NEW]
+=====================================================================================================================
+Change: put N independent chains (different start states, parameterised circuits) into one job. On D-Wave, tile many
+small copies onto disjoint qubits of one QMI. Population annealing: resampling across the population between beta
+levels, with quantum moves as the MCMC step at each level.
+Detailed balance: PROVED per chain (independent kernels). PA is exact asymptotically in the population size; the
+   moves only need to preserve pi_beta at each level, which quantum moves do.
+Cost (own calc, A4 numbers): IBM 2 s + 0.35 ms/execution, so N=4,000 chains cost ~3.4 s per round, i.e. ~0.85 ms per
+   chain-step. S* drops from ~7e7 to ~3e4 per chain-step (vs 30 ns flips). But classical chains parallelise too (one
+   per core/GPU thread), so the fair comparison is aggregate throughput: ~1,200 chain-steps/s (QPU) vs ~3e7 flips/s
+   per CPU core.
+Regimes: needed for any regime. PA is attractive at MEDIUM T (many temperatures) but does not change the per-move ratio.
+Evidence: REASONED (from sourced cost numbers).  Verdict: BUILD NOW (mandatory execution mode for any hardware run).
+Main risk: still needs a step gain S >~ 3e4 vs the best classical, per chain-step.
+
+=====================================================================================================================
+V21  Quantum proposal over fixed block (super-spin) flips   [NEW]
+=====================================================================================================================
+Change: partition the spins into STATE-INDEPENDENT blocks b1..bm. Qubit j = "flip block j or not". H_prob(f) =
+E(s XOR blocks(f)), and the circuit always starts in |0...0> on m qubits.
+Detailed balance: PROVED. From s' = s XOR f, the flip-space Hamiltonian is X^f H_s X^f, so
+   <f|U_s'|0> = <0|U_s|f> = <f|U_s|0>. SIM n=6, 3 pair-blocks (3 qubits for 6 spins): err 4.5e-17. The block moves
+   alone are not ergodic (gap 0). Mixed 50/50 with local moves: gap 0.057 vs full 6-qubit quantum 0.047 and local
+   0.0096 (one tiny instance).
+   With state-dependent FK clusters (Swendsen-Wang conditioning on bonds), the cluster-flip conditional target is a
+   product of independent cluster fields, which is exactly Gibbs-samplable classically. The quantum move adds nothing.
+Resources: m qubits (m << n); dense effective couplings between blocks.
+Hardware fit: any; the qubit reduction is n/m.
+Evidence: SIMULATED.  Verdict: SIMULATE MORE (blocks from known structure: strongly bound pairs, domains, community
+   detection).
+Main risk: good blocks require prior structure knowledge; the m-block problem is small, so again quantum-inspired.
+
+=====================================================================================================================
+V22  Conserved-quantity mixers (XY / Kawasaki; fixed composition, fixed Hamming weight)   [NEW]
+=====================================================================================================================
+Change: mixer = sum over pairs of (XX+YY)/2 on a ring or all-to-all. It conserves Hamming weight (alloys with fixed
+composition, portfolio cardinality).
+Detailed balance: PROVED (G1; the real symmetric hopping conserves the sector). SIM n=8, weight 4 (70 states): ring err
+   8.7e-19, all-to-all err 1.1e-16, leakage <=1.5e-14.
+Efficiency (SIM, one instance): beta=1: XY ring gap 2.4e-2 vs Kawasaki all-pair exchange 7.2e-4 (34x); beta=3: 2.0e-2
+   vs 3.4e-8. This is a large step ratio, but against a WEAK baseline (Kawasaki alone, no PT, no cluster).
+   Kawamata & Fujii 2611.05883 also compare only against Kawasaki.
+Regimes: LOW T (constrained glassy sectors).
+Hardware fit: XY gates on Helios / IBM (iSWAP-type decompositions; 2-3 CNOT per pair).
+Evidence: SIMULATED + LITERATURE.  Verdict: SIMULATE MORE (vs PT + Kawasaki and vs constrained-sector cluster moves).
+Main risk: the advantage disappears against PT, as for unconstrained SK.
+
+=====================================================================================================================
+V23  Quantum-trained neural independence proposal (amortised quantum)   [NEW]
+=====================================================================================================================
+Change: train an autoregressive/normalising model q(s) on quantum samples (QAOA/annealer/QeMCMC chain states). Use it
+as an independence proposal with the Hastings ratio min(1, pi(s') q(s) / (pi(s) q(s'))), which is computable because
+q is tractable.
+Detailed balance: PROVED (standard independence MH). Note (own calc): QeMCMC outputs from UNIFORM random starts are
+   exactly uniform, because Q is symmetric, hence doubly stochastic. The training data must come from chain states
+   (pi-distributed) or from QAOA/annealer outputs, not from random-start QeMCMC.
+Resources: the QPU is used offline for training data only, so sampling runs at classical speed.
+Evidence: LITERATURE (Nakano, Okada & Fujii 2506.01335: removes the symmetry constraint, ~100x gap vs weak baselines;
+   Kawamata & Fujii 2611.05883 on Heron r2, N=1064; Scriva et al. 2210.11288 with D-Wave training data).
+Verdict: QUANTUM-INSPIRED ONLY until someone shows quantum training data beats PT-generated training data for the
+   same model.
+Main risk: classical training data (PT samples) works as well, so the quantum part is decorative.
+
+=====================================================================================================================
+V24  Latency-hiding mask donation (state-independent quantum flip masks)   [NEW]
+=====================================================================================================================
+Change: generate flip masks m = r XOR s'_r from quantum runs on REFERENCE states r that are independent of the chain
+being updated: a separate one-way replica, a fixed library, or random states. Apply the move s -> s XOR m with
+Metropolis. Masks can be produced in bulk (throughput mode, ~4,000 circuits/s) and reused, which removes the per-step
+latency.
+Detailed balance: PROVED. The mask distribution does not depend on s, so Q(s'|s) = M(s XOR s') = Q(s|s'). This
+   includes a finite fixed library reused forever. With a donor chain that never uses the receiver's information,
+   the receiver is, conditional on the donor's path, a time-inhomogeneous chain of pi-invariant kernels, so it is
+   exact. SIM n=8: err <=4.4e-16.
+Efficiency (SIM n=8): beta=1: reference r ~ pi keeps 76% of the full QeMCMC gap (2.9e-2 vs 3.8e-2; local 1.2e-3,
+   uniform 4.3e-3); uniform references keep 32%. beta=0.3: 74% / 60%. Classical competitor, a differential-evolution
+   mask (r1 XOR r2 with r1, r2 ~ pi from an independent population, ter Braak 2006): gap 6.7e-4 at beta=1 (much
+   worse), 6.1e-2 at beta=0.3 (better than the quantum masks).
+   Preliminary n-scaling (SIM, B7-checks/mask_scaling.txt; median of 5 SK instances, n=4..10, fitted k in
+   gap ~ 2^-kn; small n, weak evidence):
+     beta=1.0: P1 quantum 0.32 | mask r~pi 0.42 | mask r uniform 0.71 | local 1.34 | uniform 0.93
+     beta=0.3: P1 quantum 0.29 | mask r~pi 0.48 | mask r uniform 0.69 | local 0.58 | uniform 0.86
+   So the masks keep most of the scaling gain when references come from pi, and a partial gain with uniform
+   references. Caveat: an r ~ pi donor must itself be equilibrated, which is circular on hard instances. Uniform or
+   library references avoid that but lose more.
+Why it matters: it is the only variant found that changes the COST MODEL. The QPU moves from latency mode (~2-3 s per
+   step) to throughput mode (~0.25-0.85 ms per mask, amortised and reusable), so S* falls by ~3,000-10,000x.
+Risk to the idea: the masks are state-independent, so at large n a mask learned around r may be useless at s. The
+   scaling exponent decides it.
+Evidence: SIMULATED.  Verdict: SIMULATE MORE (top Wave-4 candidate).
+Main risk: the mask-gap exponent converges to the uniform exponent at larger n.
+
+=====================================================================================================================
+V25  Quantum Houdayer move (quantum proposal on replica-difference clusters)   [NEW]
+=====================================================================================================================
+Change: two replicas A, B (same or adjacent PT temperatures). Take a connected component C of the difference set
+D = {i : A_i != B_i}. Qubits encode x = A_C, with B_C = NOT x forced. H_prob(x) = E(A with x) + E(B with NOT x). The
+quantum proposal runs on |C| qubits and accepts with the joint ratio piA piB.
+Detailed balance: PROVED. The move keeps D (and therefore the component set) invariant, so the selection is
+   state-symmetric. The joint H is real diagonal, so the kernel on C is symmetric (G1). SIM ring n=5 x 2 replicas
+   (beta 1.0 and 0.5, 1,024 joint states): err 3.5e-18.
+   The naive alternative (a quantum move on A only, inside D) is BROKEN: the reverse group differs and the reverse
+   probability is 0.
+Regimes: LOW/MEDIUM T on sparse 2D lattices, where classical Houdayer/ICM is the state of the art (A5: 2^16 vs 2^25
+   sweeps at N=1024). The quantum version replaces the deterministic cluster exchange with a quantum-chosen partial
+   exchange.
+Resources: |C| qubits (clusters are small below percolation on 2D; on SK, D percolates, so |C| ~ n/2).
+Evidence: SIMULATED (validity only).  Verdict: SIMULATE MORE (gap vs classical Houdayer on 2D EA L<=4).
+Main risk: classical ICM already solves 2D EA well. On 3D/SK the clusters percolate and the move needs n/2 qubits.
+
+=====================================================================================================================
+SUMMARY TABLE (ID | name | detailed balance | regimes | verdict)
+=====================================================================================================================
+V01 HW-tuned CG groups          | proved (state-indep.); corrected p(g|s')/p(g|s) (state-dep.) | LOW | QUANTUM-INSPIRED ONLY
+V02 Multi-group sweep fix       | P2 fixed order broken (TV .061); fwd/rev or per-group MH proved | LOW | BUILD NOW
+V03 Parallel disjoint groups    | naive broken; decoupled-surrogate proved               | LOW (sparse)    | SIMULATE MORE
+V04 Quantum move in classical/PT| proved                                                 | LOW             | BUILD NOW (sim)
+V05 Surrogate H_prob            | proved (any real diagonal)                             | LOW; HIGH if E costly | BUILD NOW (sim)
+V06 Temperature-aware tuning    | proved (frozen / fixed mixture)                        | all, <2x        | BUILD NOW (practice)
+V07 Rydberg analog              | ideal palindromic proved; one-way pulse broken; device unclear | LOW | WAIT FOR HARDWARE
+V08 D-Wave reverse anneal       | open system broken, no computable correction           | LOW             | KILL
+V09 MTM / hub multi-proposal    | proved; naive best-of-K broken                         | LOW             | SIMULATE MORE
+V10 Shallow Trotter/QAOA        | 1st-order Trotter proved; random QAOA broken; palindromic proved | LOW   | SIMULATE MORE
+V11 Potts encodings             | reject/XY/binary proved; post-select broken            | LOW             | SIMULATE MORE (XY)
+V12 Noise symmetrisation        | Pauli palindromic proved; gauge avg NOT exact; B Q B exact | all         | BUILD NOW
+V13 Quantum-inspired emulation  | proved                                                 | LOW             | QUANTUM-INSPIRED ONLY
+V14 Lifted non-reversible       | proved (skew DB); 2x slower in sim                     | LOW             | KILL (generic) / replicate Cui
+V15 Adiabatic dressing          | palindromic proved; one-way broken                     | LOW             | SIMULATE MORE
+V16 Delayed acceptance          | proved                                                 | HIGH (costly E) | QUANTUM-INSPIRED ONLY
+V17 Helios in-device loop       | as P1 + needs sandwich (reasoned)                      | LOW             | SIMULATE MORE -> WAIT
+V18 Partial readout             | broken, uncorrectable                                  | -               | KILL
+V19 Energy-window post-select   | reject version exact but useless; resample broken      | -               | KILL
+V20 Chain batching / PA         | proved                                                 | all             | BUILD NOW
+V21 Block super-spin flips      | proved (fixed blocks)                                  | LOW             | SIMULATE MORE
+V22 XY conserved mixers         | proved                                                 | LOW             | SIMULATE MORE
+V23 Quantum-trained neural prop.| proved (Hastings computable)                           | LOW             | QUANTUM-INSPIRED ONLY
+V24 Mask donation               | proved (state-independent masks)                       | LOW/MEDIUM      | SIMULATE MORE (top)
+V25 Quantum Houdayer            | proved (difference set invariant)                      | LOW/MEDIUM 2D   | SIMULATE MORE
+
+THREE VARIANTS MOST WORTH SIMULATING IN WAVE 4 (exact measurement)
+1. V24 mask donation. Exact gap of the mask kernel M (references r ~ pi from an independent replica, and from a
+   finite library of L = 100 / 1,000 masks), the P1 quantum kernel, local, uniform, and the classical XOR-mask
+   (differential evolution). SK n = 4..12, >=10 instances, beta in {0.3, 1, 3}. Fit k in gap ~ 2^-kn per kernel. Decision:
+   k_mask substantially below k_uniform (~0.95) means the throughput cost model applies (S* ~3e4 per chain-step on
+   IBM); k_mask -> k_uniform means KILL.
+2. V04+V05 cost-weighted hybrid vs the classical surrogate-transition method. On SK and 2D EA, n = 8..12 exact plus
+   n = 16-24 sampled, measure IAT of |q| (overlap) and E per unit WALL time for: PT + local; PT + local + w quantum
+   moves at the coldest replicas (w grid, R = t_Q/t_C in {3e4, 1e6, 7e7}); PT + classical surrogate-transition moves
+   with the same surrogate. The output is the w* and the minimal step gain S needed. Report "w*=0" if that is what
+   comes out.
+3. V10 shallow palindromic Trotter under realistic noise. Gap and stationarity error vs Trotter depth r = 1..8 and
+   native-coupling fraction for n = 6..10. Use a Pauli-twirled noise model from FakeNighthawk/FakeMarrakesh plus T1
+   and readout, with and without the B Q B sandwich. Measure the TV bias of the stationary distribution and the step
+   gain over the best of (local, uniform, Houdayer on lattice instances). Decision: the largest n where the gain is
+   >=2x inside the ~1,100-CZ budget.

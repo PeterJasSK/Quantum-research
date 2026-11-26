@@ -1,0 +1,13 @@
+
+
+13. VERIFICATION (Wave 6, F1; full report _reports/F1-verification.txt)
+-----------------------------------------------------------------------
+About 260 numbers checked against agent reports and saved experiment outputs: 242 OK, 11 MISMATCH (all fixed in this
+version), 7 NOT FOUND (all planning estimates or citations: Section 11 costs, the n >= 40-100 target, one P2 appendix
+pointer, now cited as P2 Table I / App B). Fixes applied: pessimistic F formula text (Section 3), note on the superseded
+Helios 0.1 s optimistic S* in 28 screening rows (no verdict changes), S* inputs for K0, B3-07, K15, B3-09, the B1-14
+tau-ratio range (0.58-0.89, 1.13 at SK n=14 MEDIUM), the V04/B3-01 p_q = 0 threshold (holds from 1e6 flips; one instance
+prefers 0.01 at 1e3), the baseline-inflation range in Section 12, the PT relaxation bound (~5e7 flips), the V06 gain
+(1.2-1.6x), and the executive summary length. Break-even arithmetic recomputed for 22 rows (all non-KILL plus 5 random
+KILL): correct given inputs. Structure: 144 rows, 17 columns, unique IDs, K0-K23 present, no markdown symbols.
+Reproduction in a scratch copy: pilot matches to printed precision; D8 analyze.py and D1 analyze.py tables byte-identical.

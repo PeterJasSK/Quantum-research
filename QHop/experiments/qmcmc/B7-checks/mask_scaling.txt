@@ -1,0 +1,26 @@
+n= 4 quantum=1.290e-01 mask_pi=8.841e-02 mask_unif=7.479e-02 local=4.310e-02 uniform=8.086e-02
+n= 5 quantum=1.307e-01 mask_pi=1.002e-01 mask_unif=6.562e-02 local=5.285e-02 uniform=5.792e-02
+n= 6 quantum=7.577e-02 mask_pi=6.331e-02 mask_unif=3.619e-02 local=4.158e-03 uniform=2.073e-02
+n= 7 quantum=5.551e-02 mask_pi=4.323e-02 mask_unif=2.399e-02 local=4.696e-03 uniform=1.371e-02
+n= 8 quantum=5.418e-02 mask_pi=2.785e-02 mask_unif=1.138e-02 local=7.343e-04 uniform=5.250e-03
+n= 9 quantum=6.824e-02 mask_pi=2.627e-02 mask_unif=8.168e-03 local=3.421e-03 uniform=4.487e-03
+n=10 quantum=2.752e-02 mask_pi=1.854e-02 mask_unif=4.397e-03 local=8.373e-05 uniform=1.678e-03
+beta=1.0: fitted k in gap ~ 2^(-k n), median over 5 SK instances, n=4..10
+  quantum    k=0.323
+  mask_pi    k=0.422
+  mask_unif  k=0.712
+  local      k=1.337
+  uniform    k=0.933
+n= 4 quantum=1.796e-01 mask_pi=2.075e-01 mask_unif=2.184e-01 local=1.460e-01 uniform=2.663e-01
+n= 5 quantum=2.019e-01 mask_pi=2.383e-01 mask_unif=2.173e-01 local=1.206e-01 uniform=2.104e-01
+n= 6 quantum=1.588e-01 mask_pi=1.439e-01 mask_unif=1.310e-01 local=5.657e-02 uniform=1.070e-01
+n= 7 quantum=9.698e-02 mask_pi=8.486e-02 mask_unif=7.682e-02 local=4.516e-02 uniform=4.929e-02
+n= 8 quantum=8.261e-02 mask_pi=6.288e-02 mask_unif=5.240e-02 local=2.850e-02 uniform=3.198e-02
+n= 9 quantum=9.431e-02 mask_pi=5.745e-02 mask_unif=3.449e-02 local=2.094e-02 uniform=2.283e-02
+n=10 quantum=5.544e-02 mask_pi=3.181e-02 mask_unif=1.186e-02 local=1.376e-02 uniform=6.534e-03
+beta=0.3: fitted k in gap ~ 2^(-k n), median over 5 SK instances, n=4..10
+  quantum    k=0.294
+  mask_pi    k=0.479
+  mask_unif  k=0.687
+  local      k=0.581
+  uniform    k=0.864

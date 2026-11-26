@@ -1,0 +1,302 @@
+C2 SCREENING NOTES (Wave 3), screening agent C2, 2026-11-21
+Scope: B2-01..B2-19 (machine learning) and B5-01..B5-19 plus KNOWN K1, K2, K3, K19, K20, K21, K22, K23. 46 rows in C2-rows.txt.
+Labels: [P1] Layden et al. arXiv:2203.12497; [P2] Ferguson and Wallden arXiv:2405.04247; [LIT] literature, verified this pass unless
+marked; [OWN] own calculation; [SPEC] speculation; [PILOT] team pilot numbers from BRIEF-common.
+
+
+PART 0. CONVENTIONS USED IN EVERY ROW (BRIEF-screening applied exactly)
+
+t_C = t_propose_C + t_energy. Cheap dense Ising at n<=100: t_C = 3e-8 s (A5 bench, 30 ns per proposal). Sparse lattice with
+  purpose-built hardware: 2e-11 s per flip (p-bit/FPGA, brief range 2-3 ps). Statistical energies: the true per-proposal energy
+  cost is used (for example 5e-6 s for a g-prior marginal likelihood with cached Gram matrix).
+t_Q = latency + t_energy. Optimistic: Helios in-program loop 0.1 s for gate-model Layden circuits on dense groups (best fit for
+  all-to-all), D-Wave 0.03 s only where an annealer-native reverse-anneal proposal on a plain unconstrained QUBO is admissible,
+  IBM 2 s where neither applies. Realistic: IBM Heron session 3 s per step. Pessimistic: realistic divided by F.
+F = (1 - 2e-3)^N_2q. N_2q rule: brief default N_2q ~ 800 (F 0.20) for a 10-12 spin dense group; for larger dense circuits I scale
+  with coupling count at ~12 two-qubit gates per coupling (800 / 66 couplings), giving n=15: 1260 (F 0.080), n=16: 1450 (F 0.055),
+  n=20: 2280 (F 0.010), 16+16 bipartite: 3070 (F 0.0021); sparse heavy-hex native n=150: ~2200 (F 0.012); 12-spin 17-bond lattice:
+  ~200 (F 0.67); n=9 dense: ~430 (F 0.42). [OWN] Caveat: the repo datum (5-spin SK = 823 CZ, i.e. ~82 CZ per coupling) is ~7x
+  worse than this scaling, so every pessimistic number here is if anything generous to quantum.
+Batching rule (ML rows that need many independent chains): one IBM job of B circuits costs ~2-3 s + B/4000 s. Realistic per
+  chain-step at B=1000: (3 + 1000/4000)/1000 = 3.25e-3 s. Optimistic: throughput floor 1/4000 = 2.5e-4 s per chain-step (B >~ 1e4).
+  [OWN arithmetic on A4 numbers]. Fairness: the classical side batches too (GPU block Gibbs ~3e-8 s per chain-sweep for a 784x500
+  RBM at B=1000, per B2 0.5), so using 30 ns per classical proposal is generous to quantum.
+Numbers below were computed with a short script (scratch, not committed); all values rounded to one or two significant digits.
+
+
+PART 1. CROSS-CUTTING FINDINGS
+
+1.1 Surrogate acceptance formula (B1 claim) CHECKED [OWN].
+  Setup: true energy E = E_sur + r, residual r ~ N(0, sigma^2) under pi_sur and decorrelated between s and s'. Ideal surrogate
+  proposal = independence draw from pi_sur, MH weight w = exp(-beta r). At stationarity under the TRUE target the current state is
+  tilted, r(s) ~ N(-beta sigma^2, sigma^2), while the proposal has r(s') ~ N(0, sigma^2). With m = beta^2 sigma^2, X = beta(r'-r)
+  ~ N(m, 2m). Acceptance = P(X<0) + E[exp(-X); X>0] = Phi(-sqrt(m/2)) + exp(-m+m) Phi(-sqrt(m/2)) = 2 Phi(-beta sigma/sqrt2).
+  Values: beta sigma 0.5 -> 0.724, 1 -> 0.480, 2 -> 0.157, 3 -> 0.034, 5 -> 0.0004. Monte Carlo check (2e5 draws): 0.723, 0.479,
+  0.157. B1's formula and numbers are correct for Gaussian decorrelated residuals. Caveats: (i) it is the residual-only factor;
+  a symmetric QeMCMC proposal that is not a draw from pi_sur also pays rejections from surrogate-energy changes on top; (ii) with
+  correlated residuals (smooth surrogate error) local moves see much smaller effective sigma, which favours local/DA-local moves
+  over long jumps. Consequence: in every expensive-energy row the far-jumping quantum proposal and the classical surrogate
+  independence sampler pay the SAME residual penalty, and the classical one has fully decorrelated proposals.
+
+1.2 Delayed acceptance / surrogate transition is the fair rival for every surrogate row [LIT + OWN].
+  Christen and Fox, "Markov chain Monte Carlo using an approximation", J. Comput. Graph. Stat. 14(4), 795-810 (2005),
+  doi 10.1198/106186005X76983 (verified bibliographically, see Part 3). With the same cheap surrogate, classical PT on the
+  surrogate gets t_E / 3e-8 s surrogate flips per true call for free in wall-clock terms: 1.3e7 flips at t_E = 0.4 s, 3e7 at 1 s.
+  For surrogates on <=200 spins (and for exact block heat-bath of a 20-spin surrogate group in 1e-2 s) this is a near-exact
+  pi_sur sample per true call. The quantum proposal can only win if pi_sur itself is classically hard to sample in that budget, or
+  if it has a structurally better acceptance against the true target (no argument exists). Applied to B2-09, B5-03, B5-08, B5-11,
+  K23 consistently.
+
+1.3 NEW bound that kills coarse-grained single-group variants at feasible group sizes [OWN, derivation].
+  Let P_g be any pi-reversible kernel that changes only the spins in group g (ideal P2 single-group QeMCMC with Metropolis accept
+  is one). Let Pi_g be exact heat-bath on g: (Pi_g f)(x) = E_pi[f | x outside g], an orthogonal projection in L2(pi).
+  For any f write f = h + u with h = Pi_g f. P_g h = h (h does not depend on spins in g), so the Dirichlet form
+  E_Pg(f) = <f, (I - P_g) f> = <u, (I - P_g) u> <= 2 ||u||^2 = 2 E_Pig(f), because the spectrum of a reversible P_g lies in [-1,1].
+  Averaging over the same random group law: E_Q(f) <= 2 E_HB(f) for all f, hence gap(QeMCMC-group) <= 2 gap(exact-group-heat-bath).
+  So the per-step advantage S of any group-confined quantum proposal over exact block heat-bath on the same groups is at most 2.
+  Cost of exact block heat-bath with Gray-code incremental energies ~10 ns per state [OWN estimate]: k=8 2.6e-6 s, k=12 4e-5 s,
+  k=16 6.6e-4 s, k=20 1e-2 s, k=24 0.17 s, k=28 2.7 s, k=30 11 s.
+  Required step advantage vs exact heat-bath, single chain IBM 3 s: k=12 7e4, k=16 5e3, k=20 3e2, k=24 18, k=28 1.1, k=30 0.3.
+  With noise (pessimistic, dense F at 12 gates per coupling): k=20 3e4, k=24 1e4, k=28 1e4, k=30 1e4; even with Helios error 8e-4
+  and 3 s per step at k=30: 18. Batched B=1000 (3.25e-3 s per chain): realistic k=20 0.31, k=24 0.02, but pessimistic k=20 30,
+  k=24 15, k=30 10. Since S <= 2 and the noisy requirement is >= 10 at every k, single-group QeMCMC cannot beat exact group heat-bath
+  in wall-clock at any group size where the circuit has non-negligible fidelity; at k >= 20 the classical side would in any case
+  switch from enumeration to a short inner MCMC on the group (1e5 flips in 3 ms), which near-equilibrates a 20-30 spin conditional
+  unless the conditional itself is glassy. The bound needs reversibility; P2's fixed-order sequential sweep is not reversible and is
+  not covered by this exact statement (expected to behave similarly, unproven). This is used in B2-02, B2-03, B5-01, B5-08.
+
+1.4 Batching fairness [OWN]. Batching divides the latency floor but the classical side batches as well; for expensive-energy ML
+  rows (B2-09) GPU evaluates B chains' dataset passes as one GEMM (~5e-8 s per chain), so batching returns the problem to the
+  cheap-energy regime. Batching is used in ML rows only (B2-01..06, 08, 13, 16, 18, 19) and stated in each row.
+
+1.5 Noise [P1 SI + OWN]. Surrogate-driven proposals inherit hardware asymmetry (readout relaxation), and the Metropolis step does
+  not correct a non-symmetric proposal; a residual bias must be measured (K3 calibration). This applies on top of F.
+
+
+PART 2. PER-ROW ARITHMETIC, JUSTIFICATION AND VERDICT CHANGES
+Format: S* = optimistic/realistic/pessimistic; "change" = vs ideation verdict.
+
+B2-01 PCD with quantum moves, small RBMs. t_C 3e-8. Batched: opt 2.5e-4/3e-8 = 8.3e3; real 3.25e-3/3e-8 = 1.1e5; pess 1.1e5/0.2 =
+  5.4e5 (16-spin or 8x8 group, N_2q 800). Step ratio available: 1.3x (HIGH, most of training) to 25x (LOW, late) vs weak baselines;
+  block Gibbs is exact on half the system, so the true ratio vs PCD block Gibbs is lower. Gap of >=3e3 even at the optimistic
+  floor. Change: SIMULATE MORE / WAIT -> KILL; the only scientifically live part (coexistence) is B2-02.
+
+B2-02 Mode hopping in RBM coexistence. Same batched arithmetic: 8.3e3/1.1e5/5.4e5 (group 12). Mixing IS the bottleneck here
+  (arXiv:2405.15376 verified: PTT; arXiv:2206.01310 tethered MC, as cited by B2). But for the group variant the 1.3 bound caps S at 2
+  vs exact group heat-bath; for the full system the only testable size is n<=20 (toy, TN-emulable per arXiv:2411.17821). Steps
+  likelihood lowered from B2's 25% to 8% (2-20) because the competitor is PTT (not block Gibbs) and P2 group exponents are weak
+  (0.64-0.77). Kept SIMULATE MORE as a kill test only; reserve Wave 4 candidate (needs RBM training to coexistence, >1 week).
+
+B2-03 Mixed v-h groups. t_C = exact heat-bath at k=12 = 4.1e-5 s. Batched: opt 2.5e-4/4.1e-5 = 6.2; real 3.25e-3/4.1e-5 = 81;
+  pess 81/0.2 = 4e2. S <= 2 by 1.3. 6 > 2 so no regime survives. B2's structural point (visible-only or hidden-only groups give a
+  product proposal, worse than exact block Gibbs) is correct [OWN check: no intra-layer couplings -> H_prob on the group is pure
+  fields -> exp(-iHt) factorises]. Change: QUANTUM-INSPIRED ONLY -> KILL (there is no real gain to emulate; the bound makes it a
+  theorem-level kill, not a likely one).
+
+B2-04 Native sparse DBM. t_C 2e-11 s (p-bit/FPGA per flip; arXiv:2303.10728 as cited by B2, 5e10 flips/s). Batched: opt
+  2.5e-4/2e-11 = 1.25e7; real 3.25e-3/2e-11 = 1.6e8; pess /0.012 (N_2q ~2200) = 1.3e10. MEDIUM step ratio 3-8x. No roadmapped device
+  reduces latency by 1e7. Hardware fit 2 (native graph, no SWAPs) but fidelity low. Change: WAIT FOR HARDWARE -> KILL.
+
+B2-05 Quantum CD-1. 8.3e3/1.1e5/5.4e5, HIGH ratio 1.3x [PILOT]. CD bias is not a sampler failure (arXiv:2105.13889 framing as cited
+  by B2). KILL kept.
+
+B2-06 Replace annealer sampling. As B2-01 batched; the D-Wave reverse-anneal alternative is single-chain 0.03/3e-8 = 1e6 opt. Job and
+  Adachi arXiv:2009.00134 (cited by B2 as verified) found SA matches the annealer-assisted result. Exactness is not a selling point
+  because PCD is asymptotically exact too. Change: SIMULATE MORE (positioning) -> KILL.
+
+B2-07 QBM training. Category error (QeMCMC targets classical Boltzmann; QBM needs quantum Gibbs). No arithmetic. KILL kept.
+
+B2-08 AIS over a beta ladder. 8.3e3/1.1e5/5.4e5. The "many-temperature ensemble" route of the brief does not help: the classical
+  local and uniform proposals are also temperature independent; what QeMCMC saves is recompilation, already negligible with
+  parametric circuits. Low-beta rungs are HIGH (1.3x), the hard rungs are B2-02. Change: QI / SIMULATE subtest -> KILL.
+
+B2-09 Binary-weight BNN posterior. t_E 5e-4 s (dataset pass, B2 own estimate 1e-4 to 1e-3 s), single chain: opt (0.1+5e-4)/5e-4 =
+  2e2; real (3+5e-4)/5e-4 = 6e3; pess 6e3/0.055 (n=16, N_2q 1450) = 1.1e5. Batched quantum does not help because the classical side
+  batches the dataset passes (1.4). Decisive physics: posterior T=1 with N data; the quadratic surrogate residual sigma (in nats)
+  grows ~ linearly with N, e.g. 1e-3 nats per example at N=1e4 gives sigma ~10 and acceptance 2Phi(-7) ~ 1e-12 (1.1) [OWN, SPEC on the
+  per-example size]. Both surrogate-driven global moves (quantum and DA) die; gradient-informed local moves (DMALA arXiv:2206.09914,
+  cited by B2) survive. Change: SIMULATE MORE -> KILL.
+
+B2-10 Discrete diffusion correctors. t_E 1e-2 s: (2+0.01)/0.01 = 2e2 with IBM 2 s optimistic (no device fits 1e3+ spins, Helios
+  not applicable); real 3e2; pess >1e10. No H_prob. KILL kept.
+
+B2-11 Constrained decoding. t_E 5e-2 s: (2.05)/0.05 = 41; 3.05/0.05 = 61; pess >1e10. Break-even is low, but proposals over token
+  bits are almost always invalid (rejected), so S << 1. KILL kept.
+
+B2-12 Diverse subset QUBO. 0.03/3e-8 = 1e6; 3/3e-8 = 1e8; pess /0.01 (n=20) = 1e10. HIGH T. KILL kept.
+
+B2-13 Neural max-ent models. Batched 8.3e3/1.1e5/5.4e5. MEDIUM ratio 2.8-8x [PILOT] vs weak baselines; PT not compared. Verified:
+  Mora and Bialek (criticality claim) and Aurell and Ekeberg (pseudolikelihood exact at large samples). Change: SIMULATE MORE ->
+  KILL as an application; the fitted 20-neuron models remain a good real-data MEDIUM test instance for the team's PT comparison.
+
+B2-14 BN structure (duplicate of B5-04). t_C 1e-6: 0.1/1e-6 = 1e5; 3/1e-6 = 3e6; pess >1e10 (hundreds of spins). KILL kept.
+
+B2-15 BOCS acquisition. 1e6/1e8/5e8 (n=12). Improving a seconds-long inner step does not move a minutes-to-days BO loop. KILL kept.
+
+B2-16 DVAE prior. Batched 8.3e3/1.1e5; pess 1.1e5/0.0021 (16+16, N_2q 3070) = 5.1e7. Change: SIMULATE MORE (low priority) -> KILL.
+
+B2-17 Protein design. 0.1/3e-8 = 3.3e6; 1e8; >1e10 (1e3-1e4 qubits). Change: WAIT FOR HARDWARE (far) -> KILL: design does not need
+  equilibrium samples, so even ideal hardware would not create demand.
+
+B2-18 NQS VMC. t_C 1e-5 s per chain (one deep-network forward for a global proposal, GPU batched; for an RBM ansatz with lookup
+  tables local moves are ~1e-7 s, which would raise S* 100x). Batched: opt 2.5e-4/1e-5 = 25; real 3.25e-3/1e-5 = 3.2e2; pess
+  3.2e2/0.14 (16-site lattice classical part, N_2q ~1000) = 2.4e3. Lowest cheap/medium break-even in my set. Verified: arXiv:2502.20799
+  is "Quantum-assisted variational Monte Carlo", adapting QeMCMC to sample NN wavefunctions. Note: the local energy is evaluated only
+  on retained samples, so per-MCMC-step cost is one amplitude ratio (I corrected B2's "local energy per step" framing; this makes the
+  energy medium, not expensive). Competitors: autoregressive NQS (tau=1, no MCMC) and global symmetry moves. Beats? UNKNOWN. Kept
+  SIMULATE MORE (replication with missing baselines), wall-clock 0.5%.
+
+B2-19 Equilibration diagnostic. Few calls, so S* (8.3e3/1.1e5/5.4e5) is not the binding currency; but at hardware sizes the classical
+  diagnostics (random-init chains, PTT swap statistics) are cheaper and any mode found is classically checkable. Change: QI -> KILL.
+
+B5-01 BVS collinear blocks. t_C 5e-6 s (true g-prior log marginal likelihood, cached Gram, k<=10). Single chain: opt (Helios, block
+  15 all-to-all) 0.1/5e-6 = 2e4; real 3/5e-6 = 6e5; pess 6e5/0.08 = 7.5e6. Exact block Gibbs at block 15 with rank-one updates ~1 us per
+  state = 3e-2 s per update, block 20 ~1 s; by 1.3 the quantum group move is worth at most 2 of them. Regime claim supported: Yang,
+  Wainwright, Jordan (Ann. Statist. 44, 2497 (2016), arXiv:1505.07925, verified) show rapid mixing (mixing time linear in p up to logs)
+  only under design conditions, and posterior concentration does not imply rapid mixing. TGS (arXiv:1805.00541, verified by B5) is the
+  strong competitor. Hardware fit raised to 2 (Helios all-to-all blocks 10-20). Kept SIMULATE MORE; Wave 4 nomination W4-2.
+
+B5-02 Fine-mapping. t_C 1e-6: 1e5/3e6; pess 3e6/0.01 (group 20) = 2.9e8. Verified SuSiE (Wang, Sarkar, Carbonetto, Stephens, JRSS-B 82,
+  1273-1300 (2020)): designed for highly correlated predictors with sparse effects, yields credible sets without MCMC. Change:
+  SIMULATE MORE -> KILL as separate idea (use public summary statistics as a real-data instance inside W4-2 later).
+
+B5-03 BVS with expensive likelihood. t_E 1 s: opt (0.1+1)/1 = 1.1; real (3+1)/1 = 4; pess 4/0.01 (n=20 dense) = 3.8e2. At t_E 10 ms:
+  11/3e2/2.9e4. Break-even is low, but the rival is DA with the same linear proxy (1.2): 3e7 surrogate flips per true call make the
+  proxy posterior on <=200 spins essentially exact, and both pay 2Phi(-beta sigma/sqrt2). Change: SIMULATE MORE -> KILL (the decisive
+  question is answered generically by W4-1).
+
+B5-04 BN structure. 1e5/3e6/>1e10. Kuipers and Moffa arXiv:1504.05006 (verified by B5). KILL kept.
+B5-05 Mixture allocations. 1e5/3e6/>1e10. KILL kept.
+B5-06 Record linkage. 1e5/3e6/5.5e7 (16 spins, F 0.055). d-blink arXiv:1909.06039 (verified by B5). KILL kept.
+B5-07 Change-point. Fearnhead (2006) exact iid sampling: classical tau = 1, break-even infinite. KILL kept.
+
+B5-08 Large-grid N-k with LODF surrogate. VERIFIED energy cost: Rezaei, Hines, Eppstein arXiv:1405.4213 state "Each cascading failure
+  simulation (by a call to DCSIMSEP) ... takes 0.3 to 0.5 seconds on average for the Polish system" (2.66 GHz Core i7 laptop), and
+  each successful Random Chemistry run needs ~47 simulations; RC is ">two orders of magnitude faster than Monte Carlo". B5's "2.35 s
+  per RC trial" snippet number is not in the text I read; replaced by 0.3-0.5 s per simulation. With t_E 0.4 s: opt (0.1+0.4)/0.4 =
+  1.25; real (3+0.4)/0.4 = 8.5; pess 8.5/0.2 (group 12) = 42. Lowest realistic break-even in my set. But: (a) DA rival (1.2) gets
+  1.3e7 surrogate flips per simulation; exact surrogate block heat-bath on a 20-line group costs 1e-2 s, so DA proposes from the exact
+  surrogate group conditional; (b) RC exploits monotonicity (supersets of failing sets fail) and produces unbiased risk estimates
+  directly. Beats? UNKNOWN (unmeasured), expected N. Hardware fit 2 (groups 10-30 on Helios). Kept SIMULATE MORE because it is the
+  real expensive-energy carrier of W4-1; the synthetic W4-1 runs first and decides it.
+
+B5-09 Unit commitment. t_E 5e-3: (0.105)/0.005 = 21; 3.005/0.005 = 6e2; pess >1e10 (1e3-5e4 spins). Optimisation (C5). KILL kept.
+
+B5-10 Cardinality portfolio. t_E 5e-5: 0.1/5e-5 = 2e3; 6e4; 3e5 (block 12). Verified: Kawamata, Nakano, Fujii arXiv:2604.20701,
+  "Divide-and-Conquer Neural Network Surrogates for Quantum Sampling" (accepted Phys. Rev. Applied, doi 10.1103/qprn-rs96): XY-mixer
+  QAOA samples train neural surrogate proposals on fixed-Hamming-weight Boltzmann sampling; gains (~20x autocorrelation-rate on
+  3-regular graphs) are vs Kawasaki dynamics, a weak baseline. Change: QUANTUM-INSPIRED ONLY -> KILL (no gain vs PT shown and users
+  want MIQP optimisation).
+
+B5-11 Interbank cascade. t_E 1e-3: 0.101/0.001 = 1e2; 3e3; 1.5e4. Monotone cascades suit IS/splitting. Change: QI -> KILL.
+
+B5-12 Multicanonical tails. t_C 3e-8: 0.1/3e-8 = 3.3e6; 1e8; 5e8. No wall-clock route (cheap energy). Open question with real
+  information value: does a temperature-independent long-range proposal shorten flat-histogram round trips, which are limited by
+  energy diffusion that near-energy-conserving quench proposals may not help. Kept SIMULATE MORE; Wave 4 nomination W4-3 (absorbs K2,
+  K20).
+
+B5-13 Occupancy 1e5/3e6/>1e10 KILL kept. B5-14 Disclosure margins 3e6/1e8/>1e10 KILL kept. B5-15 Topology ID t_E 5e-3: 21/6e2/5.8e4
+  KILL kept. B5-16 Reconfiguration t_E 1e-3: 1e2/3e3/>1e10 KILL kept. B5-17 Routing 3e6/1e8/>1e10 KILL kept.
+B5-18 BOCS siting 1e6/1e8/1e10 (n=20). Change: QI / KILL -> KILL.
+B5-19 Epidemic network t_C 1e-5: 1e4/3e5/>1e10. KILL kept.
+
+K1 Rain occurrence. 3e6/1e8/9.6e9 (20 stations dense, F 0.01). Ferromagnetic autologistic: SW z ~0.22-0.25 vs Metropolis 2.17 (A5);
+  n<=20 exactly enumerable; pseudolikelihood fitting needs no sampling. A real-data regime benchmark would only confirm that quantum
+  loses at HIGH T and to SW at MEDIUM. Change: SIMULATE MORE (benchmark) -> KILL. Hughes-Guttorp autologistic reference URL taken from
+  B5 (verified there).
+K2 Compound extremes. 3e6/1e8/5e8 (groups 12). 1D order parameter, ferromagnetic: easiest case for multicanonical in magnetisation.
+  Change: QI -> KILL (W4-3 covers the question generically).
+K3 3x4 lens. 3e6/1e8/1.5e8 (N_2q ~200, F 0.67); classical exact iid sampling makes the application break-even infinite. Practical
+  calibration plan: 4096 start states x ~100 shots as one batched offline job (P1 style), ~1-2 jobs, minutes of QPU time (~$100-500 at
+  $48-96 per QPU minute, A4) instead of hours for an online chain; estimate Q(s'|s) for high-probability pairs, chi-square test of
+  Q(s'|s) = Q(s|s'), and stationary TV distance of the noisy Metropolis chain vs exact. Can be rehearsed first on FakeMarrakesh or
+  FakeNighthawk (repo targets.py get()). Hardware fit 3 only because the problem is tiny. BUILD NOW kept, as calibration only.
+K19 IEEE 14-bus. t_E 5e-4: 2e2/6e3/5.8e5. 2^20 x 1 ms ~ 17 min enumerates everything; k<=3 = 20+190+1140 = 1350 cases. KILL kept
+  (ground truth for B5-08).
+K20 Credit contagion. 3e6/1e8/5e8. Molins and Vives arXiv:cond-mat/0401378 (verified by B5). Change: QI / KILL -> KILL.
+K21 Species co-occurrence. 3e6/1e8/5e8. HIGH. KILL kept.
+K22 Roll-call. 3e6/1e8/2.4e8 (n=9, F 0.42). 512 states, enumerable. KILL kept (outreach demo only, not a row worth a verdict above KILL).
+K23 Wildfire inverse. t_E 1 s (unverified, B5 own estimate): opt 1.1; real 4; pess 4/0.2 = 20. DA on a ferromagnetic autologistic
+  surrogate is near-ideal; physical problems use continuous moisture. Change: QI -> KILL.
+
+Summary of verdict changes (19): B2-01, B2-03, B2-04, B2-06, B2-08, B2-09, B2-13, B2-16, B2-17, B2-19, B5-02, B5-03, B5-10, B5-11,
+B5-18, K1, K2, K20, K23, all to KILL. Kept: SIMULATE MORE for B2-02, B2-18, B5-01, B5-08, B5-12 (with lowered likelihoods), BUILD NOW
+for K3 (calibration only), KILL for the rest. Final counts: BUILD NOW 1, SIMULATE MORE 5, WAIT FOR HARDWARE 0, QUANTUM-INSPIRED ONLY 0,
+KILL 40.
+Why no QUANTUM-INSPIRED ONLY: that verdict requires a real gain; no row in my set has a measured gain vs its best classical rival.
+If W4-2 finds a full-system gain vs TGS at p<=20, B5-01 becomes QUANTUM-INSPIRED ONLY (statevector at 2^20 is classical).
+
+Ranking (top 5 by wall-clock likelihood, then steps): 1 B5-08 SIMULATE MORE, wall-clock 1% (0.1-3), S* realistic 8.5; 2 B2-18 SIMULATE
+MORE, 0.5% (0-2), S* realistic 3.2e2; 3 B2-02 SIMULATE MORE, 0.2% (0-1), 1.1e5 batched; 4 B5-01 SIMULATE MORE, 0.1% (0-0.5), 6e5;
+5 B5-12 SIMULATE MORE, 0% (0-0.2), 1e8 (information value only).
+
+
+PART 3. CITATIONS VERIFIED IN THIS PASS (WebSearch / WebFetch)
+Christen and Fox 2005, JCGS 14(4):795-810, doi 10.1198/106186005X76983 (bibliographic details via secondary sources; journal page not
+  reached): https://www.physics.otago.ac.nz/data/fox/SUQ13/CF_rMCMC.pdf ; cited in https://arxiv.org/pdf/2003.04873v1
+Yang, Wainwright, Jordan, Ann. Statist. 44(6), 2497-2532 (2016): https://arxiv.org/abs/1505.07925
+Quantum-assisted variational Monte Carlo (QeMCMC adapted to NN wavefunction VMC): https://arxiv.org/abs/2502.20799
+Bereux, Decelle, Furtlehner, Rosset, Seoane, "Fast training and sampling of Restricted Boltzmann Machines", ICLR 2025 (PTT):
+  https://arxiv.org/abs/2405.15376
+Mora and Bialek, J Stat Phys 144, 268-302 (2011): https://arxiv.org/abs/1012.2242
+Wang, Sarkar, Carbonetto, Stephens, SuSiE, JRSS-B 82(5), 1273-1300 (2020), doi 10.1111/rssb.12388:
+  https://econpapers.repec.org/RePEc:bla:jorssb:v:82:y:2020:i:5:p:1273-1300
+Kawamata, Nakano, Fujii, arXiv:2604.20701, accepted Phys. Rev. Applied (doi 10.1103/qprn-rs96): https://arxiv.org/abs/2604.20701 ;
+  https://journals.aps.org/prapplied/accepted/10.1103/qprn-rs96
+Aurell and Ekeberg, PRL 108, 090201 (2012): https://arxiv.org/abs/1107.3536
+Rezaei, Hines, Eppstein, Random Chemistry risk estimation (timing 0.3-0.5 s per DCSIMSEP call, Polish system, read in the PDF text):
+  https://arxiv.org/abs/1405.4213
+Downgraded / unverified (left as recalled, not load-bearing for any verdict): Huang and Kabashima 2014; Baldassi et al. 1509.05753;
+  Campbell et al. 2205.14987; Friedman and Koller 2003; Kuipers and Moffa 2017 JASA beyond the arXiv ID; Khoshaman et al. 1802.05779;
+  Glasserman and Li 2005; Jain and Neal 2004; Eisenberg and Noe 2001; fire-simulator timings in K23 (B5 own estimate); B2's GPU and
+  CPU block-Gibbs throughput figures (own estimates). B5's "2.35 s per RC trial" replaced by the verified 0.3-0.5 s per simulation.
+
+
+PART 4. WAVE 4 NOMINATIONS (at most 3)
+
+W4-1 (decides B5-08, B5-03, B2-09, B5-11, K23 and every surrogate row of other agents): surrogate-driven QeMCMC vs delayed
+  acceptance with the SAME surrogate.
+  Instance: SK n=12, J,h ~ N(0,1) unscaled (pilot convention), 3 instances. Surrogate E_sur = the SK energy. True energy
+  E = E_sur + R with two residual families: (a) iid Gaussian per configuration, std sigma (decorrelated, worst case for jumps);
+  (b) smooth residual: 20 random 3-body terms rescaled to std sigma. sigma in {0.25, 0.5, 1, 2}. Temperatures beta in {0.1, 0.3, 1.0}
+  (HIGH, MEDIUM, LOW per pilot).
+  Proposals: Q = Layden QeMCMC, exact statevector, H_prob = E_sur, gamma ~ U[0.25,0.6], t ~ U[2,20], Metropolis with true E;
+  DA-ind = independence draw from pi_sur by exact enumeration (4096 states) with MH weight pi(s')pi_sur(s)/(pi(s)pi_sur(s'));
+  DA-loc = Christen-Fox two-stage with single-flip proposal screened on E_sur; LOC = single-flip Metropolis on E; UNI = uniform.
+  Observable: spectral gap of the exact 4096x4096 transition matrix per TRUE-energy evaluation (DA first-stage rejections are free),
+  plus measured mean acceptance vs 2Phi(-beta sigma/sqrt2).
+  Kill: gap(DA-ind) >= gap(Q) per true call for every (beta, sigma, family) on the median instance -> all surrogate-driven
+  expensive-energy rows become KILL (quantum ceiling S <= 1 whenever pi_sur is classically samplable within one true call).
+  Confirm (keep alive): gap(Q)/max(gap(DA-ind), gap(DA-loc)) >= 2 at some beta >= 0.3 in family (b) on the median instance; then
+  build the IEEE 14-bus DC cascade (K19, enumerable ground truth) as the real-energy follow-up. Also confirm the acceptance formula
+  within 10% for family (a). Effort: 1-2 days on pilot code.
+
+W4-2 (decides B5-01, and numerically checks the group bound for B2-02, B2-03 and all P2 single-group rows): collinear Bayesian
+  variable selection.
+  Instance: synthetic regression, n_obs = 200, p = 12 predictors in 3 blocks of 4 with within-block correlation rho in {0.9, 0.99},
+  one true predictor per block (effect size 0.5 noise sd), g-prior with g = n_obs, prior inclusion 1/4; 5 replicate datasets.
+  Exact posterior over all 4096 models by enumeration (ground truth). Temperatures: the posterior (beta = 1) plus tempered beta in
+  {0.3, 3} on the log posterior to map HIGH / LOW.
+  Proposals: Q-full = Layden with H_prob = least-squares quadratic fit of the log marginal likelihood over all models, true accept;
+  Q-group = single random correlation block (4 spins) with frozen-remainder fields, same H_prob; HB-group = exact heat-bath on the
+  same random block; TGS (Zanella-Roberts, importance-weighted); ADS = add-delete-swap; LOC; UNI.
+  Observable: exact spectral gap per step for the reversible kernels; for all methods asymptotic variance of the posterior
+  inclusion probabilities per step (batch means, 1e6 steps), and L1 error of PIPs after equal step counts.
+  Kill: gap(Q-group) <= 2 gap(HB-group) confirmed and Q-full PIP variance not at least 3x lower than both TGS and ADS at rho = 0.99
+  -> B5-01 KILL and all single-group quantum variants KILL. Confirm: Q-full PIP variance >= 3x lower than TGS and ADS at rho = 0.99
+  on at least 4 of 5 datasets (then label QUANTUM-INSPIRED ONLY and repeat at p = 20 with long chains). A violation of the 2x bound
+  means an implementation bug (non-reversible or non-symmetric proposal). Effort: 2-3 days.
+
+W4-3 (decides B5-12, K2, K20): multicanonical round trips with a temperature-independent quantum proposal.
+  Instance: SK n=12 (pilot convention, 3 instances) and one 12-obligor sparse heterogeneous credit-contagion Ising (K20-like:
+  ferromagnetic random-degree network, J ~ U[0.2,1], heterogeneous h). Exact density of states g(E) by enumeration in 40 energy bins;
+  fixed multicanonical weights w(E) = 1/g(E) (no Wang-Landau learning phase, so the chain is a proper MH chain with a fixed target).
+  Temperatures: none (flat-histogram target spans all T); report also the canonical beta = 1 reweighting error as a side check.
+  Proposals: Q (Layden, as pilot), LOC, UNI, and RE-WL proxy (4 overlapping energy windows with local moves and replica exchange).
+  Observable: mean round-trip time (steps) between the lowest and highest energy bins, and the exact spectral gap of the
+  multicanonical chain (4096 states).
+  Kill: Q round-trip time >= 0.5x that of the best classical (UNI, LOC or RE-WL) on the median instance -> B5-12, K2, K20 KILL.
+  Confirm: Q round trip <= 1/3 of the best classical on the median SK instance (then repeat with P2 groups at n=36). Effort: 1-2 days.
+
+Reserve (not nominated): B2-02 RBM coexistence (needs a trained RBM at coexistence, about a week); K3 hardware symmetry calibration
+(first rehearse on FakeMarrakesh / FakeNighthawk).

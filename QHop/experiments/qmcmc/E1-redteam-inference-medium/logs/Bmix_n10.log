@@ -1,0 +1,7 @@
+0 r0.68:lay/clmix=0.52(Wolff0.75+mix(u=0.5)),gain=0.89 r1.00:lay/clmix=1.67(Wolff0.5+mix(u=0.5)),gain=1.22 r1.47:lay/clmix=3.73(Wolff0.25+mix(u=0.5)),gain=1.23
+1 r0.68:lay/clmix=0.38(Wolff0.75+mix(u=0.5)),gain=0.85 r1.00:lay/clmix=1.05(Wolff0.75+mix(u=0.5)),gain=0.93 r1.47:lay/clmix=4.38(Wolff0.25+mix(u=0.5)),gain=1.04
+2 r0.68:lay/clmix=0.72(Wolff0.75+mix(u=0.5)),gain=0.87 r1.00:lay/clmix=2.50(Wolff0.5+mix(u=0.5)),gain=1.22 r1.47:lay/clmix=5.70(Wolff0.25+mix(u=0.5)),gain=1.01
+3 r0.68:lay/clmix=0.27(Wolff0.75+mix(u=0.5)),gain=0.84 r1.00:lay/clmix=0.71(Wolff0.75+mix(u=0.3)),gain=0.97 r1.47:lay/clmix=2.28(Wolff0.25+mix(u=0.3)),gain=1.07
+4 r0.68:lay/clmix=0.22(Wolff0.75+mix(u=0.5)),gain=0.85 r1.00:lay/clmix=0.37(Wolff0.75+mix(u=0.5)),gain=0.96 r1.47:lay/clmix=0.70(Wolff0.75+mix(u=0.0)),gain=1.75
+5 r0.68:lay/clmix=0.26(SW+Wolff),gain=0.80 r1.00:lay/clmix=0.81(Wolff0.75+mix(u=0.5)),gain=0.83 r1.47:lay/clmix=5.82(Wolff0.5+mix(u=0.5)),gain=0.94
+n=10 MEDIUM layden/best(incl cluster mixtures) median 1.14 IQR [0.835,1.41] tuned/best 1.34

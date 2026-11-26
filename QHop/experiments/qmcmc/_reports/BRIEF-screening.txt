@@ -1,0 +1,37 @@
+SCREENING BRIEF (Wave 3). Read BRIEF-common.txt first.
+
+SCREENING CRITERIA per idea: (1) is mixing really the bottleneck in the regime the application needs; (2) which regime and why;
+(3) Ising/QUBO/Potts mapping + embedding cost; (4) energy cost per step; (5) do fewer steps beat slower steps (break-even);
+(6) hardware fit now / public roadmap <=3 yr, with or without coarse-graining; (7) beats BEST classical for that regime (PT, cluster,
+specialised solvers, delayed acceptance with the same surrogate) not just Metropolis; (8) real engineer payoff; (9) first test in days?
+
+BREAK-EVEN CONVENTION (use exactly, so rows are comparable):
+ t_C = t_propose_C + t_energy, with the best classical method's per-step cost (cheap dense Ising ~30 ns per proposal at n<=100,
+   ~0.1-0.5 us at n=1000, A5 bench; sparse lattice ~0.15 ns/flip CPU, ~2-3 ps GPU/FPGA).
+ t_Q = t_latency_and_overhead + t_energy:
+   optimistic  = best published per-step latency for the best-fitting device: D-Wave 0.03 s; Helios in-program loop 0.1 s
+                 (estimate); IBM 2 s.
+   realistic   = IBM Heron session ~3 s per step (queue excluded; Marshall 2026 derived) or D-Wave 0.5 s if annealer-native.
+   pessimistic = realistic t_Q AND the step advantage is eroded by noise: required ideal S = S*_realistic / F,
+                 F = (1 - 2e-3)^(N_2q) circuit fidelity proxy, N_2q = two-qubit gate count of one proposal circuit
+                 (if unknown use N_2q ~ 800 for a 10-12 spin dense Trotter circuit on heavy-hex (repo: 5-spin SK = 823 CZ, so dense
+                 grows fast) -> F ~ 0.2; state your N_2q).
+ S* = t_Q / t_C. Report S* as "optimistic/realistic/pessimistic" in scientific notation (e.g. 1e6/1e8/5e8).
+ Batching: if the application needs many independent chains, t_Q per chain-step may be divided by batch size up to ~4,000
+   circuits/s on IBM (state it explicitly when used).
+
+MEASURED/ESTIMATED S per regime (until Wave 4 reports, use and label): own pilot SK n=10 quantum vs best(local,uniform):
+ HIGH beta~0.1: 1.3x; MEDIUM beta~0.3-0.5: 3-8x; LOW beta>=1: 25-40x. Versus PT / cluster: UNKNOWN (no published comparison).
+ Literature: P1 k_q 0.264 vs 0.94; P2 T=10 k 0.087 vs 0.26 local; Christmann: classical TN emulation keeps advantage at n<=9.
+
+MASTER TABLE ROW FORMAT (one line, " | " separators, plain text, no markdown):
+ID | KNOWN/NEW | Application | Temperature regime (LOW/MEDIUM/HIGH) | Ising/QUBO/Potts mapping (1 line) | Implementation variant |
+Energy cost per step (cheap/medium/expensive) | Spins needed (full / coarse-grained group size) | Hardware fit today (0-3) |
+Best classical competitor | Beats best classical? (Y/N/UNKNOWN) | Break-even S* (optimistic/realistic/pessimistic) |
+Measured or estimated S | Evidence (PAPER/LITERATURE/SIMULATED/REASONED) | SUCCESS LIKELIHOOD "wall-clock X% (range) / steps Y% (range)" |
+Verdict (BUILD NOW / SIMULATE MORE / WAIT FOR HARDWARE / QUANTUM-INSPIRED ONLY / KILL) | Main risk or kill reason
+Definitions: wall-clock likelihood = P(within 3 years, on existing or publicly roadmapped hardware, beats best classical in real time
+at a size an engineer cares about). Steps likelihood = P(real iteration-count advantage vs best classical at that size, ignoring time).
+QUANTUM-INSPIRED ONLY = gain is real but a classical simulation of the proposal captures it. CALIBRATE: most rows low (wall-clock
+mostly 0-3%); a low result is fine. Hardware fit 0 = no device can run it, 1 = toy size only, 2 = meaningful size with coarse-graining,
+3 = meaningful size natively.

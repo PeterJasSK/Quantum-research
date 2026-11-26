@@ -1,0 +1,32 @@
+{
+ "exactDM_LOW": {
+  "a_Fproxy": 0.9930886947975499,
+  "a_Feff": 1.3463652007264126,
+  "npts": 23
+ },
+ "exactDM_MEDIUM": {
+  "a_Fproxy": 0.8549959742541605,
+  "a_Feff": 1.1598099567697886,
+  "npts": 20
+ },
+ "exactDM_HIGH": {
+  "a_Fproxy": -0.35135691216853265,
+  "a_Feff": -0.4471715996236662,
+  "npts": 5
+ },
+ "model_global_dep_LOW": {
+  "a_Fproxy": 1.101381236608634,
+  "a_Feff": 1.1665550102391993,
+  "npts": 97
+ },
+ "model_global_dep_MEDIUM": {
+  "a_Fproxy": 1.4801560396585012,
+  "a_Feff": 1.5458620984387301,
+  "npts": 79
+ },
+ "model_global_dep_HIGH": {
+  "a_Fproxy": 0.4252916674906084,
+  "a_Feff": 0.4380657108386248,
+  "npts": 12
+ }
+}

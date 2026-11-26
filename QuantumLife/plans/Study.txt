@@ -1,0 +1,55 @@
+QUANTUM LIFE (QuantumTree) STUDY
+================================
+
+
+WHAT THIS STUDY IS
+------------------
+QuantumTree grows a tree on a real IBM quantum computer: every growth step is one circuit, and the measured bits
+decide how the tree branches, bends and leafs. The art version only measured diversity, which cannot tell a
+quantum circuit from coin flips, so the research fork asks whether the entangling layer leaves a spatial
+correlation in the genome that a classical, no-entanglement version cannot reproduce. A follow-up tested whether
+a long-range bond is better made by teleportation or by a chain of SWAP gates.
+
+
+THE 3 METRICS
+-------------
+1. Correlation c(d)
+   Connected two-point correlation between genome bits d positions apart, normalised; its sum is the
+   correlation length xi. Zero for independent (classical) bits.
+
+2. Significance against two nulls
+   z-score of the hardware signal against the classical simulation (no entangler) and against a hardware
+   control with the entangler switched off (readout floor).
+
+3. Dose-response
+   How the signal changes as entangling layers go 0, 1, 2, 4: if it appears only when the entangler is on, the
+   entangler causes it.
+
+
+RESULTS
+-------
+Measured on ibm_kingston (3 repeats, 4096 shots):
+- Classical simulation flat (c = 0); hardware control weak +0.015 dying at d = 1.
+- With the entangler (2 layers): c(1) = -0.077, c(2) = +0.040, an alternating pattern; z = -9.9 vs simulation,
+  z = -10.6 vs the hardware control. Not PRNG art, not a readout artefact.
+- Dose-response causal: layers 0 and 1 look like the control, the sign flips at 2, signal swamped by noise at 4.
+- Long-range bond: the ideal correlation is negative; teleportation reproduces the correct sign on hardware
+  (-0.07 to -0.14), the SWAP chain is washed out and sign-inverted by its depth.
+
+Limits: c(d) is a diagonal correlation, so it shows the entangling gates do work but is not by itself an
+entanglement certificate (a correlated classical process could produce it). Later work (artificial-life) moved
+the quantum claim to two-basis witnesses for this reason.
+
+
+HOW TO VISUALIZE IT
+-------------------
+1. The tree itself: recorded runs replayed in the browser (web/), grown from real hardware measurements.
+2. Figure: c(d) vs distance d for the three arms (simulation, hardware control, hardware main).
+3. Figure: dose-response, c(1) vs number of entangling layers.
+4. Figure: long-range bond, ideal vs teleport vs SWAP correlation.
+
+
+THESIS FIT
+----------
+Partial: a complete small study (one question, two nulls, causal sweep) and a strong visual, but the claim is a
+correlation, not certified entanglement. Best used as a chapter or the motivation for the artificial-life work.

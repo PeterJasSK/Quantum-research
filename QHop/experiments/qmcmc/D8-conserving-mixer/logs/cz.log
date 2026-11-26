@@ -1,0 +1,5 @@
+heavyhex_FakeMarrakesh ring cuau {2: 1290, 3: 2007} 62s
+heavyhex_FakeMarrakesh ring dense {2: 1395, 3: 2123} 60s
+heavyhex_FakeMarrakesh grid cuau {2: 1584, 3: 2449} 75s
+heavyhex_FakeMarrakesh grid dense {2: 1637, 3: 2547} 90s
+heavyhex_FakeMarrakesh complete cuau {2: 1895, 3: 2870} 119s

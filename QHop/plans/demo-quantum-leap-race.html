@@ -1,0 +1,410 @@
+<title>Quantum Leap Race</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: board editor on the left, the race on the right; stacks to one column on phones. */
+:root{
+  --bg:#eef0ea; --panel:#fbfcf8; --fg:#1b2220; --muted:#5a6560; --line:#d3d8cf; --chip:#e4e8df;
+  --land:#7f9b3b; --water:#2f6f8e; --classical:#b9592a; --quantum:#5643c4;
+  --rule-same:#3c4a52; --rule-diff:#b8326b; --good:#2c7a4f; --warn:#9a6b12;
+  --font-d:"Chakra Petch","Trebuchet MS",sans-serif;
+  --font-b:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-m:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121614; --panel:#1a201d; --fg:#e4ebe6; --muted:#98a49e; --line:#2d3631; --chip:#242c28;
+  --land:#93b24c; --water:#4190b5; --classical:#e2814f; --quantum:#9787f2;
+  --rule-same:#b9c6cd; --rule-diff:#ef6aa0; --good:#55b985; --warn:#d6a443; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121614; --panel:#1a201d; --fg:#e4ebe6; --muted:#98a49e; --line:#2d3631; --chip:#242c28;
+  --land:#93b24c; --water:#4190b5; --classical:#e2814f; --quantum:#9787f2;
+  --rule-same:#b9c6cd; --rule-diff:#ef6aa0; --good:#55b985; --warn:#d6a443; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-b);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:20px}
+header h1{font-family:var(--font-d);font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:.01em;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:14px;min-width:0}
+.card h2{font-family:var(--font-d);font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted)}
+label.f{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+label.f span.row{display:flex;justify-content:space-between;gap:8px}
+label.f output{font-family:var(--font-m);color:var(--fg);font-size:13px}
+select,button{font:inherit;font-size:15px}
+select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;width:100%}
+input[type=range]{width:100%;accent-color:var(--quantum)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:6px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--quantum);border-color:var(--quantum);color:#fff;font-weight:700;font-family:var(--font-d);letter-spacing:.04em;padding:10px 18px}
+button:focus-visible,select:focus-visible,input:focus-visible,.hit:focus-visible{outline:2px solid var(--quantum);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);border-radius:999px;padding:3px 10px;font-size:13px;font-family:var(--font-m);font-variant-numeric:tabular-nums}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+#editor{width:100%;height:auto;display:block;max-width:360px}
+#editor .hit{cursor:pointer}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lane{border:2px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0;transition:border-color .2s}
+.lane h3{margin:0;font-family:var(--font-d);font-size:16px;display:flex;align-items:center;gap:8px}
+.lane h3 .dot{width:10px;height:10px;border-radius:50%}
+.lane.done{border-color:var(--good)}
+.lane svg{width:100%;height:auto;max-width:240px;display:block}
+.count{font-family:var(--font-m);font-size:clamp(26px,4vw,38px);font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.count small{font-size:13px;color:var(--muted);font-weight:400;margin-left:4px}
+.status{font-size:14px;color:var(--muted);min-height:2.6em}
+.lane.done .status{color:var(--good);font-weight:600}
+.target{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.target svg{width:96px;height:auto}
+.headline{font-family:var(--font-d);font-size:clamp(20px,2.6vw,26px);font-weight:700;margin:0;text-wrap:balance}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center}
+@media (max-width:520px){.bar{grid-template-columns:minmax(0,1fr)}}
+.bar .name{font-size:14px}
+.bar .name b{display:block;font-size:15px}
+.track{position:relative;height:30px;background:var(--chip);border-radius:6px;overflow:hidden}
+.fill{position:absolute;inset:0 auto 0 0;border-radius:6px}
+.iqr{position:absolute;top:50%;height:2px;background:var(--fg);opacity:.55}
+.val{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--font-m);font-size:13px;font-variant-numeric:tabular-nums}
+.axis{display:flex;justify-content:space-between;font-family:var(--font-m);font-size:11px;color:var(--muted);margin-left:160px}
+@media (max-width:520px){.axis{margin-left:0}}
+.notes{font-size:14px;color:var(--muted);display:grid;gap:6px;max-width:80ch}
+.notes p{margin:0}
+.progress{font-family:var(--font-m);font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.lane{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Quantum Leap Race</h1>
+    <p>Build a small tile map with rules between neighbours, then race two generators to the best map. Both use the same rules, the same start and the same accept-or-reject test. The only difference is how they propose the next map: flip one tile, or take a quantum leap.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="setup-h">
+      <h2 id="setup-h">Your board</h2>
+      <div class="two">
+        <label class="f">Rules
+          <select id="preset">
+            <option value="frustrated">Conflicting rules</option>
+            <option value="islands">Everything wants to match</option>
+            <option value="checker">Everything wants to differ</option>
+            <option value="glass">Every pair has a rule</option>
+          </select>
+        </label>
+        <label class="f">Board
+          <select id="size">
+            <option value="3x3">3 × 3 (512 maps)</option>
+            <option value="2x5">2 × 5 (1,024 maps)</option>
+            <option value="3x4">3 × 4 (4,096 maps)</option>
+          </select>
+        </label>
+      </div>
+      <svg id="editor" role="img" aria-label="Board editor"></svg>
+      <div class="legend">
+        <span><i style="background:var(--rule-same)"></i>= same type</span>
+        <span><i style="background:var(--rule-diff)"></i>≠ different type</span>
+        <span><i style="background:var(--land)"></i>prefers land</span>
+        <span><i style="background:var(--water)"></i>prefers water</span>
+      </div>
+      <p class="hint" id="edit-hint">Click a rule between two tiles to cycle = / ≠ / none. Click a tile to cycle its preference.</p>
+      <div class="chips" id="chips"></div>
+      <div class="btns"><button id="reroll" type="button">New random rules</button></div>
+      <label class="f"><span class="row">Temperature (lower = pickier) <output id="T-out"></output></span>
+        <input id="T" type="range" min="0.2" max="2" step="0.05" value="0.6"></label>
+      <label class="f"><span class="row">Quantum leap length t <output id="t-out"></output></span>
+        <input id="t" type="range" min="1" max="16" step="0.5" value="8"></label>
+      <label class="f"><span class="row">Quantum mixing γ <output id="g-out"></output></span>
+        <input id="g" type="range" min="0.1" max="0.9" step="0.05" value="0.45"></label>
+      <label class="f">Races per generator
+        <select id="trials"><option>10</option><option selected>20</option><option>40</option></select>
+      </label>
+      <div class="btns">
+        <button class="primary" id="run" type="button">Run the race</button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="race-h">
+      <div class="target">
+        <h2 id="race-h" style="flex:1">Race 1: same start, live</h2>
+        <div style="text-align:center"><svg id="target-svg" role="img" aria-label="Best map"></svg><div class="hint">best map</div></div>
+      </div>
+      <div class="lanes">
+        <div class="lane" id="lane-local">
+          <h3><span class="dot" style="background:var(--classical)"></span>Classical: flip one tile</h3>
+          <svg id="map-local" role="img" aria-label="Classical generator map"></svg>
+          <div class="count" id="count-local">0<small>steps</small></div>
+          <div class="status" id="status-local">Waiting to start</div>
+        </div>
+        <div class="lane" id="lane-quantum">
+          <h3><span class="dot" style="background:var(--quantum)"></span>Quantum leap</h3>
+          <svg id="map-quantum" role="img" aria-label="Quantum generator map"></svg>
+          <div class="count" id="count-quantum">0<small>steps</small></div>
+          <div class="status" id="status-quantum">Waiting to start</div>
+        </div>
+      </div>
+      <div class="btns"><button id="skip" type="button" disabled>Skip animation</button></div>
+
+      <h2>All races: median steps to the best map</h2>
+      <p class="headline" id="headline">Press “Run the race”.</p>
+      <div class="progress" id="progress"></div>
+      <div class="bars" id="bars"></div>
+      <div class="axis" id="axis"></div>
+      <div class="notes" id="verdict"></div>
+    </section>
+  </div>
+
+  <section class="card notes" aria-label="What this shows">
+    <h2>What this shows, and what it does not</h2>
+    <p><b>Why the leap helps.</b> The leap evolves a quantum state of the whole map under the rules plus a mixing term, then measures it. Interference sends the map to distant maps with similar quality, across the bad maps in between. One-tile flips have to climb through those bad maps and get rejected.</p>
+    <p><b>Decohered leap</b> is the same leap with interference destroyed after every time slice. If it does as badly as the classical flips, interference was the reason.</p>
+    <p><b>Steps, not seconds.</b> Every quantum leap here is an exact simulation in your browser. On real hardware one leap is one circuit run, roughly 10,000 times slower than a one-tile flip on a laptop. The race counts proposals, the measure used by Layden et al., <i>Nature</i> 2023.</p>
+    <p><b>Small boards.</b> A laptop can also list all 512 to 4,096 maps and pick the best one at once, which beats both generators at this size. The leap matters only for boards far too large to list.</p>
+    <p><b>Try to beat it.</b> Find a board where one-tile flips win. Hint: rules that never conflict, such as “everything wants to differ”.</p>
+  </section>
+</div>
+
+<script>
+// ---- core simulation (tested in Node before publishing) ----
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+
+function makeConfig(kind,rows,cols,seed){
+  const r=mulberry32(seed),n=rows*cols,edges=[],h=new Float64Array(n);
+  if(kind==='glass'){
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)edges.push({i,j,J:gauss(r)});
+    for(let i=0;i<n;i++)h[i]=gauss(r);
+  }else{
+    for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+      const i=y*cols+x;
+      const pick=()=>kind==='frustrated'?(r()<0.5?1:-1):kind==='islands'?1:-1;
+      if(x+1<cols)edges.push({i,j:i+1,J:pick()});
+      if(y+1<rows)edges.push({i,j:i+cols,J:pick()});
+    }
+    const hs=kind==='islands'?0.6:0.3;
+    for(let i=0;i<n;i++)h[i]=(r()-0.5)*hs;
+  }
+  return {kind,rows,cols,n,edges,h};
+}
+function energies(cfg){
+  const N=1<<cfg.n,E=new Float64Array(N);
+  for(let x=0;x<N;x++){
+    let e=0;
+    for(const {i,j,J} of cfg.edges){const si=(x>>i)&1?-1:1,sj=(x>>j)&1?-1:1;e-=J*si*sj}
+    for(let i=0;i<cfg.n;i++)e-=cfg.h[i]*((x>>i)&1?-1:1);
+    E[x]=e;
+  }
+  return E;
+}
+// Layden-style proposal: evolve |x0> under H=(1-g)*alpha*H_rules + g*sum X for time t.
+// Symmetric Trotter (phase/2, mix, phase/2) keeps the proposal symmetric, so plain Metropolis is exact.
+function makeQuantum(cfg,E,g,t){
+  const n=cfg.n,N=1<<n;
+  let ss=0;for(const e of cfg.edges)ss+=e.J*e.J;for(let i=0;i<n;i++)ss+=cfg.h[i]*cfg.h[i];
+  const alpha=Math.sqrt(n)/Math.sqrt(ss||1);
+  const K=Math.max(1,Math.ceil(t/0.5)),dt=t/K,th=g*dt,c=Math.cos(th),s=Math.sin(th);
+  const pc=new Float64Array(N),ps=new Float64Array(N);
+  for(let x=0;x<N;x++){const ph=(1-g)*alpha*E[x]*dt/2;pc[x]=Math.cos(ph);ps[x]=Math.sin(ph)}
+  const re=new Float64Array(N),im=new Float64Array(N),cache=new Map();
+  function phase(){for(let x=0;x<N;x++){const a=re[x],b=im[x];re[x]=a*pc[x]+b*ps[x];im[x]=b*pc[x]-a*ps[x]}}
+  function dist(x0){
+    let d=cache.get(x0);if(d)return d;
+    re.fill(0);im.fill(0);re[x0]=1;
+    for(let k=0;k<K;k++){
+      phase();
+      for(let q=0;q<n;q++){const m=1<<q;
+        for(let x=0;x<N;x++){if(x&m)continue;const y=x|m,ar=re[x],ai=im[x],br=re[y],bi=im[y];
+          re[x]=c*ar+s*bi;im[x]=c*ai-s*br;re[y]=c*br+s*ai;im[y]=c*bi-s*ar}}
+      phase();
+    }
+    d=new Float32Array(N);let acc=0;
+    for(let x=0;x<N;x++){acc+=re[x]*re[x]+im[x]*im[x];d[x]=acc}
+    if(cache.size>2500)cache.clear();
+    cache.set(x0,d);return d;
+  }
+  return {K,flipP:s*s,propose(x,r){const d=dist(x),u=r()*d[N-1];let lo=0,hi=N-1;while(lo<hi){const mid=(lo+hi)>>1;if(d[mid]<u)lo=mid+1;else hi=mid}return lo}};
+}
+function proposer(method,cfg,Q){
+  const n=cfg.n,N=1<<n;
+  if(method==='local')return (x,r)=>x^(1<<Math.floor(r()*n));
+  if(method==='uniform')return (x,r)=>Math.floor(r()*N);
+  if(method==='decohered')return (x,r)=>{let y=x;for(let k=0;k<Q.K;k++)for(let q=0;q<n;q++)if(r()<Q.flipP)y^=1<<q;return y};
+  return (x,r)=>Q.propose(x,r);
+}
+
+// ---- page state ----
+const CAP=3000;
+const METHODS=[
+  {id:'local',name:'Classical',sub:'flip one tile',color:'var(--classical)'},
+  {id:'quantum',name:'Quantum leap',sub:'exact simulation',color:'var(--quantum)'},
+  {id:'decohered',name:'Decohered leap',sub:'no interference',color:'var(--muted)'},
+  {id:'uniform',name:'Random jump',sub:'any map',color:'var(--warn)'},
+];
+const $=id=>document.getElementById(id);
+let cfg,E,Emin,best=[],seed=7,runToken=0,skip=false;
+
+function sizeOf(){const [r,c]=$('size').value.split('x').map(Number);return {rows:r,cols:c}}
+function newBoard(){
+  const {rows,cols}=sizeOf();
+  cfg=makeConfig($('preset').value,rows,cols,seed);
+  $('T').value=cfg.kind==='glass'?1.0:0.6;
+  refresh();
+}
+function refresh(){
+  E=energies(cfg);Emin=Infinity;for(const e of E)Emin=Math.min(Emin,e);
+  best=[];for(let x=0;x<E.length;x++)if(E[x]<=Emin+1e-9)best.push(x);
+  drawEditor();drawMap($('target-svg'),best[0],null,18,3);
+  let fr=0;
+  if(cfg.kind!=='glass'){
+    const J=(i,j)=>{for(const e of cfg.edges)if((e.i===i&&e.j===j)||(e.i===j&&e.j===i))return e.J;return 0};
+    for(let y=0;y+1<cfg.rows;y++)for(let x=0;x+1<cfg.cols;x++){const a=y*cfg.cols+x,b=a+1,c=a+cfg.cols,d=c+1;
+      const p=J(a,b)*J(c,d)*J(a,c)*J(b,d);if(p<0)fr++}
+  }
+  $('chips').innerHTML=
+    `<span class="chip">${(1<<cfg.n).toLocaleString()} possible maps</span>`+
+    `<span class="chip">${best.length} best map${best.length>1?'s':''}</span>`+
+    (cfg.kind==='glass'?`<span class="chip">${cfg.edges.length} pair rules</span>`:`<span class="chip">${fr} conflicting square${fr===1?'':'s'}</span>`);
+  updateOutputs();resetRace();
+}
+function updateOutputs(){$('T-out').textContent=(+$('T').value).toFixed(2);$('t-out').textContent=(+$('t').value).toFixed(1);$('g-out').textContent=(+$('g').value).toFixed(2)}
+
+// ---- drawing ----
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function drawEditor(){
+  const svg=$('editor');svg.innerHTML='';
+  const S=58,G=30,P=6,{rows,cols}=cfg;
+  const W=P*2+cols*S+(cols-1)*G,H=P*2+rows*S+(rows-1)*G;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const pos=i=>({x:P+(i%cols)*(S+G),y:P+Math.floor(i/cols)*(S+G)});
+  const glass=cfg.kind==='glass';
+  $('edit-hint').textContent=glass?'Every pair of tiles has a random rule of random strength, the test case of Layden et al. Editing is off for this preset; click a tile to change its preference.':'Click a rule between two tiles to cycle = / ≠ / none. Click a tile to cycle its preference.';
+  if(!glass)cfg.edges.forEach(e=>{
+    const a=pos(e.i),b=pos(e.j),horiz=e.j===e.i+1;
+    const cx=horiz?a.x+S+G/2:a.x+S/2,cy=horiz?a.y+S/2:a.y+S+G/2;
+    const g=el('g',{class:'hit',tabindex:0,role:'button','aria-label':`Rule between tile ${e.i+1} and ${e.j+1}`},svg);
+    el('rect',{x:cx-15,y:cy-15,width:30,height:30,fill:'transparent'},g);
+    if(e.J!==0){
+      el('circle',{cx,cy,r:12,fill:e.J>0?'var(--rule-same)':'var(--rule-diff)'},g);
+      const t=el('text',{x:cx,y:cy+5,'text-anchor':'middle','font-size':16,'font-family':'var(--font-m)',fill:'var(--panel)','font-weight':700},g);
+      t.textContent=e.J>0?'=':'≠';
+    }else el('circle',{cx,cy,r:4,fill:'var(--line)'},g);
+    const cyc=()=>{e.J=e.J>0?-1:e.J<0?0:1;refresh()};
+    g.addEventListener('click',cyc);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();cyc()}});
+  });
+  for(let i=0;i<cfg.n;i++){
+    const p=pos(i),g=el('g',{class:'hit',tabindex:0,role:'button','aria-label':`Tile ${i+1} preference`},svg);
+    el('rect',{x:p.x,y:p.y,width:S,height:S,rx:8,fill:'var(--chip)',stroke:'var(--line)'},g);
+    const hv=cfg.h[i];
+    if(Math.abs(hv)>0.05)el('rect',{x:p.x+6,y:p.y+6,width:S-12,height:10,rx:3,fill:hv>0?'var(--land)':'var(--water)'},g);
+    const t=el('text',{x:p.x+S/2,y:p.y+S/2+14,'text-anchor':'middle','font-size':12,'font-family':'var(--font-m)',fill:'var(--muted)'},g);
+    t.textContent=Math.abs(hv)>0.05?(hv>0?'land':'water'):'any';
+    const cyc=()=>{cfg.h[i]=Math.abs(hv)<=0.05?0.3:hv>0?-0.3:0;refresh()};
+    g.addEventListener('click',cyc);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();cyc()}});
+  }
+}
+// bit 0 = land (spin +1), bit 1 = water
+function drawMap(svg,x,prev,S,G){
+  svg.innerHTML='';const {rows,cols}=cfg;
+  svg.setAttribute('viewBox',`0 0 ${cols*S+(cols-1)*G} ${rows*S+(rows-1)*G}`);
+  for(let i=0;i<cfg.n;i++){
+    const water=(x>>i)&1,changed=prev!=null&&((prev>>i)&1)!==water;
+    el('rect',{x:(i%cols)*(S+G),y:Math.floor(i/cols)*(S+G),width:S,height:S,rx:Math.max(2,S/8),
+      fill:water?'var(--water)':'var(--land)',stroke:changed?'var(--fg)':'none','stroke-width':changed?3:0},svg);
+  }
+}
+
+// ---- race ----
+function rngFor(m,trial){return mulberry32(seed*100003+m*7919+trial*31+1)}
+function starts(count){const r=mulberry32(seed*31+17),out=[];while(out.length<count){const x=Math.floor(r()*(1<<cfg.n));if(E[x]>Emin+1e-9)out.push(x)}return out}
+function resetRace(){
+  runToken++;skip=false;$('skip').disabled=true;$('run').disabled=false;
+  for(const id of ['local','quantum']){$('lane-'+id).classList.remove('done');$('count-'+id).innerHTML='0<small>steps</small>';$('status-'+id).textContent='Waiting to start'}
+  const x0=E?starts(1)[0]:0;
+  drawMap($('map-local'),x0,null,40,5);drawMap($('map-quantum'),x0,null,40,5);
+  $('headline').textContent='Press “Run the race”.';$('bars').innerHTML='';$('axis').innerHTML='';$('verdict').innerHTML='';$('progress').textContent='';
+}
+const frame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
+async function run(){
+  const token=++runToken;skip=false;$('run').disabled=true;$('skip').disabled=false;
+  const T=+$('T').value,Q=makeQuantum(cfg,E,+$('g').value,+$('t').value);
+  const trials=+$('trials').value,x0s=starts(trials);
+  // live race 1: classical vs quantum, same start, same random streams as the batch below
+  const lanes=['local','quantum'].map(id=>{const m=METHODS.findIndex(M=>M.id===id);
+    return {id,prop:proposer(id,cfg,Q),r:rngFor(m,0),x:x0s[0],step:0,acc:0,done:false,prev:null}});
+  for(const L of lanes){$('lane-'+L.id).classList.remove('done');$('status-'+L.id).textContent='Searching…'}
+  let tick=0;
+  while(lanes.some(L=>!L.done)&&!skip){
+    if(token!==runToken)return;
+    const spf=Math.min(60,1+Math.floor(tick/25));tick++;
+    for(const L of lanes){
+      if(L.done)continue;
+      for(let k=0;k<spf&&!L.done;k++){
+        L.step++;const y=L.prop(L.x,L.r),dE=E[y]-E[L.x];
+        if(dE<=0||L.r()<Math.exp(-dE/T)){if(y!==L.x){L.prev=L.x;L.acc++}L.x=y}
+        if(E[L.x]<=Emin+1e-9||L.step>=CAP)L.done=true;
+      }
+      drawMap($('map-'+L.id),L.x,L.prev,40,5);
+      $('count-'+L.id).innerHTML=`${L.step.toLocaleString()}<small>steps</small>`;
+      const found=E[L.x]<=Emin+1e-9;
+      $('status-'+L.id).textContent=L.done?(found?`Found the best map at step ${L.step.toLocaleString()}`:`Gave up after ${CAP.toLocaleString()} steps`):`${L.acc} moves accepted so far`;
+      if(L.done&&found)$('lane-'+L.id).classList.add('done');
+    }
+    await frame();
+  }
+  if(skip)for(const L of lanes)if(!L.done){$('status-'+L.id).textContent='Animation skipped; counted in the results below'}
+  $('skip').disabled=true;
+  // all races, all four generators
+  const res={};const total=METHODS.length*trials;let doneCount=0,last=performance.now();
+  for(let m=0;m<METHODS.length;m++){
+    const prop=proposer(METHODS[m].id,cfg,Q),arr=[];
+    for(let tr=0;tr<trials;tr++){
+      const r=rngFor(m,tr);let x=x0s[tr],step=0;
+      while(step<CAP&&E[x]>Emin+1e-9){step++;const y=prop(x,r),dE=E[y]-E[x];if(dE<=0||r()<Math.exp(-dE/T))x=y}
+      arr.push(step);doneCount++;
+      if(performance.now()-last>30){$('progress').textContent=`Running ${trials} races per generator… ${Math.round(100*doneCount/total)}%`;await frame();last=performance.now();if(token!==runToken)return}
+    }
+    res[METHODS[m].id]=arr;
+  }
+  $('progress').textContent='';showResults(res,trials);$('run').disabled=false;
+}
+function q(a,p){const b=[...a].sort((x,y)=>x-y);return b[Math.min(b.length-1,Math.floor(p*b.length))]}
+function showResults(res,trials){
+  const L=Math.log(CAP),w=v=>100*Math.log(Math.max(1,v))/L;
+  $('bars').innerHTML=METHODS.map(M=>{
+    const a=res[M.id],med=q(a,0.5),lo=q(a,0.25),hi=q(a,0.75),fin=a.filter(v=>v<CAP).length;
+    const label=med>=CAP?`${CAP.toLocaleString()}+ steps`:`${med.toLocaleString()} steps`;
+    return `<div class="bar"><div class="name"><b style="color:${M.color}">${M.name}</b>${M.sub} · finished ${fin}/${trials}</div>
+      <div class="track"><div class="fill" style="width:${w(med)}%;background:${M.color};opacity:.85"></div>
+      <div class="iqr" style="left:${w(lo)}%;width:${Math.max(.5,w(hi)-w(lo))}%"></div><span class="val">${label}</span></div></div>`}).join('');
+  $('axis').innerHTML=['1','10','100','1,000','3,000'].map(s=>`<span>${s}</span>`).join('');
+  const ml=q(res.local,0.5),mq=q(res.quantum,0.5),md=q(res.decohered,0.5),mu=q(res.uniform,0.5);
+  const ratio=Math.max(1,ml)/Math.max(1,mq),capNote=ml>=CAP?' (classical often gave up, so the real gap is larger)':'';
+  $('headline').textContent=ratio>=1.5?`Quantum leap needed ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}× fewer steps than one-tile flips${capNote}.`
+    :ratio<=1/1.5?`One-tile flips won this board: the quantum leap needed ${(1/ratio).toFixed(1)}× more steps.`
+    :'About even on this board.';
+  const N=(1<<cfg.n).toLocaleString();
+  $('verdict').innerHTML=
+    `<p>Bars show the median over ${trials} races (log scale); the thin line spans the middle half of the races.</p>`+
+    `<p>Without interference the same leap needed ${md>=CAP?CAP.toLocaleString()+'+':md.toLocaleString()} steps, and a random jump needed ${mu>=CAP?CAP.toLocaleString()+'+':mu.toLocaleString()}. ${md>mq*1.5?'So the gain comes from interference, not from jumping far.':'Here interference adds little over jumping far.'}</p>`+
+    `<p>A laptop could also list all ${N} maps and pick the best one at once. At this size that wins outright; the race is about how the leap scales.</p>`;
+}
+
+// ---- wiring ----
+$('preset').addEventListener('change',newBoard);
+$('size').addEventListener('change',newBoard);
+$('reroll').addEventListener('click',()=>{seed=Math.floor(Math.random()*1e6);newBoard()});
+for(const id of ['T','t','g'])$(id).addEventListener('input',()=>{updateOutputs();resetRace()});
+$('trials').addEventListener('change',resetRace);
+$('run').addEventListener('click',run);
+$('skip').addEventListener('click',()=>{skip=true});
+newBoard();
+</script>

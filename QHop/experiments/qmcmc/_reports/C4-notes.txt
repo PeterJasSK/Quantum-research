@@ -1,0 +1,252 @@
+C4 SCREENING NOTES - B6 MEDICAL IDEAS (B6-01..B6-20, KNOWN K8, K10-K14)
+Screening agent C4, 2026-11-21. Rows in C4-rows.txt (26 rows, 17 columns each). Plain text.
+Labels: [P1] [P2] [PILOT] [A4] [A5] [lit] = verified this session with URL; [lit-m] = from memory, not verified,
+no verdict hinges on it; [own] own calculation; [spec] speculation.
+
+VERDICT TALLY: SIMULATE MORE 4 (B6-01, B6-02, B6-08, B6-18) | QUANTUM-INSPIRED ONLY 2 (B6-07, K12) | KILL 20 |
+BUILD NOW 0 | WAIT FOR HARDWARE 0.
+
+=====================================================================================================
+0. CONVENTIONS USED FOR EVERY ROW [own, following BRIEF-screening]
+=====================================================================================================
+t_C = per-step cost of the best classical method (proposal + incremental energy). Values used:
+  dense Ising n<=100: 3e-8 s [A5]; dense n~300: 1e-7 s [A5]; sparse lattice: 1.5e-10 s/flip CPU [A5];
+  local Potts / sparse graph with data term: 1e-9 to 1e-8 s [own]; CT ray-driven incremental residual,
+  V=4 views: ~5e-8 s (V residual updates + V squared terms) [own]; PET projector column: ~3e-6 s [own];
+  protein Potts O(L), L~300: 3e-7 s [own]; fine-mapping rank-k marginal-likelihood update, k<=10: 5e-6 s [own];
+  DAG score update: 1e-6 s [own]; SIR-trajectory likelihood: 1e-4 s [own].
+t_Q optimistic: D-Wave 0.03 s for rows whose energy (or surrogate) is pairwise QUBO and annealer-embeddable
+  (reverse-anneal variant, Arai-Kadowaki style proposal); Helios in-program loop 0.1 s for Potts/binary-encoded
+  or non-pairwise rows [A4]. t_Q realistic: IBM Heron session 3 s, faithful P1 gate-based quench, for all rows
+  (uniform choice so rows are comparable) [A4].
+Pessimistic: S*_real / F, F = (1-2e-3)^N_2q. N_2q rule [own estimate]: dense group of m spins on heavy-hex with a
+  swap network, 4 first-order Trotter steps, 3 CZ per ZZ+SWAP block -> N_2q ~ 4 x 3 x m(m-1)/2 = 6 m(m-1);
+  floor 800 for m<=12 per brief convention. m=15 -> 1260 (F 0.080); m=16 -> 1440 (F 0.056); m=18 -> 1836
+  (F 0.025); m=20 -> 2280 (F 0.0104). Sparse / nearest-neighbour groups: counted edges x ~3 CZ x 4 Trotter steps:
+  3x4 nn lens ~200 (F 0.67); 4x4 nn ~300 (F 0.55); 4x4 nn+nnn ~500 (F 0.37); near-1D m=20 ~320 (F 0.53);
+  sparse m=20 graph ~400 (F 0.45). Note this is more pessimistic and more honest than the flat 800 convention
+  for 16-20 spin dense groups (repo: 5-spin SK already 823 CZ, A4/BRIEF).
+Expensive-energy rows: t_C = t_inner_DA + t_E with t_inner_DA ~1e-3 s (classical surrogate chain inside
+  delayed acceptance), t_Q = t_lat + t_E. All numbers below checked with a short python script (results match rows).
+Measured S per regime: PILOT HIGH 1.3x, MEDIUM 3-8x, LOW 25-40x, all vs local/uniform only; vs PT / cluster /
+  delayed acceptance: no published number (A3).
+
+=====================================================================================================
+1. B6-01 IN DEPTH: FEW-VIEW BINARY CT POSTERIOR
+=====================================================================================================
+1a. Mapping and temperature [own]. x in {0,1}^N, b = A x0 + w, w ~ N(0, sigma^2 I), A = ray-pixel incidence
+  (unit weights, digital lines, V directions). -log posterior = ||Ax - b||^2/(2 sigma^2) - log prior(x).
+  Quadratic part: (1/(2 sigma^2)) x^T A^T A x - (1/sigma^2) b^T A x. (A^T A)_ij = number of rays shared by
+  pixels i,j (0..V off-diagonal; V on the diagonal). In spin variables s = 2x-1 the coupling is
+  J_ij = (A^T A)_ij/(4 sigma^2) > 0 with a penalty sign, i.e. antiferromagnetic between every pair of pixels on a
+  common ray: each pixel couples to ~V sqrt(N) others. Three pixels pairwise sharing a row, a column and a
+  diagonal form an antiferro triangle, so the data term IS geometrically frustrated. Temperature: the posterior
+  is the Boltzmann law of E = ||Ax-b||^2/2 at beta = 1/sigma^2, so the noise variance sets T. Low noise = low T.
+1b. Nishimori check (the point raised by B4). Verified:
+  Nishimori, Prog. Theor. Phys. 66, 1169 (1981), doi:10.1143/PTP.66.1169 [lit]
+    https://www.scilit.com/publications/3d6d1ba1d09a549727e9758270544eb5 (bibliographic record; full text not read).
+  Zdeborova & Krzakala, "Statistical physics of inference: thresholds and algorithms", Adv. Phys. 65, 453 (2016),
+    arXiv:1511.02476, https://arxiv.org/abs/1511.02476 ; section II.7 "No replica symmetry breaking in
+    Bayes-optimal inference" read via https://ar5iv.arxiv.org/html/1511.02476 [lit]. What it says: on the Nishimori
+    line (prior, likelihood and temperature all matched = Bayes-optimal posterior of a planted instance) the overlap
+    with the planted signal is self-averaging and there is no static RSB, i.e. "absence of glass phase at
+    equilibrium"; a rigorous version (Montanari) exists for sparse systems; magnetisation self-averaging is not
+    fully rigorous. IMPORTANT caveat in the same text: this excludes only STATIC RSB. A dynamical (d1RSB) glass and
+    metastability can still appear when the inference transition is first order (the "hard phase"), and then
+    local dynamics can be stuck although Bayes-optimal marginals are well defined.
+  Consequence for B6-01 [own]: when the tomography posterior is the calibrated one (the only one whose
+  uncertainty maps a clinician should trust), the instance is planted and matched -> Nishimori line -> no
+  SK-like static glass. The P1/P2/PILOT evidence (unplanted SK at T<=1) does not transfer by default. The LOW-T
+  claim in B6-01 as a "glassy" claim is therefore KILLED for matched posteriors. What survives:
+   (i) Activated barriers that are O(1) per elementary switching component, not extensive: for 2 views a
+       4-pixel interchange; a single flip raises the energy by ~V/(2 sigma^2), so local Metropolis crosses at rate
+       ~exp(-c V/sigma^2). This is low-T slowness, but N-independent per component and removable by a classical
+       switching move (below).
+   (ii) First-order / hard-phase metastability at intermediate SNR and few views (binary signal, linear
+       measurements, structured A). For random A this is the CDMA / compressed-sensing family: Krzakala et al.,
+       Phys. Rev. X 2, 021005 (2012), https://doi.org/10.1103/PhysRevX.2.021005 [lit, existence of paper and
+       BP-based reconstruction verified; its first-order phase diagram is lit-m]; Tanaka, IEEE Trans. IT 48, 2888
+       (2002), doi:10.1109/TIT.2002.804053 [lit, paper verified; the first-order coexistence region of the
+       individually-optimal binary detector is lit-m]. In a genuine hard phase, all known polynomial algorithms
+       fail; a quench proposal on a small patch is not expected to change that, and the Orfi-Sels results [A3] warn
+       against unstructured-landscape gains.
+   (iii) Mismatched posteriors (prior or temperature chosen by hand, e.g. annealing toward MAP or a too-cold
+       smoothness prior) are off-Nishimori and can be glassy. But then the samples are from a model nobody
+       calibrated, so the medical UQ value disappears; this is an SK study in tomography clothes.
+1c. Classical discrete-tomography competitors (verified):
+  NP-hardness for >=3 directions: Gardner, Gritzmann, Prangenberg, Discrete Math. 202, 45-71 (1999),
+    doi:10.1016/S0012-365X(98)00347-1, https://portal.fis.tum.de/en/publications/on-the-computational-complexity-of-reconstructing-lattice-sets-fr/ [lit]
+    (worst-case consistency/reconstruction; says nothing about typical planted posteriors).
+  DART: Batenburg & Sijbers, IEEE TIP 20(9), 2542-2553 (2011), doi:10.1109/TIP.2011.2131661,
+    https://homepages.cwi.nl/~kbatenbu/papers/basij_tip_2011.pdf [lit] (MAP-type, not sampling).
+  Bayesian marginals for binary tomography by belief propagation with an Ising smoothness prior: Gouillart,
+    Krzakala, Mezard, Zdeborova, Inverse Problems 29, 035003 (2013), arXiv:1211.2379,
+    https://arxiv.org/abs/1211.2379 [lit]: fast BP reconstruction, beats convex methods in recovery bounds and
+    under moderate Gaussian noise; maps the recovery threshold vs number of projections. This is the strongest
+    competitor for "posterior marginals / uncertainty maps" and B6 did not list it.
+  Gibbs priors for binary tomography: Matej, Vardi, Herman, Vardi, in Discrete Tomography (Birkhauser 1999),
+    doi:10.1007/978-1-4612-1568-4_8 [lit, chapter exists]; marginal-posterior-mode approach with Gibbs priors for
+    very few views (MaRDI Q3439202) [lit, record only].
+  Switching-component moves: for 2 directions every pair of binary matrices with equal row/column sums is
+    connected by 4-pixel interchanges (Ryser 1957) [lit-m]; for V>=3 elementary switches are not always a
+    connected move set (that is where NP-hardness lives) [lit-m].
+  PT over sigma (temperature ladder = noise ladder) flattens the ~V/sigma^2 barriers [own].
+  Quantum-annealer CT papers are all optimisation (QUBO MAP), none samples the posterior; a search this session
+    found no posterior-sampling quantum tomography paper (arXiv:2212.01312, arXiv:2607.10566, arXiv:2606.24561 are
+    MAP) [lit]. The "sampling angle is open" statement in B6 stands.
+1d. Break-even [own]. t_C = 5e-8 s. Optimistic D-Wave 0.03 s: S* = 0.03/5e-8 = 6e5. Realistic IBM 3 s:
+  S* = 6e7. Pessimistic: patch m=16 dense, N_2q ~ 6x16x15 = 1440, F = 0.998^1440 = 0.056, S* = 6e7/0.056 = 1.1e9.
+  Energy asymmetry: a k-pixel quantum move costs k incremental updates vs 1 for a classical flip, irrelevant at
+  these S* values. No wall-clock route at any size: wall-clock 0.1% (0-0.5).
+1e. Verdict: SIMULATE MORE retained but narrowed and down-weighted (ideation 20-25% -> steps 8%, range 3-15).
+  The only question worth compute: does the QeMCMC gap advantage survive on planted, matched (Nishimori) posteriors
+  with tomography structure, against a local+switching-move mixture and PT? This should be run as the
+  imaging-geometry instance family inside B4-04 (generic Nishimori transfer test), not as a separate project.
+  Hardware fit 1: 9-16 pixel dense patches need ~800-1500 CZ; D-Wave QUBO CT is reported limited to ~10x10 images
+  (search snippet re arXiv:2212.01312, lit-m).
+
+=====================================================================================================
+2. PER-ROW ARITHMETIC AND JUSTIFICATION
+=====================================================================================================
+B6-02 expensive nonlinear forward models. t_E = 1 s central (0.1-10 s, spec). t_C = 1e-3 + 1 = 1.001 s.
+  opt Helios: (0.1+1)/1.001 = 1.10; real IBM: (3+1)/1.001 = 4.0; pess m=20 F 0.0104: 4.0/0.0104 = 3.8e2.
+  t_E = 10 s: 1.01 / 1.30 / 1.25e2. Key bound [own]: against delayed acceptance (DA) the quantum gain per true
+  likelihood call is at most ~1/acceptance_DA plus a decorrelation factor; with a decent Gauss-Newton surrogate DA
+  acceptance is typically tens of percent, so S <= ~2-5x unless the surrogate itself is glassy (then the inner
+  classical chain fails to decorrelate). A matched Gauss-Newton surrogate of a planted posterior is Nishimori-side
+  (section 1b), so glassiness is not expected. Delayed acceptance verified: Christen & Fox, J. Comput. Graph.
+  Stat. 14(4) (2005), doi:10.1198/106186005X76983 [lit, DOI and content verified; page numbers 795-810 lit-m].
+  Verdict SIMULATE MORE kept but gated on B6-01/B4-04: if planted posteriors show no advantage, kill B6-02 without
+  further work. Wall-clock 1% (0-3) is the highest in this set because S*_real ~4 is within reach in principle.
+B6-03 Potts segmentation UQ. 1e-8 s; opt Helios 0.1/1e-8 = 1e7; real 3e8; m=18 (9 voxels x 2 qubits) F 0.025 ->
+  1.2e10. Best classical: SW cuts, Barbu & Zhu, IEEE TPAMI 27, 1239 (2005) [lit, per B6 verified]; perfect sampling
+  PubMed 31085445 [lit, per B6]. KILL kept.
+B6-04 ferro textures. 1.5e-10 s; 0.03/1.5e-10 = 2e8; 3/1.5e-10 = 2e10; F 0.55 -> 3.6e10. Swendsen & Wang, PRL 58,
+  86 (1987) [lit-m; standard reference, verdict does not hinge on page numbers; A5 gives z~0.22-0.25 for SW/Wolff,
+  sourced there]. KILL kept.
+B6-05 frustrated textures. 3e-10 s; 1e8 / 1e10 / (F 0.37) 2.7e10. VERDICT CHANGE: QUANTUM-INSPIRED ONLY -> KILL.
+  Reason: the ideation's own kill risk (nobody needs exact Boltzmann textures) means criterion 1 fails: mixing is
+  not the bottleneck because equilibrium is not required. A possible step gain vs PT is real physics but has no
+  medical payoff; that belongs to the B3 frustrated-lattice studies.
+B6-06 PET/SPECT. 3e-6 s; 0.1/3e-6 = 3.3e4; 3/3e-6 = 1e6; /0.0104 = 9.6e7. HIGH T. KILL kept.
+B6-07 bmDCA design. 3e-7 s; 0.1/3e-7 = 3.3e5; 1e7; /0.0104 = 9.6e8. arDCA verified: Trinquier et al., Nat. Commun.
+  12, 5800 (2021), arXiv:2103.03292, https://arxiv.org/abs/2103.03292 [lit]: comparable generative quality, 1e2-1e3x
+  cheaper than bmDCA, exact sequence probabilities and ancestral sampling. Caveat [own]: temperature-scaling the
+  arDCA conditionals is not the same as sampling the bmDCA Boltzmann law at T<1, so low-T bmDCA MCMC is not fully
+  obsolete; but designers do not need it to be exact. Binary encoding of q=21 wastes 11 of 32 codes per site
+  (infinite energy, balance still exact, acceptance lost). 3-4 site groups (15-20 qubits) are statevector-cheap.
+  QUANTUM-INSPIRED ONLY kept; steps 5% (2-10).
+B6-08 antibody oracle. t_E = 0.1 s: t_C = 0.101; opt (0.1+0.1)/0.101 = 1.98; real 3.1/0.101 = 30.7; /0.0104 =
+  2.9e3. Docking t_E = 60 s: 1.00 / 1.05 / 1.0e2. Same DA bound as B6-02. D-Wave peptide design work
+  (arXiv:2503.05458) is optimisation [lit per B6]. SIMULATE MORE kept, gated on B6-02; steps 4% (1-10).
+B6-09 haplotype phasing. 1e-8 s; 3e6 / 3e8 / (F 0.53) 5.7e8. WhatsHap / HapCUT2 [lit-m] - verdict hinges on the
+  near-1D structure (exact DP), which is [own] and standard. KILL kept.
+B6-10 imputation. No Ising mapping; S* n/a. KILL kept.
+B6-11 Boltzmann-machine fitting. t_C 1e-7 s (N~300); 0.03/1e-7 = 3e5; 3e7; /0.0104 = 2.9e9. VERDICT CHANGE:
+  QUANTUM-INSPIRED ONLY -> KILL. Reason: in the fitting loop the sampler is replaceable (pseudo-likelihood, MPF)
+  and gradient steps tolerate biased short persistent chains, so even an infinitely fast-mixing sampler gives
+  little fit improvement; MEDIUM gives only 3-8x vs weak baselines [PILOT] and ~1x vs PT [spec]. K12 (the sampling
+  use of the same models) keeps the QUANTUM-INSPIRED ONLY slot.
+B6-12 rerandomization. 3e-8 s; 1e6 / 1e8 / (n=20, F 0.0104) 9.6e9. VERDICT CHANGE: SIMULATE MORE -> KILL.
+  Reasons: (1) criterion 8, the payoff is nil: a trial needs 1e3-1e4 allocations once, offline, seconds on a CPU;
+  MH rerandomization (arXiv:2602.07613) and GPU rejection (arXiv:2501.07642) exist [lit per B6]. (2) The target is
+  uniform on a thin feasible set of a multi-dimensional number-partitioning energy, a golf-course landscape where
+  local energy structure carries little information; Orfi & Sels arXiv:2403.03087 [A3, verified there] find no
+  quantum-proposal speedup on unstructured worst cases. If the team wants it, donate it as an instance family to
+  the number-partitioning benchmark, not as a medical application.
+B6-13 beam angles. t_E = 30 s: t_C = 30.001; opt (0.03+30)/30.001 = 1.00; real 33/30 = 1.10; /0.0104 = 1.06e2.
+  S* ~1, but S vs a surrogate-driven classical proposal ~1 (smooth pair scores), and the task is optimisation.
+  KILL kept.
+B6-14 epidemic inference. 1e-4 s; 0.1/1e-4 = 1e3; 3e4; /0.0104 = 2.9e6. Altarelli et al., PRL 112, 118701 (2014)
+  [lit-m]; verdict also follows from the non-pairwise likelihood. KILL kept.
+B6-15 polypharmacy. 3e-8 s; 1e6 / 1e8 / 9.6e9; enumerable. KILL kept.
+B6-16 multimorbidity. 1e-8 s; 3e6 / 3e8 / (F 0.45) 6.7e8. HIGH T. KILL kept.
+B6-17 registration. 1e-8 s; 0.1/1e-8 = 1e7; 3e8; (m=16 F 0.056) 5.4e9. KILL kept.
+B6-18 fine-mapping. 5e-6 s; 0.03/5e-6 = 6e3; 3/5e-6 = 6e5; /0.0104 = 5.8e7. Verified: FINEMAP, Benner et al.,
+  Bioinformatics 32(10), 1493-1501 (2016), doi:10.1093/bioinformatics/btw018, https://pmc.ncbi.nlm.nih.gov/articles/PMC4866522
+  [lit] (shotgun stochastic search over causal configurations); SuSiE, Wang, Sarkar, Carbonetto, Stephens, JRSS-B
+  82(5), 1273-1300 (2020), doi:10.1111/rssb.12388 [lit] (variational); SuSiE-RSS (PLoS Genet, doi:10.1371/journal.pgen.1010299)
+  [lit]. Sceptical note [own]: the posterior is again a matched Bayesian one (Nishimori-side), and the hard
+  transition (swap causal SNP A for LD partner B) is exactly a classical two-spin swap move. SIMULATE MORE kept
+  (cheap, exact enumeration feasible at 12-16 SNPs, clean negative if the swap move wins); steps 10% -> 6% (2-12).
+B6-19 DAG sampling. 1e-6 s; 1e5 / 3e6 / 2.9e8; acyclicity non-Ising, hardware fit 0. KILL kept.
+B6-20 spatial transcriptomics. 1e-7 s; 1e6 / 3e7 / 2.9e9. BayesSpace, Zhao et al., Nat. Biotechnol. 2021 [lit-m];
+  verdict hinges on data-term dominance [own], not on the citation. KILL kept.
+K8 TCGA drivers. 1e-8 s; 3e6 / 3e8 / (n=20 sparse F 0.45) 6.7e8. Exact enumeration n<=25. KILL kept.
+K10 resistance / synergy. 1e-8 s; 3e6 / 3e8 / 6.7e8. KILL kept.
+K11 fMRI ELA. 3e-8 s; 1e6 / 1e8 / (n=15 F 0.080) 1.25e9. Enumeration is the method (Masuda tutorial
+  arXiv:2411.16979; Ezaki 2020 [lit per B6]). KILL kept.
+K12 neural max-ent. 3e-8 s; 1e6 / 1e8 / (m=20 F 0.0104) 9.6e9. MEDIUM; Tkacik et al. PNAS 2015 arXiv:1407.5946 and
+  Nonnenmacher et al. 2017 arXiv:1603.00097 [lit per B6]. QUANTUM-INSPIRED ONLY kept; steps 8% -> 4% (1-8)
+  because the collective mode is ferro-like (weak frustration) and PT already works at N~100.
+K13 symptom networks. 3e-8 s; 1e6 / 1e8 / 9.6e9. Enumerable (2^20 in ms), unfrustrated. KILL kept.
+K14 MRF lens control. 1e-9 s; 3e7 / 3e9 / (3x4 nn N_2q~200, F 0.67) 4.5e9. Graph cuts verified: Boykov, Veksler,
+  Zabih, IEEE TPAMI 23(11), 1222-1239 (2001), https://www.csd.uwo.ca/~yboykov/Papers/pami01.pdf [lit].
+  KILL as application, kept as negative control.
+
+=====================================================================================================
+3. VERDICT CHANGES VS IDEATION (B6)
+=====================================================================================================
+B6-05 QUANTUM-INSPIRED ONLY -> KILL (equilibrium not needed; criterion 1 fails).
+B6-11 QUANTUM-INSPIRED ONLY -> KILL (sampler replaceable / bias-tolerant in fitting; criterion 1 and 7 fail).
+B6-12 SIMULATE MORE -> KILL (no payoff, criterion 8; golf-course unstructured landscape, Orfi-Sels).
+Likelihood downgrades without verdict change: B6-01 20-25% -> steps 8% (Nishimori line, BP marginals, switching
+  moves); B6-02 10-15% -> steps 5%, wall-clock 1% (DA bound); B6-08 10% -> 4%; B6-18 10% -> 6%; K12 8% -> 4%.
+Evidence downgrades: Tanaka/Krzakala first-order claims, Ryser connectivity, Swendsen-Wang, WhatsHap/HapCUT2,
+  BayesSpace, Altarelli kept as lit-m; none is load-bearing for a verdict. Newly added competitor not in B6:
+  Gouillart et al. 2013 BP for binary tomography (verified).
+
+=====================================================================================================
+4. WAVE 4 NOMINATIONS (max 3)
+=====================================================================================================
+W4-1 (B6-01, fold into B4-04): planted tomography Nishimori transfer test.
+  Instance: binary images 3x3 (n=9), 2x5 (n=10), 3x4 (n=12) exact; 4x4 (n=16) by statevector tau_int. Ray matrix A
+  with unit weights, V = 2 (rows, columns), 3 (+diagonal), 4 (+anti-diagonal). Planted x0 from the prior: (a)
+  Bernoulli(0.5), (b) nn Ising prior J_p = 0.3. b = A x0 + N(0, sigma^2). 20 instances per (V, sigma, prior).
+  Temperatures: matched posterior beta = 1 with sigma in {1.0, 0.5, 0.3, 0.2} (Nishimori line), plus an
+  off-Nishimori control sampled at beta_eff = 4 (2x colder in sigma).
+  Proposals: local single flip; uniform; P1 quantum_Q (common/qmc.py, gamma U[0.25,0.6], t U[2,20], H_prob = spin
+  form of A^T A/sigma^2 + fields, alpha rule); classical mixture_Q of local + elementary switching moves (4-pixel
+  interchanges for V=2, translated 2^V-pixel components for V=3,4); PT over sigma ladder (n=16, tau_int only).
+  Observable: exact spectral gap (common/qmc.py gap) per proposal; tau_int of overlap with x0 and of energy for
+  n=16; fitted gap exponent k vs n for quantum and for the local+switch mixture.
+  Kill: median gap ratio quantum / best classical proposal (local, uniform, local+switch) < 2 at every matched
+  sigma, or no growth of the ratio from n=9 to n=12 (k_Q >= k_switch - 0.05). Advantage only at beta_eff = 4
+  (off-Nishimori) also counts as a medical kill (calibrated UQ requires matched T).
+  Confirm: median ratio >= 3 at some matched sigma, increasing with n, and quantum tau_int at n=16 below PT
+  tau_int per sweep-equivalent. Then, and only then, unlock B6-02.
+W4-2 (B6-18): LD-block fine-mapping, quantum vs causal-SNP swap move.
+  Instance: simulated LD block with n = 12 and 14 SNPs, AR(1)-like LD with r in {0.9, 0.97, 0.99} plus one
+  near-perfect pair; k_true = 1-3 causal SNPs, effect z ~ 4-6; exact posterior by enumeration (2^14 = 16k states)
+  under a FINEMAP-style prior (p_causal = 1/n) and exact Gaussian marginal likelihood from summary z and R.
+  Temperature: posterior at beta = 1 (matched); plus beta = 2 tempered control.
+  Proposals: local add/delete flip; uniform; P1 quantum_Q with pairwise surrogate H_prob from the quadratic
+  approximation of the log marginal likelihood (true energy in accept, balance exact by symmetry); classical
+  mixture of add/delete + swap (move causal flag to an LD partner, chosen with prob proportional to r^2, symmetric
+  by construction).
+  Observable: exact spectral gap; tau_int of PIP (posterior inclusion probability) of the top pair.
+  Kill: gap ratio quantum / (add-delete + swap) < 1.5 at every LD level. Confirm: >= 3 at r >= 0.97 and growing
+  from n=12 to 14.
+W4-3 (K14): negative-control harness check.
+  Instance: 3x4 nn Ising lens with strong data field h ~ N(0, 2^2), J = 0.5 ferro, beta = 1 (HIGH, data-dominated);
+  n = 12 exact. Proposals: local, uniform, P1 quantum, Swendsen-Wang (implement SW on the lens; none exists in repo
+  per A4) - SW gap from its exact transition matrix at n=12 or tau_int.
+  Observable: spectral gap ratio quantum / SW. Expectation: <= ~1.3 (PILOT HIGH 1.29x vs weak baselines).
+  Flag: ratio > 1.5 vs SW means the harness or the baseline is broken; fix before trusting any Wave 4 LOW-T ratio.
+
+=====================================================================================================
+5. SOURCES VERIFIED THIS SESSION
+=====================================================================================================
+https://arxiv.org/abs/1511.02476 and https://ar5iv.arxiv.org/html/1511.02476 (Zdeborova & Krzakala, sec. II.7)
+https://www.scilit.com/publications/3d6d1ba1d09a549727e9758270544eb5 (Nishimori 1981 record, PTP 66, 1169)
+https://portal.fis.tum.de/en/publications/on-the-computational-complexity-of-reconstructing-lattice-sets-fr/ (Gardner et al. 1999)
+https://homepages.cwi.nl/~kbatenbu/papers/basij_tip_2011.pdf (DART, IEEE TIP 20, 2542)
+https://arxiv.org/abs/1211.2379 (Gouillart, Krzakala, Mezard, Zdeborova, BP for discrete tomography)
+https://link.springer.com/doi/10.1007/978-1-4612-1568-4_8 (Matej et al., Gibbs priors for binary tomography)
+https://doi.org/10.1198/106186005X76983 (Christen & Fox 2005, delayed acceptance)
+https://doi.org/10.1103/PhysRevX.2.021005 (Krzakala et al. PRX 2012)
+https://www.bohrium.com/paper-details/a-statistical-mechanics-approach-to-large-system-analysis-of-cdma-multiuser-detectors/812428625209982977-2561 (Tanaka 2002)
+https://arxiv.org/abs/2103.03292 (arDCA, Nat. Commun. 12, 5800)
+https://pmc.ncbi.nlm.nih.gov/articles/PMC4866522 (FINEMAP); doi:10.1111/rssb.12388 (SuSiE)
+https://www.csd.uwo.ca/~yboykov/Papers/pami01.pdf (Boykov-Veksler-Zabih 2001)
+https://arxiv.org/abs/2212.01312 , https://arxiv.org/abs/2607.10566 , https://arxiv.org/abs/2606.24561 (quantum CT = MAP/QUBO, no posterior sampling)

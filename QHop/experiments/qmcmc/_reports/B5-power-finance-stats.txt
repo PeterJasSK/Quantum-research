@@ -1,0 +1,701 @@
+B5 IDEATION REPORT: QeMCMC IN POWER SYSTEMS, LOGISTICS, FINANCE, STATISTICS, ENVIRONMENT
+Sub-agent B5, 2026-11-20. Plain text. Reads with BRIEF-common.txt, A3-literature.txt (applications list,
+critiques) and A4-hardware.txt (per-step latency). Every claim is labelled:
+  [P1] shown in Layden et al. arXiv:2203.12497    [P2] shown in Ferguson and Wallden arXiv:2405.04247
+  [LIT] literature, URL or arXiv ID given (verified by web search this session unless marked "recalled")
+  [OWN] own calculation or own reasoning          [SPEC] speculation
+Verdict likelihoods are rough guesses [SPEC] for "this line ends with a defensible advantage over the
+best classical method at equal wall-clock, on hardware or as a quantum-inspired classical method".
+
+=====================================================================================================
+0. CROSS-CUTTING FINDINGS (these drive most verdicts below)
+=====================================================================================================
+
+C1. Effective temperature of a Bayesian posterior. A posterior is sampled at T=1 by definition, but the
+log-likelihood is a sum over n_obs observations, so n_obs acts like beta [OWN; this is the standard
+power-posterior picture]. Regime per problem therefore depends on how rugged the posterior is:
+  effectively HIGH: weak data, near-independent coordinates (posterior close to prior, product-like).
+  effectively MEDIUM: moderate data, competing explanations of similar weight (several modes at small
+    Hamming distance, critical-like slow down of single-flip chains).
+  effectively LOW: strong data plus non-identifiability (collinear predictors, linkage disequilibrium,
+    label symmetry, equivalent DAGs): deep modes separated by Hamming distance >= 3 through
+    low-probability states. Single-flip and add-delete-swap chains get trapped here.
+Yang, Wainwright and Jordan show rapid mixing of add-delete-swap Metropolis for variable selection only
+under restricted-eigenvalue type conditions, i.e. NOT under strong collinearity (Ann. Statist. 2016,
+arXiv:1505.07925) [LIT, recalled].
+
+C2. Surrogate-driven QeMCMC is exact in the ideal limit. The proposal U=exp(-iHt) is symmetric for ANY
+real H_prob [P1], so one can put a cheap Ising surrogate (quadratic approximation of a non-Ising
+log-posterior or of a simulator output) into U and evaluate the TRUE energy only in the Metropolis
+accept. Detailed balance with respect to the true target holds because Q(s'|s)=Q(s|s') and the accept
+uses the true ratio [P1 argument, OWN application]. Hardware noise breaks exact symmetry; P1 SI needed
+twirling and a small bias remains possible [P1]. The quality of the surrogate only changes the
+acceptance rate, not correctness.
+
+C3. The classical surrogate competitor (the strongest kill risk for every "expensive energy" idea).
+When the true energy is expensive and a cheap Ising surrogate exists, the classical side can also use
+the surrogate: run parallel tempering (PT) on the surrogate at ~ns per flip, take a near-independent
+surrogate-Boltzmann sample s' ~ pi_sur, and use it as an independence proposal with accept
+min(1, pi(s') pi_sur(s) / (pi(s) pi_sur(s'))); pi_sur is known up to a constant, so this is exact
+Metropolis-Hastings [OWN; same family as delayed-acceptance MCMC, Christen and Fox, J. Comput. Graph.
+Stat. 14, 795 (2005) [LIT, recalled]]. It costs ONE true-energy evaluation per step, exactly like
+QeMCMC. Millions of surrogate flips fit into the time of one 1 s energy evaluation. Consequence [OWN]:
+in the expensive-energy regime the quantum proposal only wins if (a) the surrogate itself is
+classically hard to sample (glassy, LOW T, n beyond what PT handles in ~1 s), or (b) the quantum
+proposal has a structurally better acceptance against the true target than surrogate-Boltzmann
+proposals (no argument for this exists). Any expensive-energy study in this domain MUST include this
+competitor or it is not a fair comparison.
+
+C4. Hard constraints. Many problems here live on constrained sets: cardinality (portfolio), one-to-one
+matching (record linkage), acyclicity (Bayesian networks), radiality/spanning trees (distribution
+grids), permutations (routing), fixed margins (disclosure tables). The transverse-field mixer proposes
+states outside the set, which get pi=0 and are rejected. A Hamming-weight-preserving XY mixer keeps H
+real symmetric inside the fixed-weight subspace, so symmetry and detailed balance survive [OWN]; this
+route is studied for fixed-weight Boltzmann sampling with QAOA XY mixers plus neural surrogates by
+Kawamata, Nakano and Fujii (arXiv:2604.20701, simulation, 14x and 7.7x autocorrelation-rate gains vs
+local and global Kawasaki dynamics) [LIT]. No native mixer exists for acyclicity, one-to-one matching
+beyond small blocks, radiality or permutations at reasonable qubit cost [OWN].
+
+C5. Optimisation is not sampling. Unit commitment, portfolio selection, routing and facility location are
+optimisation problems; the deliverable is one good solution, not a Boltzmann sample. MILP/MIQP solvers
+are the competitor and QeMCMC is the wrong tool [OWN]. Only their genuinely Bayesian or rare-event
+versions qualify.
+
+C6. Learning loops. Fitting an Ising model to data (species, votes, rain) is where sampling is needed
+(Boltzmann learning), but pseudo-likelihood avoids sampling entirely and is the default in these fields
+(Harris, Ecology 2016, doi 10.1002/ecy.1605; exact normalisation feasible up to ~30 species) [LIT].
+
+C7. Break-even arithmetic for this domain [OWN, using A4-hardware.txt numbers].
+  IBM gate model, one job per step: t_Q ~ 2-5 s. D-Wave reverse-anneal step: ~0.03-1 s. Batched
+  K chains per job: ~2/K s per chain-step (A4).
+  Cheap statistical energy (marginal likelihood with k<=10 via cached Gram matrix, Ising delta-E):
+  t_E ~ 1-10 us -> S* = t_Q/t_C ~ 2e5 to 5e6 (IBM sequential), ~200-5000 even at K=1000 batching.
+  Medium energy (AC power flow ~10-100 ms, Laplace-approximated GLMM marginal likelihood ~1-100 ms):
+  S* ~ 20-500 (IBM), ~1.3-100 (D-Wave).
+  Expensive energy (cascade simulation, hydrological/fire simulator, ~1 s or more): S* ~ 1.1-6.
+  The team pilot step ratios are 1.3x (HIGH), 2.8x (MEDIUM, critical), 25x (LOW) vs WEAK baselines
+  (local, uniform) [BRIEF]. Against PT or cluster moves these shrink further (A3: Mazumder and Towe
+  2607.09893, PT recovers most of the ESS gap). So at HIGH and MEDIUM T only the expensive-energy
+  corner can reach break-even, and there C3 applies.
+
+=====================================================================================================
+1. NEW IDEAS B5-01 .. B5-18
+=====================================================================================================
+
+-----------------------------------------------------------------------------------------------------
+B5-01  Bayesian variable selection with collinear predictor blocks (spike-and-slab / g-prior, 2^p models)
+-----------------------------------------------------------------------------------------------------
+Payoff: posterior inclusion probabilities and model averaging when predictors come in correlated groups
+  (economics, environmental drivers, omics). Wrong mixing = wrong inclusion probabilities, silently.
+Temperature regime: T=1 posterior. Effectively LOW to MEDIUM when blocks of 3+ predictors are nearly
+  collinear and jointly predictive: the modes are "one representative from each block", separated by
+  Hamming >= 2 through bad-fit states (drop all) or penalised states (keep two) [OWN, C1]. Effectively
+  HIGH for near-orthogonal designs, where TGS/informed proposals already mix fast.
+Mapping: gamma_j in {0,1} -> spins. Ising surrogate = second-order expansion of the log marginal
+  likelihood in gamma: h_j from marginal correlation with y and the prior inclusion odds, J_ij negative
+  (repulsive) for collinear pairs, positive for suppressor pairs [OWN]. Dense J inside blocks, near zero
+  across blocks: block-sparse. Embedding: all-to-all inside each block (block size 5-30); natural fit
+  for P2 coarse-graining with groups = correlation blocks instead of index blocks [OWN].
+Energy per step: log marginal likelihood under g-prior with k active variables: O(k^3) Cholesky on the
+  cached Gram submatrix, ~1-10 us for k<=10; O(n k^2) if not cached [OWN]. Cheap.
+Spins needed: full p = 50-20000; per group 5-30.
+Is mixing the bottleneck? Yes for collinear designs (C1, Yang-Wainwright-Jordan). No for orthogonal.
+Best classical competitor: tempered Gibbs sampler / importance tempering, Zanella and Roberts, JRSS-B 81,
+  489 (2019), arXiv:1805.00541 (orders of magnitude over alternatives, tens of thousands of regressors)
+  [LIT]; locally informed proposals, Zanella, JASA 2020, arXiv:1711.07424 [LIT, recalled]; adaptive
+  add-delete-swap, Griffin, Latuszynski and Steel, arXiv:1708.05678 [LIT, recalled]; block-swap moves
+  that exchange a variable for a correlated partner [OWN].
+Implementation sketch: surrogate-driven single-group QeMCMC: pick one correlation block at random
+  (symmetric choice), freeze the rest as effective field (P2), propose inside the block with U built
+  from the quadratic surrogate, accept with the TRUE marginal likelihood. Detailed balance: holds in the
+  ideal case (symmetric proposal per group, random-group choice independent of state) [P2 single-group
+  argument + C2]. Device: exact statevector for blocks <=20 first; trapped ion for all-to-all blocks.
+Break-even: cheap energy -> S* ~ 1e5+ sequential; hardware wall-clock win impossible today [OWN, C7].
+  The realistic product is quantum-inspired (MPS/statevector proposal on a 10-20 spin block is cheap
+  classically, A3: Christmann et al. arXiv:2411.17821) [LIT].
+Main kill risk: TGS plus a classical block-swap move already crosses Hamming-2/3 barriers; exhaustive
+  enumeration inside a 15-spin block (32768 states x 10 us = 0.3 s) is an exact block Gibbs update, a
+  perfect classical competitor for blocks up to ~20 [OWN].
+Verdict guess: SIMULATE MORE (as the cleanest stats testbed), then likely QUANTUM-INSPIRED ONLY.
+  Likelihood of defensible advantage: ~10%.
+
+-----------------------------------------------------------------------------------------------------
+B5-02  Bayesian fine-mapping of causal variants inside linkage-disequilibrium (LD) blocks
+-----------------------------------------------------------------------------------------------------
+Payoff: which SNPs in a GWAS locus are causal; posterior inclusion probabilities feed credible sets and
+  drug-target prioritisation. Direct link to the genome/healthcare angle wanted by the Siemens
+  direction (memory note), though the client there now prefers classical lung work.
+Temperature regime: effectively LOW. High LD (r^2 > 0.9) makes SNPs interchangeable; large GWAS sample
+  sizes (n_obs ~ 1e5) make the posterior very peaked; with 2-5 causal signals the modes are sets of
+  representatives separated by Hamming 2k [OWN, C1].
+Mapping: same as B5-01 using summary statistics: h from z-scores, J from the LD matrix. Natural blocks.
+Energy per step: summary-statistic likelihood with k<=10 causal: O(k^3) on the LD submatrix, ~us [OWN].
+Spins needed: 100-5000 SNPs per locus; groups 10-30 (sub-blocks of high LD).
+Is mixing the bottleneck? Partly. Existing tools avoid MCMC: FINEMAP uses shotgun stochastic search
+  over k<=5 configurations, SuSiE uses variational sum-of-single-effects (Benner et al. Bioinformatics
+  2016; Wang et al. JRSS-B 2020) [LIT, recalled]. Their known failure is under-coverage when LD is
+  extreme and signals multiple, which is exactly the multimodal case [SPEC on size of the effect].
+Best classical competitor: FINEMAP, SuSiE, plus exact enumeration over k<=3 within a block [LIT/OWN].
+Implementation sketch: as B5-01, groups = LD sub-blocks. Benchmark against exact enumeration on small
+  loci (p<=25) so ground truth is known. Detailed balance as B5-01.
+Break-even: cheap energy, hardware hopeless now; quantum-inspired only [OWN].
+Main kill risk: k is small, so the space of relevant models is C(p,k) and enumerable for k<=3; shotgun
+  search covers it; MCMC is not the field's bottleneck.
+Verdict guess: SIMULATE MORE (shared code with B5-01, real public summary stats), expect
+  QUANTUM-INSPIRED ONLY. Likelihood ~5-10%.
+
+-----------------------------------------------------------------------------------------------------
+B5-03  Variable selection with EXPENSIVE likelihoods (GLMM, survival, Gaussian-process or simulator models)
+-----------------------------------------------------------------------------------------------------
+Payoff: input selection for models where each candidate model must be fitted (Laplace/INLA marginal
+  likelihood for GLMMs, Cox models, GP emulators for environmental simulators).
+Temperature regime: as B5-01; MEDIUM to LOW when inputs are correlated (meteorological drivers).
+Mapping: inclusion spins, Ising surrogate from a cheap linear-Gaussian proxy (B5-01 surrogate on the
+  same design), true energy = expensive marginal likelihood (C2).
+Energy per step: medium to expensive: Laplace/INLA fit ~10 ms to seconds; GP marginal likelihood
+  O(n_obs^3) ~0.1-10 s for n_obs ~ 1e3-1e4 [OWN estimate].
+Spins needed: 20-200 inputs.
+Is mixing the bottleneck? Here the bottleneck is the number of true evaluations; mixing per evaluation is
+  what matters.
+Best classical competitor: C3 surrogate independence sampler / delayed acceptance (Christen-Fox), plus
+  TGS on the proxy; also model-space Bayesian optimisation.
+Implementation sketch: QeMCMC proposal from the linear proxy, accept with expensive likelihood; compare
+  number of TRUE evaluations to ESS for (a) QeMCMC, (b) surrogate-PT independence sampler, (c) TGS.
+  Detailed balance: yes, C2.
+Break-even: S* ~ 1.1-6 at 1 s energy (C7); the step ratio must be measured vs (b), not vs local.
+Main kill risk: C3. The proxy posterior on <=200 spins is classically easy to sample exactly-ish, so
+  (b) is near-ideal and the quantum proposal has nothing structural to add [OWN].
+Verdict guess: SIMULATE MORE (cheap to test with B5-01 code), likely KILL by C3. Likelihood ~5%.
+
+-----------------------------------------------------------------------------------------------------
+B5-04  Bayesian network structure learning (structure MCMC over edges; order and partition MCMC)
+-----------------------------------------------------------------------------------------------------
+Payoff: posterior over causal/graph structures (systems biology, risk models, environmental drivers).
+Temperature regime: effectively LOW: Markov equivalence classes and strong data give many equal-score
+  DAGs and deep modes; structure MCMC is known to mix poorly [LIT: Kuipers and Moffa, JASA 2017,
+  arXiv:1504.05006].
+Mapping: edge indicators -> spins (p(p-1) of them); acyclicity is a global hard constraint not
+  expressible as Ising; order MCMC works on permutations (not binary) [OWN, C4].
+Energy per step: BDe/BGe scores decompose per node and are cached: cheap (~us) [OWN].
+Spins needed: 20-100 nodes -> 380-9900 edge spins.
+Is mixing the bottleneck? Yes, but solved better classically by changing the state space.
+Best classical competitor: order MCMC (Friedman and Koller 2003) [LIT, recalled], partition MCMC
+  (arXiv:1504.05006) and the hybrid scheme of Kuipers, Suter and Moffa (arXiv:1803.07859, BiDAG)
+  [LIT].
+Implementation sketch: only plausible as QeMCMC on parent-set indicators of ONE node with all else fixed
+  (acyclicity then reduces to excluding descendants), which is tiny and enumerable.
+Break-even: cheap energy, constraint rejection -> no.
+Main kill risk: acyclicity rejections plus partition MCMC.
+Verdict guess: KILL. Likelihood <2%.
+
+-----------------------------------------------------------------------------------------------------
+B5-05  Mixture-model allocations / Bayesian clustering (cluster labels = Potts)
+-----------------------------------------------------------------------------------------------------
+Payoff: clustering with uncertainty (customer segments, weather regimes, phenotypes).
+Temperature regime: LOW for well-separated clusters (label switching and split/merge barriers), HIGH
+  for overlapping clusters. Label symmetry gives K! exactly equivalent modes that do not need to be
+  mixed over (post-hoc relabelling) [OWN].
+Mapping: Potts labels need one-hot (n x K qubits) with one-hot constraint -> transverse field leaves the
+  feasible set; or log2 K binary encoding with dense multi-body terms [OWN, C4].
+Energy per step: collapsed conjugate likelihood update ~us [OWN].
+Spins needed: n data points x K, i.e. thousands.
+Is mixing the bottleneck? Sometimes (split/merge).
+Best classical competitor: split-merge MCMC, Jain and Neal, J. Comput. Graph. Stat. 2004 [LIT, recalled];
+  variational and EM for point estimates.
+Implementation sketch: none worth building; qubit count and constraint dominate.
+Break-even: no. Main kill risk: encoding overhead plus split-merge.
+Verdict guess: KILL. Likelihood <2%.
+
+-----------------------------------------------------------------------------------------------------
+B5-06  Bayesian record linkage / entity resolution (bipartite matching posterior)
+-----------------------------------------------------------------------------------------------------
+Payoff: census and health-record linkage with uncertainty propagated to downstream estimates.
+Temperature regime: MEDIUM to LOW in ambiguous blocks (common names, typos): several near-equal matchings
+  differing by swaps of 2-4 records [OWN].
+Mapping: binary match matrix with one-to-one constraint (permutation-like) -> C4: X mixer violates it;
+  only small blocks (<= 4x4 records) are representable with penalties [OWN].
+Energy per step: Fellegi-Sunter comparison-vector likelihood, cheap (~us) [OWN].
+Spins needed: block size squared; blocks are small after blocking.
+Is mixing the bottleneck? In small ambiguous blocks yes, but these are enumerable.
+Best classical competitor: Sadinle, JASA 2017 (bipartite matchings) [LIT, recalled]; locally informed
+  proposals applied exactly to record linkage in Zanella arXiv:1711.07424 [LIT, recalled]; d-blink
+  distributed partially collapsed Gibbs, Marchant et al., JCGS 2021, arXiv:1909.06039 (>300x speedups)
+  [LIT].
+Implementation sketch: not recommended.
+Main kill risk: blocks small enough for quantum are enumerable; large blocks violate constraints.
+Verdict guess: KILL. Likelihood <2%.
+
+-----------------------------------------------------------------------------------------------------
+B5-07  Bayesian multiple change-point models
+-----------------------------------------------------------------------------------------------------
+Payoff: regime changes in load, prices, river flow, climate series.
+Temperature regime: n/a: exact posterior simulation exists.
+Mapping: change indicators per time point -> 1D chain of spins with segment likelihoods (multi-body).
+Energy per step: segment marginal likelihoods, cheap.
+Spins needed: series length (1e2-1e5).
+Is mixing the bottleneck? No: Fearnhead's forward-backward recursions give exact iid posterior samples
+  in minutes, no MCMC (Statist. Comput. 16, 203 (2006)) [LIT].
+Best classical competitor: Fearnhead 2006; PELT for point estimates [LIT, recalled].
+Verdict guess: KILL. Likelihood ~0%.
+
+-----------------------------------------------------------------------------------------------------
+B5-08  Grid N-k contingency rare-event sampling on LARGE grids with an LODF Ising surrogate (expensive energy)
+-----------------------------------------------------------------------------------------------------
+Payoff: blackout risk estimation and the list of dangerous multi-outage sets for planners (NERC-style
+  extreme-event studies).
+Temperature regime: target pi(s) proportional to p_outage(s) x exp(lambda x blackout_size(s)), a tilted
+  (low effective T) importance distribution; blackout size is a threshold-like, rugged function of the
+  outage set, so effectively LOW to MEDIUM [OWN].
+Mapping: line/transformer outage indicators -> spins; Ising surrogate from line outage distribution
+  factors: J_ij = overload induced on j by losing i (and vice versa), h_i from base loading and failure
+  rate [OWN]. Sparse-ish but long-range (LODF is non-local). Embedding: dense on hardware; P2 groups =
+  electrical neighbourhoods.
+Energy per step: one cascading-failure simulation. Random-chemistry studies report ~2.35 s per RC trial
+  on the 2383-bus Polish case and ~9.5 s on a Western US model (each trial = several cascade sims)
+  [LIT: Rezaei, Hines, Eppstein arXiv:1405.4213, timing from search snippet]; DC cascade sim on a
+  2000-bus case ~10-100 ms, AC with protection ~0.1-few s [OWN estimate]. Medium to expensive.
+Spins needed: 186 lines (IEEE 118) to ~2900 branches (Polish 2383); groups 10-30.
+Is mixing the bottleneck? The number of simulator calls is the bottleneck; mixing per call matters.
+Best classical competitor: Random Chemistry, Eppstein and Hines 2012, O(log n) simulations per minimal
+  contingency found (https://phines.w3.uvm.edu/publications/2012/eppstein_2012.pdf) [LIT]; its risk
+  estimator arXiv:1405.4213 [LIT]; SIGHT group testing arXiv:1909.04513 [LIT]; correlated-outage
+  extension arXiv:1901.03304 [LIT]; splitting / cross-entropy importance sampling [LIT, recalled];
+  and C3 surrogate-PT independence sampler [OWN].
+Implementation sketch: surrogate-driven coarse-grained QeMCMC: choose an electrical neighbourhood group
+  at random, propose with LODF-surrogate U, accept with the true cascade simulator (MATPOWER-based DC
+  then AC). Detailed balance: holds ideally (C2 + P2 single-group). Device: exact sim of 10-20 spin
+  groups first, then IBM session batching (one job per step is acceptable when t_E ~ 1 s).
+Break-even: per-step ratio ~1.1-6 (C7). Required step advantage vs the BEST classical (Random Chemistry
+  and C3) of ~2-6 is within the range the pilot shows at MEDIUM-LOW T vs weak baselines, but unknown vs
+  the real competitors [OWN].
+Main kill risk: C3: the LODF surrogate is classically trivial to sample with PT at these sizes, and
+  Random Chemistry exploits the monotone structure (supersets of a failing set fail) that no Boltzmann
+  sampler uses. Also: risk estimation needs unbiased weights, which IS-style methods give directly.
+Verdict guess: SIMULATE MORE (the one power-system idea with expensive energy). Likelihood ~5-10%.
+
+-----------------------------------------------------------------------------------------------------
+B5-09  Unit commitment (binary on/off + continuous dispatch, hybrid)
+-----------------------------------------------------------------------------------------------------
+Payoff: day-ahead scheduling cost; huge money, but an optimisation problem (C5).
+Temperature regime: n/a for optimisation; if posed as sampling near-optimal schedules, LOW (min-up/down
+  constraints create rugged landscape).
+Mapping: u_{g,t} spins (units x hours), continuous dispatch solved classically per commitment (inner LP)
+  [LIT: Koretsky et al. arXiv:2110.12624 use exactly this hybrid split]. Ramp and min-up/down time
+  constraints are multi-body/penalties; feasibility rejections high [OWN].
+Energy per step: economic dispatch LP/QP ~1-10 ms, with network DC-OPF ~10-100 ms [OWN estimate].
+Spins needed: 50-1000 units x 24-48 periods = 1e3-5e4.
+Is mixing the bottleneck? No: MILP solvers solve industrial UC; Koretsky et al. report classical solvers
+  effective below 400 units on their instances [LIT]; Carrion and Arroyo MILP formulation, IEEE TPWRS
+  2006 [LIT, recalled].
+Best classical competitor: MILP (Gurobi/CPLEX) with tight formulations, Lagrangian relaxation.
+Main kill risk: wrong tool (C5).
+Verdict guess: KILL. Likelihood ~0-1%.
+
+-----------------------------------------------------------------------------------------------------
+B5-10  Cardinality-constrained portfolio sampling (Bayesian / near-optimal portfolio ensembles)
+-----------------------------------------------------------------------------------------------------
+Payoff: an ensemble of diverse near-optimal K-asset portfolios (robustness to estimation error), or a
+  Bayesian posterior over which K assets to hold.
+Temperature regime: target exp(-beta x (risk - mu x return)) on fixed-weight states; asset correlation
+  blocks (sectors) give MEDIUM multimodality [OWN].
+Mapping: x_i in {0,1}, quadratic covariance term = dense Ising, cardinality = fixed Hamming weight ->
+  XY (Hamming-preserving) mixer (C4); weights continuous -> inner QP per subset [OWN].
+Energy per step: Markowitz QP over K assets ~10-100 us (K<=50) [OWN estimate]; pure binary version ~us.
+Spins needed: 30-2000 assets.
+Is mixing the bottleneck? For optimisation no (MIQP/branch-and-bound solves OR-Library instances
+  31-225 assets of Chang et al. 2000 [LIT, recalled]). For sampling of near-optimal ensembles, Kawasaki
+  swap dynamics is the baseline.
+Best classical competitor: MIQP solvers; Kawasaki/swap MCMC with PT; Kawamata et al. arXiv:2604.20701
+  is the closest quantum-proposal study (fixed weight, XY mixer + neural surrogate, simulation) [LIT].
+Implementation sketch: XY-mixer QeMCMC on a sector block, accept with true QP objective; detailed
+  balance holds if the XY Hamiltonian is real symmetric and the block choice is state-independent [OWN].
+Break-even: cheap energy -> no hardware case.
+Main kill risk: C5 (users want optimisation) and Kawasaki+PT on dense but small instances.
+Verdict guess: QUANTUM-INSPIRED ONLY. Likelihood ~3%.
+
+-----------------------------------------------------------------------------------------------------
+B5-11  Interbank default cascade (Eisenberg-Noe clearing) tail sampling
+-----------------------------------------------------------------------------------------------------
+Payoff: systemic-risk stress testing: probability that >X banks default given correlated shocks.
+Temperature regime: tilted rare-event target, effectively LOW at the tail; cascade threshold gives
+  bimodal outcomes (contained vs systemic) [OWN].
+Mapping: initial-shock indicators (which banks are hit) -> spins; Ising surrogate from first-order
+  exposure matrix (J_ij = loss transmitted i->j relative to capital) [OWN].
+Energy per step: Eisenberg-Noe clearing vector by fixed-point iteration, O(n^2) per iteration, ms for
+  n~100-1000 banks [LIT for model: Eisenberg and Noe, Management Science 2001, recalled; OWN timing].
+Spins needed: 50-1000 banks.
+Is mixing the bottleneck? Rare-event efficiency is; cascades are monotone in the shock set, so
+  importance splitting and Random-Chemistry-like shrinkage apply.
+Best classical competitor: importance sampling for correlated defaults (Glasserman and Li, Management
+  Science 2005) [LIT, recalled]; splitting; C3.
+Break-even: ms energy -> S* ~ 20-500 on IBM; not reachable at MEDIUM T [OWN, C7].
+Main kill risk: monotonicity exploited classically; data confidentiality means few real networks.
+Verdict guess: QUANTUM-INSPIRED ONLY. Likelihood ~2%.
+
+-----------------------------------------------------------------------------------------------------
+B5-12  Flat-histogram (Wang-Landau / multicanonical) tail estimation with quantum proposals
+-----------------------------------------------------------------------------------------------------
+Payoff: a generic rare-event engine: density of states g(E) of an Ising risk model -> tail probabilities
+  P(E > e*) at ALL tilts/temperatures from one run (credit loss, compound extremes, outage counts).
+Temperature regime: covers all temperatures at once; the hard part is the low-energy end (LOW T) and
+  first-order-like barriers [OWN]. This is the brief's "many-temperature ensemble" lever.
+Mapping: any Ising risk model; WL accept min(1, g(E)/g(E')) needs only a symmetric proposal, which the
+  QeMCMC proposal is [P1 symmetry + OWN]. Note the proposal is temperature-independent [BRIEF], so the
+  same proposal kernel serves every energy window.
+Energy per step: Ising delta-E, cheap.
+Spins needed: 10-20 for exact study; groups for larger.
+Is mixing the bottleneck? Yes: WL/multicanonical round-trip time in energy grows fast at first-order
+  transitions and in glassy low-energy regions [LIT, recalled: Berg and Neuhaus 1992; Wang and Landau,
+  PRL 2001].
+Best classical competitor: WL with replica-exchange windows; population annealing; multicanonical with
+  cluster moves where couplings are ferromagnetic [LIT, recalled].
+Implementation sketch: in the existing pilot code, replace the Boltzmann accept with the WL/multicanonical
+  accept (fixed converged weights for the measurement phase so the chain is a proper MCMC with a fixed
+  target); measure energy round-trip time quantum vs local vs uniform vs replica-exchange WL on SK and on
+  K20/K2-style instances. Detailed balance: holds for the fixed-weight multicanonical phase (symmetric
+  proposal, MH accept); the WL learning phase is non-Markov by design and is excluded from claims [OWN].
+Caveat: P1 proposals stay close in energy (that is why they are accepted at low T); a flat-histogram walk
+  also needs energy-changing moves, so the quantum proposal may help tunnelling within an energy window
+  but not diffusion across windows [SPEC]. This is exactly what the experiment would show.
+Break-even: cheap energy -> hardware no; value is a regime/benchmark result and a quantum-inspired tool.
+Main kill risk: replica-exchange WL already removes most barriers at n<=50; advantage limited to LOW-T
+  windows where P1 already claims it (nothing new).
+Verdict guess: SIMULATE MORE (1-2 days on existing pilot). Likelihood ~5%; high information value.
+
+-----------------------------------------------------------------------------------------------------
+B5-13  Multi-species occupancy with interactions and imperfect detection (site x species latent field)
+-----------------------------------------------------------------------------------------------------
+Payoff: biodiversity monitoring, invasive-species risk.
+Temperature regime: effectively HIGH: occupancy posteriors are dominated by site covariates and detection
+  data; interaction terms are weak and few species are modelled jointly [OWN; Rota et al. Methods Ecol.
+  Evol. 2016 multispecies occupancy, LIT recalled].
+Mapping: latent z_{site,species} spins, coupled within a site by species interactions and spatially by
+  autologistic terms.
+Energy per step: cheap (Bernoulli detection likelihoods).
+Spins needed: 1e2-1e4 sites x 2-20 species.
+Is mixing the bottleneck? No; data-augmentation Gibbs (JAGS/NIMBLE) mixes adequately [OWN].
+Best classical competitor: Gibbs in NIMBLE/Stan with marginalised latents.
+Verdict guess: KILL. Likelihood ~0-1%.
+
+-----------------------------------------------------------------------------------------------------
+B5-14  Synthetic microdata for disclosure control: sampling binary records under exact published margins
+-----------------------------------------------------------------------------------------------------
+Payoff: releasing synthetic census/survey data that exactly matches published tables.
+Temperature regime: target = fitted log-linear/Ising model conditioned on exact margins: hard constraints
+  make the feasible set fragmented; effectively MEDIUM to LOW [OWN].
+Mapping: records x attributes binary; margins = fixed Hamming weights per attribute (XY-type mixers per
+  column) plus pairwise margins (no simple mixer) [OWN, C4].
+Energy per step: cheap.
+Spins needed: n_records x p_attributes (thousands+).
+Is mixing the bottleneck? Yes for fixed-margin tables: Markov bases can be huge (Diaconis and Sturmfels,
+  Ann. Statist. 1998) [LIT, recalled].
+Best classical competitor: Markov-basis MCMC, sequential importance sampling for tables, model-based
+  synthesis without exact margins (Reiter/Drechsler school) [LIT, recalled].
+Main kill risk: practice relaxes exact margins (or uses differential privacy), removing the hard
+  constraint; qubit count enormous.
+Verdict guess: KILL (interesting theory, no practical path). Likelihood ~1%.
+
+-----------------------------------------------------------------------------------------------------
+B5-15  Grid topology / breaker-status identification posterior (hidden outages from SCADA/PMU)
+-----------------------------------------------------------------------------------------------------
+Payoff: detect wrong topology in state estimation after storms or cyber events.
+Temperature regime: LOW when measurement redundancy is low (several topologies explain the data equally);
+  otherwise the posterior is a single spike [OWN].
+Mapping: breaker status spins; surrogate from measurement-sensitivity of each switch [OWN].
+Energy per step: weighted-least-squares state estimation per topology ~1-10 ms [OWN estimate].
+Spins needed: tens of suspect switches.
+Is mixing the bottleneck? No: candidate topologies are few (k<=3 changes from nominal) and are
+  enumerated or solved by MILP/sparse methods [OWN].
+Verdict guess: KILL. Likelihood ~1%.
+
+-----------------------------------------------------------------------------------------------------
+B5-16  Distribution-network reconfiguration / restoration sampling
+-----------------------------------------------------------------------------------------------------
+Payoff: diverse restoration plans after outages.
+Temperature regime: LOW (sparse feasible set).
+Mapping: switch spins with radiality (spanning-tree) global constraint; no Ising encoding without many
+  ancilla variables; most proposals infeasible (C4) [OWN].
+Energy per step: radial power flow (backward-forward sweep) ~ms.
+Best classical competitor: MILP with spanning-tree constraints, branch exchange heuristics.
+Verdict guess: KILL. Likelihood ~0%.
+
+-----------------------------------------------------------------------------------------------------
+B5-17  Logistics: sampling diverse near-optimal routes / schedules (VRP, crew scheduling)
+-----------------------------------------------------------------------------------------------------
+Payoff: route diversity for robustness.
+Temperature regime: LOW (rugged); but C5 applies (optimisation).
+Mapping: permutation one-hot encoding n^2 qubits with two-way one-hot constraints; X mixer infeasible;
+  no compact constraint-preserving mixer at scale (C4) [OWN].
+Energy per step: route cost cheap; with stochastic simulation medium.
+Best classical competitor: LKH/OR-Tools, large neighbourhood search, column generation.
+Verdict guess: KILL. Likelihood ~0%.
+
+-----------------------------------------------------------------------------------------------------
+B5-18  Facility / sensor-network siting with simulation-based cost (Bayesian optimisation over binaries)
+-----------------------------------------------------------------------------------------------------
+Payoff: where to place depots, rain gauges, air-quality sensors, substations when each candidate design
+  needs a slow simulation (discrete-event logistics sim, hydrological model) of seconds-minutes.
+Temperature regime: inside a BOCS-style loop one samples/optimises an acquisition over a sparse Bayesian
+  quadratic (Ising) surrogate; acquisition landscapes are MEDIUM [OWN].
+Mapping: site spins; surrogate is natively Ising (BOCS: Baptista and Poloczek, ICML 2018,
+  arXiv:1806.08838 [LIT, recalled]).
+Energy per step: the simulator is called once per BO iteration, not per MCMC step; the MCMC/annealing
+  inside the acquisition step runs on the cheap surrogate [OWN].
+Spins needed: 20-100 sites.
+Is mixing the bottleneck? No: the bottleneck is simulator calls; the inner surrogate sampling is cheap
+  classically (simulated annealing / SDP in BOCS).
+Main kill risk: the quantum part would only accelerate the cheap inner step.
+Verdict guess: QUANTUM-INSPIRED ONLY at best; effectively KILL. Likelihood ~1%.
+
+-----------------------------------------------------------------------------------------------------
+B5-19  Epidemic contact-network inference (latent edges given infection/recovery times)
+-----------------------------------------------------------------------------------------------------
+Payoff: who-could-have-infected-whom networks for outbreak response (households, wards, farms).
+Temperature regime: effectively MEDIUM to LOW: sparse epidemic data leave many networks consistent with
+  the timeline; consistency (every infected node needs an infectious neighbour) is a hard constraint, so
+  the feasible edge set is fragmented [OWN].
+Mapping: edge indicators -> spins (n(n-1)/2); prior = Erdos-Renyi/ERGM (Ising-like); likelihood couples
+  edges to the transmission tree (multi-body). Groendyke, Welch and Hunter fit a stochastic SEIR on an
+  Erdos-Renyi network to recovery times with MCMC (Scand. J. Stat. 2011) [LIT]; dynamic-network data
+  augmentation arXiv:1910.04221 [LIT].
+Energy per step: epidemic likelihood given network and augmented times, O(edges + events), ~us-ms [OWN].
+Spins needed: n=30-200 hosts -> 435-20000 edge spins; only edges among infectious-period overlaps
+  matter (much smaller).
+Is mixing the bottleneck? Partly; the joint update of transmission tree and edges is the slow part, and
+  that is a tree (not Ising) variable.
+Best classical competitor: data-augmentation MCMC with tree moves (Groendyke et al.; Fintzi et al.
+  arXiv:1606.07995) [LIT].
+Main kill risk: hard consistency constraint (C4) and the tree variable, not edges, dominates mixing.
+Verdict guess: KILL (QUANTUM-INSPIRED at most). Likelihood ~1%.
+
+=====================================================================================================
+2. KNOWN PROJECT IDEAS (same format)
+=====================================================================================================
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K1  Multi-site rain occurrence weather generator (autologistic/Ising, real station data, summer vs winter)
+-----------------------------------------------------------------------------------------------------
+Payoff: stochastic weather generator that reproduces joint wet/dry patterns across stations; summer vs
+  winter is a natural regime contrast.
+Temperature regime: fitted model, so T=1 by construction. Effective regime from the fitted couplings:
+  summer convective = short-range, weak couplings, strong local fields -> HIGH; winter frontal = strong,
+  long-range positive couplings, near-bimodal "all wet / all dry" days -> MEDIUM (near ordering) [OWN,
+  to be measured as the specific-heat-like peak position of the fitted model under a beta sweep].
+Mapping: station wet/dry = spin; autologistic = Ising with h from covariates (circulation type) and
+  J >= 0 between stations. Literature: autologistic within non-homogeneous HMM, Hughes and Guttorp 1994
+  [LIT: https://sites.stat.washington.edu/NRCSE/pdf/trs04_hgc.pdf]; latent-Gaussian alternatives
+  (Wilks 1998; arXiv:2003.07998) [LIT].
+Energy per step: Ising delta-E ~ns-us. Cheap.
+Spins needed: 10-50 stations (exact sim feasible up to ~20).
+Is mixing the bottleneck? No. Couplings are ferromagnetic (unfrustrated), so Swendsen-Wang with a ghost
+  spin for fields mixes fast even near ordering [LIT, recalled, standard]; fitting by pseudo-likelihood
+  needs no sampling (C6). For n<=20 the distribution is exactly enumerable.
+Best classical competitor: Swendsen-Wang / Wolff; exact enumeration for n<=20; Gibbs at HIGH T.
+Implementation sketch: real station data (e.g. national met service daily records), fit autologistic
+  per season by pseudo-likelihood, then run the pilot quantum-vs-local-vs-uniform-vs-SW gap analysis on
+  the two fitted instances. Detailed balance: ideal QeMCMC yes (P1); SW yes (standard).
+Break-even: cheap energy -> S* ~ 1e5+; no wall-clock route.
+Main kill risk: SW mixes ferromagnets near-optimally; no application advantage possible.
+Verdict guess: SIMULATE MORE only as an honest real-data regime benchmark (HIGH summer vs MEDIUM winter,
+  ferromagnetic non-SK instance, 2-3 days); as an application: KILL. Likelihood of advantage ~1%.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K2  Compound extremes (drought/flood coincidence) at low T or conditioned on an extreme
+-----------------------------------------------------------------------------------------------------
+Payoff: probability of multi-station, multi-day joint dry spells or wet spells (crop failure, flood
+  coincidence), and samples of how such events look.
+Temperature regime: either tilted (LOW effective T) or conditioned on "fraction wet >= q over D days",
+  which adds a hard constraint; the conditioned space-time field is effectively MEDIUM to LOW [OWN].
+Mapping: space-time autologistic (stations x days) Ising; conditioning = constraint on magnetisation.
+Energy per step: cheap.
+Spins needed: 20 stations x 10-30 days = 200-600.
+Is mixing the bottleneck? Partly: conditioning on a magnetisation is handled classically by
+  multicanonical sampling in the magnetisation (1D order parameter) or by fixed-magnetisation Kawasaki
+  plus SW-type clusters [OWN].
+Best classical competitor: multicanonical / Wang-Landau in magnetisation; importance splitting; PT.
+Implementation sketch: use B5-12 machinery on the fitted K1 model; fixed-magnetisation version needs an
+  XY mixer (C4).
+Break-even: cheap -> no hardware route.
+Main kill risk: ferromagnetic model with a 1D order parameter is the easiest possible case for
+  multicanonical methods.
+Verdict guess: QUANTUM-INSPIRED ONLY (fold into B5-12 as an instance). Likelihood ~2%.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K3  3x4 convective-cell / frost lens
+-----------------------------------------------------------------------------------------------------
+Payoff: a 12-spin lattice picture (convective cells, frost pockets) that fits current hardware.
+Temperature regime: whatever is fitted; at 12 spins the notion of regime is weak (no phase transition at
+  this size, only a smooth crossover) [OWN].
+Mapping: 12-spin nearest-neighbour Ising, 17 bonds; heavy-hex embedding cheap.
+Energy per step: trivial.
+Spins needed: 12.
+Is mixing the bottleneck? No: 4096 states, exact enumeration in microseconds; exact sampling is free.
+Best classical competitor: exact enumeration (perfect iid samples).
+Implementation sketch: hardware validation of the proposal kernel only: compare measured Q(s'|s) and the
+  resulting chain against the exact enumerated target; quantify noise-induced asymmetry (P1 SI issue).
+  Detailed balance: ideal yes; on hardware only approximately (test it, that is the point).
+Break-even: impossible by construction.
+Main kill risk: none as a calibration demo; fatal as an application claim.
+Verdict guess: BUILD NOW as a hardware symmetry/noise calibration demo only; KILL as an application.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K19  Grid cascading outages, IEEE 14-bus
+-----------------------------------------------------------------------------------------------------
+Payoff: didactic N-k risk picture.
+Temperature regime: tilted rare-event target as B5-08; effectively LOW at high tilt.
+Mapping: 20 branches -> 20 spins; LODF surrogate (B5-08).
+Energy per step: DC cascade on 14 buses ~0.1-1 ms; AC ~1-10 ms [OWN estimate].
+Spins needed: 20.
+Is mixing the bottleneck? No: all 2^20 ~ 1e6 outage sets x ~1 ms = ~17 min of DC simulation enumerates
+  the whole space exactly; for k<=3 only C(20,1)+C(20,2)+C(20,3) = 1350 cases [OWN].
+Best classical competitor: exhaustive enumeration; Random Chemistry at larger scale (B5-08).
+Implementation sketch: use only as the validation instance for B5-08 (exact ground truth available).
+Break-even: impossible at this size.
+Main kill risk: enumerable.
+Verdict guess: KILL as an application; keep as B5-08 ground-truth test case (BUILD NOW as a test only).
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K20  Credit default contagion (Ising default model, tail loss)
+-----------------------------------------------------------------------------------------------------
+Payoff: portfolio loss tail (VaR/ES) with contagion, beyond conditional-independence copula models.
+Temperature regime: the long-range Ising credit model shows a first-order-like transition with a jump in
+  risk as correlation rises (Molins and Vives, arXiv:cond-mat/0401378) and doubly-peaked loss
+  distributions in contagion variants (Molins and Vives, "Model risk on credit risk", arXiv:1502.06984)
+  [LIT]. So the tail is a second mode: effectively LOW for the tail event, MEDIUM in the bulk [OWN].
+Mapping: obligor default = spin; J = contagion/exposure links; h = individual default propensities.
+  Mean-field (all-to-all equal J) in the homogeneous case.
+Energy per step: cheap (O(n) delta-E).
+Spins needed: 100-10000 obligors.
+Is mixing the bottleneck? For mean-field or near-mean-field models no: the state is summarised by one
+  order parameter (number of defaults), so exact combinatorics (homogeneous case, solved by Molins and
+  Vives) or multicanonical sampling in that 1D variable work; the two modes sit at Hamming distance
+  O(n), which a quantum proposal also does not bridge efficiently (transverse-field tunnelling in
+  mean-field models is exponentially suppressed in n) [OWN, SPEC on the last point]. Only a sparse,
+  heterogeneous exposure network makes it genuinely glassy.
+Best classical competitor: exact/semianalytic for homogeneous; Glasserman-Li importance sampling
+  (2005) [LIT, recalled]; multicanonical/Wang-Landau; population annealing.
+Implementation sketch: B5-12 instance with a sparse heterogeneous exposure network.
+Break-even: cheap energy -> no hardware route.
+Main kill risk: 1D order parameter makes classical rare-event methods near-optimal.
+Verdict guess: QUANTUM-INSPIRED ONLY (or KILL). Likelihood ~2%.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K21  Species co-occurrence (Markov network / Ising of presence-absence)
+-----------------------------------------------------------------------------------------------------
+Payoff: infer direct species interactions from co-occurrence (Harris, Ecology 2016, doi
+  10.1002/ecy.1605, R package rosalia) [LIT].
+Temperature regime: fitted ecological couplings are weak relative to site/environment fields -> HIGH
+  effective T [OWN; consistent with the field fitting by likelihood/pseudo-likelihood without trouble].
+Mapping: species presence = spin, J = interaction, h = environment; exact normalisation up to ~30 species
+  [LIT: Harris].
+Energy per step: cheap.
+Spins needed: 20-300 species.
+Is mixing the bottleneck? No (HIGH T; pseudo-likelihood fitting avoids sampling, C6).
+Best classical competitor: pseudo-likelihood; Gibbs; exact enumeration below ~30 species.
+Verdict guess: KILL. Likelihood ~0-1%.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K22  Roll-call voting blocs (maximum-entropy Ising of votes)
+-----------------------------------------------------------------------------------------------------
+Payoff: bloc structure, influence of members; nice public data.
+Temperature regime: fitted pairwise maximum-entropy model; Lee, Broedersz and Bialek found a strong pull
+  to unanimity, a simple energy landscape with a few local maxima (ideological split, conservative core),
+  and couplings of both signs (J. Stat. Phys. 2015, arXiv:1306.5004) [LIT]. For legislatures with party
+  discipline: two dominant blocs -> MEDIUM, few modes, mostly ferromagnetic within party [OWN].
+Mapping: legislator vote = spin; J from inverse Ising fit.
+Energy per step: cheap.
+Spins needed: 9 (Supreme Court; enumerable, 512 states) to 100 (Senate) to 435 (House).
+Is mixing the bottleneck? No: 9 justices are enumerable; for the Senate two blocs are bridged by PT or
+  cluster moves; standard political science uses ideal-point models (Clinton, Jackman and Rivers, APSR
+  2004; NOMINATE) where sampling is easy [LIT, recalled].
+Best classical competitor: exact enumeration (n=9); PT + Houdayer/Wolff-type clusters for n=100.
+Verdict guess: KILL as an application; possible outreach demo (n=9 fits hardware, ground truth exact).
+  Likelihood ~1%.
+
+-----------------------------------------------------------------------------------------------------
+KNOWN-K23  Wildfire lens
+-----------------------------------------------------------------------------------------------------
+Payoff: burn-probability maps, or inverse problem: infer a binary fuel-dryness map from an observed burn
+  scar using a fire-spread simulator.
+Temperature regime: forward burn sampling is a percolation-like process best simulated directly (no MCMC
+  needed). The inverse posterior over fuel cells given a scar is MEDIUM (only cells near the front are
+  constrained, the rest is prior) [OWN].
+Mapping: cell fuel state = spin; Ising surrogate = spatial autologistic prior + linearised front
+  sensitivity; true energy = simulator mismatch (C2). Burned-area connectivity is a global constraint
+  if the burned field itself is the variable (C4).
+Energy per step: fire-spread simulator (cellular automaton seconds; physics-based FARSITE-class
+  seconds to minutes) [OWN estimate, not verified].
+Spins needed: 100-1e4 cells; groups of 10-30 cells near the front.
+Is mixing the bottleneck? The number of simulator calls is.
+Best classical competitor: C3 surrogate independence sampler / delayed acceptance; ensemble Kalman and
+  ABC methods used in fire data assimilation [LIT, recalled].
+Break-even: expensive energy -> S* ~ 1.1-6 (C7), but C3 applies and the surrogate is a ferromagnetic
+  autologistic field (classically easy to sample).
+Main kill risk: C3; also fire inverse problems are usually posed with continuous fuel moisture, not
+  binary fields.
+Verdict guess: QUANTUM-INSPIRED ONLY (formally sound, no structural edge). Likelihood ~2%.
+
+=====================================================================================================
+3. SUMMARY TABLE (ID | regime | energy | verdict | likelihood)
+=====================================================================================================
+B5-01 BVS collinear blocks          | LOW-MED (collinearity) | cheap us    | SIMULATE MORE -> QI | ~10%
+B5-02 Fine-mapping in LD blocks     | LOW                    | cheap us    | SIMULATE MORE -> QI | 5-10%
+B5-03 BVS expensive likelihood      | MED-LOW                | med-exp     | SIMULATE MORE       | ~5%
+B5-04 BN structure learning         | LOW                    | cheap       | KILL                | <2%
+B5-05 Mixture allocations (Potts)   | LOW/HIGH               | cheap       | KILL                | <2%
+B5-06 Record linkage                | MED-LOW                | cheap       | KILL                | <2%
+B5-07 Change-point                  | n/a (exact)            | cheap       | KILL                | ~0%
+B5-08 Grid N-k large, LODF surrog.  | LOW-MED (tilted)       | 0.01-few s  | SIMULATE MORE       | 5-10%
+B5-09 Unit commitment               | n/a (optimisation)     | ms LP       | KILL                | ~0-1%
+B5-10 Cardinality portfolio         | MED                    | cheap       | QUANTUM-INSPIRED    | ~3%
+B5-11 Interbank cascade tail        | LOW (tail)             | ms          | QUANTUM-INSPIRED    | ~2%
+B5-12 Flat-histogram tails          | all T, LOW windows     | cheap       | SIMULATE MORE       | ~5%, high info
+B5-13 Multi-species occupancy       | HIGH                   | cheap       | KILL                | ~0-1%
+B5-14 Disclosure margins            | MED-LOW (constraints)  | cheap       | KILL                | ~1%
+B5-15 Topology identification       | LOW/spike              | ms          | KILL                | ~1%
+B5-16 Distribution reconfiguration  | LOW (radiality)        | ms          | KILL                | ~0%
+B5-17 Routing diversity             | LOW (optimisation)     | cheap       | KILL                | ~0%
+B5-18 Siting with BOCS surrogate    | MED (inner loop)       | cheap inner | QI / KILL           | ~1%
+B5-19 Epidemic contact network      | MED-LOW (constraints)  | us-ms       | KILL                | ~1%
+KNOWN-K1 Rain occurrence            | HIGH summer / MED wint | cheap       | SIMULATE MORE (benchmark only) | ~1%
+KNOWN-K2 Compound extremes          | LOW / conditioned      | cheap       | QUANTUM-INSPIRED (into B5-12)  | ~2%
+KNOWN-K3 3x4 cell lens              | n/a (12 spins)         | trivial     | BUILD NOW (calibration demo)   | 0% as application
+KNOWN-K19 IEEE 14-bus cascades      | LOW tilted             | ~ms         | KILL (keep as B5-08 test case) | 0%
+KNOWN-K20 Credit contagion          | LOW tail / MED bulk    | cheap       | QUANTUM-INSPIRED / KILL        | ~2%
+KNOWN-K21 Species co-occurrence     | HIGH                   | cheap       | KILL                           | ~0-1%
+KNOWN-K22 Roll-call blocs           | MED (two blocs)        | cheap       | KILL (outreach demo n=9)       | ~1%
+KNOWN-K23 Wildfire lens             | MED (inverse)          | s-min       | QUANTUM-INSPIRED               | ~2%
+
+=====================================================================================================
+4. THREE STRONGEST CANDIDATES AND WHY
+=====================================================================================================
+1. B5-01 (+B5-02) Bayesian variable selection / fine-mapping with collinear (LD) blocks. The only problem
+   class here where a T=1 posterior is genuinely effectively LOW for a structural, well-understood reason
+   (non-identifiable collinear blocks), where the Ising surrogate falls out of the model (h from
+   marginal association, J from the correlation/LD matrix), where P2 groups map onto natural blocks,
+   where the true energy can be kept in the accept (exact detailed balance in the ideal limit), and
+   where the named competitor (Zanella-Roberts TGS, informed proposals, block enumeration) is concrete
+   and runnable. Honest expected outcome: quantum-inspired at best; the hard test is TGS + block swap +
+   exact block Gibbs.
+2. B5-08 Large-grid N-k rare-event sampling with an LODF surrogate. The one idea in this domain with a
+   truly expensive energy (cascade simulation, ~seconds per Random-Chemistry trial on the Polish case),
+   so S* drops to ~1.1-6 and a step advantage could become wall-clock. Must beat Random Chemistry and
+   the C3 surrogate-PT independence sampler; K19 (IEEE 14-bus, enumerable) gives exact ground truth.
+3. B5-12 Flat-histogram (multicanonical) tail estimation with quantum proposals. Cheapest to test (swap
+   the accept rule in the existing pilot), answers a question no QeMCMC paper has asked (does the
+   temperature-independent proposal help an all-T rare-event walk?), and absorbs K2 and K20 as
+   instances. High information value even if negative.
+
+Not recommended as applications: unit commitment, routing, portfolio optimisation (optimisation, C5);
+BN structure, record linkage, mixtures, reconfiguration (hard constraints, C4); change-point (exact
+methods); species, rain, voting (HIGH T or ferromagnetic, solved by SW/pseudo-likelihood/enumeration).
+
+Sources consulted this session (web-verified): arXiv:1805.00541; arXiv:1504.05006; arXiv:1803.07859;
+arXiv:1909.06039; arXiv:1405.4213; arXiv:1901.03304; arXiv:1909.04513;
+https://phines.w3.uvm.edu/publications/2012/eppstein_2012.pdf; arXiv:2110.12624; arXiv:2412.11312;
+arXiv:cond-mat/0401378; arXiv:1502.06984; arXiv:1306.5004; doi 10.1002/ecy.1605 (bioRxiv 018861);
+https://sites.stat.washington.edu/NRCSE/pdf/trs04_hgc.pdf; arXiv:2003.07998; Fearnhead 2006 doi
+10.1007/s11222-006-8450-8; Groendyke et al. Scand. J. Stat. 2011; arXiv:2403.03087; arXiv:2408.07881;
+arXiv:2411.17821; arXiv:2604.20701; arXiv:2312.01402 (quantum multiproposal MCMC for Ising-type
+Bayesian ancestral trait models, Bayesian Analysis 2025, not Layden-type).
+Marked "recalled" = cited from memory, not re-verified this session.

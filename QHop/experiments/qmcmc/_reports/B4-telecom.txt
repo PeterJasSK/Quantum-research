@@ -1,0 +1,524 @@
+B4 - QeMCMC APPLICATION IDEAS: TELECOM, CODING, SIGNAL PROCESSING
+Sub-agent B4, 2026-11-20. Plain text. Read with BRIEF-common.txt and A4-hardware.txt.
+Labels: [P1] shown in Layden et al. 2023; [P2] shown in Ferguson & Wallden 2025; [LIT] literature, cited, checked
+this session by web search or abstract unless marked "recalled"; [LIT-recalled] from memory, NOT re-verified this
+session (web search budget ran out); [OWN] own calculation; [SPEC] speculation; [PILOT] team pilot in BRIEF.
+
+======================================================================================================
+0. BOTTOM LINE
+======================================================================================================
+1. Real-time physical-layer use is dead, and not narrowly. A 5G NR slot is 1 ms at 15 kHz subcarrier spacing and
+   0.125 ms at 120 kHz. Every resource element carries its own detection problem, so a 100 MHz carrier needs about
+   1e8 detection problems per second [OWN, section 2]. The fastest documented quantum round trip is a D-Wave QMI at
+   about 16 ms of QPU access plus 10-20 ms overhead (A4). Gate-based cloud steps take seconds (A4). That is 6 to 9
+   orders of magnitude too slow, before any MCMC chain length is counted. Every "detect/decode/schedule/precode
+   inside the frame" idea is KILLED cleanly (B4-01, 02, 06, 09, 12, 13, 16, 18, 19).
+2. The temperature physics does not match the P1/P2 evidence. P1, P2 and the pilot measured unplanted SK spin glasses
+   at low T. A telecom posterior sampled at the matched temperature (T set by the noise variance) lies on the
+   Nishimori line, where Bayes-optimal inference shows NO replica-symmetry breaking [LIT: Nishimori, comment on
+   Tanaka, arXiv:cond-mat/0111003; Zdeborova & Krzakala, arXiv:1511.02476, section "no RSB in Bayes-optimal
+   inference"]. Telecom's hard regimes are of a different kind:
+   (a) a first-order (spinodal) metastability window at intermediate SNR in overloaded systems [LIT: Arai, Ohzeki,
+       Tanaka, arXiv:2004.11066];
+   (b) T -> 0 maximum-likelihood search at high SNR (an optimization task, not a sampling task).
+   Whether the quantum proposal's gap advantage survives on planted, Nishimori-line instances is untested anywhere.
+   It is cheap to test with the team's existing code. This is the single most useful thing B4 can recommend (B4-04).
+3. The offline survivors fall into three cases where energy evaluation is expensive, the landscape is multimodal and
+   no deadline applies:
+   (a) error-floor rare-event estimation, where the "energy" is a full BP decoder run (B4-07);
+   (b) low-autocorrelation binary sequence (LABS) design for radar and sonar, a famously glassy offline problem with
+       a quantum precedent (B4-15);
+   (c) overloaded NOMA/CDMA detection in the first-order window, studied as science, not as a product (B4-03).
+   None of them is BUILD-NOW on hardware. The best case for all three is SIMULATE MORE, ending as QUANTUM-INSPIRED
+   ONLY for any group size that can be simulated classically.
+
+======================================================================================================
+1. KEY PHYSICS: SNR -> TEMPERATURE, AND WHERE THE HARD REGIME IS
+======================================================================================================
+1.1 Mapping [OWN, standard]. Real-valued model y = Hx + w, w ~ N(0, sigma^2 I), x in a discrete alphabet.
+    Posterior p(x|y) ~ exp(-||y - Hx||^2 / (2 sigma^2)). With E(x) = ||y - Hx||^2 = x^T G x - 2 z^T x + const,
+    where G = H^T H and z = H^T y, the posterior is a Boltzmann distribution at T_eff = 2 sigma^2.
+    Ising form with BPSK spins: J_ij = -2 G_ij (i<j), h_i = 2 z_i.
+    Low SNR => large sigma^2 => HIGH T. High SNR => LOW T.
+    The couplings come from the channel Gram matrix: dense, all-to-all, and changing once per channel coherence
+    block. The fields come from y: they change with EVERY received vector, i.e. per subcarrier per OFDM symbol.
+1.2 QAM -> spins [OWN, standard; used in QuAMax, LIT arXiv:2001.04014].
+    One complex M-QAM symbol is 2 real PAM dimensions, giving log2(M) spins per user:
+      QPSK 2, 16-QAM 4, 64-QAM 6, 256-QAM 8.
+    16-QAM per real dimension: value = 2 s1 + s2. Within-symbol coupling weights scale 4:2:1, and 64-QAM reaches
+    16:1. The coefficient dynamic range grows with M.
+    For annealers this hurts directly: the precision error (ICE) moves the ground state.
+    For QeMCMC it hurts only proposal quality, never correctness. Any real symmetric H_prob gives an exact
+    Boltzmann chain [P1]. This is the one structural edge QeMCMC has over QuAMax-style annealing. It is real, but it
+    buys correctness, not speed.
+1.3 Where the hard regime is.
+    LOW SNR (HIGH T): the posterior is broad and single-spin Gibbs mixes fast. MMSE is near-optimal for typical
+      massive MIMO (N_r >> N_t). BRIEF's HIGH regime: no quantum case unless energy is expensive. Telecom energies
+      are cheap: an incremental Delta-E costs O(d N) [OWN].
+    MATCHED-T posterior, N_t <= N_r, iid channel: on the Nishimori line, no RSB [LIT above]. In the large-system
+      limit AMP/BP is Bayes-optimal when the replica fixed point is unique [LIT: Montanari & Tse, arXiv:cs/0602028,
+      proves Tanaka's formula for loading alpha <= alpha_s ~ 1.49 in a sparse-signature model]. That alpha_s marks
+      the onset of multiple fixed points (a first-order transition) [LIT-recalled]. Conclusion: for ordinary MIMO
+      loading at the matched temperature, mixing is NOT the bottleneck.
+    MATCHED-T, overloaded (alpha above ~1.5: NOMA, overloaded CDMA, user-dense uplink), intermediate SNR: a
+      first-order transition with metastable states. MCMC and BP get stuck in the wrong (low-overlap) state.
+      Quantum annealing also suffers here: reverse annealing could not avoid the first-order transition in their
+      practical test [LIT: arXiv:2004.11066]. This is the real "hard phase" of telecom inference. It is
+      metastability between two macrostates, not an SK-like glass. P1/P2 evidence does not cover it.
+    LOW T below matched (ML detection, T -> 0, square or overloaded, large N, high-order QAM, intermediate-to-high
+      SNR): an off-Nishimori, rugged landscape. Sphere-decoding expected complexity is exponential in N at any
+      fixed SNR [LIT: Jalden & Ottersten, IEEE TSP 53(4) 2005, abstract checked], against the polynomial claim of
+      Hassibi & Vikalo [LIT]. Hassibi et al. found that running the MCMC detector at T = noise std makes mixing time
+      unbounded as SNR grows when local minima exist. Their recommendation is T scaling like sqrt(SNR) for mixing,
+      while an optimality bound caps T at O(sqrt(SNR)/ln N) for SNR > 2 ln N [LIT: arXiv:1310.7305,
+      IEEE TSP 62(17) 2014]. This is the regime where the P1-type low-T advantage could apply. But it is an
+      optimization regime, and at high SNR an MMSE warm start already lands in the right basin for most
+      realizations. The hard part is the tail of ill-conditioned channel draws. [OWN/SPEC: the fraction of hard
+      realizations is not quantified here.]
+    WHAT IT MEANS: the pilot's 25x-39x gap ratios at beta >= 1 [PILOT] are for the wrong ensemble. Telecom needs a
+      planted test (B4-04) before any telecom idea gets compute.
+
+======================================================================================================
+2. LATENCY AND THROUGHPUT ARITHMETIC (why real-time dies)
+======================================================================================================
+2.1 Deadlines. NR numerology mu: 14 OFDM symbols per slot, 2^mu slots per 1 ms subframe, so the slot is 1, 0.5, 0.25
+    or 0.125 ms for 15/30/60/120 kHz [LIT: 3GPP TS 38.211 numerology; slot/symbol structure confirmed via patent
+    text in search, exact N1/N2 processing tables in TS 38.214 not fetched]. HARQ processing budgets are fractions
+    of a slot to a few slots [LIT-recalled: LTE ~3 ms eNB processing in the 8 ms HARQ loop].
+2.2 Problem rate [OWN]. 100 MHz carrier at 30 kHz: 273 PRB x 12 = 3,276 subcarriers x 14 symbols = 45,864
+    detection problems per 0.5 ms slot, about 9e7 problems/s per carrier, each with a different field vector h.
+    Per-problem time budget on one device: ~10 ns.
+2.3 Quantum step times (from A4). D-Wave QMI: ~16 ms QPU access (15.9 ms programming) plus 10-20 ms unbilled
+    overhead. IBM Heron: ~2 s per sub-job, 2-4 s in-session 1-shot round trip (A4 estimate). Helios: 55 ms per
+    depth-1 layer. QuAMax's headline "10 us" counts anneal time only [LIT: arXiv:2001.04014]. Overheads were in the
+    hundreds of ms per the team's own D-Wave talk (search snippet, not re-verified). X-ResQ (reverse-annealing MIMO)
+    reports anneal-level BER for 4x6 16-QAM on 240 qubits, not end-to-end latency [LIT: arXiv:2402.18778].
+2.4 Hypothetical best case [OWN/SPEC]. Run the whole chain on the controller: measure s', compute Delta-E on an FPGA,
+    accept with an on-board RNG, conditionally re-prepare s by feedforward. IBM FF is ~600 ns (A4). Helios has
+    real-time arithmetic (A4). A step then costs at least the circuit time. For n = 32 dense spins one Trotter layer
+    is ~1.5k CNOT, depth ~100 two-qubit layers [OWN, 2.5], ~10-30 us per step on superconducting. 100 steps take
+    1-3 ms for ONE problem, against a ~10 ns per-problem budget. Still ~1e5x short even with perfect fidelity, and
+    the fidelity is not there (2.5).
+2.5 Embedding cost [OWN]. Dense n-spin ZZ evolution on a line or heavy-hex via a swap network: about 3 CNOT per pair
+    per Trotter layer, i.e. ~1.5 n^2 CNOT and ~3n two-qubit depth per layer:
+       n=16 (8x8 QPSK):          ~360 CNOT/layer
+       n=32 (16x16 QPSK):        ~1.5k
+       n=64 (16x16 16-QAM):      ~6k
+       n=256 (64x64 16-QAM):     ~98k
+    t ~ U[2,20] with alpha-normalized H (||alpha H_prob|| ~ sqrt(n)) needs on the order of 10-100 Trotter layers
+    [SPEC range; not measured]. A4 puts the Heron budget at ~2-5k two-qubit gates with mitigation. Ideal-shaped
+    proposals are therefore impossible beyond n ~ 16-24 spins on present hardware. Coarse-grained groups of 8-16
+    spins fit, but P2 notes small groups are classically simulable, so that is quantum-inspired [P2].
+2.6 Energy per step [OWN]. Cache the residual r = y - Hx. A move flipping d spins costs O(d N) to update, a full
+    evaluation O(N^2). For N = 32-256: ~1e2-1e5 flops, i.e. ~10 ns-10 us on a CPU core, faster batched on GPU.
+    Cheap, so S* = t_Q/t_C ~ 1e6-1e9 as in BRIEF. Exception: when the "energy" is a decoder run (B4-07).
+2.7 Verdict rule applied below: any idea that needs its answer inside a frame, slot, or channel-coherence block is
+    KILLED. No foreseeable device closes 6-9 orders of magnitude in throughput per watt against ASIC detectors
+    [SPEC, but the gap is big enough that the conclusion does not depend on the exact numbers].
+
+======================================================================================================
+3. IDEAS
+======================================================================================================
+
+B4-01  Real-time hard-output (near-ML) MIMO detection with a QeMCMC proposal
+ Payoff: higher spectral efficiency than MMSE in square/overloaded uplinks (ParaMax-type gains, ~1.4x throughput
+   vs a linear detector in 12x24 16-QAM [LIT: arXiv:2103.10561]).
+ Regime: LOW T (T -> 0 or Hassibi-tempered T ~ sqrt(SNR) scale), mid-high SNR. Why: ML is the ground state; the chain
+   is used as stochastic search.
+ Mapping: BPSK/QAM -> N_t log2 M spins; J from the dense Gram matrix (all-to-all); h from H^T y per received vector.
+   Embedding ~1.5 n^2 CNOT per Trotter layer [OWN 2.5].
+ Energy/step: O(dN) incremental, 10 ns-1 us.
+ Spins: 32-512 full; group 8-16.
+ Mixing the bottleneck? Partly, only for the ill-conditioned tail. An MMSE warm start puts most chains in the right
+   basin at high SNR [OWN/SPEC].
+ Best classical: MMSE-SIC, K-best/sphere decoding for small N, ParaMax parallel tempering [LIT arXiv:2103.10561],
+   RI-MIMO/TRIM Ising-machine detectors [LIT arXiv:2105.10535], deep-unfolded detectors, all on ASIC/GPU.
+ Sketch: none worth building. If forced: on-controller loop (2.4).
+ Detailed balance: holds in the ideal case [P1]. Irrelevant here, since this is search.
+ Break-even: ~9e7 problems/s needed vs >= 16 ms per quantum call. Missed by >1e6 even at zero chain length.
+ Kill risk: certain (deadline + throughput).
+ VERDICT: KILL. Likelihood of any value: <1%.
+
+B4-02  Real-time soft-output MIMO detection (LLRs from posterior samples at T = 2 sigma^2)
+ Payoff: soft LLRs into the LDPC decoder are worth ~1-3 dB in coded systems [LIT-recalled: list sphere decoding
+   literature]. This is the one telecom task that is genuinely SAMPLING.
+ Regime: matched T (Nishimori line). LOW SNR = HIGH T (easy). Intermediate SNR + overloaded = first-order window.
+ Mapping/embedding/spins: as B4-01.
+ Energy/step: O(dN), ~10 ns-1 us.
+ Mixing the bottleneck? Usually no for N_t <= N_r (no RSB; AMP/EP near-optimal for iid channels). Only in the
+   overloaded first-order window.
+ Best classical: list sphere decoding, soft MMSE-PIC, EP detectors, MCMC with optimized temperature
+   [LIT arXiv:1310.7305], ParaMax soft variant [LIT arXiv:2103.10561].
+ Detailed balance: required here, since the samples must be the posterior. Holds ideally [P1]. Hardware noise biases
+   LLRs unless twirled [P1 SI].
+ Break-even: same throughput wall as B4-01.
+ Kill risk: certain.
+ VERDICT: KILL (real-time). The offline variant is B4-05.
+
+B4-03  Overloaded NOMA/CDMA multiuser detection in the first-order hard window (offline science)
+ Payoff: a scientific answer to "does a quantum proposal escape a first-order metastable state that traps Gibbs and
+   BP?". If yes, it is the first QeMCMC result on a planted inference problem with a known phase diagram. Product value
+   is nil (offline).
+ Regime: matched T at intermediate SNR, loading alpha ~1.5-3 (NOMA overloading). Why: coexistence of a high-overlap
+   and a low-overlap macrostate. Barriers are extensive, so local moves need exponential time [LIT: 2004.11066 for
+   QA; LIT-recalled for the classical spinodal].
+ Mapping: BPSK users, J = -2 G with G = S^T S from random spreading S (dense), h = 2 S^T y.
+ Energy/step: O(dN).
+ Spins: 8-16 per instance for exact gaps (n <= 12-14 statevector with common/qmc.py); full chains to ~20 in sim.
+ Mixing the bottleneck? Yes, by construction inside the window.
+ Best classical: BP/AMP with damping and restarts, parallel tempering across SNR, population annealing. Also known
+   trick: start from a decoded/oracle partial solution, i.e. reverse-annealing analogue [LIT 2004.11066].
+ Sketch: generate planted CDMA instances; sweep alpha and SNR; compute exact spectral gaps of quantum_Q vs local_Q,
+   uniform_Q and PT (common/qmc.py: quantum_Q, gap, parallel_tempering). Measure the time for a chain started at
+   the paramagnetic state to hit overlap > 0.9.
+ Caveat: finite n <= 14 blurs any first-order transition. The window is visible only as a bimodal overlap
+   histogram at n ~ 12-20 [SPEC].
+ Detailed balance: exact ideal [P1]; checked numerically by qmc.asymmetry.
+ Break-even: n/a (science). Any hardware run is n <= 10 and offline.
+ Kill risk: finite-size smearing makes "first-order" untestable at n <= 14. PT across SNR closes the gap anyway.
+ VERDICT: SIMULATE MORE. Likelihood of a clean positive result ~15%.
+
+B4-04  Nishimori-line transfer test: does the QeMCMC gap advantage survive on planted, matched-temperature posteriors?
+ Payoff: decides the whole telecom/inference vertical in a few days of CPU. If the gap-ratio collapses to ~1x on the
+   Nishimori line (as no-RSB suggests for typical loading), every telecom sampling idea dies with a clear reason.
+   If it survives, B4-03/05/07/11 earn compute. Also a citable negative or positive result: nobody has published
+   QeMCMC on planted posteriors [SPEC: no such paper found in this session's searches].
+ Regime: matched T across SNR (= across T), plus off-matched low T (ML-like) as a control. Why: separates "glass"
+   advantage (P1 regime) from "inference" hardness.
+ Mapping: three planted ensembles at n = 6-14 (exact):
+   (i) MIMO BPSK with Gaussian H at loading 0.5/1/1.5/2;
+   (ii) Sourlas/LDPC-like p-spin codes, e.g. 3-body parity terms; any diagonal H_prob keeps U real symmetric, so
+        symmetry holds;
+   (iii) the SK control already in the pilot.
+ Energy/step: trivial.
+ Spins: 6-14.
+ Mixing the bottleneck? That is exactly the measured quantity.
+ Best classical: local, uniform, PT, and for MIMO the Hassibi-tempered chain (T scaled with sqrt(SNR)).
+ Sketch: reuse pilot/pilot_sk_gap_vs_beta.py. Replace sk_instance with a planted generator: x0 random, y = Hx0 + w,
+   J/h as 1.1; beta_matched = 1/(2 sigma^2). Report the median gap ratio quantum/best-classical vs (SNR, loading)
+   and vs (beta/beta_matched). Same 3+ instances per point as the pilot, ideally 20.
+ Detailed balance: ideal-exact [P1]. The planted generator does not change the proof (diagonal H_prob).
+ Break-even: n/a. Simulation only.
+ Kill risk: small-n gaps at n <= 14 may not show the scaling exponent. Fit k as in P1 Fig 2c and say so.
+ VERDICT: BUILD NOW (simulation only). Likelihood it yields a decisive answer ~70%. Likelihood the answer is "advantage
+   survives on matched posteriors" ~20% [SPEC].
+
+B4-05  Offline gold-standard posterior labels for training and benchmarking deep-learning MIMO detectors
+ Payoff: exact LLR labels on hard channel draws (correlated, ill-conditioned, overloaded) for training and stress
+   tests of learned detectors.
+ Regime: matched T, intermediate SNR, hard channel tail.
+ Mapping: as B4-01.
+ Energy/step: cheap.
+ Spins: 16-128.
+ Mixing the bottleneck? Only in the overloaded window. For N <= ~24 exact enumeration of 2^N states is cheap on a
+   GPU [OWN: 2^24 ~ 1.7e7 states x N ops], so labels need no sampling at all.
+ Best classical: exact enumeration (N <= ~28), list sphere decoding, PT with many replicas on GPU.
+ Detailed balance: required; ideal-exact; hardware bias needs twirling [P1 SI].
+ Break-even: offline, but S* ~1e6-1e9 against GPU PT and the labels are cheap anyway.
+ Kill risk: classical PT and enumeration already produce these labels.
+ VERDICT: QUANTUM-INSPIRED ONLY (use a coarse-grained group proposal inside GPU PT if B4-04 is positive).
+   Likelihood of quantum value ~3%.
+
+B4-06  LDPC / Sourlas MAP decoding by Gibbs sampling at the Nishimori temperature
+ Payoff: bitwise-MAP decoding between the BP threshold and the MAP threshold.
+ Regime: matched T (channel noise). The hard window is the first-order region between the BP and MAP thresholds.
+ Mapping: code bits as spins, checks as d_c-body Z terms (d_c = 6-20 typical), or penalty+ancilla to 2-body (adds
+   qubits). Kasi & Jamieson embed up to 420-bit blocks on a 2,048-qubit annealer [LIT: arXiv:2007.11069], but not
+   protocol-size codes.
+ Energy/step: O(d * d_v) incremental, ~10 ns.
+ Spins: 1e3-1e4 bits per codeword in 5G NR.
+ Mixing the bottleneck? In the window, yes. But the window is a narrow SNR band of ~0.1-0.5 dB for good codes
+   [LIT-recalled], and codes are designed so BP works at the operating point.
+ Best classical: BP / min-sum on ASIC at Gbit/s; spatial coupling closes the BP-MAP gap classically
+   [LIT-recalled: threshold saturation, Kudekar-Richardson-Urbanke].
+ Detailed balance: ideal-exact for multi-body diagonal H_prob [P1 argument].
+ Break-even: real-time throughput wall (2.2). Spatial coupling already harvests the MAP gain.
+ Kill risk: certain.
+ VERDICT: KILL. The science content is folded into B4-04 ensemble (ii).
+
+B4-07  Error-floor rare-event estimation: quantum proposals from a surrogate Ising, exact accept with the true decoder
+ Payoff: frame error rates of 1e-12 to 1e-19 in the error floor for optical/storage/5G-URLLC codes, where plain Monte
+   Carlo is hopeless. Industrial value is real: code qualification for 400G/800G optics, flash, URLLC.
+ Regime: multicanonical / tempered sampling over BSC-quantized error patterns e. Target
+   pi(e) ~ p^w(e) (1-p)^(n-w(e)) x 1[decoder fails on e], or a flat histogram over weight w restricted to failures.
+   The failure set is a union of disconnected islands (trapping sets / near-codewords): genuinely multimodal, a
+   LOW-T-like problem where local flips rarely bridge islands [SPEC, consistent with the trapping-set literature].
+ Mapping: e in {0,1}^n as spins. The proposal Hamiltonian H_prob is a SURROGATE: e.g. a 2-body Ising built from the
+   parity-check graph that rewards patterns concentrated on small check-sharing clusters. P1's key property: the
+   proposal is symmetric and exact for ANY real symmetric H_prob [P1], so a crude surrogate costs only efficiency,
+   not correctness. The accept step evaluates the true target, i.e. runs the real BP decoder.
+ Energy/step: one decoder run, 1-100 us per call on a CPU for n ~ 1e3 [OWN estimate: ~3e3-6e3 edges x 20-50
+   iterations]. This is the rare telecom case where t_energy is not negligible.
+ Spins: n = 1e2-1e4 full (infeasible). Coarse-grained group of 10-30 bits around the current failing pattern's
+   support (P2-style), the rest frozen.
+ Mixing the bottleneck? Yes: island-to-island moves.
+ Best classical: DAIS / multicanonical MC, reaching BER ~1e-19 on a (96,50) LDPC code [LIT: Holzlohner et al., IEEE
+   Comm. Lett. 9(2) 2005, via search]; trapping-set enumeration + importance sampling [LIT: arXiv:cs/0605051];
+   Richardson's error-floor method [LIT-recalled]; GPU brute-force decoding at 1e9-1e10 frames/day.
+ Sketch: (1) small QC-LDPC code n ~ 64-128, BSC. (2) Classically simulate the group proposal for groups of 10-12
+   bits. (3) Compare integrated autocorrelation of the failure indicator and the island-switching rate vs local
+   flip + swap-in/out moves and vs DAIS. (4) Only if the advantage is >~10x per step, consider a hardware run with
+   cached shots per group configuration (P1 ran offline from cached shots).
+ Detailed balance: holds if the group is chosen at random independent of the state and the group proposal is the
+   symmetric P1/P2 single-group move [P2]. Choosing the group FROM the current support makes the proposal
+   state-dependent, so a Hastings correction is needed (qmc.mh_matrix(hastings=True) supports it).
+ Break-even [OWN]: t_C ~ 1-100 us (decoder dominated), t_Q ~ 0.1-4 s per step on cloud => S* ~ 1e3-4e6. Better than
+   the 1e6-1e9 of cheap-energy problems, still far from any measured step advantage at n <= 30. Offline: no deadline.
+ Kill risk: a group proposal of 10-12 bits is classically simulable [P2], and domain-informed classical moves
+   (swap one trapping set for another) are already near-optimal.
+ VERDICT: SIMULATE MORE (quantum-inspired). Likelihood of a quantum-hardware case ~5%; of a useful quantum-inspired
+   move ~15%.
+
+B4-08  Minimum-distance and trapping-set search for code design
+ Payoff: certify d_min / dominant trapping sets of candidate codes (NP-hard in general).
+ Regime: LOW T optimization over nonzero codewords. Energy = Hamming weight. Glassy for random-like codes [SPEC].
+ Mapping: information bits as spins. Codeword weight is a sum of parities of generator columns, i.e. multi-body Z
+   terms of weight up to the generator column weight (dense for LDPC generators). Alternative: code bits as spins
+   with check penalties (d_c-body). High-order terms make the circuits ~O(n * d_c) multi-controlled phases per
+   layer [OWN].
+ Energy/step: O(n) or O(d_c d_v) incremental, ~10 ns.
+ Spins: 1e2-1e4.
+ Mixing the bottleneck? Yes, but the task is search, not equilibrium.
+ Best classical: Brouwer-Zimmermann, Stern / information-set decoding, impulse methods [LIT-recalled].
+ Detailed balance: ideal-exact (diagonal multi-body H_prob) [P1 argument]. Irrelevant for search.
+ Break-even: S* ~1e6-1e9 (cheap energy). Hopeless at n of interest.
+ Kill risk: ISD is very strong, and sizes are far beyond hardware.
+ VERDICT: QUANTUM-INSPIRED ONLY. ~3%.
+
+B4-09  List decoding (polar SCL / CA-SCL) replaced or assisted by sampling
+ Payoff: lower FER at short block lengths (5G control channels).
+ Regime: matched-T posterior over info bits; the list wants the top-L codewords, i.e. LOW T.
+ Mapping: polar encoding gives high-order parity terms. Dense.
+ Energy/step: O(N log N) re-encode, or O(N) incremental.
+ Spins: 32-1024.
+ Mixing the bottleneck? No. SCL is deterministic O(L N log N) and near-ML for L = 8-32 [LIT-recalled].
+ Best classical: CA-SCL, SCL-flip, ordered statistics decoding.
+ Detailed balance: ideal-exact; irrelevant.
+ Break-even: deadline wall.
+ Kill risk: certain.
+ VERDICT: KILL. ~0%.
+
+B4-10  Protograph lifting / circulant-shift assignment for QC-LDPC design (Potts)
+ Payoff: codes with larger girth and fewer small trapping sets.
+ Regime: LOW T (optimize), offline.
+ Mapping: Potts variable per protograph edge with q = lifting size Z (up to 384 in 5G NR), i.e. ~9 qubits per
+   variable in binary encoding, all 2^9 values valid when Z is a power of two, else invalid states are rejected.
+   The cost (count of short cycles) is a high-order function of shift sums mod Z: not quadratic, so H_prob must be a
+   surrogate.
+ Energy/step: cycle counting, ~1-100 us.
+ Spins: hundreds of edges x 9 qubits = thousands.
+ Mixing the bottleneck? Unclear. Greedy PEG/ACE heuristics plus random restarts work well [LIT-recalled].
+ Best classical: PEG, ACE, girth-aware greedy, SA.
+ Detailed balance: binary-encoded Potts with rejection of invalid codes is still symmetric (pi = 0 outside the valid
+   set) [OWN, from the P1 argument].
+ Break-even: offline; S* ~1e3-1e5 with the costlier energy; problem too large.
+ Kill risk: no evidence that mixing limits design quality.
+ VERDICT: QUANTUM-INSPIRED ONLY. ~2%.
+
+B4-11  Sparse support recovery with binary support (spike-and-slab) for sparse channel / delay-Doppler estimation
+       and compressive sensing
+ Payoff: sparse mmWave / OTFS channel estimation and radar grid detection with exact support posteriors.
+ Regime: matched T on the support posterior after integrating out the Gaussian slab. Hard phase = the first-order
+   region of AMP for spike-and-slab at low sparsity and intermediate measurement rate [LIT-recalled: Krzakala et
+   al., seeded/spatially coupled CS]. Low SNR = HIGH T, easy.
+ Mapping: support bits as spins. The marginal likelihood after integrating the slab is NOT quadratic in the support
+   (log-det of a support-dependent matrix), so H_prob must be a quadratic surrogate (e.g. from the Gram matrix of
+   the dictionary). Accept with the exact marginal (rank-1 updates, O(K^2) per flip).
+ Energy/step: O(K^2) with K = support size; ~100 ns-10 us.
+ Spins: 64-4096 grid points.
+ Mixing the bottleneck? Only in the hard phase. AMP/VAMP otherwise.
+ Best classical: OMP, VAMP/EM-BG-AMP, Gibbs with block moves, spatially coupled measurements.
+ Detailed balance: exact (symmetric proposal, exact accept) [P1].
+ Break-even: real-time variants hit the deadline wall. Offline radar/sonar post-processing tolerates ~seconds, but
+   S* is still ~1e5-1e8.
+ Kill risk: classical AMP is near-optimal outside a narrow window; deadlines.
+ VERDICT: SIMULATE MORE only as a 4th ensemble in B4-04; otherwise QUANTUM-INSPIRED ONLY. ~5%.
+
+B4-12  Joint channel estimation and data detection with discrete priors (semi-blind, pilot contamination)
+ Payoff: fewer pilots, better throughput.
+ Regime: bilinear posterior: continuous channel times discrete data, matched T.
+ Mapping: only the data part is Ising (conditional on H). Gibbs alternates continuous/discrete blocks. The quantum
+   proposal applies to the discrete block only.
+ Energy/step: O(N^2) per block update.
+ Spins: 1e2-1e4 per frame.
+ Mixing the bottleneck? Phase/permutation ambiguities are real multimodality, but they are resolved by a few pilots,
+   not by better moves.
+ Best classical: EM / turbo channel estimation, BiG-AMP.
+ Detailed balance: holds blockwise (Metropolis-within-Gibbs with a symmetric discrete proposal) [OWN from P1].
+ Break-even: deadline wall.
+ Kill risk: certain.
+ VERDICT: KILL. ~0%.
+
+B4-13  1-bit / low-resolution ADC massive MIMO detection
+ Payoff: detection with cheap, low-power ADCs.
+ Regime: posterior with probit likelihood; matched T. No simple SNR->T map, because quantization noise dominates
+   at high SNR.
+ Mapping: the true energy is non-quadratic (sum of log Phi terms). A quadratic surrogate H_prob (Bussgang
+   linearization) for proposals, exact accept.
+ Energy/step: O(N_r) per flip with cached products.
+ Spins: 16-256.
+ Mixing the bottleneck? No evidence. Bussgang-LMMSE and GAMP work well [LIT-recalled].
+ Best classical: GAMP, Bussgang LMMSE, learned detectors.
+ Detailed balance: exact with exact accept [P1].
+ Break-even: deadline wall.
+ VERDICT: KILL (real-time). ~0%.
+
+B4-14  Multi-target tracking data association (radar/sonar MCMCDA)
+ Payoff: better association in dense clutter.
+ Regime: posterior over association hypotheses, mostly HIGH-T-like for single scan.
+ Mapping: one-hot assignment variables with row/column constraints, i.e. a constrained Potts / permutation. A
+   quantum proposal from an unconstrained H plus measurement mostly lands outside the feasible set and is rejected.
+   The penalty-term version used in the adiabatic MOT formulation [LIT: Zaech et al., CVPR 2022, arXiv:2202.08837]
+   adds dense couplings.
+ Energy/step: O(1)-O(K) per move.
+ Spins: targets x measurements, 1e2-1e4.
+ Mixing the bottleneck? NO for single scan: MCMCDA is a fully polynomial randomized approximation scheme for JPDA
+   [LIT: Oh, Russell, Sastry, IEEE TAC 54(3) 2009]. Multi-scan track split/merge moves are where it gets hard, and
+   those moves are already designed classically.
+ Best classical: MCMCDA, JPDA/MHT with Murty k-best, GNN, PMBM filters.
+ Detailed balance: symmetric if infeasible proposals are rejected [OWN from P1], but the acceptance rate would be tiny.
+ Break-even: tracking update deadlines of ~10-100 ms, still far below a seconds-scale cloud step. S* ~1e6+.
+ Kill risk: mixing is provably not the bottleneck in single scan; the constraint structure wastes proposals.
+ VERDICT: KILL. ~1%.
+
+B4-15  LABS: low-autocorrelation binary sequences for radar/sonar pulse compression and sync words (offline design)
+ Payoff: better peak-sidelobe / merit-factor sequences for radar, sonar and sync codes. One-off offline design, so no
+   deadline. An established hard benchmark with a quantum precedent: QAOA (plus quantum minimum finding) gave the
+   best empirical scaling of any algorithm for LABS [LIT: Shaydulin et al., Sci. Adv. 10, eadm6761 (2024),
+   arXiv:2308.02342, abstract checked; their classical comparison in the abstract is branch-and-bound]. The memetic
+   tabu search baseline and its ~1.34^N scaling are LIT-recalled (Boskovic et al. 2017), not re-verified.
+ Regime: LOW T. A notoriously glassy "golf-course" landscape [LIT-recalled]. This is the P1 regime.
+ Mapping: E = sum_k C_k^2 with C_k = sum_i s_i s_{i+k}: 4-body and 2-body terms, ~N^3/12 four-body terms [OWN order
+   of magnitude]. Each 4-body ZZZZ rotation is ~6 CNOT plus routing, so ~1e4-1e5 CNOT per Trotter layer at
+   N = 30-40 [OWN]. Far beyond hardware. Option: a 2-body surrogate H_prob (keep only the 2-body part or a
+   mean-field linearization) for the proposal; correctness is unaffected [P1].
+ Energy/step: O(N) incremental per flip with tables (as in MTS), ~10-100 ns.
+ Spins: N = 20-30 for sim studies; applications want N = 64-1000+.
+ Mixing the bottleneck? Yes (exponential time-to-solution for all known methods).
+ Best classical: memetic tabu search on GPU, PT, self-avoiding walks; branch-and-bound for proofs.
+ Sketch: exact gap of the QeMCMC proposal at N <= 14 (2^14 states, qmc.quantum_Q with the true 4-body diagonal, which
+   works since H_prob is diagonal) vs local, uniform, PT. Fit gap exponents like P1 Fig 2c. Then a time-to-ground-state
+   comparison at N <= 24 using the sampled proposal inside PT. Report steps AND wall-clock.
+ Detailed balance: ideal-exact for any diagonal H_prob [P1]. Optimization, so it matters only for
+   tempering-correctness claims.
+ Break-even: cheap energy, so S* ~1e6-1e9 on cloud hardware. Even offline, a step advantage must exceed that, or the
+   device must run the chain on the controller (2.4). Realistic outcome: a QUANTUM-INSPIRED proposal kernel.
+ Kill risk: MTS is excellent; the 4-body circuit cost is prohibitive; gap exponents at N <= 14 may not predict
+   time-to-solution at N ~ 60+.
+ VERDICT: SIMULATE MORE. Likelihood of a publishable gap-exponent result ~25%; of a hardware wall-clock win <1%.
+
+B4-16  User scheduling, PRB allocation and beam selection (Potts / QUBO)
+ Payoff: higher sum-rate / proportional-fair utility.
+ Regime: optimization at LOW T, solved every TTI (0.125-1 ms).
+ Mapping: one-hot users x PRBs/beams with interference couplings, i.e. constrained Potts. Proposals mostly infeasible
+   (B4-14 issue).
+ Energy/step: O(K) per move.
+ Spins: 1e2-1e4.
+ Mixing the bottleneck? No. Greedy proportional-fair and Hungarian/auction are near-optimal in practice
+   [LIT-recalled].
+ Best classical: greedy PF, Hungarian, WMMSE, learned schedulers.
+ Detailed balance: irrelevant (search).
+ Break-even: TTI deadline wall.
+ VERDICT: KILL. ~0%.
+
+B4-17  Interference-graph colouring: frequency assignment, PCI/PRACH planning (Potts, offline network planning)
+ Payoff: fewer conflicts in network-planning tools, run hours or days offline.
+ Regime: LOW T optimization; glassy near the colourability threshold [LIT-recalled: random colouring phase diagram];
+   real interference graphs are geometric and usually far from the threshold [SPEC].
+ Mapping: q-state Potts (q = 3-504 for PCI), log2 q qubits per cell, invalid codes rejected. Couplings sparse
+   (neighbouring cells), so better embedding than MIMO.
+ Energy/step: O(degree), ~10 ns.
+ Spins: 1e3-1e5 cells x log2 q.
+ Mixing the bottleneck? Rarely for real networks.
+ Best classical: tabu, SA, DSATUR, ILP with commercial solvers.
+ Detailed balance: symmetric with rejection of invalid encodings [OWN from P1].
+ Break-even: offline, but S* ~1e6-1e9 and problem sizes are far beyond hardware.
+ VERDICT: QUANTUM-INSPIRED ONLY. ~2%.
+
+B4-18  Vector perturbation precoding (downlink integer lattice search)
+ Payoff: near-capacity downlink with full diversity.
+ Regime: LOW T (closest-lattice-point search), per channel realization and per symbol vector.
+ Mapping: integer perturbation -> several spins per dimension; dense Gram couplings. A QA version exists (QAVP)
+   [LIT: snippet from the Jamieson group's NSF record, attribution not fully verified].
+ Energy/step: O(dN).
+ Spins: 32-256.
+ Mixing the bottleneck? Search problem. Sphere encoders and lattice reduction are competitive.
+ Best classical: sphere encoding with LLL, THP, regularized ZF.
+ Break-even: deadline wall.
+ VERDICT: KILL. ~0%.
+
+B4-19  Physical-layer security and secret-key reconciliation (Cascade / LDPC information reconciliation, CV-QKD)
+ Payoff: higher reconciliation efficiency, longer key.
+ Regime: decoding near capacity at low SNR (CV-QKD at SNR << 1), i.e. HIGH T for the posterior.
+ Mapping: LDPC/polar decoding as B4-06.
+ Energy/step: cheap.
+ Spins: 1e4-1e6 bit blocks.
+ Mixing the bottleneck? No. It is a deterministic syndrome-decoding task where BP on long multi-edge codes is
+   near-optimal [LIT-recalled]. The task needs ONE correct decoded string, not samples. Detailed balance is irrelevant.
+ Best classical: multi-edge-type LDPC + BP on GPU, Cascade for DV-QKD.
+ Break-even: key-rate throughput wall.
+ Kill risk: certain. Also the trusted-hardware question: a cloud QPU in the key-distillation loop leaks
+   side-information [SPEC].
+ VERDICT: KILL. ~0%.
+
+B4-20  Many-SNR (many-temperature) ensembles for BER-curve generation with one compiled proposal circuit
+ Payoff: amortize compilation across a whole SNR sweep. The QeMCMC proposal does not contain T (H_prob is not divided
+   by T [P1/BRIEF]), so one circuit family serves every SNR point.
+ Regime: all T; the useful part is the MEDIUM/LOW-T end of the sweep.
+ Mapping: compile once per channel matrix H (couplings fixed), bind fields h = 2 H^T y as parameters per received
+   vector (parametric Rz angles; Braket/IBM parametric compilation, A4).
+ Energy/step: cheap.
+ Spins: as B4-01.
+ Mixing the bottleneck? Only at the hard end. Also, PT across SNR points is the natural classical answer, and it is
+   free classically.
+ Best classical: PT/replica exchange across SNR on GPU, multicanonical sweeps.
+ Detailed balance: per-T chains exact ideal [P1]. Swap moves between SNR points standard.
+ Break-even: removes t_compile from t_Q but leaves latency and shot time: S* still ~1e5-1e8 [OWN from A4 numbers].
+ Kill risk: the amortization fixes the smallest term in t_Q.
+ VERDICT: SIMULATE MORE only as an engineering note for any hardware run of B4-03/04/07. On its own: KILL. ~2%.
+
+======================================================================================================
+4. RANKING AND RECOMMENDATIONS
+======================================================================================================
+Strongest three:
+ 1. B4-04 Nishimori-line transfer test (BUILD NOW, simulation). Cheap (reuses pilot + common/qmc.py) and decisive for
+    the entire inference/telecom vertical. It tests the physics question nobody has answered for QeMCMC: does the
+    low-T glass advantage [P1, PILOT] carry over to planted matched-temperature posteriors, where theory says there is
+    no RSB? Either answer is a clean result.
+ 2. B4-07 Error-floor rare-event sampling (SIMULATE MORE). The only telecom task combining:
+      - genuine multimodality (trapping-set islands);
+      - an expensive energy (a BP decoder call), which pulls S* down to ~1e3-1e6;
+      - no deadline;
+      - a direct use of P1's "any H_prob is exact" property: a crude surrogate Ising drives proposals while the true
+        decoder decides acceptance.
+    The likely end state is a quantum-inspired move. It is still a concrete, sellable offline use (code
+    qualification).
+ 3. B4-15 LABS radar/sonar sequence design (SIMULATE MORE). Offline, LOW-T glassy (exactly P1's regime), a famous
+    classical baseline, and a recent quantum-scaling precedent. Gap exponents at N <= 14 are computable this week. The
+    4-body circuit cost kills hardware, so the honest deliverable is a proposal-kernel exponent study.
+Runner-up: B4-03 (overloaded NOMA first-order window). Fold it into B4-04 as the alpha > 1.5 slice.
+Clean kills (reason = deadline/throughput, section 2): B4-01, 02, 06, 09, 12, 13, 16, 18, 19; B4-14 killed by FPRAS.
+
+Open checks for whoever continues (web budget ran out in this session):
+ - verify the MTS ~1.34^N and QAOA scaling bases for LABS (arXiv:2308.02342 full text);
+ - verify alpha_s ~ 1.49 = onset of non-unique fixed points in Tanaka/Montanari-Tse;
+ - get 3GPP TS 38.214 N1/N2 tables for exact processing deadlines;
+ - confirm the QuAMax end-to-end overhead figure from the paper itself (arXiv:2001.04014, evaluation section).
+
+SOURCES CHECKED THIS SESSION
+ arXiv:1310.7305 (Hassibi et al., optimized MCMC MIMO, temperature vs SNR)
+ arXiv:2001.04014 (Kim, Venturelli, Jamieson, QuAMax, SIGCOMM 2019)
+ arXiv:2103.10561 (Kim, Mandra, Venturelli, Jamieson, ParaMax, MobiCom 2021)
+ arXiv:2105.10535 (Singh, Jamieson, McMahon, Venturelli, RI-MIMO/TRIM)
+ arXiv:2402.18778 (X-ResQ reverse-annealing MIMO)
+ arXiv:2007.11069 (Kasi, Jamieson, quantum BP LDPC decoding, MobiCom 2020)
+ arXiv:cond-mat/0111003 (Nishimori, no RSB for MPM CDMA demodulator)
+ arXiv:cs/0602028 (Montanari, Tse, BP for CDMA, Tanaka formula)
+ arXiv:2004.11066 (Arai, Ohzeki, Tanaka, reverse annealing CDMA, first-order transition)
+ arXiv:1511.02476 (Zdeborova, Krzakala, statistical physics of inference; TOC only)
+ Jalden & Ottersten, IEEE TSP 53(4) 2005 (sphere decoding exponential complexity; abstract)
+ Holzlohner et al., IEEE Comm. Lett. 9(2) 2005 (DAIS, BER 1e-19); arXiv:cs/0605051 (Cole et al., LDPC low error rates)
+ Oh, Russell, Sastry, IEEE TAC 54(3) 2009 (MCMCDA, FPRAS for JPDA)
+ arXiv:2202.08837 (Zaech et al., adiabatic QC for multi-object tracking, CVPR 2022)
+ arXiv:2308.02342 (Shaydulin et al., QAOA scaling on LABS, Sci. Adv. 2024; abstract)
+ A4-hardware.txt (team hardware scan) for all device timing numbers.

@@ -1,0 +1,185 @@
+ea12_s1_HIGH_metro_k0_none tauE_sec=1.28e-05 res=True
+ea12_s1_HIGH_hb_k4_block tauE_sec=7.51e-05 res=True
+ea12_s1_HIGH_hb_k8_block tauE_sec=0.000442 res=True
+ea12_s1_HIGH_hb_k8_subset tauE_sec=0.000587 res=True
+ea12_s1_HIGH_hb_k8_cluster tauE_sec=0.000354 res=True
+ea12_s1_HIGH_hb_k12_block tauE_sec=0.00438 res=True
+ea12_s1_HIGH_q_k4_block tauE_sec=0.00872 res=True
+ea12_s1_HIGH_q_k8_block tauE_sec=0.0622 res=False
+ea12_s1_HIGH_q_k8_cluster tauE_sec=0.19 res=False
+ea12_s1_HIGH_q_k12_block tauE_sec=-0.0113 res=False
+ea12_s1_HIGH_dec_k8_block tauE_sec=0.0425 res=True
+ea12_s1_MEDIUM_metro_k0_none tauE_sec=0.000202 res=True
+ea12_s1_MEDIUM_hb_k4_block tauE_sec=0.00114 res=True
+ea12_s1_MEDIUM_hb_k8_block tauE_sec=0.00638 res=True
+ea12_s1_MEDIUM_hb_k8_subset tauE_sec=0.011 res=True
+ea12_s1_MEDIUM_hb_k8_cluster tauE_sec=0.00132 res=True
+ea12_s1_MEDIUM_hb_k12_block tauE_sec=0.0875 res=False
+ea12_s1_MEDIUM_q_k4_block tauE_sec=0.0606 res=False
+ea12_s1_MEDIUM_q_k8_block tauE_sec=0.246 res=False
+ea12_s1_MEDIUM_q_k8_cluster tauE_sec=0.157 res=False
+ea12_s1_MEDIUM_q_k12_block tauE_sec=-0.133 res=False
+ea12_s1_MEDIUM_dec_k8_block tauE_sec=0.173 res=False
+ea12_s1_MEDIUM_pt_k0_none tauE_sec=0.000342 res=True minswap=0.52
+ea12_s1_MEDIUM_pth_k0_none tauE_sec=0.000327 res=True minswap=0.52
+ea12_s1_LOW_metro_k0_none tauE_sec=0.0525 res=False
+ea12_s1_LOW_hb_k4_block tauE_sec=0.135 res=False
+ea12_s1_LOW_hb_k8_block tauE_sec=0.0928 res=False
+ea12_s1_LOW_hb_k8_subset tauE_sec=0.0131 res=True
+ea12_s1_LOW_hb_k8_cluster tauE_sec=0.00714 res=True
+ea12_s1_LOW_hb_k12_block tauE_sec=0.0308 res=True
+ea12_s1_LOW_q_k4_block tauE_sec=0.0395 res=True
+ea12_s1_LOW_q_k8_block tauE_sec=0.178 res=False
+ea12_s1_LOW_q_k8_cluster tauE_sec=0.143 res=False
+ea12_s1_LOW_q_k12_block tauE_sec=nan res=False
+ea12_s1_LOW_dec_k8_block tauE_sec=0.173 res=False
+ea12_s1_LOW_pt_k0_none tauE_sec=0.000667 res=True minswap=0.38
+ea12_s1_LOW_pth_k0_none tauE_sec=0.000314 res=True minswap=0.37
+ea12_s2_HIGH_metro_k0_none tauE_sec=1.41e-05 res=True
+ea12_s2_HIGH_hb_k4_block tauE_sec=0.000106 res=True
+ea12_s2_HIGH_hb_k8_block tauE_sec=0.000634 res=True
+ea12_s2_HIGH_hb_k8_subset tauE_sec=0.00089 res=True
+ea12_s2_HIGH_hb_k8_cluster tauE_sec=0.000489 res=True
+ea12_s2_HIGH_hb_k12_block tauE_sec=0.00568 res=True
+ea12_s2_HIGH_q_k4_block tauE_sec=0.0112 res=True
+ea12_s2_HIGH_q_k8_block tauE_sec=0.105 res=False
+ea12_s2_HIGH_q_k8_cluster tauE_sec=0.1 res=False
+ea12_s2_HIGH_q_k12_block tauE_sec=0.0458 res=True
+ea12_s2_HIGH_dec_k8_block tauE_sec=0.0369 res=True
+ea12_s2_MEDIUM_metro_k0_none tauE_sec=0.00278 res=True
+ea12_s2_MEDIUM_hb_k4_block tauE_sec=0.00168 res=True
+ea12_s2_MEDIUM_hb_k8_block tauE_sec=0.00629 res=True
+ea12_s2_MEDIUM_hb_k8_subset tauE_sec=0.0146 res=True
+ea12_s2_MEDIUM_hb_k8_cluster tauE_sec=0.00187 res=True
+ea12_s2_MEDIUM_hb_k12_block tauE_sec=0.0272 res=True
+ea12_s2_MEDIUM_q_k4_block tauE_sec=0.0294 res=True
+ea12_s2_MEDIUM_q_k8_block tauE_sec=0.167 res=False
+ea12_s2_MEDIUM_q_k8_cluster tauE_sec=0.222 res=False
+ea12_s2_MEDIUM_q_k12_block tauE_sec=0.085 res=False
+ea12_s2_MEDIUM_dec_k8_block tauE_sec=0.221 res=False
+ea12_s2_MEDIUM_pt_k0_none tauE_sec=0.000255 res=True minswap=0.45
+ea12_s2_MEDIUM_pth_k0_none tauE_sec=0.000228 res=True minswap=0.46
+ea12_s2_LOW_metro_k0_none tauE_sec=0.0149 res=True
+ea12_s2_LOW_hb_k4_block tauE_sec=0.0336 res=True
+ea12_s2_LOW_hb_k8_block tauE_sec=0.0786 res=False
+ea12_s2_LOW_hb_k8_subset tauE_sec=0.0144 res=True
+ea12_s2_LOW_hb_k8_cluster tauE_sec=0.251 res=False
+ea12_s2_LOW_hb_k12_block tauE_sec=0.0204 res=True
+ea12_s2_LOW_q_k4_block tauE_sec=0.173 res=False
+ea12_s2_LOW_q_k8_block tauE_sec=0.254 res=False
+ea12_s2_LOW_q_k8_cluster tauE_sec=0.177 res=False
+ea12_s2_LOW_q_k12_block tauE_sec=0.148 res=False
+ea12_s2_LOW_dec_k8_block tauE_sec=0.273 res=False
+ea12_s2_LOW_pt_k0_none tauE_sec=0.000189 res=True minswap=0.31
+ea12_s2_LOW_pth_k0_none tauE_sec=0.000223 res=True minswap=0.31
+ea12_s3_HIGH_metro_k0_none tauE_sec=1.26e-05 res=True
+ea12_s3_HIGH_hb_k4_block tauE_sec=0.000101 res=True
+ea12_s3_HIGH_hb_k8_block tauE_sec=0.000529 res=True
+ea12_s3_HIGH_hb_k8_subset tauE_sec=0.000693 res=True
+ea12_s3_HIGH_hb_k8_cluster tauE_sec=0.000355 res=True
+ea12_s3_HIGH_hb_k12_block tauE_sec=0.00816 res=True
+ea12_s3_HIGH_q_k4_block tauE_sec=0.0121 res=True
+ea12_s3_HIGH_q_k8_block tauE_sec=0.0657 res=False
+ea12_s3_HIGH_q_k8_cluster tauE_sec=0.188 res=False
+ea12_s3_HIGH_q_k12_block tauE_sec=5.23e-05 res=True
+ea12_s3_HIGH_dec_k8_block tauE_sec=0.217 res=False
+ea12_s3_MEDIUM_metro_k0_none tauE_sec=0.000664 res=True
+ea12_s3_MEDIUM_hb_k4_block tauE_sec=0.00346 res=True
+ea12_s3_MEDIUM_hb_k8_block tauE_sec=0.0144 res=True
+ea12_s3_MEDIUM_hb_k8_subset tauE_sec=0.015 res=True
+ea12_s3_MEDIUM_hb_k8_cluster tauE_sec=0.00134 res=True
+ea12_s3_MEDIUM_hb_k12_block tauE_sec=0.0171 res=True
+ea12_s3_MEDIUM_q_k4_block tauE_sec=0.0201 res=True
+ea12_s3_MEDIUM_q_k8_block tauE_sec=0.198 res=False
+ea12_s3_MEDIUM_q_k8_cluster tauE_sec=0.13 res=False
+ea12_s3_MEDIUM_q_k12_block tauE_sec=0.235 res=False
+ea12_s3_MEDIUM_dec_k8_block tauE_sec=0.0931 res=False
+ea12_s3_MEDIUM_pt_k0_none tauE_sec=0.000258 res=True minswap=0.51
+ea12_s3_MEDIUM_pth_k0_none tauE_sec=0.000291 res=True minswap=0.50
+ea12_s3_LOW_metro_k0_none tauE_sec=0.000303 res=True
+ea12_s3_LOW_hb_k4_block tauE_sec=0.000403 res=True
+ea12_s3_LOW_hb_k8_block tauE_sec=0.00148 res=True
+ea12_s3_LOW_hb_k8_subset tauE_sec=0.00806 res=True
+ea12_s3_LOW_hb_k8_cluster tauE_sec=0.00559 res=True
+ea12_s3_LOW_hb_k12_block tauE_sec=0.0357 res=True
+ea12_s3_LOW_q_k4_block tauE_sec=0.0542 res=False
+ea12_s3_LOW_q_k8_block tauE_sec=0.231 res=False
+ea12_s3_LOW_q_k8_cluster tauE_sec=0.172 res=False
+ea12_s3_LOW_q_k12_block tauE_sec=nan res=False
+ea12_s3_LOW_dec_k8_block tauE_sec=0.255 res=False
+ea12_s3_LOW_pt_k0_none tauE_sec=0.000359 res=True minswap=0.36
+ea12_s3_LOW_pth_k0_none tauE_sec=0.000334 res=True minswap=0.36
+ea12_s4_HIGH_metro_k0_none tauE_sec=1.11e-05 res=True
+ea12_s4_HIGH_hb_k4_block tauE_sec=8.76e-05 res=True
+ea12_s4_HIGH_hb_k8_block tauE_sec=0.000467 res=True
+ea12_s4_HIGH_hb_k8_subset tauE_sec=0.000591 res=True
+ea12_s4_HIGH_hb_k8_cluster tauE_sec=0.000352 res=True
+ea12_s4_HIGH_hb_k12_block tauE_sec=0.00489 res=True
+ea12_s4_HIGH_q_k4_block tauE_sec=0.014 res=True
+ea12_s4_HIGH_q_k8_block tauE_sec=0.223 res=False
+ea12_s4_HIGH_q_k8_cluster tauE_sec=0.192 res=False
+ea12_s4_HIGH_q_k12_block tauE_sec=0.191 res=False
+ea12_s4_HIGH_dec_k8_block tauE_sec=0.113 res=False
+ea12_s4_MEDIUM_metro_k0_none tauE_sec=0.00179 res=True
+ea12_s4_MEDIUM_hb_k4_block tauE_sec=0.0096 res=True
+ea12_s4_MEDIUM_hb_k8_block tauE_sec=0.0916 res=False
+ea12_s4_MEDIUM_hb_k8_subset tauE_sec=0.0466 res=False
+ea12_s4_MEDIUM_hb_k8_cluster tauE_sec=0.00505 res=True
+ea12_s4_MEDIUM_hb_k12_block tauE_sec=0.0571 res=False
+ea12_s4_MEDIUM_q_k4_block tauE_sec=0.149 res=False
+ea12_s4_MEDIUM_q_k8_block tauE_sec=0.26 res=False
+ea12_s4_MEDIUM_q_k8_cluster tauE_sec=0.234 res=False
+ea12_s4_MEDIUM_q_k12_block tauE_sec=-0.23 res=False
+ea12_s4_MEDIUM_dec_k8_block tauE_sec=0.116 res=False
+ea12_s4_MEDIUM_pt_k0_none tauE_sec=0.000469 res=True minswap=0.48
+ea12_s4_MEDIUM_pth_k0_none tauE_sec=0.000424 res=True minswap=0.47
+ea12_s4_LOW_metro_k0_none tauE_sec=0.000298 res=True
+ea12_s4_LOW_hb_k4_block tauE_sec=0.000363 res=True
+ea12_s4_LOW_hb_k8_block tauE_sec=0.000768 res=True
+ea12_s4_LOW_hb_k8_subset tauE_sec=0.00372 res=True
+ea12_s4_LOW_hb_k8_cluster tauE_sec=0.158 res=False
+ea12_s4_LOW_hb_k12_block tauE_sec=0.237 res=False
+ea12_s4_LOW_q_k4_block tauE_sec=0.19 res=False
+ea12_s4_LOW_q_k8_block tauE_sec=0.27 res=False
+ea12_s4_LOW_q_k8_cluster tauE_sec=0.249 res=False
+ea12_s4_LOW_q_k12_block tauE_sec=nan res=False
+ea12_s4_LOW_dec_k8_block tauE_sec=0.0326 res=True
+ea12_s4_LOW_pt_k0_none tauE_sec=0.000109 res=True minswap=0.33
+ea12_s4_LOW_pth_k0_none tauE_sec=0.000205 res=True minswap=0.33
+ea12_s5_HIGH_metro_k0_none tauE_sec=1.31e-05 res=True
+ea12_s5_HIGH_hb_k4_block tauE_sec=9.71e-05 res=True
+ea12_s5_HIGH_hb_k8_block tauE_sec=0.000542 res=True
+ea12_s5_HIGH_hb_k8_subset tauE_sec=0.000647 res=True
+ea12_s5_HIGH_hb_k8_cluster tauE_sec=0.000318 res=True
+ea12_s5_HIGH_hb_k12_block tauE_sec=0.00482 res=True
+ea12_s5_HIGH_q_k4_block tauE_sec=0.00832 res=True
+ea12_s5_HIGH_q_k8_block tauE_sec=0.0608 res=False
+ea12_s5_HIGH_q_k8_cluster tauE_sec=0.0547 res=False
+ea12_s5_HIGH_q_k12_block tauE_sec=nan res=False
+ea12_s5_HIGH_dec_k8_block tauE_sec=0.184 res=False
+ea12_s5_MEDIUM_metro_k0_none tauE_sec=0.000602 res=True
+ea12_s5_MEDIUM_hb_k4_block tauE_sec=0.00575 res=True
+ea12_s5_MEDIUM_hb_k8_block tauE_sec=0.0192 res=True
+ea12_s5_MEDIUM_hb_k8_subset tauE_sec=0.0185 res=True
+ea12_s5_MEDIUM_hb_k8_cluster tauE_sec=0.00381 res=True
+ea12_s5_MEDIUM_hb_k12_block tauE_sec=0.214 res=False
+ea12_s5_MEDIUM_q_k4_block tauE_sec=0.108 res=False
+ea12_s5_MEDIUM_q_k8_block tauE_sec=0.155 res=False
+ea12_s5_MEDIUM_q_k8_cluster tauE_sec=0.263 res=False
+ea12_s5_MEDIUM_q_k12_block tauE_sec=0.184 res=False
+ea12_s5_MEDIUM_dec_k8_block tauE_sec=-0.0208 res=False
+ea12_s5_MEDIUM_pt_k0_none tauE_sec=0.000359 res=True minswap=0.50
+ea12_s5_MEDIUM_pth_k0_none tauE_sec=0.00031 res=True minswap=0.50
+ea12_s5_LOW_metro_k0_none tauE_sec=0.00157 res=True
+ea12_s5_LOW_hb_k4_block tauE_sec=0.102 res=False
+ea12_s5_LOW_hb_k8_block tauE_sec=0.00389 res=True
+ea12_s5_LOW_hb_k8_subset tauE_sec=0.241 res=False
+ea12_s5_LOW_hb_k8_cluster tauE_sec=0.00116 res=True
+ea12_s5_LOW_hb_k12_block tauE_sec=0.0741 res=False
+ea12_s5_LOW_q_k4_block tauE_sec=0.0209 res=True
+ea12_s5_LOW_q_k8_block tauE_sec=0.146 res=False
+ea12_s5_LOW_q_k8_cluster tauE_sec=0.0901 res=False
+ea12_s5_LOW_q_k12_block tauE_sec=nan res=False
+ea12_s5_LOW_dec_k8_block tauE_sec=0.127 res=False
+ea12_s5_LOW_pt_k0_none tauE_sec=0.000154 res=True minswap=0.37
+ea12_s5_LOW_pth_k0_none tauE_sec=0.000234 res=True minswap=0.36

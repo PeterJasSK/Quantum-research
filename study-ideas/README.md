@@ -18,6 +18,16 @@ Each is the **de-risked pivot** of a raw thesis pitch whose naive version is a t
 Pivot from security to sellable HEALTHCARE QC (small-now / scalable-10yr). Full set + its own index in **[`siemens/README.md`](siemens/README.md)**; scraped company deep-dive in repo-root `ideas.txt` Part 6.
 **Main thesis = quantum *sampling* of imaging forward-physics (NO QML, training-free), as a 3-paper program** → `siemens/siemens-6-masters-trilogy.md`. Runner-up `siemens/siemens-7` (cardiac QRC); original ranked menu `siemens/siemens-1..5`.
 
+## Active — post-Phantoms personal direction (new 2026-11-18 — must have a practical point; no memory/QRNG/auditor)
+- `net-5-entangled-load-balancer.md` — real Heron Bell rounds drive ECMP path choice; beat best shared-randomness coordinator on p99, find threshold S\*. **72/100 · want-to-do 4/5 · effort medium · QC yes (small)**
+- `pqc-1-patient-data-quantum-clock.md` — CEE hospital TLS scan → per-data-class harvest-now-decrypt-later exposure year (Mosca). **70/100 · want-to-do 3/5 · effort medium · QC no**
+- `edu-1-honest-quantum-lab.md` — interactive lab: students try to fake real quantum results with classical twins; measured claim-literacy gain (QSEEC). **68/100 · want-to-do 4/5 · effort low-medium · QC optional**
+- `qh-15-qemcmc-noise-threshold.md` — continues Layden 2023 / Ferguson–Wallden 2025 open question: measured error threshold ε\* where the QeMCMC gap-scaling speedup dies, Heron r2 vs r3. **74/100 · want-to-do 4/5 · effort high · QC yes (sim-first)**
+- `qh-18-quantum-leap-map-game.md` — map-generation game on the heavy-hex chip: walk / teleport / quantum leap, amplitude cloud jumps energy barriers; "decohere" switch = same generator without interference; hardware test that the QeMCMC step advantage comes from interference. **70/100 · want-to-do 5/5 · effort medium-high · QC yes (exact sim ≤ 14 q + stored Heron)**
+- **CLOSED 2026-11-19 (no quantum point in any lung stage; lungs go classical)** `qh-17-quantum-proposed-tumour.md` — thesis spine: every random tumour layer (TCGA-fitted genotype Ising → phenotype → clone-map Potts) sampled by one QeMCMC engine, quantum proposes / classical accepts so output is correct by construction; per-layer measured mixing speedup + ε\*. Uses qh-15 as measurement core. **72/100 · want-to-do 5/5 · effort high · QC yes (sim-first)**
+- `qh-16-amplified-bayesian-diagnosis-crossover.md` — continues Low–Yoder–Chuang 2014 / Borujeni 2020: evidence-probability crossover P\* where amplified quantum rejection sampling beats classical on a clinical Bayesian network, with/without error detection. **70/100 · want-to-do 4/5 · effort medium-high · QC yes (sim-first)** — read QANTIS 2607.06760 first
+- `qh-14-canary-circuits-job-forecast.md` — seconds of bound-certified small circuits forecast whether a big job passes; priced QPU savings. **64/100 · want-to-do 3/5 · effort medium · QC yes**
+
 ## Active — networking / RNG
 - `net-1-unpredictability-as-network-primitive.md` — umbrella: 3 attacker games + boot-entropy fix
 - `net-2-boot-entropy-fix.md` — Q-EaaS cures weak keys on headless devices (score 84, highest)

@@ -1,0 +1,7 @@
+[sk16s1602      19s] LOW metro 102.9 121.0
+[sk16s1602      22s] LOW PT R 4 swap [0.35 0.34 0.33] tau(flips) 219 254
+[sk16s1602      29s] MED metro 97.8 269.5
+[sk16s1602      32s] MED PT R 3 swap [0.47 0.44] tau(flips) 167 303
+[sk16s1602      67s] HIGH metro 16.9 35.9
+[sk16s1602      68s] HIGH PT R 1 swap [0.] tau(flips) 22 39
+[sk16s1602      68s] done

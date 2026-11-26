@@ -1,0 +1,418 @@
+[
+ {
+  "n": 4,
+  "case": "ideal 2nd-order palindromic",
+  "palindrome": true,
+  "max_abs_U_minus_UT": 5.0895734351719815e-16,
+  "asym": 7.929177063201182e-16
+ },
+ {
+  "n": 4,
+  "case": "ideal 1st-order (control)",
+  "palindrome": false,
+  "max_abs_U_minus_UT": 0.24071882549363283,
+  "asym": 6.205227846313452e-16
+ },
+ {
+  "n": 4,
+  "case": "dep",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 5.69206140554889e-16
+ },
+ {
+  "n": 4,
+  "case": "dep",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 7.597004622605982e-16
+ },
+ {
+  "n": 4,
+  "case": "deph",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 4.3263732440318467e-16
+ },
+ {
+  "n": 4,
+  "case": "deph",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 4.47450236584768e-16
+ },
+ {
+  "n": 4,
+  "case": "ad",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.04504665686080054
+ },
+ {
+  "n": 4,
+  "case": "ad",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 0.044928694126913686
+ },
+ {
+  "n": 4,
+  "case": "ad_pauli_twirl",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.0009629142551043729
+ },
+ {
+  "n": 4,
+  "case": "ad_pauli_twirl",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 8.941415316488085e-16
+ },
+ {
+  "n": 4,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.0011124061732350685,
+  "asym_unfixed": 0.04504665686080054
+ },
+ {
+  "n": 4,
+  "case": "ad gauge full 2^n masks",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.0008359855050876728
+ },
+ {
+  "n": 4,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 0.0005738142693376024,
+  "asym_unfixed": 0.044928694126913686
+ },
+ {
+  "n": 4,
+  "case": "ad gauge full 2^n masks",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 0.00013807243516306237
+ },
+ {
+  "n": 4,
+  "case": "dep",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 4.1893571944839724e-16
+ },
+ {
+  "n": 4,
+  "case": "dep",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 5.655198531684376e-16
+ },
+ {
+  "n": 4,
+  "case": "deph",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 3.350184712980211e-16
+ },
+ {
+  "n": 4,
+  "case": "deph",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 4.006127027333941e-16
+ },
+ {
+  "n": 4,
+  "case": "ad",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.38363884980870167
+ },
+ {
+  "n": 4,
+  "case": "ad",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 0.38251000462668305
+ },
+ {
+  "n": 4,
+  "case": "ad_pauli_twirl",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.00644640641916841
+ },
+ {
+  "n": 4,
+  "case": "ad_pauli_twirl",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 7.08634539936536e-16
+ },
+ {
+  "n": 4,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.04726650516468477,
+  "asym_unfixed": 0.38363884980870167
+ },
+ {
+  "n": 4,
+  "case": "ad gauge full 2^n masks",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.0036540960151867055
+ },
+ {
+  "n": 4,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 0.046684477962765765,
+  "asym_unfixed": 0.38251000462668305
+ },
+ {
+  "n": 4,
+  "case": "ad gauge full 2^n masks",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 0.009274664906419412
+ },
+ {
+  "n": 4,
+  "case": "readout symmetric",
+  "eps": 0.01,
+  "asym": 0.019488968848611014
+ },
+ {
+  "n": 4,
+  "case": "readout asym (0.5p,1.5p)",
+  "eps": 0.01,
+  "asym": 0.03244534399055073
+ },
+ {
+  "n": 4,
+  "case": "readout twirl+mirrored pre-flip",
+  "eps": 0.01,
+  "asym": 7.348722325106756e-16
+ },
+ {
+  "n": 4,
+  "case": "readout symmetric",
+  "eps": 0.05,
+  "asym": 0.08465380236368744
+ },
+ {
+  "n": 4,
+  "case": "readout asym (0.5p,1.5p)",
+  "eps": 0.05,
+  "asym": 0.1534433547484015
+ },
+ {
+  "n": 4,
+  "case": "readout twirl+mirrored pre-flip",
+  "eps": 0.05,
+  "asym": 6.145257913647846e-16
+ },
+ {
+  "n": 6,
+  "case": "ideal 2nd-order palindromic",
+  "palindrome": true,
+  "max_abs_U_minus_UT": 5.79553433516819e-16,
+  "asym": 1.1021692732352636e-15
+ },
+ {
+  "n": 6,
+  "case": "ideal 1st-order (control)",
+  "palindrome": false,
+  "max_abs_U_minus_UT": 0.22669630566386573,
+  "asym": 1.0431599983545752e-15
+ },
+ {
+  "n": 6,
+  "case": "dep",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 8.220861328917626e-16
+ },
+ {
+  "n": 6,
+  "case": "dep",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 1.0013216926625765e-15
+ },
+ {
+  "n": 6,
+  "case": "deph",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 6.407135089950457e-16
+ },
+ {
+  "n": 6,
+  "case": "deph",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 7.206958655889539e-16
+ },
+ {
+  "n": 6,
+  "case": "ad",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.0964332339519156
+ },
+ {
+  "n": 6,
+  "case": "ad",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 0.09625013072673909
+ },
+ {
+  "n": 6,
+  "case": "ad_pauli_twirl",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.0014156444578387053
+ },
+ {
+  "n": 6,
+  "case": "ad_pauli_twirl",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 1.6016630702926813e-15
+ },
+ {
+  "n": 6,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.001,
+  "placement": "after",
+  "asym": 0.002928705417115305,
+  "asym_unfixed": 0.0964332339519156
+ },
+ {
+  "n": 6,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.001,
+  "placement": "split",
+  "asym": 0.0028515583779112454,
+  "asym_unfixed": 0.09625013072673909
+ },
+ {
+  "n": 6,
+  "case": "dep",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 5.255127930037203e-16
+ },
+ {
+  "n": 6,
+  "case": "dep",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 6.388390250827691e-16
+ },
+ {
+  "n": 6,
+  "case": "deph",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 4.898357652653733e-16
+ },
+ {
+  "n": 6,
+  "case": "deph",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 5.347894978420536e-16
+ },
+ {
+  "n": 6,
+  "case": "ad",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.6856455302249728
+ },
+ {
+  "n": 6,
+  "case": "ad",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 0.6843259993826625
+ },
+ {
+  "n": 6,
+  "case": "ad_pauli_twirl",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.006967001391670152
+ },
+ {
+  "n": 6,
+  "case": "ad_pauli_twirl",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 1.0570429080647782e-15
+ },
+ {
+  "n": 6,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.01,
+  "placement": "after",
+  "asym": 0.18360758152681955,
+  "asym_unfixed": 0.6856455302249728
+ },
+ {
+  "n": 6,
+  "case": "ad gauge pair {0,1..1}",
+  "eps": 0.01,
+  "placement": "split",
+  "asym": 0.18502096960962816,
+  "asym_unfixed": 0.6843259993826625
+ },
+ {
+  "n": 6,
+  "case": "readout symmetric",
+  "eps": 0.01,
+  "asym": 0.029620209867896194
+ },
+ {
+  "n": 6,
+  "case": "readout asym (0.5p,1.5p)",
+  "eps": 0.01,
+  "asym": 0.046241723873119325
+ },
+ {
+  "n": 6,
+  "case": "readout twirl+mirrored pre-flip",
+  "eps": 0.01,
+  "asym": 1.0117003873652738e-15
+ },
+ {
+  "n": 6,
+  "case": "readout symmetric",
+  "eps": 0.05,
+  "asym": 0.12499775392200946
+ },
+ {
+  "n": 6,
+  "case": "readout asym (0.5p,1.5p)",
+  "eps": 0.05,
+  "asym": 0.2108861901097172
+ },
+ {
+  "n": 6,
+  "case": "readout twirl+mirrored pre-flip",
+  "eps": 0.05,
+  "asym": 7.147467296839137e-16
+ }
+]

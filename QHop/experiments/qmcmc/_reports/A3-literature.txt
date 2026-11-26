@@ -1,0 +1,217 @@
+A3 LITERATURE SCOUT: QeMCMC follow-ups and related work, 2022 to Nov 2026
+=========================================================================
+Compiled 2026-11-20 by sub-agent A3.
+Base papers:
+  P1 = Layden et al., Nature 619, 282 (2023), arXiv:2203.12497
+  P2 = Ferguson & Wallden, Phys. Rev. Research 7, 013231 (2025), arXiv:2405.04247
+
+METHOD / PROVENANCE
+- Semantic Scholar citations API, pulled 2026-11-20: 111 citing records for P1 and 14 for P2.
+  S2 coverage of P1 is clearly incomplete (it misses 2611.05883, 2506.01335 and 2604.20701), so I
+  also ran arXiv API keyword searches and web searches.
+- Every arXiv ID below was checked against arXiv: the export API (title, authors, date, abstract,
+  journal_ref) for all of them, plus the full HTML text for the key papers, which I grepped for
+  temperature, size and hardware facts.
+- Rows marked "[S2-only]" or "[snippet-only]" take a detail (usually the journal DOI) from Semantic
+  Scholar or a search snippet that I did not open on the journal site.
+- Temperature convention: P1 and most follow-ups use the SK model with UNNORMALISED couplings,
+  J_jk and h_j ~ N(0,1) (confirmed in the text of P1 and of Arai 2502.08060). The glass transition
+  therefore sits near T_c ~ sqrt(n), which is about 3 for n=10. "T=1" in these papers is LOW T for
+  n~10, and "T=10" is about 3*T_c, i.e. genuinely high T. Keep this in mind when reading "medium/high T".
+
+Columns: authors | year | ID + URL | what it shows | regime (T; hw/sim) | size | verdict for practical QeMCMC (why)
+
+-------------------------------------------------------------------------
+ID CHECKS AGAINST EARLIER NOTES
+-------------------------------------------------------------------------
+- 2408.07881 Orfi & Sels: CONFIRMED. The arXiv title is "Quantum enhanced Markov chains require
+  fine-tuned quenches". The journal title differs: per S2 it appeared as "Barriers to efficient mixing
+  of quantum-enhanced Markov chains", PRA 110, 052434 (2024) [S2-only DOI 10.1103/physreva.110.052434].
+  A separate EARLIER Orfi & Sels paper exists, arXiv:2403.03087 "Bounding speedup of QeMCMC"; per S2
+  it is PRA 110, 052414 (2024). Do not conflate the two.
+- 2602.06171 Marshall et al.: CONFIRMED (IBM Quantum + Hartree Centre; v3 dated 17 Nov 2026).
+  NUANCE: the problem is Maximum Independent Set with up to 117 variables on 117 qubits
+  (ibm_boston / ibm_pittsburgh, plus ibm_aachen at 17 nodes). The method combines QeMCMC with
+  warm-start QAOA and parallel tempering, all at T=0.1. Authors' own caveat: "the instances studied
+  here are solved efficiently by CPLEX". The scaling claim is only "an indication of more favorable
+  scaling" against the tested classical MCMC, on 5 instances.
+- 2411.17821 Christmann et al.: CONFIRMED. Authors Christmann, Ivashkov, Chiurco, Mazzola;
+  Phys. Rev. A 111, 042615 (2025).
+- 2603.08395 Claudon et al.: CONFIRMED. Authors Claudon, Ramos-Calderer, Piquemal; run on Quantinuum
+  H2 and Helios. NUANCE: this is NOT Layden-type QeMCMC. It is a Szegedy-style quantum-walk qMCMC
+  with amplitude estimation, demonstrated on TWO-STATE Markov chains (toy), on physical qubits and
+  with the Iceberg error-detection code.
+- 2603.28076 Hsieh, Orfi, Sels "Adiabatic dressing of quantum enhanced Markov chains": CONFIRMED.
+  S2 lists a journal DOI 10.1103/x255-fw2l [S2-only].
+- 2606.23350 Cui et al. "Irreversibility Enhances Quantum-Enhanced MCMC": CONFIRMED (v2 18 Nov 2026,
+  cond-mat.stat-mech).
+- P1 hardware size: an earlier note said "IBM hardware to n=27". This is WRONG as a problem size.
+  P1 ran n=10 instances (e.g. T=0.1) on ibmq_mumbai, which is a 27-QUBIT device. Exact-gap
+  numerics covered n<=10.
+- Not found despite targeted searches: "Nakano et al. QeMCMC for alloys"; any Szabo/Bauer QeMCMC
+  paper; any Rydberg-hardware QeMCMC EXPERIMENT; any D-Wave HARDWARE QeMCMC run; any paper training
+  RBMs/Boltzmann machines with Layden-type QeMCMC; any head-to-head paper showing the speedup
+  vanishes against parallel tempering + cluster moves. The Nakano papers that do exist are
+  QAOA-MC (2305.08789), a neural sampler trained on QAOA (2506.01335) and fair sampling (2512.14552);
+  details below. "Arai et al." is Arai & Kadowaki 2502.08060 (quantum-annealing proposal,
+  SIMULATION only).
+
+=========================================================================
+1. HARDWARE DEMONSTRATIONS
+=========================================================================
+- Layden et al. | 2022/2023 | arXiv:2203.12497, doi:10.1038/s41586-023-06095-4, https://arxiv.org/abs/2203.12497 | quench proposal U=exp(-iHt) + classical Metropolis-Hastings; exact gap k_q=0.264 vs k_local=0.94 (factor 3.6 at T=1); speedup claimed for T<~1 | low T (T=1 fits; hw at T=0.1); hw + sim | n<=10 exact; hw n=10 on ibmq_mumbai (27 qubits) | BASELINE (advantage is empirical, small n, low T only)
+- Marshall et al. (IBM) | 2026 | arXiv:2602.06171, https://arxiv.org/abs/2602.06171 | QeMCMC + warm-start QAOA + parallel tempering for MIS; recovers global optima | low T (T=0.1); hw (ibm_aachen, ibm_boston, ibm_pittsburgh) | up to 117 vars/qubits, 5 instances | NEUTRAL-WEAK (largest QeMCMC hw run, but CPLEX solves these instances and the scaling claim is only an "indication" against weak MCMC baselines)
+- Kawamata & Fujii | 2026 | arXiv:2611.05883, https://arxiv.org/abs/2611.05883 | neural-surrogate QeMCMC: a MADE network trained on QAOA samples from subblocks; fixed-Hamming-weight Boltzmann sampling | T not stated in abstract; hw IBM Heron r2 | N=144 and N=1064 | NEUTRAL (largest N, but the quantum part is only a training-data source; gains are per MCMC step (5.2x/12.3x autocorrelation decay) against global/local Kawasaki dynamics, a weak baseline; no wall-clock or PT comparison)
+- Cui et al. | 2026 | arXiv:2606.23350, https://arxiv.org/abs/2606.23350 | irreversible QeMCMC (IQEMC); hw run compares IQEMC vs QEMC convergence of magnetisation | hw at HIGH T (T=10); sim scaling at T=0.1; hw = AGate-100 via LogicalQubit cloud | hw n=3; sim n small | NEUTRAL (hw run is a toy; see Variants)
+- Claudon, Ramos-Calderer, Piquemal | 2026 | arXiv:2603.08395, https://arxiv.org/abs/2603.08395 | Szegedy/LCU-encoded Markov chain + amplitude estimation (qMCMC) on Quantinuum H2/Helios, with Iceberg QED on logical qubits | n/a (two-state chains); hw | 2-state chains | NEUTRAL (feasibility of the fault-tolerant-style route only; not QeMCMC)
+- Zhu et al. (Zhejiang) | 2025 | arXiv:2509.11535, https://arxiv.org/abs/2509.11535 | shallow warm-start-QAOA "quantum jump" sampler inside simulated annealing for Ising ground states; beats a highly optimised SA on solution quality; TTS path to speedup | optimisation (T->0); hw superconducting | up to 104 qubits | NEUTRAL-STRENGTHENS for optimisation-flavoured QeMCMC-like hybrids (not a Boltzmann-sampling claim)
+- Hegade et al. (Kipu) | 2025 | arXiv:2510.26735, https://arxiv.org/abs/2510.26735 | digitized counterdiabatic quantum sampling + iterative bias + classical reweighting (NOT MCMC); claims PT needs up to 1000x more samples, ~2x runtime | low T; hw IBM | 124 (1D sim) / 156 qubits hw | COMPETING quantum sampler (only ~2x runtime claim)
+
+=========================================================================
+2. THEORY OF ADVANTAGE (when does the gap enhancement exist?)
+=========================================================================
+- Orfi & Sels | 2024 | arXiv:2403.03087 (PRA 110, 052414 [S2-only]), https://arxiv.org/abs/2403.03087 | no speedup on a worst-case unstructured sampling problem; upper bound on the Markov gap rules out speedup for ANY unital proposal there; in the low-T regime gap = O(2^-N) for any unitary proposal on that problem | low T; theory | general N | WEAKENS (no generic advantage; any advantage must come from problem structure)
+- Orfi & Sels | 2024 | arXiv:2408.07881 (PRA 110, 052434 "Barriers to efficient mixing..." [S2-only]), https://arxiv.org/abs/2408.07881 | long-time-limit gap is bounded by the IPR of classical states in the eigenstate basis, so NO advantage when quenching to an ERGODIC system; optimum needs delocalisation without too much entropy, which is a fine-tuned intermediate regime for SK and 3-spin | low T; sim + theory | small N (ED) | WEAKENS (advantage needs fine-tuned quench parameters; it disappears in the ergodic/long-t limit)
+- Hsieh, Orfi, Sels | 2026 | arXiv:2603.28076, https://arxiv.org/abs/2603.28076 | replace the quench with a time-symmetric adiabatic ramp ("dressing"); suppresses high-energy proposals and improves gap scaling: SK k drops from 0.614 (quench) to 0.146 (peak) / 0.124 (kappa-averaged); 3-spin from 0.453 to 0.182 / 0.181 | low T (beta=5, h=1.5); sim (ED + bottleneck bound) | ED N=5-12; Ising-chain bound N=8-40 | STRENGTHENS (better scaling; same group as the bounds)
+- Christmann, Ivashkov, Chiurco, Mazzola | 2024/2025 | arXiv:2411.17821 (PRA 111, 042615), https://arxiv.org/abs/2411.17821 | finds an optimal mixing strength (gamma~0.45, just below critical) and fixed t=12; time-to-plateau of the gap is linear in n; large Trotter steps fine; reverse digitized annealing explored; MPS/TEBD proposals with chi=4 follow the ideal k~0.23 up to n=9 | T=1 main text (low T for these n); gap-vs-T at n=8 in App. D; sim | n<=~10 exact | WEAKENS the quantum case (a classical approximate emulation keeps the scaling advantage over local/uniform)
+- Nakano, Hakoshima, Mitarai, Fujii | 2023 | arXiv:2305.08789 (PRR 6, 033105, 2024), https://arxiv.org/abs/2305.08789 | QAOA-type proposal satisfying the symmetric-proposal constraint; acceptance rate correlates with gap, so parameters can be tuned from a measurable; quadratic speedup in convergence | low T; sim | small n | STRENGTHENS (shallow circuits, tunable from data)
+- Incudini & Mazzola | 2026 | arXiv:2607.22818, https://arxiv.org/abs/2607.22818 | puts the Layden Hamiltonian-simulation proposal inside a coherent Szegedy walk ("fully-quantum walk"); heuristic cubic gap gain over best classical proposal at low T; total ~6th-degree query speedup; full FT compilation; crossover vs CPU/GPU/FPGA cut from ~10^3 years to <1 day | low T; sim + FT resource estimate | dense Ising, extrapolated | STRENGTHENS the long-run case (FT route), WEAKENS the NISQ-QeMCMC case (they call standard QeMCMC a "classical sequential chain assisted by a quantum simulator")
+- Shirai | 2026 | arXiv:2609.38943, https://arxiv.org/abs/2609.38943 | "quantum-echo" kernel (forward+backward QA/QAOA dynamics): Hamming-space delocalisation via operator spreading plus energy-space localisation; too much energy localisation hurts; greedy descent needed | optimisation; sim | small | NEUTRAL (mechanistic insight; agrees with Orfi/Sels tension)
+- D'Arcangelo, Javanmard, Pearson (Pasqal) | 2025 | arXiv:2505.21255 (PRA 113, 052403, 2026), https://arxiv.org/abs/2505.21255 | quantum Markov chain using an MBL Floquet Ising chain; thermal-to-MBL transition tunes the acceptance rate; aimed at neutral-atom/analog QPUs | not stated; sim | small | NEUTRAL (the localisation knob is the same lever as the IPR bound; neutral-atom-friendly)
+
+=========================================================================
+3. TEMPERATURE-DEPENDENCE RESULTS (explicit)
+=========================================================================
+- Layden et al. 2203.12497: "substantially better delta on average than either classical alternative for T <~ 1". Fits at T=1 (k_q=0.264, k_local=0.94, k_uniform=0.948); "roughly cubic/quartic enhancement at low temperatures". No advantage claim at high T | sim n<=10.
+- Ferguson & Wallden 2405.04247, App. B.3 Table 1 (k in delta ~ 2^-kn; header reads T = 0.01 / 1 / 10, while the main text says T=0.1 and T=10, an inconsistency inside the paper):
+    T=1 : uniform 0.97, local 0.92, QeMCMC 0.335, CG improved-local-group 0.64, CG multi-sample 0.50
+    T=10: uniform 0.341, local 0.26, QeMCMC 0.087, CG local-group 0.177, CG improved 0.171, CG multi-sample 0.10
+  i.e. even at T=10 the fitted QeMCMC exponent is ~3x smaller than local. CAVEATS: gaps are large in
+  absolute terms at T=10, n<=10 exact, and the fits are over a very small n range. Text: multi-sample
+  CG "almost match[es] QeMCMC in high temperatures; performance is reduced in low temperatures".
+  Main text also: 6 simulated qubits give an advantage for the magnetisation of a 36-spin system at T=0.1.
+- Arai & Kadowaki 2502.08060 (Sci. Rep. 2025, s41598-025-07293-y [snippet-only]): QA-proposal gap vs T at N=10. At T>=10 the Boltzmann distribution approaches uniform, so they fix tau=0.01; "short annealing times ... yield a large spectral gap in the high-temperature region". For 1<=T<10 (intermediate) the QA update gives a larger gap than uniform/local; at T<1 the uniform/local updates fail and QA helps most. Size scaling at T=1 | QuTiP sim only, SK N<=~10.
+- Cui et al. 2606.23350: gap vs T at n=6, with IQEMC > QEMC across the whole T range; scaling advantage at T=0.1; hardware toy run at T=10, n=3.
+- Christmann et al. 2411.17821: all scaling at T=1; App. D Fig. 13 shows gap vs T at n=8 for Trotter/MPS proposals; MPS performance depends strongly on chi.
+- Wilson et al. 2407.13830 (AQAM, Rydberg quench proposal, 12-atom sim): "large temperature regions where the AQAM has a larger MCMC spectral gap" than classical samplers | sim only.
+- Pelofske 2510.10345 (direct sampling, not MCMC): at very high T a depth-1 Grover-mixer QAOA approximates the Boltzmann distribution better than the X-mixer QAOA; the quality depends heavily on the angles.
+- Hsieh/Orfi/Sels 2603.28076 and both Orfi/Sels papers: analysed only at low T (beta=5 etc.); bottleneck bounds chosen for low T.
+- Marshall 2602.06171: T=0.1 only. Nakano 2512.14552: ground-state fair sampling, i.e. T->0.
+
+=========================================================================
+4. VARIANTS (by type)
+=========================================================================
+4a Coarse-grained / fewer-qubit
+- Ferguson & Wallden | 2024/2025 | arXiv:2405.04247 (PRR 7, 013231) | P2: sqrt(n)-qubit coarse-grained QeMCMC keeps a scaling advantage over local/uniform | T=0.1/1/10; sim | gap n<=10; convergence n=16/25/36 | STRENGTHENS (hardware-size relief), but its baselines are local/uniform only
+- Kawamata, Fujii et al. | 2026 | arXiv:2604.20701 | divide-and-conquer neural surrogates: QAOA on subgraphs with an XY mixer (fixed Hamming weight) trains neural proposals | not stated; sim | large constrained | NEUTRAL (scalability engineering; the quantum role shrinks)
+
+4b Annealing / annealer-based proposals
+- Arai & Kadowaki | 2025 | arXiv:2502.08060 | quantum annealing as proposal (QAEMCMC); larger gaps; scaling exponent of TV distance improved; Optuna-tuned anneal time | all T (see sec. 3); QuTiP SIMULATION, no D-Wave hardware | SK N~10 | STRENGTHENS in sim; a D-Wave reverse-annealing hardware QeMCMC remains UNDONE in the literature I found
+- Christmann et al. 2411.17821 | reverse digitized annealing + time-dependent H inside QEMC | sim | NEUTRAL
+- Hsieh, Orfi, Sels 2603.28076 | adiabatic dressing (see sec. 2) | STRENGTHENS
+- Scriva et al. | 2022/2023 | arXiv:2210.11288 (SciPost Phys. 15, 018) | D-Wave samples train a generative NN used as Metropolis proposals for spin glasses at low but finite T | low T; D-Wave hw data + NN | NEUTRAL (annealer used for data, not for proposals; pre-QeMCMC lineage)
+
+4c QAOA / variational / learned proposals
+- Nakano et al. | 2023 | arXiv:2305.08789 (PRR 6, 033105) | QAOA-MC (see sec. 2) | STRENGTHENS
+- Nakano, Okada, Fujii | 2025 | arXiv:2506.01335 (PRX Quantum 2026 per search snippet, DOI 10.1103/9nhx-5pym [snippet-only]) | generative neural sampler trained on QAOA samples removes the symmetry constraint; ~100x gap vs UNIFORM proposals, even without parameter optimisation | low T; sim | small | NEUTRAL (100x vs the weakest baseline; quantum becomes an offline data source)
+- Nakano & Fujii | 2025 | arXiv:2512.14552 | fair sampling of degenerate ground states; hybrid QAOA-neural + single-flip matches PT-ICM fairness on 2-SAT and stays ~uniform on 3-SAT; solution counting needs about as many transitions as WalkSAT | T->0; sim | small | NEUTRAL (matches, does not beat, classical PT-ICM)
+- Wilson et al. | 2024 | arXiv:2407.13830 | adversarial quantum autoencoder; quench proposal under a Rydberg Hamiltonian (Rb-87) | range of T; sim, 12 atoms | NEUTRAL (only Rydberg-flavoured QeMCMC found; no experiment)
+- Kawamata & Fujii | 2026 | arXiv:2611.05883 | (hardware, sec. 1)
+
+4d Irreversible / non-reversible
+- Cui, Cao, Chen, Wang et al. | 2026 | arXiv:2606.23350 | lifted/irreversible flows over quantum-generated candidate paths; polynomial gap-scaling gain over QEMC, persisting at matched compute; time-dependent t-IQEMC | T=0.1 scaling, gap>QEMC across T at n=6; tiny hw at T=10 | small n | STRENGTHENS (cheap classical-side upgrade). Compared against QEMC, not against SOTA classical
+
+4e Quantum-walk MCMC (Szegedy, amplitude estimation, coherent)
+- Claudon, Ramos-Calderer, Piquemal | 2025 | arXiv:2506.11576 (J. Phys. A 59, 305304, 2026) | circuits for a Szegedy-walk MH without coherent arithmetic for transition probabilities | theory | NEUTRAL (FT era)
+- Claudon et al. | 2026 | arXiv:2603.08395 | (hardware, sec. 1)
+- Carrasco-Arango et al. | 2026 | arXiv:2604.15179 | penalised qubitised walks; full circuit-level qMH workflow (simulated) | sim | NEUTRAL
+- Incudini & Mazzola | 2026 | arXiv:2607.22818 | fully-quantum walk with Hamiltonian-simulation proposal (sec. 2) | STRENGTHENS the FT route
+- Miyamoto | 2023 | arXiv:2303.05640 | quantum MH with target computed by quantum Monte Carlo integration | theory | NEUTRAL
+- Ramos et al. | 2025 | arXiv:2504.12089 | discrete quantum walk circuit for MCMC; convergence within the walk subspace | sim | NEUTRAL
+- Lin et al. | 2023 | arXiv:2312.01402 (Bayesian Anal. 2025) | quantum multiproposal MCMC, O(sqrt P) target evaluations | theory/sim | NEUTRAL (different speedup mechanism)
+
+4f Continuous-variable / Hamiltonian Monte Carlo
+- Lockwood et al. | 2024 | arXiv:2403.01775 (PRR 6, 033142) | Quantum Dynamical HMC: continuous-space quantum dynamics replaces symplectic integration as proposal; detailed balance kept via momentum inversion | n/a; sim | small | NEUTRAL (extends QeMCMC idea to continuous targets)
+- Sarracino et al. | 2025 | arXiv:2509.09395 | quantum-circuit step proposals for cosmological posteriors, MH accept | sim | NEUTRAL (no advantage shown; consistent with classical)
+- Schindler et al. | 2026 | arXiv:2606.15985 | QE-MCMC sampling turbulent acceleration vectors (Lagrangian tracer dispersion); works reliably for Nq<=6 qubits per dimension | sim | NEUTRAL (engineering application; tiny)
+- Ingelmann et al. | 2025 | arXiv:2506.14586 (Phys. Fluids 37, 085251) | quantum-assisted generator for turbulent tracers, validated against classical MCMC | sim | NEUTRAL
+
+4g Optimisation-oriented QeMCMC (SA/PT hybrids)
+- Ferguson & Wallden | 2026 | arXiv:2602.01353 | Quantum-enhanced SA (QeSA) and Quantum-enhanced PT (QePT); "superior scaling" on hard SK | T->0 (optimisation); sim | appendix n=4-9 | NEUTRAL (tiny n)
+- Marshall et al. 2602.06171 (sec. 1); Zhu et al. 2509.11535 (sec. 1)
+- Eder et al. | 2025 | arXiv:2508.10656 | quantum-guided cluster algorithm: clusters drawn from QAOA two-point correlations give high acceptance at low T | low T; sim | small | NEUTRAL (shows cluster moves + quantum info combine)
+
+4h Fermionic / VMC adaptations
+- Chang et al. | 2025 | arXiv:2502.20799 (Precision Chemistry 2025) | QA-VMC: QeMCMC proposals for neural-network wavefunction sampling; larger gaps, lower autocorrelation for Fermi-Hubbard / molecules | sim | small | STRENGTHENS (new application class)
+- Sajjan et al. | 2024 | arXiv:2412.12398 | quantum-enabled MC for training RBM/Hopfield-type NQS (closest thing to "RBM + QeMCMC") | sim | NEUTRAL
+
+=========================================================================
+5. CLASSICAL / QUANTUM-INSPIRED COMPETITORS AND CRITIQUES
+=========================================================================
+- Christmann et al. 2411.17821: tensor-network (MPS, unconverged chi) emulation of the QEMC proposal keeps a scaling advantage over standard classical samplers. Strongest "the speedup is classically reproducible (at small n)" evidence | T=1, n<=~10 | WEAKENS the quantum-hardware case
+- Orfi & Sels 2403.03087 and 2408.07881: no generic advantage; no advantage for ergodic quenches; requires fine-tuning | WEAKENS
+- Mazumder & Towe | 2026 | arXiv:2607.09893, https://arxiv.org/abs/2607.09893 | amplitude-encoded i.i.d. quantum sampling for small MRFs (2^n probabilities precomputed classically); mean ESS ratio quantum/classical = 16.35 (single-site Gibbs), 7.29 (block Gibbs), 1.82 (tuned block), 1.79 (parallel tempering); exact inverse-CDF sampling is 36x faster than the quantum sampler in wall-clock; "confirming no wall-clock advantage" | sim, n=8-12 | WEAKENS (not Layden-QeMCMC, but the clearest "modern classical samplers close the gap / PT erases most of it" data point)
+- Chen et al. | 2025 | arXiv:2509.23945 | Tensor-Network MCMC: TN-generated collective proposals sample 3D EA spin glasses up to 64^3 on one CPU, with orders-of-magnitude speedup over conventional MCMC | low T; classical | 262k spins | WEAKENS (classical non-local proposals at scales QeMCMC cannot touch)
+- Marshall et al. 2602.06171 (own caveat): instances solved efficiently by CPLEX | WEAKENS practical claim
+- Nakano & Fujii 2512.14552: hybrid only matches PT-ICM on 2-SAT fairness | NEUTRAL-WEAK
+- Incudini & Mazzola 2607.22818: even conventional quantum walks need ~10^3 years to reach a runtime crossover under identical hw assumptions; frames NISQ QeMCMC as only a quantum-assisted classical chain | WEAKENS NISQ claims
+- Gap: no paper found that benchmarks Layden-type QeMCMC against tuned parallel tempering + Houdayer/ICM cluster moves at equal wall-clock. All QeMCMC scaling claims (P1, P2, Arai, Cui, Hsieh, Ferguson 2026) use local / uniform (sometimes plain PT) baselines at n<=~12 exact.
+
+=========================================================================
+6. APPLICATIONS
+=========================================================================
+- Combinatorial optimisation / MIS: Marshall 2602.06171 (hw 117q); Ferguson & Wallden 2602.01353; Zhu 2509.11535; Eder 2508.10656; Shirai 2609.38943; Kale et al. 2611.19301 (LABS/Bernasconi, transverse-field escape from local minima, GPU sim N=20-30; cites P1).
+- Constrained Boltzmann sampling (fixed Hamming weight; portfolio-like): Kawamata 2604.20701, 2611.05883 (hw N=1064).
+- Fair sampling / solution counting (SAT): Nakano & Fujii 2512.14552.
+- Quantum gravity (causal sets): Ferguson, Nasiri, Wallden | 2025 | arXiv:2506.19538 | constrained QeMCMC with Benincasa-Dowker action; "super-quadratic" scaling advantage | sim | NEUTRAL-STRENGTHENS (niche).
+- Fluids (turbulent tracers): Schindler 2606.15985; Ingelmann 2506.14586.
+- Quantum chemistry / VMC: Chang 2502.20799; Sajjan 2412.12398.
+- Bayesian / cosmology: Sarracino 2509.09395; Lin 2312.01402 (Bayesian Anal.).
+- Data assimilation (4DVAR): Sripat | 2024 | arXiv:2410.03853 | conceptual QAOA + QMCMC particle filter | no results of note | NEUTRAL.
+- Generative / ML: Wilson 2407.13830 (AQAM, metasurface design); Nakano 2506.01335 (neural sampler).
+- Not found: MIMO detection/decoding, alloys/materials, RBM training with Layden QeMCMC.
+
+=========================================================================
+FACTS MOST RELEVANT TO MEDIUM AND HIGH TEMPERATURE
+=========================================================================
+1. P1 claims an advantage only for T <~ 1 with unnormalised SK (T_c ~ sqrt(n) ~ 3 at n=10), i.e.
+   low T. No paper claims a practically useful advantage at high T.
+2. The one quantitative high-T number is P2's App. B.3: at T=10, fitted k = 0.087 (QeMCMC) vs
+   0.26 (local) vs 0.341 (uniform). Even at high T, the fitted gap DECAY rate is ~3x slower for
+   QeMCMC. But (a) the absolute gaps are already large, (b) n<=10, (c) the table header (0.01)
+   disagrees with the text (0.1) for the low-T column. Treat this as weak evidence; it needs replication.
+3. Arai & Kadowaki: at T>=10 the target is near-uniform and the optimal anneal time ~0, so the
+   quantum proposal degenerates toward a near-uniform proposal. The QA advantage is largest for T<1
+   and still present for 1<=T<10 (intermediate) at N=10.
+4. Cui et al.: IQEMC > QEMC across the whole T range at n=6; their hardware demo was at T=10 (n=3).
+   That is a convenient regime for noisy hw, not evidence of high-T advantage over classical.
+5. Wilson et al. (Rydberg-quench AQAM, 12 atoms): "large temperature regions" with a larger gap than
+   classical samplers. Simulation only.
+6. Orfi/Sels bounds and Hsieh dressing are all analysed at low T (beta=5). The IPR bound in the
+   long-time limit is temperature-agnostic in form, but the papers focus on low T.
+7. Inference (mine, not a paper claim): at high T the local Metropolis chain already mixes fast
+   (O(n log n)-type), so a per-step quantum gain cannot offset the shot/latency cost. Medium T
+   (around T_c, critical slowing down) is the only non-low-T regime where a gap gain could matter.
+   I found NO paper that specifically studies QeMCMC at/near T_c, and none that compares against
+   cluster algorithms there.
+
+=========================================================================
+STRONGEST CRITIQUE FOUND
+=========================================================================
+Combined Orfi & Sels line + Christmann et al.:
+ (i) arXiv:2403.03087: no speedup for any unital proposal on a worst-case unstructured problem
+     (gap O(2^-N) at low T).
+ (ii) arXiv:2408.07881: in the long-time limit the gap is bounded by the eigenstate IPR, so quenching
+     into an ergodic regime gives NO advantage; the advantage requires a fine-tuned intermediate
+     quench.
+ (iii) arXiv:2411.17821: the scaling advantage is reproduced by cheap, unconverged MPS emulation
+     (chi=4, n<=9). The observed small-n "quantum" advantage is therefore not evidence of
+     classical hardness.
+ Supporting practical critiques:
+ - Marshall's hw paper admits CPLEX solves its instances.
+ - Mazumder & Towe (2607.09893): PT recovers almost all the ESS gap and wall-clock favours classical.
+ - No QeMCMC paper benchmarks against tuned PT + ICM/Houdayer cluster moves.
+
+Single strongest paper-level critique: Orfi & Sels arXiv:2408.07881 (PRA 110, 052434). It explains
+WHEN the gap advantage exists (intermediate, non-ergodic, fine-tuned quench) and shows it vanishes
+otherwise.

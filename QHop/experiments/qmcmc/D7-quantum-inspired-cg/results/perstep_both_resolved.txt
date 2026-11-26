@@ -1,0 +1,19 @@
+Per-step IAT ratio HB/Q (same k, same grouping), ONLY pairs where both runs resolved (N/tau>=50). Theorem: <= ~2.
+E ('dec', '8', 'HIGH') n=4 median 10.076 max 20.102
+E ('dec', '8', 'LOW') n=1 median 20.141 max 20.141
+E ('dec', '8', 'MEDIUM') n=1 median 22.268 max 22.268
+E ('q', '12', 'HIGH') n=4 median 18.161 max 19033.377
+E ('q', '12', 'MEDIUM') n=1 median 92.046 max 92.046
+E ('q', '4', 'HIGH') n=30 median 0.196 max 0.305
+E ('q', '4', 'LOW') n=10 median 0.745 max 124.620
+E ('q', '4', 'MEDIUM') n=24 median 0.288 max 4.519
+E ('q', '8', 'HIGH') n=22 median 0.316 max 0.642
+E ('q', '8', 'LOW') n=3 median 7.132 max 36.631
+E ('q', '8', 'MEDIUM') n=5 median 0.253 max 0.691
+H ('dec', '8', 'HIGH') n=3 median 66.644 max 137.082
+H ('dec', '8', 'MEDIUM') n=1 median 168.809 max 168.809
+H ('q', '12', 'HIGH') n=4 median 13.195 max 25.661
+H ('q', '4', 'HIGH') n=26 median 0.404 max 0.893
+H ('q', '4', 'LOW') n=4 median 0.435 max 1.943
+H ('q', '4', 'MEDIUM') n=10 median 0.497 max 10.825
+H ('q', '8', 'HIGH') n=14 median 0.593 max 1.355

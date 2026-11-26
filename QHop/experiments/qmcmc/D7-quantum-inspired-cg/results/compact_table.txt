@@ -1,0 +1,145 @@
+Medians over 5 instances. tauE_moves = IAT(E) per move (metro: per sweep; pt: per PT sweep of all replicas); sec = IAT in CPU seconds; res = fraction of instances resolved (N/tau>=50 and >=1000 records)
+-- sk32 HIGH
+  metro          us/move     3.52 | tauE/move     1.33 | tauE sec 4.64e-06 | tauH sec 3.47e-06 | resE 1.0 resH 1.0 | teq s 0.00066
+  hb_k4_block    us/move     1.12 | tauE/move     15.8 | tauE sec 1.76e-05 | tauH sec 5.09e-05 | resE 1.0 resH 1.0 | teq s 0.00072
+  hb_k8_block    us/move     10.1 | tauE/move     7.36 | tauE sec 7.71e-05 | tauH sec 2.13e-04 | resE 1.0 resH 1.0 | teq s 0.0012
+  hb_k8_cluster  us/move       11 | tauE/move     7.63 | tauE sec 8.83e-05 | tauH sec 1.98e-04 | resE 1.0 resH 1.0 | teq s 0.00083
+  hb_k12_block   us/move      166 | tauE/move     4.78 | tauE sec 8.28e-04 | tauH sec 1.90e-03 | resE 1.0 resH 1.0 | teq s 0.0017
+  q_k4_block     us/move     19.5 | tauE/move     76.4 | tauE sec 1.46e-03 | tauH sec 2.22e-03 | resE 1.0 resH 1.0 | teq s 0.0018
+  q_k8_block     us/move      604 | tauE/move     60.4 | tauE sec 3.42e-02 | tauH sec 2.27e-02 | resE 0.0 resH 0.0 | teq s 0.043
+  q_k8_cluster   us/move      699 | tauE/move     35.1 | tauE sec 2.60e-02 | tauH sec 3.15e-02 | resE 0.0 resH 0.0 | teq s 0.022
+  q_k12_block    us/move 2.13e+04 | tauE/move     5.47 | tauE sec 1.16e-01 | tauH sec 1.24e-01 | resE 0.0 resH 0.0 | teq s 0.32
+  dec_k8_block   us/move 8.06e+03 | tauE/move     8.49 | tauE sec 6.81e-02 | tauH sec 1.66e-01 | resE 0.0 resH 0.0 | teq s 0.24
+-- sk32 MEDIUM
+  metro          us/move     2.81 | tauE/move     2.02 | tauE sec 6.03e-06 | tauH sec 2.51e-05 | resE 1.0 resH 1.0 | teq s 0.0014
+  pt             us/move     11.1 | tauE/move     1.79 | tauE sec 1.98e-05 | tauH sec 5.63e-05 | resE 1.0 resH 1.0 | teq s 0.0014
+  hb_k4_block    us/move     1.05 | tauE/move     37.6 | tauE sec 4.16e-05 | tauH sec 2.80e-04 | resE 1.0 resH 1.0 | teq s 0.00085
+  hb_k8_block    us/move     11.1 | tauE/move     16.7 | tauE sec 1.82e-04 | tauH sec 1.17e-03 | resE 1.0 resH 1.0 | teq s 0.0015
+  hb_k8_cluster  us/move       11 | tauE/move     14.9 | tauE sec 2.01e-04 | tauH sec 9.56e-04 | resE 1.0 resH 1.0 | teq s 0.0007
+  hb_k12_block   us/move      153 | tauE/move     9.91 | tauE sec 1.41e-03 | tauH sec 6.59e-03 | resE 1.0 resH 1.0 | teq s 0.0022
+  q_k4_block     us/move     18.8 | tauE/move      191 | tauE sec 4.11e-03 | tauH sec 1.04e-02 | resE 1.0 resH 1.0 | teq s 0.0026
+  q_k8_block     us/move      684 | tauE/move      118 | tauE sec 8.05e-02 | tauH sec 1.08e-01 | resE 0.0 resH 0.0 | teq s 0.088
+  q_k8_cluster   us/move      674 | tauE/move     57.1 | tauE sec 3.78e-02 | tauH sec 1.30e-01 | resE 0.0 resH 0.0 | teq s 0.064
+  q_k12_block    us/move 2.18e+04 | tauE/move     5.71 | tauE sec 1.60e-01 | tauH sec 2.13e-01 | resE 0.0 resH 0.0 | teq s 1.7
+  dec_k8_block   us/move 7.26e+03 | tauE/move     21.6 | tauE sec 1.74e-01 | tauH sec 2.21e-01 | resE 0.0 resH 0.0 | teq s 1.4
+-- sk32 LOW
+  metro          us/move     1.91 | tauE/move     5.74 | tauE sec 1.12e-05 | tauH sec 1.89e-03 | resE 0.8 resH 0.8 | teq s 0.0013
+  pt             us/move     13.3 | tauE/move     2.45 | tauE sec 3.34e-05 | tauH sec 1.85e-04 | resE 1.0 resH 1.0 | teq s 0.0013
+  hb_k4_block    us/move    0.896 | tauE/move     77.8 | tauE sec 5.41e-05 | tauH sec 4.54e-03 | resE 1.0 resH 1.0 | teq s 0.002
+  hb_k8_block    us/move     9.27 | tauE/move     34.4 | tauE sec 3.09e-04 | tauH sec 2.31e-02 | resE 0.8 resH 0.8 | teq s 0.0025
+  hb_k8_cluster  us/move     9.39 | tauE/move      119 | tauE sec 1.03e-03 | tauH sec 3.30e-02 | resE 1.0 resH 0.6 | teq s 0.0012
+  hb_k12_block   us/move      148 | tauE/move     19.9 | tauE sec 3.31e-03 | tauH sec 5.66e-02 | resE 0.6 resH 0.4 | teq s 0.18
+  q_k4_block     us/move     17.8 | tauE/move      193 | tauE sec 3.44e-03 | tauH sec 9.03e-02 | resE 0.8 resH 0.4 | teq s 0.0071
+  q_k8_block     us/move      639 | tauE/move     83.6 | tauE sec 5.21e-02 | tauH sec 1.35e-01 | resE 0.0 resH 0.0 | teq s 0.34
+  q_k8_cluster   us/move      663 | tauE/move      106 | tauE sec 6.86e-02 | tauH sec 1.05e-01 | resE 0.0 resH 0.0 | teq s 0.27
+  q_k12_block    us/move 2.08e+04 | tauE/move     7.76 | tauE sec 1.62e-01 | tauH sec 1.07e-01 | resE 0.0 resH 0.0 | teq s 2.7
+  dec_k8_block   us/move 7.21e+03 | tauE/move     25.6 | tauE sec 1.94e-01 | tauH sec 1.91e-01 | resE 0.0 resH 0.0 | teq s 2.1
+-- sk128 HIGH
+  metro          us/move     26.2 | tauE/move     1.31 | tauE sec 3.35e-05 | tauH sec 2.81e-05 | resE 1.0 resH 1.0 | teq s 0.0014
+  hb_k4_block    us/move     1.29 | tauE/move     68.9 | tauE sec 8.66e-05 | tauH sec 3.08e-04 | resE 1.0 resH 1.0 | teq s 0.0018
+  hb_k8_block    us/move     10.3 | tauE/move     31.3 | tauE sec 3.50e-04 | tauH sec 1.32e-03 | resE 1.0 resH 1.0 | teq s 0.00096
+  hb_k8_cluster  us/move     10.6 | tauE/move     34.5 | tauE sec 3.49e-04 | tauH sec 1.06e-03 | resE 1.0 resH 1.0 | teq s 0.0011
+  hb_k12_block   us/move      147 | tauE/move     25.6 | tauE sec 3.87e-03 | tauH sec 1.02e-02 | resE 1.0 resH 1.0 | teq s 0.0076
+  q_k4_block     us/move       18 | tauE/move      357 | tauE sec 5.96e-03 | tauH sec 1.03e-02 | resE 1.0 resH 1.0 | teq s 0.0072
+  q_k8_block     us/move      624 | tauE/move      125 | tauE sec 8.15e-02 | tauH sec 1.04e-01 | resE 0.0 resH 0.0 | teq s 0.12
+  q_k8_cluster   us/move      604 | tauE/move      103 | tauE sec 6.50e-02 | tauH sec 5.57e-02 | resE 0.0 resH 0.0 | teq s 0.091
+  q_k12_block    us/move 1.99e+04 | tauE/move     6.96 | tauE sec 1.34e-01 | tauH sec 1.08e-01 | resE 0.0 resH 0.0 | teq s 2.4
+  dec_k8_block   us/move 7.04e+03 | tauE/move     16.4 | tauE sec 1.15e-01 | tauH sec 1.80e-01 | resE 0.0 resH 0.0 | teq s 0.93
+-- sk128 MEDIUM
+  metro          us/move     16.3 | tauE/move     2.68 | tauE sec 4.48e-05 | tauH sec 3.99e-04 | resE 1.0 resH 1.0 | teq s 0.00077
+  pt             us/move      145 | tauE/move     2.31 | tauE sec 3.35e-04 | tauH sec 1.47e-03 | resE 1.0 resH 1.0 | teq s 0.0013
+  hb_k4_block    us/move     1.08 | tauE/move      233 | tauE sec 2.54e-04 | tauH sec 2.86e-03 | resE 1.0 resH 1.0 | teq s 0.0022
+  hb_k8_block    us/move     11.4 | tauE/move      128 | tauE sec 1.35e-03 | tauH sec 1.17e-02 | resE 1.0 resH 1.0 | teq s 0.0018
+  hb_k8_cluster  us/move     10.8 | tauE/move      106 | tauE sec 1.11e-03 | tauH sec 1.03e-02 | resE 1.0 resH 1.0 | teq s 0.0019
+  hb_k12_block   us/move      151 | tauE/move     61.1 | tauE sec 9.67e-03 | tauH sec 5.01e-02 | resE 1.0 resH 0.2 | teq s 0.0089
+  q_k4_block     us/move     18.1 | tauE/move      675 | tauE sec 1.26e-02 | tauH sec 9.08e-02 | resE 1.0 resH 0.0 | teq s 0.021
+  q_k8_block     us/move      623 | tauE/move      158 | tauE sec 9.51e-02 | tauH sec 2.14e-01 | resE 0.0 resH 0.0 | teq s 0.23
+  q_k8_cluster   us/move      610 | tauE/move      124 | tauE sec 7.91e-02 | tauH sec 1.35e-01 | resE 0.0 resH 0.0 | teq s 0.44
+  q_k12_block    us/move 1.94e+04 | tauE/move     0.83 | tauE sec 1.43e-02 | tauH sec -4.81e-02 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.01e+03 | tauE/move     27.8 | tauE sec 2.04e-01 | tauH sec 1.13e-01 | resE 0.0 resH 0.0 | teq s nan
+-- sk128 LOW
+  metro          us/move     6.96 | tauE/move     4.99 | tauE sec 3.48e-05 | tauH sec 1.69e-02 | resE 1.0 resH 0.8 | teq s 0.0015
+  pt             us/move      207 | tauE/move     3.74 | tauE sec 6.91e-04 | tauH sec 1.09e-02 | resE 1.0 resH 0.8 | teq s 0.0028
+  hb_k4_block    us/move    0.837 | tauE/move      965 | tauE sec 7.54e-04 | tauH sec 3.52e-02 | resE 0.8 resH 0.6 | teq s 0.0032
+  hb_k8_block    us/move     9.98 | tauE/move      194 | tauE sec 2.03e-03 | tauH sec 2.98e-02 | resE 0.8 resH 0.6 | teq s 0.015
+  hb_k8_cluster  us/move     9.52 | tauE/move      117 | tauE sec 1.16e-03 | tauH sec 3.28e-02 | resE 1.0 resH 0.6 | teq s 0.022
+  hb_k12_block   us/move      145 | tauE/move     80.7 | tauE sec 1.17e-02 | tauH sec 2.16e-02 | resE 1.0 resH 0.6 | teq s 0.078
+  q_k4_block     us/move     17.5 | tauE/move 3.57e+03 | tauE sec 6.09e-02 | tauH sec 2.38e-01 | resE 0.4 resH 0.0 | teq s 0.079
+  q_k8_block     us/move      612 | tauE/move      375 | tauE sec 2.34e-01 | tauH sec 2.32e-01 | resE 0.0 resH 0.0 | teq s 1.4
+  q_k8_cluster   us/move      658 | tauE/move      286 | tauE sec 1.88e-01 | tauH sec 1.87e-01 | resE 0.0 resH 0.0 | teq s 1.6
+  q_k12_block    us/move 1.94e+04 | tauE/move     1.98 | tauE sec 4.73e-02 | tauH sec 9.87e-02 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.09e+03 | tauE/move     20.6 | tauE sec 1.84e-01 | tauH sec 1.20e-01 | resE 0.0 resH 0.0 | teq s nan
+-- ea8 HIGH
+  metro          us/move     3.29 | tauE/move     1.78 | tauE sec 5.67e-06 | tauH sec 2.65e-05 | resE 1.0 resH 1.0 | teq s 0.0014
+  hb_k4_block    us/move    0.899 | tauE/move     45.9 | tauE sec 4.13e-05 | tauH sec 2.56e-04 | resE 1.0 resH 1.0 | teq s 0.0012
+  hb_k8_block    us/move     10.1 | tauE/move     21.8 | tauE sec 2.07e-04 | tauH sec 1.21e-03 | resE 1.0 resH 1.0 | teq s 0.0017
+  hb_k8_cluster  us/move     10.5 | tauE/move     16.9 | tauE sec 1.84e-04 | tauH sec 5.86e-04 | resE 1.0 resH 1.0 | teq s 0.00069
+  hb_k12_block   us/move      155 | tauE/move     12.7 | tauE sec 1.90e-03 | tauH sec 7.46e-03 | resE 1.0 resH 1.0 | teq s 0.0023
+  q_k4_block     us/move     17.2 | tauE/move      219 | tauE sec 4.36e-03 | tauH sec 1.69e-02 | resE 1.0 resH 1.0 | teq s 0.0042
+  q_k8_block     us/move      666 | tauE/move     57.4 | tauE sec 4.35e-02 | tauH sec 1.33e-01 | resE 0.0 resH 0.0 | teq s 0.1
+  q_k8_cluster   us/move      700 | tauE/move     68.8 | tauE sec 5.30e-02 | tauH sec 7.38e-02 | resE 0.0 resH 0.0 | teq s 0.13
+  q_k12_block    us/move 2.06e+04 | tauE/move     8.06 | tauE sec 1.56e-01 | tauH sec 1.72e-01 | resE 0.0 resH 0.0 | teq s 2.2
+  dec_k8_block   us/move 7.53e+03 | tauE/move     19.5 | tauE sec 1.47e-01 | tauH sec 1.36e-01 | resE 0.0 resH 0.0 | teq s 0.79
+-- ea8 MEDIUM
+  metro          us/move     2.93 | tauE/move     22.4 | tauE sec 8.65e-05 | tauH sec 1.20e-02 | resE 1.0 resH 1.0 | teq s 0.0021
+  pt             us/move     15.7 | tauE/move      3.8 | tauE sec 5.91e-05 | tauH sec 5.67e-04 | resE 1.0 resH 1.0 | teq s 0.0012
+  pth            us/move     34.7 | tauE/move     1.96 | tauE sec 7.03e-05 | tauH sec 4.90e-04 | resE 1.0 resH 1.0 | teq s 0.0025
+  hb_k4_block    us/move    0.864 | tauE/move      488 | tauE sec 3.84e-04 | tauH sec 3.44e-02 | resE 1.0 resH 0.6 | teq s 0.0013
+  hb_k8_block    us/move     9.75 | tauE/move      172 | tauE sec 1.68e-03 | tauH sec 1.42e-01 | resE 1.0 resH 0.2 | teq s 0.0025
+  hb_k8_cluster  us/move     9.85 | tauE/move     60.3 | tauE sec 5.89e-04 | tauH sec 4.12e-02 | resE 1.0 resH 0.6 | teq s 0.0014
+  hb_k12_block   us/move      157 | tauE/move     41.9 | tauE sec 6.79e-03 | tauH sec 5.67e-02 | resE 1.0 resH 0.4 | teq s 0.011
+  q_k4_block     us/move     17.5 | tauE/move 1.28e+03 | tauE sec 2.19e-02 | tauH sec 1.27e-01 | resE 0.8 resH 0.2 | teq s 0.011
+  q_k8_block     us/move      683 | tauE/move      211 | tauE sec 1.46e-01 | tauH sec 1.50e-01 | resE 0.0 resH 0.0 | teq s 0.55
+  q_k8_cluster   us/move      709 | tauE/move      311 | tauE sec 2.20e-01 | tauH sec 1.36e-01 | resE 0.0 resH 0.0 | teq s 0.34
+  q_k12_block    us/move 2.19e+04 | tauE/move       10 | tauE sec 2.23e-01 | tauH sec 1.63e-01 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 6.82e+03 | tauE/move     26.4 | tauE sec 1.88e-01 | tauH sec 1.63e-01 | resE 0.0 resH 0.0 | teq s nan
+-- ea8 LOW
+  metro          us/move     2.75 | tauE/move      778 | tauE sec 2.04e-03 | tauH sec 6.44e-02 | resE 1.0 resH 0.4 | teq s 0.0054
+  pt             us/move       14 | tauE/move     6.72 | tauE sec 9.69e-05 | tauH sec 1.74e-03 | resE 1.0 resH 1.0 | teq s 0.0015
+  pth            us/move     35.8 | tauE/move     2.36 | tauE sec 8.45e-05 | tauH sec 1.71e-03 | resE 1.0 resH 1.0 | teq s 0.0012
+  hb_k4_block    us/move     0.81 | tauE/move 9.88e+03 | tauE sec 7.84e-03 | tauH sec 1.89e-01 | resE 0.8 resH 0.0 | teq s 0.012
+  hb_k8_block    us/move     9.63 | tauE/move 1.34e+03 | tauE sec 1.28e-02 | tauH sec 2.21e-01 | resE 0.6 resH 0.0 | teq s 0.032
+  hb_k8_cluster  us/move     9.31 | tauE/move      147 | tauE sec 1.36e-03 | tauH sec 6.49e-03 | resE 1.0 resH 0.6 | teq s 0.0073
+  hb_k12_block   us/move      141 | tauE/move     68.4 | tauE sec 9.11e-03 | tauH sec 4.57e-02 | resE 1.0 resH 0.4 | teq s 0.034
+  q_k4_block     us/move     18.4 | tauE/move      892 | tauE sec 1.79e-02 | tauH sec 7.62e-02 | resE 0.8 resH 0.4 | teq s 0.12
+  q_k8_block     us/move      679 | tauE/move      290 | tauE sec 1.86e-01 | tauH sec 2.30e-01 | resE 0.0 resH 0.0 | teq s nan
+  q_k8_cluster   us/move      787 | tauE/move      174 | tauE sec 1.15e-01 | tauH sec 1.62e-01 | resE 0.0 resH 0.0 | teq s 0.83
+  q_k12_block    us/move 1.97e+04 | tauE/move     8.79 | tauE sec 1.70e-01 | tauH sec 1.16e-01 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.29e+03 | tauE/move     32.3 | tauE sec 2.17e-01 | tauH sec 2.08e-01 | resE 0.0 resH 0.0 | teq s nan
+-- ea16 HIGH
+  metro          us/move     11.8 | tauE/move     1.91 | tauE sec 2.29e-05 | tauH sec 1.13e-04 | resE 1.0 resH 1.0 | teq s 0.0007
+  hb_k4_block    us/move    0.923 | tauE/move      183 | tauE sec 1.81e-04 | tauH sec 1.38e-03 | resE 1.0 resH 1.0 | teq s 0.0014
+  hb_k8_block    us/move     10.3 | tauE/move     91.6 | tauE sec 1.05e-03 | tauH sec 7.40e-03 | resE 1.0 resH 1.0 | teq s 0.0041
+  hb_k8_cluster  us/move       11 | tauE/move       69 | tauE sec 8.00e-04 | tauH sec 2.47e-03 | resE 1.0 resH 1.0 | teq s 0.0021
+  hb_k12_block   us/move      151 | tauE/move     63.5 | tauE sec 9.57e-03 | tauH sec 4.93e-02 | resE 0.0 resH 0.0 | teq s 0.011
+  q_k4_block     us/move       19 | tauE/move      920 | tauE sec 1.65e-02 | tauH sec 4.16e-02 | resE 1.0 resH 0.6 | teq s 0.022
+  q_k8_block     us/move      742 | tauE/move      286 | tauE sec 2.26e-01 | tauH sec 1.72e-01 | resE 0.0 resH 0.0 | teq s 0.47
+  q_k8_cluster   us/move      654 | tauE/move      140 | tauE sec 1.08e-01 | tauH sec 1.77e-01 | resE 0.0 resH 0.0 | teq s 0.87
+  q_k12_block    us/move 2.07e+04 | tauE/move     2.52 | tauE sec 5.23e-02 | tauH sec 5.23e-02 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.48e+03 | tauE/move     5.76 | tauE sec 4.58e-02 | tauH sec 4.60e-02 | resE 0.0 resH 0.0 | teq s nan
+-- ea16 MEDIUM
+  metro          us/move     9.89 | tauE/move     62.8 | tauE sec 6.86e-04 | tauH sec 8.53e-02 | resE 1.0 resH 0.2 | teq s 0.0034
+  pt             us/move     81.3 | tauE/move     12.5 | tauE sec 1.04e-03 | tauH sec 1.10e-02 | resE 1.0 resH 1.0 | teq s 0.003
+  pth            us/move      182 | tauE/move     3.15 | tauE sec 5.72e-04 | tauH sec 1.01e-02 | resE 1.0 resH 1.0 | teq s 0.0028
+  hb_k4_block    us/move    0.831 | tauE/move 5.53e+03 | tauE sec 4.73e-03 | tauH sec 1.64e-01 | resE 1.0 resH 0.2 | teq s 0.0043
+  hb_k8_block    us/move       10 | tauE/move      927 | tauE sec 1.02e-02 | tauH sec 2.00e-01 | resE 1.0 resH 0.0 | teq s 0.015
+  hb_k8_cluster  us/move     10.8 | tauE/move      370 | tauE sec 4.01e-03 | tauH sec 1.71e-01 | resE 1.0 resH 0.0 | teq s 0.0055
+  hb_k12_block   us/move      158 | tauE/move      428 | tauE sec 6.74e-02 | tauH sec 2.48e-01 | resE 0.0 resH 0.0 | teq s 0.14
+  q_k4_block     us/move     20.2 | tauE/move 2.03e+03 | tauE sec 3.94e-02 | tauH sec 2.46e-01 | resE 0.6 resH 0.0 | teq s 0.15
+  q_k8_block     us/move      687 | tauE/move      348 | tauE sec 2.39e-01 | tauH sec 1.80e-01 | resE 0.0 resH 0.0 | teq s 1.9
+  q_k8_cluster   us/move      699 | tauE/move      325 | tauE sec 2.38e-01 | tauH sec 1.98e-01 | resE 0.0 resH 0.0 | teq s 2.5
+  q_k12_block    us/move 2.12e+04 | tauE/move     2.52 | tauE sec 5.34e-02 | tauH sec 5.34e-02 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.57e+03 | tauE/move     5.76 | tauE sec 4.61e-02 | tauH sec 4.46e-02 | resE 0.0 resH 0.0 | teq s nan
+-- ea16 LOW
+  metro          us/move     9.29 | tauE/move 2.97e+03 | tauE sec 2.34e-02 | tauH sec 1.98e-01 | resE 0.6 resH 0.0 | teq s 0.77
+  pt             us/move      107 | tauE/move     17.2 | tauE sec 2.06e-03 | tauH sec 6.53e-02 | resE 1.0 resH 0.0 | teq s 0.029
+  pth            us/move      252 | tauE/move     3.64 | tauE sec 8.72e-04 | tauH sec 1.13e-02 | resE 1.0 resH 1.0 | teq s 0.025
+  hb_k4_block    us/move    0.852 | tauE/move 1.17e+04 | tauE sec 9.99e-03 | tauH sec 1.82e-01 | resE 0.6 resH 0.0 | teq s 0.17
+  hb_k8_block    us/move     10.6 | tauE/move 8.21e+03 | tauE sec 8.87e-02 | tauH sec 1.81e-01 | resE 0.4 resH 0.0 | teq s 1
+  hb_k8_cluster  us/move     9.36 | tauE/move 2.99e+03 | tauE sec 3.14e-02 | tauH sec 2.18e-01 | resE 0.6 resH 0.2 | teq s 0.16
+  hb_k12_block   us/move      156 | tauE/move      835 | tauE sec 1.18e-01 | tauH sec 1.32e-01 | resE 0.0 resH 0.0 | teq s nan
+  q_k4_block     us/move     19.3 | tauE/move 9.94e+03 | tauE sec 1.72e-01 | tauH sec 1.90e-01 | resE 0.2 resH 0.0 | teq s nan
+  q_k8_block     us/move      690 | tauE/move      385 | tauE sec 2.67e-01 | tauH sec 2.39e-01 | resE 0.0 resH 0.0 | teq s nan
+  q_k8_cluster   us/move      678 | tauE/move      383 | tauE sec 2.63e-01 | tauH sec 1.80e-01 | resE 0.0 resH 0.0 | teq s nan
+  q_k12_block    us/move 2.14e+04 | tauE/move     2.52 | tauE sec 5.40e-02 | tauH sec 5.40e-02 | resE 0.0 resH 0.0 | teq s nan
+  dec_k8_block   us/move 7.91e+03 | tauE/move     5.76 | tauE sec 5.16e-02 | tauH sec 5.01e-02 | resE 0.0 resH 0.0 | teq s nan

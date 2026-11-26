@@ -1,0 +1,495 @@
+A2 REPORT - P2: Ferguson & Wallden, "Quantum-enhanced Markov Chain Monte Carlo
+for systems larger than your Quantum Computer"
+=============================================================================
+Reviewer: sub-agent A2.  Date: 2026-11-20.
+Source read: local PDF QHop/plans/papers/Ferguson-Wallden_QeMCMC-larger-than-QC_2025.pdf,
+all 15 pages (main text p1-11, refs p11-12, Appendix A p12, Appendix B p12-15).
+
+Labels used:
+  [P2 loc]   = shown in P2 at that location (page numbers = PDF page numbers 1-15)
+  [INFER]    = my inference / my own derivation, NOT stated in P2
+  [FIG-READ] = approximate value read off a plot by eye (not a number printed in P2)
+  "not in P2" = searched, absent.
+
+-----------------------------------------------------------------------------
+0. BIBLIOGRAPHIC STATUS
+-----------------------------------------------------------------------------
+- Local PDF = arXiv:2405.04247v2 [quant-ph], dated 13 Jan 2025 (stamp on p1; "Dated:
+  January 14, 2025"). arXiv abstract page (checked 2026-11-20) lists v2 (Mon, 13 Jan
+  2025) as the LATEST version; comments "13 pages, 8 figures". So the local PDF is current.
+- Journal: Physical Review Research 7, 013231 (2025).
+  DOI: 10.1103/PhysRevResearch.7.013231  (from arXiv journal-ref / related-DOI fields).
+  arXiv DOI: 10.48550/arXiv.2405.04247.
+  [INFER] I did not read the PRR typeset version; minor differences from v2 are possible.
+- Code: [P2 App A, p12, ref 39] "S. Ferguson, Cgqemcmc: Python repository for
+  coarse-graining the quantum enhanced markov chain monte carlo (2024)" (GitHub), built on
+  ref [40] R. Pal, "Qumcmc" (2023). Simulator: qulacs, Python 3.11.
+
+-----------------------------------------------------------------------------
+1. THE CGQeMCMC ALGORITHM, EXACTLY AS GIVEN
+-----------------------------------------------------------------------------
+1.1 Base QeMCMC as P2 states it [P2 Sec II.D, p4, Eqs 6-9, Algorithm 2]
+  Eq 6:  H = (1 - gamma) * alpha * H_prob + gamma * H_mix,  H_mix = sum_j X_j.
+  Eq 7:  H_prob = - sum_{j>k} J_jk Z_j Z_k - sum_j h_j Z_j = sum_s E(s)|s><s|.
+  Eq 1:  E(s) = - sum_{j>k=1}^n J_jk s_j s_k - sum_{j=1}^n h_j s_j  [p2].
+  Eq 2:  mu(s) = e^{-E(s)/T} / Z  [p2]  -> temperature T is used throughout, never beta.
+  U = e^{-iHt}, "with practical implementation requiring an approximation through the
+  Trotter-Suzuki product" [p4].
+  Eq 8:  Q(s'|s) = |<s'|U|s>|^2 = |<s|U|s'>|^2 = Q(s|s')  ("symmetry constraint").
+  Eq 9:  A(s'|s) = min(1, exp((E(s) - E(s'))/T)).
+  Algorithm 2 (p4): "gamma <- hyper-parameter in range (0.25, 0.6); t <- hyper-parameter
+  in range (2, 20); |psi> <- exp[-iHt]|s>; s' <- X measurement result of |psi>".
+    [INFER] "X measurement" in line 5 conflicts with the text ("Measurement in the
+    computational basis state returns a binary outcome", p4); most likely a typo.
+  alpha: appears in Eq 6 but its value / normalisation rule is NOT given in P2 (not in P2).
+  Quote [p4]: "hyper-parameters are sampled in the range t = (2,20) and gamma = (0.25,0.6),
+  although optimization of these parameters is an ongoing issue."
+  Quote [App A p12]: "gamma is varied in the range (0.25, 0.6) and the integer time
+  parameter is varied between (2, 20) for all of the following experiments."  -> t is an
+  INTEGER drawn from 2..20.
+
+1.2 Coarse-graining framework [P2 Sec III.A, p5, Algorithm 3]
+  Quote: "This is immediately realized in Ising models at each MCMC step by isolating a
+  group consisting of q spins - here referred to by the corresponding fraction of the
+  lattice per group (q/n). These spins may not necessarily be close to one another or even
+  interact, however the optimal (in terms of thermalization) choice of spins in a group is
+  likely to depend on the details of the problem."
+  Algorithm 3 (Coarse Graining): s' <- s; index <- find spins in group; s_g <- subset of s;
+  s'_g <- QeMCMC(s_g) [Algorithm 2]; s'[index] <- s'_g.  Only group spins change.
+  Acceptance is not written inside Algorithm 3; Algorithm 1 (p3) and Eq 9 (full E(s), full
+  mu) are the accept rule. [INFER] => MH uses the FULL n-spin energy, so the reduced
+  Hamiltonian only shapes the proposal.
+
+1.3 Strategy (a) Naive local group [P2 Sec IV.A, p6, Eq 13]
+  Quote: "pick the indices of spins that are neighbors forming the set,
+  g_l = {i_r, i_{r+1} ... i_{r+q}} where i_r is the index of a randomly selected spin s_r
+  that begins our 'local group'."
+  [INFER] as written the set has q+1 elements (index notation slip); wrap-around at the
+  end of the index list is not specified (not in P2).
+  "Local" = consecutive INDICES, not physical locality: "We still use the term 'local' to
+  distinguish this coarse graining strategy from others, but this should not be
+  misunderstood as 'physically' local." (p6)
+  Eq 13: J~ = J_{i in g_l, j in g_l},  h~ = h_{i in g_l}.  "This new Hamiltonian
+  represents only the selected spins, while essentially ignoring the spins not selected."
+
+1.4 Strategy (b) Improved local group = effective local field [P2 Sec IV.B, p6-7, Eqs 14-15]
+  EXACT FORMULA (Eq 14, p6):
+        h~_j = h_j + sum_{i not in g_l}^{n} J_ji s_i        (for each j in g_l)
+        J~   = J_{i in g_l, j in g_l}  (unchanged from naive)
+  "Where each s_i (value of spins not in the group) is now a constant parameter."
+  Eq 15 (p7): sum_{j in g_l} h~_j s_j = sum_{j in g_l} s_j (h_j + sum_{i not in g_l} J_ji s_i).
+  Hamiltonian on QPU [INFER from Eqs 6,7,13,14]:
+        H_g = (1-gamma)*alpha*( - sum_{j>k in g} J_jk Z_j Z_k - sum_{j in g} h~_j Z_j )
+              + gamma * sum_{j in g} X_j ,   on q qubits.
+  Quote (p7): "In this way, the accuracy of the Hamiltonian is increased from the local
+  group method without the addition of any quantum gates. The effective Hamiltonian
+  H'_prob now fully represents the relative energy of any two states of the group."
+  Quote (p7): "improved local grouping refines the naive local groups, however there is
+  still tail-off for small q/n."
+  [INFER] Correct: E(s_g, s_rest) = E_g^eff(s_g; s_rest) + const(s_rest), so energy
+  differences between two group configurations are exact. The ZZ graph on the QPU is the
+  induced subgraph of J on g (all-to-all q-qubit for a fully connected SK-like J).
+
+1.5 Strategy (c) Multiple groups / "multiple sampling" [P2 Sec IV.C, p7, Algorithm 4]
+  Quote: "we use sqrt(n) groups of size sqrt(n). This method can be easily combined with
+  the improved local group method resulting in an iterative process that loops through the
+  entire lattice where each quantum computation inherits the measurement results of the
+  last."
+  Quote: "we first split the spins into our sqrt(n) local groups before evaluating the
+  first group individually using the Improved local group method. The measurement results
+  of this group then update the state of the system, impacting the environment of the next
+  group which is subsequently evaluated using the Improved local method. In this way, our
+  algorithm iterates through the groups, where at each step the measurement results update
+  the system for subsequent groups' update. The MH acceptance is only computed after the
+  entire state has been updated by each of the sqrt(n) groups. For the remainder of the
+  paper, this method will be labeled 'multiple sampling' and will harness the Improved local
+  group strategy."
+  Algorithm 4: "for i <- 0 to n_g do: index <- spins in i-th group; s_g <- subset of s
+  using index; s'_g <- QeMCMC(s_g); s'[index] <- s'_g".  -> FIXED order 0..n_g-1.
+  [INFER] Algorithm 4 literally builds s_g from s (not s'), but the prose says each group
+  sees the updated environment; the prose is the intended method. Whether the partition is
+  fixed or re-randomised each MCMC step is NOT stated (not in P2); the remainder discussion
+  (V.A, p7: "If we have n = 10 and q = 6, the remainder is 4, meaning an optimal multiple
+  sample strategy with q = 6 also has another 4 qubit quantum computation") suggests a
+  fixed contiguous-block partition with a remainder block.
+  Quote (p7): "With this CG we are able to maintain both advantages of QeMCMC described at
+  the start of the section: can jump to arbitrary Hamming distances; use the full problem
+  Hamiltonian for these jumps."
+  [INFER] Caveat: "full problem Hamiltonian" only in the mean-field/conditional sense: each
+  group sees a classical frozen environment; no cross-group coherent dynamics.
+
+1.6 Qubits, sweeps, parallel QPUs
+  - Qubits per QPU call = q (group size); headline q = sqrt(n) [P2 Sec IV.C p7; abstract].
+  - Sweep: in multiple sampling, one MCMC step = one pass over all n_g = sqrt(n) groups,
+    sequentially, then ONE MH accept/reject on the whole new state [P2 p7].
+  - Parallel QPUs: claimed as a framework property: abstract/intro p1: "each subset 'group'
+    of the lattice can be evaluated in separate quantum computations, even on different QPUs
+    in parallel"; p2 contributions: "in some cases, parallelize computation over multiple
+    QPU." No parallel experiment is reported (not in P2).
+    [INFER] The best strategy (multiple sampling + improved field) is inherently SEQUENTIAL
+    (each group's field depends on the previous group's measured output), so it cannot be
+    run in parallel as specified. Parallelism is only consistent with naive groups (no
+    environment dependence) or with a graph-colouring scheme (non-interacting groups) that
+    P2 does not discuss.
+
+-----------------------------------------------------------------------------
+2. ALL GROUPING STRATEGIES CONSIDERED, AND RESULTS
+-----------------------------------------------------------------------------
+Only three strategies [P2 Sec IV intro p6]: "(a) a 'naive' approach where one chooses a
+random subset of spins and ignores the rest, (b) an improved local approach where one
+chooses a random subset of spins while treating the remaining spins as an external field and
+(c) an approach that considers multiple subsets, treating each of them separately as in the
+earlier approaches. Each of these coarse graining strategies is - to our knowledge - novel".
+All three use index-contiguous ("local") groups: "Future optimal coarse graining strategies
+will likely not use local groupings, but we limit our analysis in this paper to local
+groupings for simplicity." (p6)
+NOT considered (not in P2): truly random (non-contiguous) subsets, strongest-coupling /
+cluster-based groups, graph-partition groups, state-dependent groups, overlapping groups,
+random sweep orders. Only a pointer: "there is scope for a multitude of different groupings,
+sub-groupings and clusterings as is sometimes seen in classical literature [28-33]. These are
+not exhaustively discussed here" (p5). [28-33] = Houdayer/Wolff/Swendsen-Wang/cluster MC.
+
+Results per strategy (exponent k in delta = a*2^{-kn}, smaller k = better; Table I p15,
+Fig 3 caption p8; all with q = sqrt(n)):
+                       T="0.01"/0.1*   T=1        T=10
+  Uniform (classical)  1.003(2)        0.97(1)    0.341(8)
+  Local (classical)    N/A             0.92(4)    0.26(1)
+  Full QeMCMC          0.25(8)         0.335(8)   0.087(1)
+  (a) naive group      1.27(2)         0.77(2)    0.177(5)
+  (b) improved group   1.1(2)          0.64(2)    0.171(5)
+  (c) multiple sample  0.46(4)         0.50(3)    0.10(1)
+  *Table I column header prints "0.01" but Fig 8 panel says "temp = 0.1" and the text
+   (p8) says "T = 0.1 ... 2.17" which matches 1.003/0.46. [INFER] header is a typo for 0.1.
+  Key observations:
+  - (a) and (b) at T=0.1 are WORSE than the uniform proposal (1.27, 1.1 vs 1.003) [Table I].
+    Only (c) multiple sampling beats classical at low T. [P2 Table I; observation mine]
+  - Fig 8 caption claims improved local group "performs better, consistently out-scaling
+    classical methods" - [INFER] contradicted by its own Table I at T=0.1 (1.1(2) vs 1.003(2)).
+  - Fig 1 (p8, T=1, n = 6, 8, 10): "Naive local group (purple) is seen to perform badly as q
+    is decreased, while using an improved local group (light blue) performs significantly
+    better. Multiple sampling with Improved local groups (red) is seen to perform
+    considerably better than both, however the existence of few very factors of small
+    numbers limits proper analysis."
+  - Fig 2 (p8, n=9, 100 instances, T from ~1e-2 to 1e3): "The CGQeMCMC with 3 groups of 3
+    qubits (red) is also superior to the classical strategy, however the speedup is clearly
+    dampened. If one evaluates a single 3 spin group on the lattice each quantum proposal
+    (transparent blue) the quantum speedup is lost for most temperature ranges for this
+    system size." (p7-8)
+  - App B.1 / Fig 6 (p12-14, one 9-spin instance, q=3): improved local group without
+    multiple sampling "greatly reduces the energy difference compared to all methods, while
+    increasing the Hamming distance compared to the classical local method"; multiple
+    sampling Hamming distance "slightly reduced compared to the uniform or QeMCMC method";
+    its energy-difference distribution "still outperforms classical methods, almost matching
+    the QeMCMC". "Scaling of this artifact is left to future work."
+
+-----------------------------------------------------------------------------
+3. DETAILED BALANCE / PROPOSAL SYMMETRY
+-----------------------------------------------------------------------------
+What P2 says:
+  - Eq 5 (p3): detailed balance P(s'|s)mu(s) = P(s|s')mu(s').
+  - Eq 8 (p4): symmetry of the QeMCMC proposal -> Eq 9 acceptance with no proposal ratio.
+  - Irreducibility/aperiodicity: "These are true in our case as no states are forbidden
+    assuming there is no unwanted symmetry as discussed in [9]." (p3)
+  - The ONLY CG-specific statement (Sec VI, p11): "A Markov chain produced by the CGQeMCMC
+    provably samples the Boltzmann distribution as it satisfies detailed balance and is
+    aperiodic and irreducible."  NO proof, no derivation, no per-strategy argument, no
+    acceptance-ratio correction anywhere in P2.
+  - Group-selection probability: P2 never discusses it explicitly. Group choice is "a
+    randomly selected spin s_r that begins our 'local group'" (p6) => state-independent.
+    State-dependent group choice: not in P2.
+
+My analysis [INFER, all of the following]:
+  (a) Naive group, random start r (state independent), U_g built from J~,h~ only.
+      H_g is real-symmetric in the Z basis (ZZ, Z diagonal real; X real symmetric) so
+      U_g^T = U_g and |<a|U_g|b>|^2 = |<b|U_g|a>|^2. Mixture over r, t, gamma of symmetric
+      kernels is symmetric. Spins outside g unchanged. MH with full E => detailed balance OK.
+  (b) Improved group: h~ depends on s_rest, but s_rest is identical in s and s' (only g
+      changes), so the SAME U_g governs s->s' and s'->s. Symmetric. Detailed balance OK
+      provided group choice is state independent (it is).
+  (c) Multiple sampling with FIXED order g_1..g_m and a single MH at the end:
+      Q(s'|s)  = prod_i |<s'_{g_i}| U_i(env_i)  |s_{g_i}>|^2, env_i  = (s'_{g<i}, s_{g>i})
+      Q(s|s')  = prod_i |<s_{g_i}| U_i(env'_i) |s'_{g_i}>|^2, env'_i = (s_{g<i}, s'_{g>i})
+      env_i != env'_i in general (for i>1 and i<m), so the effective fields differ and
+      Q(s'|s) != Q(s|s') in general. Eq 9 (ratio = 1) is then NOT justified; the chain's
+      stationary distribution can be biased away from Boltzmann. P2's "provably ... satisfies
+      detailed balance" is therefore a GAP for its headline method. (Holds trivially only if
+      groups do not interact, i.e. J between groups = 0.)
+      Fixes (mine): (i) choose the sweep order sigma at random with P(sigma) = P(reverse
+      sigma) (e.g. forward/backward with prob 1/2): then Q_sigma(s'|s) = Q_{rev sigma}(s|s')
+      exactly (the reverse sweep sees env (s'_{g<i}, s_{g>i}) at group i), so the mixture is
+      symmetric; (ii) do an MH accept/reject after EACH group (Metropolis-within-Gibbs: each
+      group kernel is reversible, the sweep composition preserves Boltzmann, though the
+      composite is not reversible); (iii) compute the Hastings ratio explicitly (costly:
+      needs |<a|U|b>|^2 for each group, exp in q classically).
+  P2's own spectral-gap numbers for (c) come from a P matrix estimated by brute force
+  (App A p12: "randomly select a starting state, run a CGQeMCMC step where t and gamma are
+  randomly chosen and then add 1/n_s to the (i,j)th element of Q ... n_s = (2^n)^2 deemed
+  fit"). [INFER] If Q is asymmetric and A from Eq 9, that P's stationary vector is not mu;
+  the gap delta = 1 - max_{lambda!=1}|lambda| (Eq 11) would then be the gap of a chain
+  converging to the wrong distribution. P2 never checks the stationary vector of P.
+  Convergence plots at n=16-36 do not settle it either (at T=0.1 no method converged).
+  State-dependent group choice (e.g. "strongest-coupling to currently frustrated spins"):
+  [INFER] would require the Hastings factor P(g|s')/P(g|s); not discussed in P2.
+
+-----------------------------------------------------------------------------
+4. INSTANCES, SIZES, TEMPERATURES, gamma/t
+-----------------------------------------------------------------------------
+  Instance family: "randomly initialized fully-connected Ising models" (V.A p7; Figs 2,3).
+    Distribution of J_jk and h_j: NOT in P2 (no mean/variance/Gaussian stated).
+    Only fully connected tested; "the problem instance type (1D, 2D, fully connected, sparse
+    etc.) influences the outcome of these experiments, however these topics are beyond the
+    scope of this work." (p8-9)
+  Spectral-gap study: n = 4..10 [V.A p7]; Fig 1 n = 6, 8, 10 at T=1; Fig 2 n=9 with 100
+    instances, T sweep ~1e-2 .. 1e3 [FIG-READ axis]; Fig 3 / Fig 8: "500 randomly
+    initialized fully-connected Ising models of each integer number of spins. Only 50
+    systems of 9 and 10 spins for CG techniques were evaluated due to computational
+    limitations." (Fig 3 caption p8). Instance counts for the T=0.1 and T=10 panels of
+    Fig 8 are not separately stated (not in P2).
+  Non-square n: "we avoid this complication by finding the two closest integer values to
+    q = sqrt(n) and interpolating to estimate the spectral gap value ... The linear
+    assumption is likely to underestimate the true value. Of course, for 4 and 9 spins
+    interpolation is not required." (V.A p7) => only n=4 and n=9 are genuine sqrt(n) points.
+  Convergence study: n = 16, 25, 36 (one instance each: Fig 7 caption "one randomly
+    selected Ising model"); "Here the stationary distribution of exemplar 16, 25 and 36 spin
+    instances are found by brute force" (III.C p5); 20 chains per method, recorded at
+    100-step intervals (Fig 4, 7 captions); T = 0.1 primary, T = 1 also (App B Fig 7).
+    Group sizes at 36 spins: q = 6 (6 groups of 6, "6 qubits multiple sample"), 6-qubit
+    improved local group (single group), and multiple sampling with q = 12 and q = 18
+    (Fig 4 caption p10). n=16: 4 qubits; n=25: 5 qubits (Fig 7 legends).
+  Temperatures used (T, never beta): 0.1 (Table I header "0.01", see sec 2), 1, 10; Fig 2
+    sweep ~1e-2 to 1e3. Scale of T relative to |J| unknown because J distribution not given.
+  gamma ~ U(0.25,0.6), t integer in 2..20, resampled every proposal; Q rows for QeMCMC
+    estimated with m = 30 random (t,gamma) statevectors ("chosen to be 30 by
+    experimentation") (App A p12) - differs from [9], which "employed exact numerical
+    integration by discretizing the gamma parameter".
+
+-----------------------------------------------------------------------------
+5. EVERY REPORTED NUMBER
+-----------------------------------------------------------------------------
+  Spectral gap fit, Eq 16: delta = a * 2^{-kn}  (p8).
+  T = 1 (Fig 3 caption p8): Uniform 0.97(1), Local 0.92(4), QeMCMC 0.335(8), local group
+    0.77(2), Improved local group 0.64(2), multiple sample 0.50(3).
+  Eq 17: k_QEF = k_classical / k_quantum (best classical).
+  "For the multiple sample proposal strategy, we see a quantum enhancement factor of
+    k_QEF = 1.84 against the best classical approach - the local proposal. In this data, the
+    QeMCMC gains an enhancement of 2.7, a slightly reduced value than reported in [9] for
+    the same temperature." (p8)
+  "The corresponding quantum speedups in k for T = 0.1 and T = 10 are 2.17 and 2.6
+    respectively." (p8)
+  Table I (p15): full table reproduced in section 2 above.
+  My arithmetic from Table I [INFER]: QeMCMC k_QEF = 1.003/0.25 ~ 4.0 at T=0.1 (large
+    error, 0.25(8)); 0.26/0.087 ~ 3.0 at T=10. Improved single group at T=1: 0.92/0.64 ~ 1.44;
+    naive at T=1: 0.92/0.77 ~ 1.19. Multiple-sample / QeMCMC exponent ratio: 0.50/0.335 ~ 1.5
+    (T=1), 0.46/0.25 ~ 1.8 (T=0.1), 0.10/0.087 ~ 1.15 (T=10).
+  Conclusion (p10): "Using only sqrt(n) qubits, Quantum-enhanced Markov Chain
+    thermalization is predicted to outperform classical techniques for larger systems,
+    giving a quantum enhancement factor k_QEF ... between 1.84 and 2.6."
+  36-spin, T=0.1, 20 chains (p9): "where we consider 20 chains for each proposal, 5 local
+    chains, 0 uniform chains and 11 CGQeMCMC chains (6 qubit multiple sampling) have found
+    the minima. The classical methods had an extra order of magnitude steps to search the
+    state space". "Figure 4 shows that all proposed methods are unable to converge within
+    simulable timescales." [FIG-READ] Fig 4: classical runs to ~1e7 steps, 6-qubit
+    multiple sampling to ~1e6, 12/18-qubit runs only ~1e4; exact average energy ~ -155.5.
+  "It should also be noted that increasing the number of qubits used (smaller coarse
+    graining) has a positive effect on convergence. Simulations of 12 qubits (pink) and 18
+    qubits (purple) show increasing promise, despite being simulated for far fewer steps."
+    (p9)
+  Magnetization (Fig 5, p10): "The magnetization plots confirm lack of convergence of all
+    proposed methods when compared with the brute force exact magnetization." (p9)
+  Autocorrelation / mixing time at larger n: NOT measured (not in P2). Explicitly deferred:
+    "Speeding up thermalization does not necessarily result in quicker auto-correlation,
+    and thus this must be studied in future work" (p11).
+  Acceptance rates, wall-clock, shot counts: not in P2.
+
+  THE "about sqrt(n) qubits" CLAIM - exactly what is claimed:
+   - Abstract: "the quantum speedup persisting while using only sqrt(n) simulated qubits
+     where n is the number of qubits required in the original QeMCMC - a quadratic
+     reduction in resources." and "only 6 simulated qubits suffice to gain advantage
+     compared to standard classical approaches when investigating the magnetization of a
+     36 spin system."
+   - Intro p1: "it is predicted that one can use a QPU with as few as O(sqrt(n)) ... qubits
+     and still achieve a scaling advantage in comparison with classical techniques."
+   - p8: "There is evident promise of quantum speedup using merely sqrt(n) qubits, however
+     speedup at a fixed system size is less important."
+   Evidence: (i) spectral-gap exponent fits over n = 4..10 (7 sizes; only n=4,9 are exact
+     sqrt(n); others interpolated; 50 instances at n=9,10 for CG), noiseless statevector
+     emulation; (ii) one instance each at n=16,25,36, 20 chains, T=0.1 and 1.
+   Authors' own hedge (p9): "Although the results reported in this section point towards a
+     scaling advantage, this cannot be explicitly proven by analysis of only a select few
+     Ising model instances. A more thorough analysis with multiple different models would be
+     required."
+   Also (p5): "one must be reluctant to overstate the results of spectral gap analysis."
+   [INFER] "quadratic reduction in resources" = qubits per call only; the number of
+     sequential QPU calls per MCMC step rises from 1 to sqrt(n), so total qubit-shots per
+     step stay ~n. The magnetization result for 36 spins does NOT show convergence (Fig 5
+     and p9 quote), so "advantage ... when investigating the magnetization" in the abstract
+     rests on energy-trace/min-finding counts (11 vs 5 vs 0 chains) for one instance.
+
+-----------------------------------------------------------------------------
+6. TEMPERATURE DEPENDENCE (quotes)
+-----------------------------------------------------------------------------
+  - p1: "maintaining a scaling advantage that may lead to quantum speedup over the classical
+    MCMC in the low temperature limit [12]."
+  - p3: "In the low temperature regime, both approaches [local and uniform] exhibit slow
+    auto-correlation and thermalization times."
+  - p4: "This becomes incredibly important when in the low temperature regime ... proposals
+    that can suggest similar energy states are highly likely to be accepted and can
+    significantly improve a Markov-chains convergence."
+  - p7: "There is also a temperature dependence, as the performance of small q is
+    inextricably linked with the performance of the classical local proposal. For analysis
+    of temperature dependence for a 9 spin instance see Figure 2."
+  - Fig 2 caption (p8): "The classical uniform (orange) and local (green) strategies are
+    clearly improved at low temperatures by the QeMCMC strategy (blue)".
+    [FIG-READ] Fig 2: at low T, QeMCMC ~3e-2 > multiple sample ~5e-3..1e-2 > uniform ~2e-3 >
+    improved single group ~1e-3 > local (<1e-4 below T~0.3). At high T (>~10) uniform is
+    best (~1), QeMCMC and multiple sample ~0.4, improved single group ~0.15, local falls.
+  - p8: "Figure 3 depends largely on the temperature while Figure 2 depends on the problem
+    size."
+  - p9: "The stationary distribution of the 36 spin instance at T = 0.1 is the primary focus
+    of this analysis as it is the largest system studied and has low temperature, which as
+    seen in Figure 2 is where we expect CGQeMCMC to perform well. The problem is
+    approaching that of an optimization problem (the limit reached at zero temperature)".
+  - p9: "It is clear that even when employing only 6 simulated qubits, a quantum enhanced
+    exploration of the state space is more effective than both classical methods in the low
+    temperature regime. One should note that when the temperature is raised to T = 1, this
+    quantum enhancement is diminished."
+  - Fig 7 caption (p14): "T = 0.1 (top) is clearly a more difficult problem than T = 1
+    (bottom) where the Markov chains acceptance rate is much higher."
+  - App B.2 (p13): "the local proposal struggles at low temperatures and in every case, both
+    quantum proposals analysed efficiently find a better than classical low energy regime."
+  - Fig 8 caption (p15): "Multiple sampling enables (red) CGQeMCMC to almost match QeMCMC in
+    high temperatures, however performance is reduced in low temperatures."
+  - Medium/high T numbers: Table I T=1 and T=10 (section 2). At T=10 everything mixes fast;
+    k values small (0.087-0.341). Low-T limit: only T=0.1 (or 0.01) column; no T->0 theory.
+
+-----------------------------------------------------------------------------
+7. RESOURCE COUNTS
+-----------------------------------------------------------------------------
+  - Qubits: q per call; q = sqrt(n) headline; 4, 5, 6 qubits for n = 16, 25, 36; also 12
+    and 18 qubits at n=36 [P2 Fig 4, 7].
+  - Circuit depth / Trotter steps / gate counts: NOT in P2. All "quantum" results are exact
+    statevector emulations in qulacs (App A p12: "run the appropriate quantum circuit and
+    output the statevector"); Trotterisation only mentioned generically (p4).
+  - Executions per MCMC step: QeMCMC is "one-shot ... requiring only a single execution on a
+    QPU per step" (p1). [INFER from Algorithm 4] multiple sampling = n_g = sqrt(n) sequential
+    single-shot q-qubit executions per MCMC step (plus a remainder block for non-square n);
+    naive/improved single group = 1 execution per step.
+  - Connectivity: abstract: "adaptable to various quantum hardware specifications - in
+    particular those with limited connectivity." [INFER] for fully connected J each group
+    needs all-to-all ZZ among q qubits; P2 gives no compilation/SWAP counts.
+  - Classical cost of building h~: [INFER] O(q(n-q)) per group, trivial.
+
+-----------------------------------------------------------------------------
+8. CLASSICAL SIMULABILITY / "quantum-inspired" (exact quotes)
+-----------------------------------------------------------------------------
+  - Footnote [12] (p11): "Here we need to stress that by quantum speed up we mean that our
+    proposal outperforms the classical MCMC. It is understood, that while the size of the
+    quantum computer used is small, and specifically smaller than what can be classically
+    simulated, the advantage of our algorithm can be viewed as a 'quantum inspired'
+    approach, while the true quantum advantage can be achieved when the QPU used is larger
+    than what can be classically simluated." [sic]
+  - p2: "In both cases, the quantum computers part of CGQeMCMC is realised in an emulation
+    environment (using classical devices - see Appendix A for details of the
+    implementation)."
+  - Abstract: "it requires very few qubits to approach classically intractable problem
+    instances".
+  - p1: QeMCMC "is expected to exceed quadratic scaling in comparison with the best classical
+    alternative in certain contexts".
+  [INFER] At q = 6..18 the proposal is trivially classically simulable; by the authors' own
+  footnote the 36-spin results are a quantum-inspired classical algorithm. Genuine quantum
+  advantage would require q > ~50, i.e. n > ~2500 under q = sqrt(n).
+
+-----------------------------------------------------------------------------
+9. WHAT IS LOST, LIMITATIONS, OPEN QUESTIONS
+-----------------------------------------------------------------------------
+  Lost vs full QeMCMC [P2 p6]:
+   - "Firstly, the Hamming distance of proposal steps is fundamentally restricted to the
+     size of the group. While this is better than classical local move approaches, it still
+     puts a bound on the jumps that the proposal steps can make, and is more likely to get
+     stuck in local minima".
+   - "The second issue is that the new problem Hamiltonian H'_prob is missing contributions
+     from the ignored spins making the evolution fundamentally incomplete." (naive)
+   - "If one were to consider a 1D Ising model where only neighboring spins interact, this
+     choice of CG is likely to perform adequately, as the boundary interaction terms of the
+     group is constant (2) with cluster size ... The same is not true for general Ising
+     models with higher connectivity."
+   - Numbers: multiple-sample k worse than QeMCMC at every T (0.46 vs 0.25; 0.50 vs 0.335;
+     0.10 vs 0.087; Table I). Single-group CG loses speedup at most T for n=9 (Fig 2 text).
+   - Fig 4 caption (p10): "The more local a proposal, the larger the offset from the true
+     average energy (black line). This is greatly reduced by CGQeMCMC with multi-sampling
+     and larger groups - methods that decrease the locality of proposals."
+   - p10: CG proposals "also occasionally suffer from local minima."
+   - [INFER] No coherent superposition across groups: the proposal is a product of
+     independent q-qubit unitaries conditioned on classical outcomes, so cross-group
+     "tunnelling" is only via sequential classical conditioning.
+  Limitations stated: spectral gap only to 10 spins (p2); fully connected only; no noise;
+  few instances at large n; magnetization not converged; spectral gap ignores multi-chain
+  schemes (p5); uniform proposal result misleading ("Figure 3 may wrongly suggest that the
+  uniform proposal is a useful step", p9).
+  Open questions (quotes):
+   - NOISE (p10-11): "The effect of noise has not been investigated. The QeMCMC method is
+     by construction noise-resilient, and our CG approach uses smaller QPUs minimizing
+     further these effects. Concrete analysis for the level and types of noise under which
+     we maintain the quantum scaling advantage is an important open question. Here it is
+     also worth pointing out that due to the one-shot nature of the algorithm, standard
+     error mitigation methods are not applicable meaning it would require a bespoke scheme
+     that is outwith current literature [36, 37]."
+   - Sampling error / autocorrelation (p11): "Another future direction is quantification of
+     the sampling error induced by coarse graining. ... Speeding up thermalization does not
+     necessarily result in quicker auto-correlation, and thus this must be studied in future
+     work to properly understand the cost of coarse graining compared to the QeMCMC."
+   - Beyond Ising (p11): "An important future step is to apply coarse graining to problems
+     other than the Ising model. Application of variationally prepared Hamiltonian evolution
+     is also an interesting avenue ... apply the CGQeMCMC to quantumly enhance classical
+     methods such as simulated annealing, parallel tempering and population annealing."
+   - Hyper-parameters: "optimization of these parameters is an ongoing issue." (p4)
+   - Grouping: "the optimal (in terms of thermalization) choice of spins in a group is
+     likely to depend on the details of the problem" (p5); improved-group energy artefact
+     "Scaling of this artifact is left to future work." (p13)
+   - Unproven detailed balance for multiple sampling (my finding, section 3) - not raised
+     by P2.
+
+-----------------------------------------------------------------------------
+10. TUNING GROUP SIZE TO HARDWARE
+-----------------------------------------------------------------------------
+  Yes, explicitly claimed, with only the 36-spin q=6/12/18 runs as evidence:
+   - p9: "This highlights the flexible nature of this coarse graining algorithm, that can
+     take as input the size of the hardware that one has and accordingly achieve the best
+     possible performance."
+   - p10: "The choice of q = sqrt(n) qubits in this paper was successful, however the
+     optimal relation between q and fastest thermalization or indeed autocorrelation is both
+     problem and hardware dependent. Future work should use the CGQeMCMC to exploit the
+     connectivity of hardware. For example, if one were to consider an Ising model with 3D
+     connectivity, they could partition the problem into n planar lattices that are suitable
+     for the 2D connectivity common to many QPU. In this way, the CGQeMCMC can be a powerful
+     tool in relating highly connected problems to QPUs with limited connectivity."
+   - Abstract: "adaptable to various quantum hardware specifications - in particular those
+     with limited connectivity." ; "Our method can be easily combined with other classical
+     and quantum techniques".
+   - Fig 1 (q/n sweep at n=6,8,10, T=1) is the only systematic q-dependence data: gap
+     decreases as q/n decreases, much faster for naive groups.
+  [INFER] No q-vs-noise trade-off, no hardware-connectivity-aware grouping, and no
+  per-group compilation cost is studied.
+
+-----------------------------------------------------------------------------
+DECISION-RELEVANT SUMMARY (top facts)
+-----------------------------------------------------------------------------
+ 1. Effective field (Eq 14, p6): h~_j = h_j + sum_{i not in g} J_ji s_i; J~ = J restricted to
+    g (Eq 13). Exact for energy differences within the group.
+ 2. Only 3 strategies, all index-contiguous groups, random start; strongest-coupling /
+    cluster / state-dependent groups not studied (p5-6).
+ 3. Best method = sqrt(n) groups x sqrt(n) qubits, sequential sweep with field update, one MH
+    accept at end (p7, Alg 4) -> sequential, not parallel.
+ 4. Detailed balance asserted without proof (p11); my derivation: OK for single groups,
+    NOT generally OK for fixed-order multiple sampling with Eq 9 (no Hastings correction).
+    Fix: random forward/reverse order or per-group MH.
+ 5. k at T=1: uniform 0.97, local 0.92, QeMCMC 0.335, naive 0.77, improved 0.64, multi 0.50
+    (n=4..10, Fig 3); k_QEF 1.84 (T=1), 2.17 (T=0.1), 2.6 (T=10).
+ 6. Low T: single-group CG worse than uniform (Table I 1.27/1.1 vs 1.003); only multiple
+    sampling holds; Table I header "0.01" vs figure "0.1" inconsistency.
+ 7. sqrt(n) evidence = noiseless statevector, n<=10 fits (only n=4,9 exact sqrt(n)) + one
+    instance each at n=16/25/36, 20 chains; nothing converged at n=36, T=0.1.
+ 8. J/h distribution, alpha, circuit depth, Trotter steps, shots, autocorrelation: not in P2.
+ 9. Footnote [12]: small-q advantage is "quantum inspired".
+10. Noise: "Concrete analysis for the level and types of noise ... is an important open
+    question"; one-shot => standard error mitigation not applicable.

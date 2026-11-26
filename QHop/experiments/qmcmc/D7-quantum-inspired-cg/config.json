@@ -1,0 +1,77 @@
+{
+ "sk": {
+  "sizes": [
+   32,
+   64,
+   128
+  ],
+  "beta_over_betac": {
+   "HIGH": 0.5,
+   "MEDIUM": 1.0,
+   "LOW": 3.0
+  },
+  "pt_bmin_over_betac": 0.3,
+  "R": {}
+ },
+ "ea": {
+  "sizes": [
+   8,
+   12,
+   16
+  ],
+  "T": {
+   "HIGH": 2.0,
+   "MEDIUM": 0.8,
+   "LOW": 0.4
+  },
+  "pt_Tmax": 2.0,
+  "R": {},
+  "pt_tuned_T_MEDIUM": 1.0
+ },
+ "q_jobs": [
+  [
+   4,
+   "block"
+  ],
+  [
+   8,
+   "block"
+  ],
+  [
+   8,
+   "cluster"
+  ],
+  [
+   12,
+   "block"
+  ]
+ ],
+ "dec_jobs": [
+  [
+   8,
+   "block"
+  ]
+ ],
+ "hb_jobs": [
+  [
+   4,
+   "block"
+  ],
+  [
+   8,
+   "block"
+  ],
+  [
+   8,
+   "subset"
+  ],
+  [
+   8,
+   "cluster"
+  ],
+  [
+   12,
+   "block"
+  ]
+ ]
+}

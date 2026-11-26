@@ -1,0 +1,61 @@
+QUANTUM PHANTOMS STUDY
+======================
+
+
+WHAT THIS STUDY IS
+------------------
+Quantum Phantoms builds synthetic lung tumours without training data: a tumour is placed by anatomy, grown by
+published growth models and rendered into a real lung CT with the scanner's own blur and noise, so detection AI
+can be tested on rare cases. Every case carries a replayable record of how it was made, and a quantum processor
+supplies the seed through a Bell test, which certifies where the randomness came from (provenance, not
+realism). The Siemens project ended (2026-11); the continuation drops further quantum claims and measures whether
+the synthetic nodules make a detection model better on real scans.
+
+
+THE 3 METRICS
+-------------
+1. Detection gain
+   Sensitivity of a nodule-detection model on real LIDC scans when trained on real only, real + synthetic and
+   synthetic only, split by nodule type, size and position (rare types such as juxtapleural and part-solid are
+   the headline).
+
+2. Realism
+   Do synthetic nodules match real ones: radiomics feature distributions, intensity (HU) profiles, and whether a
+   reader or detector treats them like real nodules.
+
+3. Record integrity
+   Replay from the record gives the identical image (voxel hash), and a one-voxel edit is detected. Formal
+   properties of the workflow checked as a Petri net (with Korecko).
+
+
+RESULTS SO FAR AND POSSIBLE RESULTS
+-----------------------------------
+Measured on ibm_fez (2026-11-14, one calibration snapshot):
+- Bell test CHSH 2.68-2.77 on every run (bound 2): the certified seed works (L0 provenance).
+- Small quantum separations passed: tick-clock 0.38-0.40 vs 0.296 (5/5 runs), random access codes 0.85 vs 0.75
+  and 0.737 vs 0.625, learning with quantum memory passed up to 40 pairs (80 qubits).
+- Large entangled growth circuits failed (DSCALE 0-1 of 3, GHZ spine, QCA); classical hardness (L2) not reached.
+- Verdict: no stage of the lung pipeline gives quantum a practical job beyond provenance.
+
+Possible:
+A. Synthetic rare nodules raise detection sensitivity on real LIDC rare types: a useful result for detection-AI
+   makers (SyntheticTumors / Pixel2Cancer line, never done for the lung).
+B. Gain only on some types; realism gaps show where the generator is weak.
+C. No gain: synthetic data does not transfer; the record and integrity paper still stands (CBMS).
+
+
+HOW TO VISUALIZE IT
+-------------------
+1. Before / after CT slices: real host scan, the same scan with the inserted synthetic nodule, and the growth
+   sequence (web growth player).
+2. Figure: detection sensitivity per nodule type for the three training arms.
+3. Figure: radiomics feature distributions, real vs synthetic.
+4. The record: one case, its replay hash and the failed check after a one-voxel edit; the Petri net of the
+   workflow.
+
+
+THESIS FIT
+----------
+Engineering-heavy (A-H pipeline, renderer, record, detector training) with a clear user (detection-AI
+validation). Check IP ownership of the code written during the Siemens period before reuse.
+Papers: CBMS 2027 (record + Petri net), then MICCAI / ISBI / SPIE MI (synthetic lung nodules + detection gain).

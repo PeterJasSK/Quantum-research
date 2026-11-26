@@ -21,7 +21,7 @@ const PROJECTS = [
     tags: ["FastAPI", "Next.js", "Postgres", "ML-KEM", "NIST SP 800-90A"],
     links: [
       { label: "Live site ↗", href: "https://qrng.peterjas.sk/" },
-      // { label: "Repo ↗", href: REPO + "qrng-eaas" }
+      { label: "Repo ↗", href: REPO + "qrng-eaas" }
     ]
   },
   {
@@ -40,31 +40,31 @@ const PROJECTS = [
       { label: "Live site ↗", href: "https://tree.peterjas.sk/" },
     ]
   },
-  {
-    title: "artificial-life project",
-    status: "IN PROGRESS", cls: "progress", color: "#12ddcb",
-    desc: "Based on best definition and best source ever WIKI Quantum_artificial_life. I replicated results from 2018. I improved the archaic design and certified their result. Created enclosed one dimensional space, and put 2 living organism in the space and see what they do when they meet. :)",
-    tags: ["Qiskit", "Education", "IBM Quantum"],
-    links: [{ label: "Live site ↗", href: "https://quantum-artificial-life.vercel.app/" },{ label: "Repo ↗", href: REPO + "artificial-life" },{ label: "Wiki ↗", href: "https://en.wikipedia.org/wiki/Quantum_artificial_life" }]
-  },
-  {
-    title: "The Attacker in the Gap — ECMP Salt-Collision DoS",
-    status: "Live", cls: "live",  color: "#ff9db1",
-    desc: "Guess an ECMP (Equal-Cost Multi-Path) load balancer's hash salt and one host no botnet can craft flows that all land on a single link, starving a victim. The fix: rotate the salt faster than it can be reconstructed. Live fat-tree lab, backed by QEaaS quantum entropy.",
-    tags: ["ECMP", "Network security", "DoS", "Moving-target defence", "Next.js", "QEaaS"],
-    links: [
-      { label: "Live site ↗", href: "https://ecmp.peterjas.sk/" },
-    ]
-  },
-  {
-    title: "Progresso — Remote Personal Training",
-    status: "Live", cls: "live",  color: "#a5f3c0",
-    desc: "A platform that lets a trainer watch a trainee's progress and set goals to keep them on track. Each week the trainee logs body measurements and a progress photo; the trainer reviews the trends, compares photos over time, and adjusts the plan together with them. Django backend with a React/TypeScript Tailwind PWA that installs and works offline.",
-    tags: ["Django", "React", "TypeScript", "Tailwind", "PWA", "Postgres"],
-    links: [
-      { label: "Live site ↗", href: "https://progresso.peterjas.sk/" },
-    ]
-  },
+  // {
+  //   title: "artificial-life project",
+  //   status: "IN PROGRESS", cls: "progress", color: "#12ddcb",
+  //   desc: "Based on best definition and best source ever WIKI Quantum_artificial_life. I replicated results from 2018. I improved the archaic design and certified their result. Created enclosed one dimensional space, and put 2 living organism in the space and see what they do when they meet. :)",
+  //   tags: ["Qiskit", "Education", "IBM Quantum"],
+  //   links: [{ label: "Live site ↗", href: "https://quantum-artificial-life.vercel.app/" },{ label: "Repo ↗", href: REPO + "artificial-life" },{ label: "Wiki ↗", href: "https://en.wikipedia.org/wiki/Quantum_artificial_life" }]
+  // },
+  // {
+  //   title: "The Attacker in the Gap — ECMP Salt-Collision DoS",
+  //   status: "Live", cls: "live",  color: "#ff9db1",
+  //   desc: "Guess an ECMP (Equal-Cost Multi-Path) load balancer's hash salt and one host no botnet can craft flows that all land on a single link, starving a victim. The fix: rotate the salt faster than it can be reconstructed. Live fat-tree lab, backed by QEaaS quantum entropy.",
+  //   tags: ["ECMP", "Network security", "DoS", "Moving-target defence", "Next.js", "QEaaS"],
+  //   links: [
+  //     { label: "Live site ↗", href: "https://ecmp.peterjas.sk/" },
+  //   ]
+  // },
+  // {
+  //   title: "Progresso — Remote Personal Training",
+  //   status: "Live", cls: "live",  color: "#a5f3c0",
+  //   desc: "A platform that lets a trainer watch a trainee's progress and set goals to keep them on track. Each week the trainee logs body measurements and a progress photo; the trainer reviews the trends, compares photos over time, and adjusts the plan together with them. Django backend with a React/TypeScript Tailwind PWA that installs and works offline.",
+  //   tags: ["Django", "React", "TypeScript", "Tailwind", "PWA", "Postgres"],
+  //   links: [
+  //     { label: "Live site ↗", href: "https://progresso.peterjas.sk/" },
+  //   ]
+  // },
   // {
   //   title: "Quantum Algorithms",
   //   status: "Complete", cls: "done", color: "#c4b5ff",
@@ -72,13 +72,13 @@ const PROJECTS = [
   //   tags: ["Qiskit", "Education", "Simulator"],
   //   links: [{ label: "Repo ↗", href: REPO + "QuantumAlgorithmsExplained" }]
   // },
-  // {
-  //   title: "Bachelor Thesis — Bell-Pair QRNG",
-  //   status: "Complete", cls: "done", color: "#ffcf9a",
-  //   desc: "Design and implementation of a Bell-Pair quantum random number generator. The foundation the later QRNG projects grew from.",
-  //   tags: ["Thesis", "QRNG", "TUKE"],
-  //   links: [{ label: "Repo ↗", href: REPO + "BC" }]
-  // }
+  {
+    title: "Bachelor Thesis — Bell-Pair QRNG",
+    status: "Complete", cls: "done", color: "#ffcf9a",
+    desc: "Design and implementation of a Bell-Pair quantum random number generator. The foundation the later QRNG projects grew from.",
+    tags: ["Thesis", "QRNG", "TUKE"],
+    links: [{ label: "Repo ↗", href: REPO + "BC" }]
+  }
 ];
 
 // ---- projects grid ----

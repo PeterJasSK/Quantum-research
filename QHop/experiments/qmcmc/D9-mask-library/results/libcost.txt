@@ -1,0 +1,8 @@
+n=12 L=1024: basin-diff (f) 0.051 s numpy | percolation (g) 0.073 s numpy | DE (e) ~7.37e-03 s C-estimate (2L samples x 10 sweeps x n x 30 ns, assumes PT already mixes)
+   quantum library (b): L x 0.25-0.85 ms = 0.26-0.87 s QPU + job overhead ~2-3 s; price at $48-96/QPU-min: $0.20-$1.39
+n=12 L=8192: basin-diff (f) 0.632 s numpy | percolation (g) 0.380 s numpy | DE (e) ~5.90e-02 s C-estimate (2L samples x 10 sweeps x n x 30 ns, assumes PT already mixes)
+   quantum library (b): L x 0.25-0.85 ms = 2.05-6.96 s QPU + job overhead ~2-3 s; price at $48-96/QPU-min: $1.64-$11.14
+n=100 L=1024: basin-diff (f) 2.715 s numpy | percolation (g) nan s numpy | DE (e) ~6.14e-02 s C-estimate (2L samples x 10 sweeps x n x 30 ns, assumes PT already mixes)
+   quantum library (b): L x 0.25-0.85 ms = 0.26-0.87 s QPU + job overhead ~2-3 s; price at $48-96/QPU-min: $0.20-$1.39
+n=100 L=8192: basin-diff (f) 19.832 s numpy | percolation (g) nan s numpy | DE (e) ~4.92e-01 s C-estimate (2L samples x 10 sweeps x n x 30 ns, assumes PT already mixes)
+   quantum library (b): L x 0.25-0.85 ms = 2.05-6.96 s QPU + job overhead ~2-3 s; price at $48-96/QPU-min: $1.64-$11.14

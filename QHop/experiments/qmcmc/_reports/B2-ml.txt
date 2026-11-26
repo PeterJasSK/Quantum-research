@@ -1,0 +1,429 @@
+B2 REPORT: QeMCMC PROPOSALS IN MACHINE LEARNING
+Sub-agent B2 (ideation, machine learning), QeMCMC applied-review team. Date 2026-11-20.
+Scope: 19 application ideas, weighted to MEDIUM and HIGH temperature, LOW-T included where the ML literature puts it.
+Labels used on every claim: [P1] shown in Layden et al. arXiv:2203.12497; [P2] shown in Ferguson and Wallden arXiv:2405.04247;
+[LIT] literature, verified by web search in this pass (arXiv ID given); [LIT-UNVERIFIED] literature cited from memory, search budget
+ran out before it could be checked, treat as to-verify; [OWN] own calculation; [SPEC] speculation.
+
+
+PART 0. CROSS-CUTTING FINDINGS (read before the idea list)
+
+0.1 Where does T=1 sit for a trained RBM? It moves during training.
+  Early training: weights small, model paramagnetic, T=1 is HIGH relative to the model. Block Gibbs mixes in a few sweeps.
+  Mid training: the model crosses a cascade of mode-forming transitions, each one a second-order transition with critical slowing
+  down [LIT arXiv:2405.14689 "Cascade of phase transitions in the training of energy-based models"; arXiv:2405.15376 states that
+  distant modes are encoded by second-order transitions and mixing times diverge]. T=1 is MEDIUM at those moments.
+  Late training on clustered/multimodal data: slow mixing is tied to phase coexistence, as near a first-order transition
+  [LIT arXiv:2206.01310, Bereux, Decelle, Furtlehner, Seoane, SciPost Phys. 14, 032 (2023)]. Here T=1 behaves as LOW relative to
+  the model, and standard parallel tempering in temperature is reported to fail at first-order transitions [LIT, stated in the
+  2405.15376 line of work]. Alternating Gibbs sampling does no better than Metropolis on the effective visible-layer landscape
+  [LIT arXiv:2107.06013, Roussel, Cocco, Monasson, PRE 104, 034109 (2021)].
+  Consequence: the RBM negative phase is NOT a uniformly HIGH-T problem. The MEDIUM/LOW window is real, but it is exactly where the
+  newest classical tools (tethered MC, parallel trajectory tempering) were designed.
+
+0.2 Is mixing the binding constraint in RBM training?
+  Decelle, Furtlehner, Seoane [LIT arXiv:2105.13889, NeurIPS 2021]: two regimes. If the number of MC steps k per gradient update is
+  below the mixing time, training is out of equilibrium; the model still produces good-looking samples after k steps from the same
+  init but does not learn the correct equilibrium distribution. So mixing binds only if the user wants an equilibrium model
+  (likelihood, calibrated generation, interpretability, physics/biology uses). For "make samples that look good" it does not bind.
+  Bereux et al. [LIT arXiv:2405.15376, ICLR 2025]: for highly structured data, training is slowed by MCMC mixing and their PTT
+  (parallel trajectory tempering, swaps between models saved along the training trajectory) plus low-rank PCA pre-training fixes much
+  of it. This is the strongest current classical competitor in the regime where a quantum move might matter.
+  For deep EBMs with neural-network energies the binding constraints are energy-evaluation cost and gradient variance/instability,
+  not discrete mixing per se [SPEC, consistent with 2102.04509 and 2206.09914 framing].
+
+0.3 Structural kill-point for coarse-grained QeMCMC on RBMs [OWN].
+  RBM energy E(v,h) = -a.v - b.h - v^T W h. There are NO visible-visible and NO hidden-hidden couplings. If a P2-style group contains
+  only visible units (hidden frozen) the effective H_prob on the group is pure local fields, so exp(-iHt) factorises into single-qubit
+  rotations and the "quantum" proposal is a product distribution, strictly worse than exact block Gibbs, which samples that
+  conditional exactly in one shot. Same for hidden-only groups. Any useful group must mix visible and hidden units (a k_v x k_h
+  bipartite sub-block of W). This also says: in the joint (v,h) space the classical baseline is not single-spin Metropolis but exact
+  block Gibbs of half the system in one step, a much stronger "local" baseline than in P1/P2.
+
+0.4 Embedding cost of a dense bipartite RBM on gate hardware [OWN, rough].
+  One Trotter step of H_prob needs n_v x n_h RZZ terms. On heavy-hex with a bipartite SWAP network, roughly 2 to 3 two-qubit gates per
+  coupling per Trotter step. With t ~ U[2,20] [P1] tens of Trotter steps are plausible [OWN, depends on step-size tolerance].
+  Example 16v x 16h: 256 couplings x ~3 x ~20 steps = ~15,000 two-qubit gates. At two-qubit error ~1e-3 to 5e-3 [SPEC, to be replaced
+  by team hardware scan] fidelity is effectively zero; the proposal degenerates toward a depolarised, near-uniform proposal. A near-
+  uniform proposal is useless at MEDIUM/LOW T and offers nothing over classical uniform at HIGH T. Rough budget for a meaningful
+  proposal (~1e2 to 1e3 two-qubit gates) allows only about 8v x 8h dense, or ~50 to 100 spins on a hardware-native sparse graph with
+  few Trotter steps [OWN].
+
+0.5 Throughput, batching and the latency picture [OWN unless marked].
+  ML negative phases need many independent chains (minibatch B = 1e2 to 1e4 fantasy particles). Chains are independent, so one job can
+  advance B chains by ONE step each (step i+1 of a chain needs the classical accept of step i). Per synchronous round:
+    t_round = t_latency + B x t_shot   (each chain = a different circuit: different initial bitstring, gamma, t).
+  With t_latency ~1 s and t_shot ~1e-4 to 1e-3 s [brief ranges], latency is amortised once B >~ 1e3 to 1e4. Best-case QPU throughput is
+  then ~1e3 to 1e4 chain-steps per second, set by shot rate, not latency. Batching rescues latency; it does not rescue throughput.
+  Classical comparison: GPU block Gibbs for a 784v x 500h RBM, B=1000: one sweep is two GEMMs of ~0.4 GFLOP each; at ~50 TFLOP/s that is
+  ~20 to 40 microseconds per sweep of 1000 chains, i.e. ~3e7 chain-sweeps/s, ~4e10 spin updates/s [OWN]. Independent anchor: FPGA p-bit
+  machine at 50 to 64 billion flips/s, about 10x GPU/TPU [LIT arXiv:2303.10728, Niazi et al.].
+  For a small RBM (32 spins) CPU block Gibbs is ~1e7 to 1e8 chain-sweeps/s [OWN].
+  Break-even per proposal: S* = (classical chain-sweeps/s)/(quantum chain-steps/s) ~ 1e7/1e3 to 1e8/1e4 ~ 1e3 to 1e5 sweeps; with
+  conservative latency (no amortisation) 1e5 to 1e8 [OWN]. A quantum proposal must be worth 1e3 to 1e5 classical sweeps even in the
+  best batched case. That is only plausible when classical tunnelling between modes takes >1e5 sweeps, i.e. LOW/coexistence regime at
+  sizes that do not fit hardware (0.4). Batching therefore converts the problem from "impossible" (1e6 to 1e9 sequential) to "very hard"
+  (1e3 to 1e5), and GPUs gain from batching too, so the ratio does not improve by more than the latency factor.
+  Offline caching (as P1 did [P1]): for n <= ~16 one can precompute proposal shots for all 2^n start states and replay them. Exact if
+  each cached shot is used at most once (fresh randomness); reusing cached shots correlates chains and introduces bias [OWN]. Useful
+  for experiments, not a deployment path.
+
+0.6 Detailed balance checklist used below [OWN, from brief/P1].
+  Symmetric proposal holds for any real-symmetric H_prob (even a wrong surrogate) when gamma, t are drawn independently of the state
+  [P1]. Mixture or composition of pi-invariant kernels (block Gibbs + QeMCMC step) keeps pi invariant (stationarity; composition is not
+  reversible unless symmetrised) [OWN, standard MCMC]. Random choice of coarse-grained group keeps symmetry; fixed-order multi-group
+  sweep does not in general [P2]. Hardware noise breaks symmetry, notably asymmetric readout (1 -> 0 relaxation); mitigation: Pauli
+  twirling [P1 SI] plus random spin-reversal (gauge) transforms per shot, which symmetrise readout bias on average [OWN/SPEC]; residual
+  bias must be measured, not assumed.
+
+0.7 Quantum-annealer Boltzmann-sampling history (relevant priors).
+  Adachi and Henderson used D-Wave samples for RBM model expectations on coarse-grained MNIST [LIT arXiv:1510.06356]. Benedetti et al.
+  showed annealers sample at an instance-dependent effective temperature that must be estimated [LIT arXiv:1510.07611, PRA 94, 022308];
+  performance near CD-100 in their case study. Dixit et al. trained RBMs on D-Wave 2000Q (bars and stripes) [LIT arXiv:2005.03247].
+  Kalis et al. used annealer samples as initial states for classical Gibbs chains [LIT arXiv:2304.12418]. Job and Adachi reproduced the
+  2015 result on newer hardware and found simulated annealing matches it: no quantum advantage for classical RBM training on stoquastic
+  annealers [LIT arXiv:2009.00134]. Quantum Boltzmann machine (transverse-field Gibbs model) [LIT arXiv:1601.02036, PRX 8, 021050].
+  QeMCMC-specific ML prior art: QeMCMC adapted to sample neural-network wavefunctions in VMC [LIT arXiv:2502.20799]; quantum-enabled
+  VMC for NQS [LIT arXiv:2412.12398]. No paper found applying Layden-style QeMCMC to classical RBM/EBM training [search result, one
+  query; absence not proven]. Theoretical caution: no speedup for unstructured worst case [LIT arXiv:2403.03087, Orfi and Sels];
+  gap bounded by inverse participation ratio, no advantage when quenching to an ergodic system, needs fine-tuned quenches
+  [LIT arXiv:2408.07881].
+
+
+PART 1. IDEAS
+
+B2-01  QeMCMC as the persistent negative-phase kernel for small RBMs (PCD with quantum moves)
+  Payoff: ML researchers training small equilibrium RBMs (bars-and-stripes, 8x8 binary images, small biology datasets) get a better-
+  mixed negative phase per gradient step, hence closer-to-equilibrium models (2105.13889 regime) with fewer MC steps.
+  Regime: moves through HIGH (early) -> MEDIUM (mode-forming transitions) -> LOW-like (late, clustered data) (see 0.1). Average over
+  training is mostly HIGH; the gain window is the late phase only.
+  Mapping: joint (v,h) Ising, bipartite K_{nv,nh}; spins = nv+nh; dense; embedding 2 to 3 two-qubit gates per coupling per Trotter
+  step (0.4). Detailed balance: symmetric proposal on joint state, Metropolis accept with exact joint energy; composed with block Gibbs.
+  Energy cost per step: cheap (one bilinear form, O(nv nh)).
+  Spins needed: full 24 to 64 for toy RBMs; coarse-grained mixed v/h groups of 8 to 16 (0.3).
+  Mixing the bottleneck? Only if equilibrium is required and data are clustered; otherwise gradient noise and k choice dominate (0.2).
+  Best classical competitor: PCD with GPU block Gibbs; PT for RBMs [LIT Desjardins et al. AISTATS 2010, PMLR v9; adaptive PT
+  arXiv:1012.3476]; PTT [LIT arXiv:2405.15376].
+  Implementation sketch: B=100 to 1000 persistent chains; each gradient step: k block-Gibbs sweeps on CPU plus one QeMCMC step per chain
+  batched into one job of B parametrised circuits (random gamma, t, init bits as X gates), 1 shot each; accept classically; update W.
+  Simulate first with statevector at n<=20 to measure integrated autocorrelation of the log-likelihood gradient estimate.
+  Break-even: S* ~1e3 to 1e5 block-Gibbs sweeps per quantum step even when batched (0.5); toy RBMs mix in far fewer sweeps.
+  Kill risk: classical block Gibbs already exact on half the system; toy RBMs are too easy; real RBMs too big for hardware.
+  Verdict: SIMULATE MORE as a benchmark only; wall-clock advantage WAIT FOR HARDWARE. Likelihood of any wall-clock win: <5% [SPEC].
+
+B2-02  Mode-hopping QeMCMC move for multimodal RBMs in phase coexistence
+  Payoff: groups that need equilibrium RBMs on clustered data (Decelle/Seoane line, protein RBMs) get transitions between distant
+  modes, correct relative mode weights, and unbiased log-likelihood gradients late in training.
+  Regime: LOW relative to the model (first-order-like coexistence at T=1, 2206.01310), adjacent MEDIUM at mode-forming transitions.
+  This is the one ML setting that matches the P1/P2 claimed-advantage regime and where temperature-PT is known to struggle.
+  Mapping: joint (v,h) Ising; dense bipartite; best done on a coarse-grained mixed group spanning the hidden units that encode the mode
+  switch plus the visible units they couple to most (choose by |W| magnitude). Detailed balance: group chosen by a rule independent of
+  the current state (e.g. fixed per epoch from W, random within that family) keeps symmetry; state-dependent group choice breaks it.
+  Energy cost: cheap.
+  Spins needed: full system 50 to 1000+; group of ~sqrt(n) = 8 to 30 mixed units.
+  Mixing the bottleneck? Yes, by construction of the regime, per 2206.01310 and 2405.15376.
+  Best classical competitor: tethered MC [LIT arXiv:2206.01310]; PTT [LIT arXiv:2405.15376]; also Metropolis in latent space when hidden
+  units are weakly dependent [LIT, Roussel et al. 2107.06013 follow-up remark]; Wolff-type cluster moves do not apply (no simple symmetry).
+  Implementation sketch: exact simulation at n<=20 on synthetic 2- to 4-cluster datasets trained to coexistence; measure mode-switch rate
+  per proposal for quantum vs block Gibbs vs PTT vs uniform-on-group vs a classical "flip correlated block" proposal; then P2 groups
+  at n=36 to 100 with statevector groups of 10 to 20. Hardware stage only if group proposals beat PTT per step by >1e3.
+  Break-even: need classical mode-switch time >~1e5 sweeps and quantum switch in O(1 to 10) proposals (0.5). Plausible only at larger
+  n where groups of 10 to 20 are still classically simulable, which makes it QUANTUM-INSPIRED at those sizes [P2 note].
+  Kill risk: PTT already resolves coexistence cheaply; P2 gap exponents at group size are much weaker (0.64 to 0.77) than full QeMCMC
+  (0.335) [P2]; the mode switch may require flipping more units than a group holds.
+  Verdict: SIMULATE MORE (strongest scientific test in ML). Likelihood it beats PTT per step at n<=20: ~25%; wall-clock: <5% [SPEC].
+
+B2-03  Mixed visible-hidden coarse-grained groups for RBMs (method note turned idea)
+  Payoff: methodological; fixes the trap in 0.3 for anyone porting P2 to bipartite models.
+  Regime: any; most relevant MEDIUM/LOW.
+  Mapping: group = k_v visible + k_h hidden with largest |W| block; effective fields from frozen remainder per P2. Symmetric if group
+  selection is state-independent [P2].
+  Energy cost: cheap. Spins: groups 8 to 20.
+  Mixing the bottleneck? Same as B2-02.
+  Best classical competitor: exact enumeration of the group conditional (2^20 = 1e6 states is classically tractable!), i.e. a block
+  heat-bath move on the same group, which is the Peskun-better classical analogue of any proposal on that group [OWN].
+  Implementation: compare quantum group proposal vs exact block heat-bath on the same group. If exact heat-bath wins (expected for
+  k<=20), the quantum version is dead at these sizes.
+  Break-even: classical exact group heat-bath costs ~2^k energy terms, ~1e6 at k=20 (ms on CPU) vs one QPU shot ~1 ms + latency: rough
+  parity at k~20 to 25, quantum only plausible at k >~ 30 [OWN].
+  Kill risk: exact block heat-bath dominates for k <= 25.
+  Verdict: QUANTUM-INSPIRED ONLY at k<=25; ~70% that exact heat-bath wins [SPEC].
+
+B2-04  Hardware-native sparse deep Boltzmann machine (topology = heavy-hex or the device coupling graph)
+  Payoff: co-designing the model to the QPU removes SWAP overhead; Niazi et al. showed sparse DBMs with ~30k parameters can be useful
+  generative/classifier models [LIT arXiv:2303.10728].
+  Regime: same trajectory as B2-01; sparse graphs have lower effective coordination, so transitions occur at stronger weights; trained
+  sparse DBMs at T=1 likely MEDIUM [SPEC].
+  Mapping: Ising on the device graph, one Trotter step = 3 colour layers of RZZ (heavy-hex is 3-edge-colourable); ~1.2n two-qubit
+  gates per Trotter step [OWN]. Symmetric; exact accept.
+  Energy cost: cheap. Spins: 100 to 156 (current Heron-class sizes) full system, no grouping needed.
+  Mixing the bottleneck? For sparse DBMs trained with CD-n, Niazi et al. used up to 1e7 sweeps per update on FPGA [LIT 2303.10728],
+  which suggests mixing matters, but they solved it with raw throughput.
+  Best classical competitor: FPGA p-bits at 5e10 flips/s on the same sparse graph [LIT 2303.10728]; GPU graph-coloured Gibbs.
+  Implementation: train small sparse DBM on device graph subset (n~50 to 100), QeMCMC step batched over B chains; compare per-sweep.
+  Break-even: vs p-bits at 5e10 flips/s, a 100-spin sweep costs ~2 ns; QPU step ~1e-4 to 1e-3 s: S* ~1e5 to 1e6 [OWN].
+  Kill risk: p-bit hardware is the purpose-built competitor and is 5 to 6 orders faster per sweep.
+  Verdict: WAIT FOR HARDWARE; ~3% [SPEC].
+
+B2-05  Replace CD-k (data-initialised, non-persistent) with one quantum step from the data
+  Payoff: claimed less biased gradients than CD-1.
+  Regime: early training HIGH; CD bias comes from short chains started at data, not from hard barriers.
+  Mapping: joint (v,h) Ising; symmetric. Energy cheap. Spins: full.
+  Mixing the bottleneck? No. CD bias is fixed by persistence (PCD) or more steps; the 2105.13889 analysis says short-k non-equilibrium
+  training is a regime choice, not a sampler failure.
+  Best classical competitor: PCD, CD-k with larger k on GPU (cheap).
+  Implementation: none recommended.
+  Break-even: unreachable; HIGH regime where uniform/local gaps are already near max [P1 Fig 2a, team pilot 1.29x at beta 0.1].
+  Kill risk: certain.
+  Verdict: KILL; ~95% confident.
+
+B2-06  Unbiased "quantum-assisted" Boltzmann sampler: QeMCMC replaces annealer sampling in the D-Wave QA-RBM pipeline
+  Payoff: the annealer pipelines (1510.06356, 1510.07611, 2005.03247) suffer from unknown effective temperature and biased samples; a
+  Metropolis-corrected quantum proposal gives exact Boltzmann stationarity at any T without T_eff estimation [P1 property]. Clean story
+  for "quantum-assisted training without temperature calibration".
+  Regime: T=1 relative to the model; same trajectory as 0.1.
+  Mapping: as B2-01. Detailed balance exact in ideal case; on hardware needs twirling/gauge (0.6).
+  Energy cheap. Spins: as B2-01.
+  Mixing the bottleneck? Partly; but Job and Adachi found simulated annealing matched the quantum-assisted result [LIT 2009.00134],
+  suggesting the original gains were from better-than-CD sampling, which classical samplers also deliver.
+  Best classical competitor: PCD/PT/SA with GPU throughput.
+  Implementation: reproduce 2005.03247 bars-and-stripes setup with statevector QeMCMC vs PCD vs PT, matched wall-clock.
+  Break-even: as B2-01.
+  Kill risk: correctness is not the bottleneck; classical PCD is also asymptotically exact.
+  Verdict: SIMULATE MORE only as a positioning paper (correction of annealer-bias literature); wall-clock KILL. ~10% useful [SPEC].
+
+B2-07  Training quantum Boltzmann machines (transverse-field Gibbs models) with QeMCMC
+  Payoff: none from QeMCMC. QBM [LIT 1601.02036] needs samples of a QUANTUM Gibbs state; QeMCMC samples a CLASSICAL Boltzmann
+  distribution. The transverse field in QeMCMC is a proposal device, not part of the target.
+  Regime: n/a. Mapping: mismatch. Energy: n/a.
+  Best competitor: quantum Monte Carlo (path-integral) for stoquastic QBMs, or quantum Gibbs-state preparation algorithms.
+  Kill risk: category error.
+  Verdict: KILL; ~98%. Listed so nobody re-proposes it.
+
+B2-08  Many-temperature ensembles with one temperature-independent proposal: AIS / log-likelihood estimation for RBMs
+  Payoff: RBM practitioners get log-likelihood estimates (AIS needs a ladder of beta from 0 to 1, 1e3 to 1e4 intermediate distributions).
+  QeMCMC's proposal does not depend on T [brief, P1], so one compiled circuit family serves the whole ladder; only the accept step
+  changes. This is one of the brief's HIGH-T routes ("many-temperature ensembles").
+  Regime: mostly HIGH (small beta) with a MEDIUM/LOW tail near beta=1; the hard part of AIS is the tail.
+  Mapping: joint (v,h) or visible-only with hidden summed out (then energy is a sum of softplus terms, not 2-body, so H_prob must be a
+  quadratic surrogate; still exact by symmetry [P1]). Energy cheap.
+  Spins: full; or groups.
+  Mixing the bottleneck? Partly: AIS variance explodes when intermediate chains fail to equilibrate near beta=1.
+  Best classical competitor: AIS with block Gibbs; Bereux et al. online log-likelihood via annealing trajectory and PTT
+  [LIT 2405.15376]; reverse AIS.
+  Implementation: statevector study at n<=20 of AIS variance (log Z error) with quantum vs Gibbs transitions at equal step count;
+  hardware-wise, compile per-chain circuits once (parameter binding only for init bits, gamma, t).
+  Break-even: same throughput barrier (0.5); the T-independence saves compile time only, which is already small with parametric
+  circuits [OWN].
+  Kill risk: low-beta part has no advantage (P1 Fig 2a: uniform gap -> 1 at high T); high-beta part is B2-02 again.
+  Verdict: QUANTUM-INSPIRED ONLY / SIMULATE MORE as subtest of B2-02. ~10% [SPEC].
+
+B2-09  Posterior sampling for Bayesian binary-weight neural networks (binary perceptron / small BNN)
+  Payoff: calibrated uncertainty for binary-weight models (edge deployment, interpretability); posterior over w in {-1,+1}^n.
+  Regime: LOW relative to the posterior landscape for the binary perceptron near capacity: typical solutions are isolated, with rare
+  dense clusters [LIT-UNVERIFIED Huang and Kabashima PRE 2014; Baldassi et al. arXiv:1509.05753]. At moderate data/temperature it is
+  MEDIUM. Posterior temperature 1 with a likelihood term over N data points.
+  Mapping: energy = training loss(w) + prior, NOT quadratic in w in general (sign activations). For a squared-loss linear-threshold
+  surrogate, E(w) ~ w^T (X^T X) w - 2 y^T X w is an exact dense Ising H_prob. Use that surrogate as H_prob and the true loss in the
+  accept step: symmetry holds for ANY H_prob, so stationarity is exact [P1 property, OWN application].
+  Energy cost per step: MEDIUM to EXPENSIVE: one pass over the dataset, O(N n); for N=1e5 to 1e6 on GPU ~1e-4 to 1e-3 s [OWN], i.e.
+  comparable to t_shot, which pushes the per-step ratio toward 1 (brief break-even model).
+  Spins needed: n = number of binary weights: 20 to 100 (perceptron), 1e3+ for real BNNs (groups needed: layer-wise blocks).
+  Mixing the bottleneck? Yes for exact posterior sampling of the binary perceptron (glassy); no for practical BNN training (STE / SGD
+  with latent weights does not need the posterior).
+  Best classical competitor: DMALA / discrete Langevin, tested on binary NNs [LIT arXiv:2206.09914]; Gibbs-with-gradients
+  [LIT arXiv:2102.04509]; locally balanced proposals [LIT arXiv:1711.07424, Zanella JASA 2020]; PT.
+  Implementation: perceptron with n=16 to 24 binary weights, statevector QeMCMC with surrogate H_prob; measure ESS per energy
+  evaluation (the honest currency when energy dominates) vs DMALA/GwG/PT; then scale data N to push t_energy up.
+  Break-even: if t_energy >> t_propose for both, wall-clock speedup ~ tau_C/tau_Q per energy evaluation [brief model]; a quantum
+  proposal also costs one energy evaluation, so the comparison is ESS per dataset pass. Batching across chains (B posterior chains) is
+  natural.
+  Kill risk: gradient-informed classical proposals use the same expensive pass and get many-coordinate moves for free; surrogate H_prob
+  may be poor (low acceptance); real BNN sizes far beyond hardware.
+  Verdict: SIMULATE MORE. ~20% that per-energy-evaluation ESS beats DMALA/PT at n<=24 [SPEC]; hardware relevance WAIT FOR HARDWARE.
+
+B2-10  Corrector / refinement steps for discrete diffusion and masked generative models
+  Payoff: better sample quality at the end of discrete diffusion via MCMC correction.
+  Regime: HIGH relative (corrector operates at the model's temperature on near-data configurations, local moves suffice) [SPEC].
+  Mapping: tokens are Potts variables with vocab q = 1e3 to 1e5 for text, 256 for pixels; one-hot or log2(q) binary encodings; energy
+  is a transformer forward pass, not quadratic. Embedding cost prohibitive.
+  Energy cost: EXPENSIVE (forward pass), which helps the ratio, but no Ising H_prob exists except as a crude surrogate.
+  Spins: 1e3 to 1e6 binary variables.
+  Mixing the bottleneck? No; model quality and step count dominate.
+  Best classical competitor: predictor-corrector schemes for discrete diffusion [LIT-UNVERIFIED Campbell et al. arXiv:2205.14987];
+  masked-conditional MH [LIT arXiv:2106.02736].
+  Implementation: none. Exception worth one note: binary-latent diffusion models with small binary latent codes could use B2-16 instead.
+  Kill risk: encoding size and absence of a usable H_prob.
+  Verdict: KILL; ~90%.
+
+B2-11  Constrained LLM decoding by MCMC with quantum proposals
+  Payoff: unbiased sampling of grammar-constrained outputs (program fuzzing, structured generation).
+  Regime: HIGH-ish (LM at T=1 over valid strings), but constraints create disconnected valid regions.
+  Mapping: no natural Ising; Gonzalez et al. build proposals over valid outputs with MH accept on LM likelihood [LIT arXiv:2506.05754,
+  NeurIPS 2025]; Goyal et al. MH over masked-LM energies [LIT arXiv:2106.02736]. A QeMCMC proposal over token bits would almost
+  always land outside the grammar (rejected).
+  Energy cost: EXPENSIVE (LM forward pass ~1e-2 to 1e-1 s [SPEC]), so per-step ratio near 1 is achievable; this is the only reason it
+  is listed.
+  Spins: 1e3+ binary. Mixing the bottleneck? The paper's point is that proposal validity is the bottleneck, not tunnelling.
+  Best classical competitor: grammar-aware proposals (2506.05754), SMC-based constrained decoding.
+  Implementation: none recommended; at most a quantum-inspired surrogate-Ising proposal over a binary choice structure (e.g. which
+  constituents to resample).
+  Kill risk: constraint violation makes quantum proposals near-always rejected.
+  Verdict: KILL (QUANTUM-INSPIRED at most); ~90%.
+
+B2-12  Energy-based reranking / diverse subset selection as a QUBO
+  Payoff: sample diverse top-k subsets of N candidates (retrieval, LLM candidate reranking) with pairwise redundancy penalties.
+  Regime: HIGH (users want diversity, soft distributions) [SPEC].
+  Mapping: x_i in {0,1} chosen; E = -sum s_i x_i + lambda sum sim_ij x_i x_j + cardinality penalty: exact dense QUBO, n = N = 20 to 200.
+  Energy cost: cheap once similarities are precomputed.
+  Mixing the bottleneck? No; N small, HIGH T, swap moves mix quickly; exact DPP samplers exist for related kernels.
+  Best classical competitor: swap-move MH, exact k-DPP sampling, greedy MAP.
+  Break-even: S* ~1e6 to 1e9 (cheap energy, HIGH T) [brief].
+  Kill risk: certain at HIGH T.
+  Verdict: KILL; ~95%.
+
+B2-13  Inverse Ising / Boltzmann learning for neural population data near criticality
+  Payoff: neuroscience groups fitting pairwise maximum-entropy models to spike rasters (n = 40 to 150 neurons) need model averages at
+  T=1 of a fitted model reported to sit near a critical point.
+  Regime: MEDIUM [LIT-UNVERIFIED: Mora and Bialek "Are biological systems poised at criticality?" J Stat Phys 2011]. Fitted models are
+  dense with both signs of J (frustrated), possibly glassy pockets.
+  Mapping: dense SK-like Ising, n = 40 to 150. Embedding: all-to-all, ~n^2/2 couplings per Trotter step: 800 to 11,000 RZZ (0.4).
+  Energy cost: cheap.
+  Spins: full 40 to 150; groups of 7 to 12.
+  Mixing the bottleneck? Only for exact Boltzmann-learning; pseudolikelihood and mean-field methods avoid sampling entirely
+  [LIT-UNVERIFIED Aurell and Ekeberg arXiv:1107.3536] and are the standard.
+  Best classical competitor: pseudolikelihood; Boltzmann learning with PT/Swendsen-Wang-like moves; GPU MCMC.
+  Implementation: statevector QeMCMC vs PT on fitted 20-neuron models from public datasets; this matches the team pilot regime (SK-like,
+  MEDIUM, beta near specific-heat peak gave 2.8x step ratio vs weak baselines [team pilot]).
+  Break-even: cheap energy, S* ~1e3 to 1e5 batched (0.5); 2.8x per step is far below.
+  Kill risk: pseudolikelihood makes sampling optional; PT handles MEDIUM.
+  Verdict: SIMULATE MORE (cheap, uses team pilot code) but expected outcome KILL for wall-clock; ~10% [SPEC].
+
+B2-14  Bayesian network structure learning via MCMC over graphs
+  Payoff: posterior over DAG structures.
+  Regime: posterior can be multimodal (Markov-equivalence classes), MEDIUM/LOW [SPEC].
+  Mapping: O'Gorman et al. QUBO with O(n^2) qubits plus acyclicity penalties [LIT arXiv:1407.3897]. Acyclicity is a hard constraint:
+  QeMCMC proposals over edge bits mostly create cycles and are rejected.
+  Energy cost: medium (decomposable score with caching is cheap).
+  Spins: n(n-1) edge bits plus ordering auxiliaries: 100 to 1000+ for n=10 to 30 variables.
+  Mixing the bottleneck? Yes classically for structure MCMC, but order-MCMC and partition-MCMC fix much of it [LIT-UNVERIFIED Friedman
+  and Koller 2003; Kuipers and Moffa 2017].
+  Best classical competitor: order MCMC, partition MCMC, exact DP for n <= ~25.
+  Kill risk: hard constraint + exact DP at small n.
+  Verdict: KILL; ~90%.
+
+B2-15  Acquisition sampling in combinatorial Bayesian optimisation (BOCS-style)
+  Payoff: BOCS uses a sparse second-order (quadratic) surrogate over binary inputs, i.e. an exact Ising/QUBO; its SA variant optimises
+  the Thompson-sampled acquisition by simulated annealing [LIT arXiv:1806.08838, ICML 2018].
+  Regime: optimisation (LOW, T -> 0) of a small (n = 10 to 60) dense QUBO per BO iteration.
+  Mapping: exact QUBO; n small enough for hardware at the low end.
+  Energy cost: cheap (acquisition); the expensive black-box evaluation sits OUTSIDE the MCMC loop.
+  Mixing the bottleneck? No. Per BO iteration the cost is dominated by the black-box experiment (minutes to days); acquisition
+  optimisation is seconds of SA and does not need to be exact.
+  Best classical competitor: SA, SDP relaxation (BOCS-SDP), exhaustive search at n<=25.
+  Kill risk: improving the acquisition step does not change BO wall-clock.
+  Verdict: KILL; ~90%.
+
+B2-16  Latent Boltzmann prior in discrete VAEs (DVAE / DVAE++ / QVAE)
+  Payoff: discrete-latent generative models with an RBM prior over binary latents [LIT arXiv:1609.02200 Rolfe; arXiv:1802.04920
+  DVAE++]; the QVAE variant used a QBM prior [LIT, via citation in arXiv:1805.07349; Khoshaman et al. arXiv:1802.05779 not directly
+  verified]. The prior RBM is small (tens to a few hundred latent units), a plausible hardware size at the low end.
+  Regime: priors are typically fitted to aggregated posteriors that are clustered, so LOW-like late in training is possible [SPEC];
+  most of training HIGH/MEDIUM.
+  Mapping: bipartite RBM prior, 2 x 32 to 2 x 128 units; dense (0.4) -> hardware only at ~8x8.
+  Energy cost: cheap (prior energy); encoder/decoder costs are outside the sampler.
+  Mixing the bottleneck? Probably not: prior negative-phase quality is one of several gradient noise sources; encoder/decoder gradient
+  variance and relaxation bias dominate [SPEC].
+  Best classical competitor: PCD on GPU, PT; same as B2-01.
+  Implementation: small DVAE on binarised MNIST with 16+16 prior; swap PCD for statevector QeMCMC; measure ELBO/test LL at equal steps.
+  Break-even: as B2-01.
+  Kill risk: prior sampling is not binding.
+  Verdict: SIMULATE MORE only as a low-priority side experiment; ~5% [SPEC].
+
+B2-17  Low-T design sampling from trained biological RBMs (protein sequence design)
+  Payoff: generating high-fitness novel sequences by sampling a trained protein RBM at T < 1 [LIT arXiv:1803.08718, Tubiana, Cocco,
+  Monasson, eLife 2019 (design use is described there)].
+  Regime: LOW by intent (biasing toward high-probability sequences); genuinely glassy.
+  Mapping: Potts visible units q=21 per residue position, L=50 to 600 positions; one-hot (21 qubits per site) or 5-bit encoding with
+  penalty terms. Hidden units 100 to 1000. Embedding cost very large.
+  Energy cost: cheap.
+  Spins: 1e3 to 1e4 binary.
+  Mixing the bottleneck? Yes at low T (that is why design is hard), but the design goal is good sequences, not equilibrium; SA/greedy
+  suffice for that.
+  Best classical competitor: SA, PT, Gibbs with hidden-unit conditioning (sample h first, then v).
+  Kill risk: encoding size; design does not need exact sampling.
+  Verdict: WAIT FOR HARDWARE (far); ~2%.
+
+B2-18  Neural-network quantum states: sampling |psi(s)|^2 of RBM/NN wavefunctions in VMC
+  Payoff: VMC practitioners get decorrelated configurations in ordered/frustrated phases where local Metropolis sticks.
+  Regime: |psi|^2 for ordered phases is multimodal (symmetry-broken sectors), LOW-like; paramagnetic phases HIGH.
+  Mapping: log|psi|^2 for an RBM ansatz = sum of log-cosh terms, not 2-body; use the physical Hamiltonian's classical part or a fitted
+  quadratic surrogate as H_prob; exact by symmetry [P1 property]. Prior art does precisely this: QeMCMC adapted to NN wavefunction VMC
+  [LIT arXiv:2502.20799]; quantum-enabled VMC for NQS reported shorter chain convergence [LIT arXiv:2412.12398].
+  Energy cost per step: MEDIUM to EXPENSIVE: each local-energy estimate needs psi on all connected configurations (O(n) to O(n^2) NN
+  evaluations), and amplitude ratios need a network forward pass [OWN]. This improves the per-step ratio.
+  Spins: 16 to 100 sites, full or grouped.
+  Mixing the bottleneck? In symmetry-broken phases yes, but symmetry-projected ansatze or global symmetry moves (flip all spins) solve
+  the simplest case classically; autoregressive NQS give exact independent samples with no MCMC at all.
+  Best classical competitor: autoregressive NQS (exact sampling), cluster/global moves, PT over wavefunction "temperature".
+  Implementation: reproduce 2502.20799 at n<=16 then add the classical global-move and autoregressive baselines that a reviewer will ask
+  for; measure ESS per local-energy evaluation.
+  Break-even: per-step ratio closer to 1 than RBM training thanks to expensive local energies, but hardware n is small.
+  Kill risk: prior art already exists (novelty), autoregressive models bypass MCMC.
+  Verdict: SIMULATE MORE (mostly as replication + stronger baselines). ~15% [SPEC].
+
+B2-19  Quantum moves as an equilibration diagnostic for persistent chains
+  Payoff: detect when PCD chains are out of equilibrium (2105.13889) by testing whether long-range proposals from fantasy particles find
+  lower-free-energy unseen modes. Needs few calls (a diagnostic, not a sampler), so latency hardly matters.
+  Regime: MEDIUM/LOW late training.
+  Mapping: as B2-01/B2-02. Energy cheap. Spins: as B2-02.
+  Mixing the bottleneck? This idea measures it rather than fixes it.
+  Best classical competitor: data-initialised vs random-initialised chain comparison, PTT swap statistics, tethered free-energy
+  profile [LIT 2206.01310]. These are cheap and effective.
+  Kill risk: classical diagnostics already do this.
+  Verdict: QUANTUM-INSPIRED ONLY; ~5%.
+
+
+PART 2. SUMMARY TABLE IN PLAIN TEXT (ID; regime; energy cost; verdict; rough likelihood)
+B2-01 PCD with quantum moves, small RBMs; HIGH->MEDIUM->LOW over training; cheap; SIMULATE MORE (benchmark) / WAIT; <5% wall-clock
+B2-02 Mode-hopping move for RBMs in phase coexistence; LOW-relative (MEDIUM at transitions); cheap; SIMULATE MORE; 25% per-step vs PTT
+B2-03 Mixed v/h coarse-grained groups; MEDIUM/LOW; cheap; QUANTUM-INSPIRED ONLY; exact group heat-bath likely wins
+B2-04 Heavy-hex-native sparse DBM; MEDIUM; cheap; WAIT FOR HARDWARE; 3%
+B2-05 Quantum CD-1 from data; HIGH; cheap; KILL
+B2-06 Unbiased replacement for annealer RBM sampling; T=1 trajectory; cheap; SIMULATE MORE (positioning) / KILL wall-clock; 10%
+B2-07 QBM training with QeMCMC; n/a (category error); KILL
+B2-08 AIS / many-temperature log-likelihood; HIGH with MEDIUM/LOW tail; cheap; QUANTUM-INSPIRED / SIMULATE as B2-02 subtest; 10%
+B2-09 Binary-weight BNN posterior with surrogate H_prob; LOW/MEDIUM; medium-expensive; SIMULATE MORE; 20%
+B2-10 Discrete diffusion correctors; HIGH; expensive; KILL
+B2-11 Constrained LLM decoding; HIGH with hard constraints; expensive; KILL (quantum-inspired at most)
+B2-12 Diverse subset reranking QUBO; HIGH; cheap; KILL
+B2-13 Inverse Ising for neural data near criticality; MEDIUM; cheap; SIMULATE MORE, expected KILL; 10%
+B2-14 Bayesian network structure MCMC; MEDIUM/LOW with hard constraints; medium; KILL
+B2-15 BOCS acquisition sampling; LOW (optimisation); cheap; KILL
+B2-16 DVAE latent RBM prior; HIGH/MEDIUM; cheap; SIMULATE MORE (low priority); 5%
+B2-17 Low-T protein design from RBMs; LOW; cheap; WAIT FOR HARDWARE (far); 2%
+B2-18 NQS / VMC sampling of |psi|^2; LOW-like in ordered phases; medium-expensive; SIMULATE MORE; 15%
+B2-19 Equilibration diagnostic; MEDIUM/LOW; cheap; QUANTUM-INSPIRED ONLY; 5%
+
+
+PART 3. STRONGEST CANDIDATES AND WHY
+
+1. B2-02 (mode-hopping in coexistence). The only ML setting where T=1 is genuinely LOW relative to the model, where the literature
+   documents mixing as the binding constraint (2206.01310, 2405.15376) and where temperature-PT is reported to struggle. A clean,
+   falsifiable exact-simulation test at n<=20 against PTT and tethered MC; a negative result is publishable as a kill.
+2. B2-09 (binary-weight posterior). Combines three properties the brief says a quantum case needs: expensive energy (dataset pass ~
+   t_shot, so per-step ratio approaches 1), a glassy LOW-T posterior, and P1's "any H_prob is exact" property, which lets a quadratic
+   surrogate drive the proposal while the true loss gates acceptance. Honest currency: ESS per dataset pass vs DMALA/GwG/PT.
+3. B2-18 (NQS VMC). Expensive local energies again shrink t_C/t_Q, and QeMCMC-for-VMC prior art (2502.20799, 2412.12398) shows the
+   community is already testing it, so a hard-nosed replication with the missing baselines (global flips, autoregressive exact
+   sampling) has clear value. Novelty risk is the main weakness.
+
+Overall verdict for the ML domain: no BUILD NOW candidate. RBM energies are cheap, classical block Gibbs samples half the system
+exactly per step, GPU/p-bit throughput is 1e10 to 1e11 spin updates/s, and dense bipartite embedding blows the gate budget beyond ~8x8.
+Batching many independent chains amortises QPU latency (B >~ 1e3) but leaves a break-even of ~1e3 to 1e5 classical sweeps per quantum
+proposal. Any quantum case in ML must come from expensive energies (B2-09, B2-18) or genuine coexistence (B2-02).
+
+Note on verification: web search budget was exhausted before checking items marked LIT-UNVERIFIED (Huang and Kabashima 2014,
+Baldassi et al. 1509.05753, Campbell et al. 2205.14987, Mora and Bialek 2011, Aurell and Ekeberg 1107.3536, Friedman and Koller 2003,
+Kuipers and Moffa 2017, Khoshaman et al. 1802.05779). All hardware timing ranges are brief ranges or own estimates, to be replaced by
+the team hardware scan.

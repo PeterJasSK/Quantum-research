@@ -1,0 +1,299 @@
+A6 REPO MAP -- reusable code, data and notes for QeMCMC experiments
+====================================================================
+Date: 2026-11-20. Read-only survey (only this file was created). Python: /home/peter/anaconda3/bin/python
+(3.13, numpy 2.4.6, scipy 1.15.3, qiskit 2.3.1, qiskit-aer 0.17.2, qiskit-ibm-runtime 0.47.0).
+Abbreviations used in paths:
+  RE  = /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/plans/relatedPapers/reverse-engineering
+  QPC = /home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/code
+  QH  = /home/peter/PycharmProjects/Quantum-research/QHop
+All import tests were run from /tmp (outside the repo) with sys.path inserts, so they reflect what a script in
+QH/experiments/qmcmc/ will see.
+
+
+0. TL;DR -- RECOMMENDED sys.path PREAMBLE (verified: prints "all ok")
+-------------------------------------------------------------------
+    import sys
+    sys.path.insert(0, "/home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/common")   # qmc.py
+    sys.path.append("/home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/plans/relatedPapers/reverse-engineering")  # RE: shared, B_mapping
+    sys.path.append("/home/peter/PycharmProjects/Quantum-research/QuantumPhantoms/code")              # QPC: common.targets etc.
+    import qmc
+    from common import targets, allocate, pauli_noise          # QPC
+    from shared.simbackend import transpile_heron, make_simulator
+    from B_mapping.src import qemcmc                          # RE
+
+  ORDER MATTERS (both verified failures):
+  * RE must come BEFORE QPC. Both trees have a regular package named B_mapping (and D_quantum_growth, ...).
+    With QPC first:  "ModuleNotFoundError: No module named 'B_mapping.src'"
+  * Do NOT import the new harness as `from common import qmc` when QPC is on the path: QPC's `common` is a
+    regular package and wins over QH/experiments/qmcmc/common (a namespace dir, no __init__.py), regardless of
+    sys.path order:  "ImportError: cannot import name 'qmc' from 'common' (.../QuantumPhantoms/code/common/__init__.py)"
+    -> put .../qmcmc/common itself on sys.path and `import qmc` (the module docstring already says so).
+    If someone adds common/__init__.py to qmcmc/, the collision becomes order-dependent; better rename the
+    folder (e.g. qmclib) or never import QPC's `common` in the same process.
+  * Import cost: RE `shared` alone 0.02 s; shared.simbackend / B_mapping.src.qemcmc ~1.0 s (pulls qiskit, aer,
+    ibm_runtime fake_provider); QPC common.targets+allocate+pauli_noise ~1.8 s; building 4 fake targets ~3.5 s.
+    No heavy data loads at import time anywhere (tumor_energy reads nii.gz only inside build()).
+
+
+1. ALREADY IN QH/experiments/qmcmc (written by a teammate during this survey, 20:57)
+-------------------------------------------------------------------------------------
+QH/experiments/qmcmc/common/qmc.py (≈360 lines, imports numpy + scipy.linalg.eigh only; import verified OK)
+  Exact dense harness, n <= ~13. Functions (line):
+    spins:20, ising_energies:25, sk_instance(n, seed, field):30, lattice_edges(L1,L2,periodic):39,
+    ea_instance(L1,L2,seed,periodic,dist,field):51, ferro_instance:64, mixer_diag_flip:75, mixer:82,
+    alpha_from_energy:90 (sqrt(n)/std(E); for a pure 2-body Ising with no constant this EQUALS Layden's
+    sqrt(n)/||J,h||_F exactly, since Var_s E = sum J^2 + sum h^2 over uniform spins), draw_params(seed,m):98,
+    quantum_Q(Hprob,gammas,ts):103 (any real energy vector; caches eigh per gamma),
+    decohered_Q(...,dt=0.25):123 (full Z-dephasing every dt slice = classical kernel |e^{-iH dt}|^2 composed),
+    local_Q:139, uniform_Q:148, mixture_Q:152, coarse_grained_Q(J,h,groups,...):157 (Ferguson-Wallden style),
+    boltzmann:203, mh_matrix(Q,E,beta,hastings):208, spectral_gap(P,pi):222 (symmetrised eigvalsh when pi given
+    -- use this, it is much faster than eigvals), gap:236, acceptance:242, mean_hamming:250, asymmetry:263,
+    thermo:269, local_gap_curve:279, iat(x,c=5.0):286 (integrated autocorrelation time, Sokal window),
+    sample_row:303, run_chain(Q,E,beta,steps,seed):307, parallel_tempering(E_fn_flip,n,betas,sweeps,seed):323,
+    ising_flip_fn:353, ising_E_fn:359.
+  => This already covers: instance generators (SK, EA, ferro), decohered control, coarse-graining, PT, IAT.
+  Not covered anywhere in the repo: Wolff / Swendsen-Wang cluster moves, Potts, MRF (see section 6).
+
+
+2. CORE QeMCMC CODE (RE letter B, Layden reproduction) -- the original source
+-------------------------------------------------------------------------------
+RE/B_mapping/src/qemcmc.py  (197 lines; import verified; needs RE on sys.path; imports shared.simbackend at top)
+  spins(n):18                 (2^n,n) +-1, bit i of index = spin i, 0 -> +1.
+  energies(J,h):24            E = -sum_{i<j} J s s - sum h s (J symmetric, zero diag). Dense einsum; fine to n~20.
+  alpha(J,h):30               sqrt(n)/sqrt(sum triu J^2 + sum h^2)  (Layden).
+  mixer(n):34                 dense sum_i X_i (2^n x 2^n) -- memory 8*4^n bytes (n=12: 134 MB, n=13: 537 MB).
+  quantum_Q(J,h,gammas,ts):45 Q[s,s'] = mean_k |<s'|exp(-iH_k t_k)|s>|^2 via np.linalg.eigh (no expm used
+                              anywhere in the repo). Ising-only signature (J,h).
+  local_Q(n):57, uniform_Q(n):65
+  mh_matrix(Q,E,T=1):69       Metropolis min(1, pi'/pi), pi = exp(-(E-Emin)/T). Docstring: only correct for
+                              symmetric Q (no Hastings option -> use qmc.mh_matrix(hastings=True) for noisy Q).
+  spectral_gap(P):79          1 - |lambda_2| via np.linalg.eigvals (non-symmetric, slow: see timings).
+  asymmetry(Q):84             mean|Q-Q^T| / mean Q.
+  draw_params(g,m):89         gamma~U[0.25,0.6], t~U[2,20].
+  GRID:95                     [(0.3,2),(0.3,6),(0.5,2),(0.5,6)] fixed (gamma,t) grid for the hardware arm.
+  trotter_circuit(J,h,gamma,t,state,steps_per_t=2.0):98
+                              2nd-order (Strang) Trotter: per step diag/2 (rz for h, rzz for every nonzero
+                              J_ij) - rx(2 gamma dt) on all - diag/2; r = max(2, round(2t)); X on the input
+                              basis bits; measures all qubits. qiskit QuantumCircuit(n,n). Uses rzz (decomposed to
+                              2 CZ by the transpiler; FakeMarrakesh/Boston/Nighthawk targets expose no rzz).
+                              Endianness consistent: int(bitstring,2) -> index with bit i = clbit i = spin i.
+  noisy_Q(J,h,mode,seed,shots,grid):128
+                              builds 2^n x |grid| circuits, transpile_heron(opt=1), AerSimulator.from_backend
+                              (FakeMarrakesh) run, returns (Q_est, {"mean_depth","mean_cz","circuits"}).
+                              Cost explodes: 2^n*4 circuits; n=8 run "abandoned after > 1 h".
+  main():147                  CLI `python -m B_mapping.src.qemcmc --tumor --mode ideal|heron` (cwd = RE). Requires
+                              the certificate stub status "pass" and tumor_energy.build; writes runs/ (gitignored).
+  Limits: dense; no Hastings; no decohered control; Ising only; eigvals-based gap.
+  Verified smoke (n=5 SK, gamma=.4, t=5, T=1): gap_quantum 0.0308, gap_local 0.00325, asymmetry 1e-16;
+  trotter_circuit -> transpile_heron: 823 CZ, depth 2257 (all-to-all SK on heavy-hex, r=10 steps).
+  Timings measured on this (shared, loaded) 8-core / 31 GB box, one (gamma,t) draw:
+    n=8: quantum_Q 1.0 s, eigvals gap 0.5 s | n=10: 12 s, 14 s | n=11: 21 s, 57 s.
+    -> n=12 with eigvals is many minutes per instance; use qmc.spectral_gap(P, pi) (eigvalsh) instead.
+
+RE/B_mapping/repro/layden.py (66 lines)
+  sk(n,g):15 -> (J symmetric N(0,1), h N(0,1)); fit_k(ns,gaps):20 = -slope of log2<delta> vs n.
+  main(): n=3..8, 100 instances, M=64 draws, seed 11, T=1; writes RE/B_mapping/data/layden_result.json and
+  figures/layden_gap_scaling.png. Import: `from B_mapping.repro.layden import sk, fit_k` (RE on path).
+
+RE/B_mapping/src/tumor_energy.py (54 lines)
+  PARAMS:13 (J_compact .5, h_vessel 1, h_pleura 1, length_mm 5, h_size .5, size_ref 10, patch [2,2,2]).
+  build(sites_path, site_id, size_mm, params, patch):24 -> (J, h, info) for prod(patch) voxel spins from
+  anatomy masks (scipy distance_transform_edt, shared.volumes.read_volume, SimpleITK-free? -> uses nii.gz via
+  shared.volumes). Inputs are STUBS: RE/shared/stubs/site_candidates/sites.json + stubs/anatomy_masks/*.nii.gz.
+  Landscape is nearly flat on stubs (h ~ -0.10 constant). qh-17 is CLOSED, so treat this as history only.
+
+RE/B_mapping/src/qemcmc_figure.py (38 lines): bar chart of gaps from newest runs/*-qemcmc-*; the run dirs are
+  gitignored (.gitignore line 20: reverse-engineering/**/runs/) and no qemcmc_result.json exists any more ->
+  script will SystemExit "no qemcmc-ideal run with n=8". Pattern only.
+
+
+3. NOISE MODELS, FAKE BACKENDS, TRANSPILATION, CZ COUNTING
+-----------------------------------------------------------
+RE/shared/simbackend.py (78 lines; imports qiskit, aer, ibm_runtime at top)
+  fake_backend():27 lru-cached FakeMarrakesh (Heron r2, 156 q heavy-hex, CZ).
+  make_simulator(mode in {"ideal","heron"}, seed):40 -- "heron" = AerSimulator.from_backend(FakeMarrakesh).
+    GOTCHA: the heron simulator is a cached singleton; set_options(seed_simulator=...) mutates it globally.
+  transpile_heron(circ, seed, optimization_level=1):52  transpile to FakeMarrakesh target.
+  circuit_hash(circ) (qasm3 sha256), run_counts(circ,mode,shots,seed):62, calibration_snapshot():70
+  (props sha256 + last_update_date of the fake). Only FakeMarrakesh; no other backends.
+RE/shared/seedhash.py: derive_seed(seed_hex,label):82, rng(seed_hex,label):88 (PCG64), sha256/canonical_json/
+  code_hash/git_state. Pure numpy; `from shared import RE_ROOT` is the only internal dep. Reusable for
+  run-record provenance.
+RE/shared/__init__.py: RE_ROOT, STUBS, CONTRACTS (paths only, light).
+RE/shared/runrecord.py: start_run(letter_dir, name, sim_mode, tool) -> run dir under <letter>/runs (gitignored).
+
+QPC/common/targets.py (171 lines; needs QPC on path; networkx)
+  FAKES:24 {"marrakesh":FakeMarrakesh, "kingston":FakeKingston, "boston":FakeBoston (Heron r3),
+  "nighthawk":FakeNighthawk (120 q square lattice)} + "helios-class" (all-to-all 98 q datasheet, no ISA).
+  get(name):83 -> Target dataclass:40 {graph (nx), e2q per edge, e1q, p01/p10 asymmetric readout, t1, t2,
+  durations, calibration snapshot, backend}. from_backend(name, b, label, cal):122 works for ANY backend incl.
+  live IBM ones; register():166. Verified medians of 2q error: marrakesh 3.29e-3, kingston 1.83e-3,
+  boston 1.27e-3, nighthawk 2.71e-3; all four expose only cz/rz/sx/x (no rzz) in the target.
+QPC/common/allocate.py (421 lines) -- calibration-aware qubit selection (the best "tier" tool in the repo)
+  node_cost:38 (ro+sx), edge_cost:42, short_coherence:52, prune(tg):67 (drops bad qubits/edges; kept 130/156
+  marrakesh, 147 boston, 113 nighthawk, 129 kingston), patch(g,tg,n,centre):181 (connected n-qubit patch
+  grown cheapest-first -> {"nodes","edges","centre"} = a ready hardware-native instance graph),
+  path:92, bfs_tree:149, virtual_grid(tg,ncol):375, nighthawk_rows:388 (q = 10*row+col, 12x10 grid).
+QPC/common/qhard.py: faces(g,size=12):122 -> 12-cycles (hexagon cells) of heavy-hex = the qh-18 "lens"
+  (one heavy-hex cell, 12 qubits); rings/ring_layout/tile_layout:183-275; edge_layers(edges):546 (greedy
+  edge colouring into parallel CZ layers -- useful for depth of a Trotter step); acceptance_model, KAPPA
+  (fidelity ~ exp(-kappa * e_cz * N_CZ), one-point fit) :337/476/496.
+QPC/common/pauli_noise.py (152 lines)
+  idle_probs(t,t1,t2):34 (T1/T2 -> Pauli-twirled idle probs), noise_model(name):41 (per-qubit depolarizing
+  sx/x + asymmetric readout + per-edge CZ depolarizing from the Target; basis cz/sx/x/rz/id -- NO amplitude
+  damping, NO rzz), delays_to_pauli:75, is_clifford:119, run(circuits,name,shots,seed):136.
+  -> Good starting point for a TYPE-RESOLVED noise sweep (swap depolarizing for amplitude_damping_error /
+  phase_damping_error / ReadoutError per qh-15/Study.txt); nothing in the repo implements T1 amplitude damping.
+THESIS/CriticalQuantumLife/code/fault_injection.py: noise_model(Fault):54 -- labelled Aer NoiseModel menu
+  (depolarizing on "cx", phase_damping_error on h/ry/rz, readout). Built for cx/h/ry basis, NOT the CZ ISA;
+  copy the pattern only.
+THESIS/QuantumEvolutionFrontier/analysis/classical_cost.py: mps_profile(qc,shots):33 (exact MPS without
+  truncation, max bond chi, wall time) -- reusable as the "classical cost of the proposal circuit" axis.
+artificial-life/code/backlog/stage3_teleport.py:511 maps "fake_heron" -> FakeFez (only FakeFez use in repo).
+Fake backends available in the env (verified import): FakeFez, FakeTorino, FakeNighthawk, FakeBoston,
+FakeKingston, FakeMarrakesh.
+CZ counting idiom used throughout: tc.count_ops().get("cz", 0) after transpile(..., seed_transpiler=s).
+No PauliEvolutionGate / heavy_hex helper / expm usage anywhere in repo code.
+
+
+4. IBM RUNTIME SUBMISSION HELPERS
+---------------------------------
+QPC/common/quantum.py (267 lines) -- the most complete one
+  session(ctx):71 (dry = FakeMarrakesh Aer; live = QiskitRuntimeService() pre-saved account, "auto" =
+  least_busy >=100 q, or named backend; backend.json persisted per run), qpu_seconds(isa,b,shots):98
+  (estimate_duration + 250 us rep delay), fit_shots:109 (spend cap MAX_QPU_SECONDS=45, MIN_SHOTS=300),
+  run_isa(ctx,key,isa,shots,dd=True,twirl=False):123 (SamplerV2, XX dynamical decoupling, job id written to
+  <run>/jobs/<key>.json BEFORE waiting, resume-by-fetch, cancelled -> resubmit), bits(pub):169,
+  execute(ctx,key,circuits,shots):174 (transpile with metadata["layout"], lint: no mid-circuit measure).
+  Dependency: a runio.Ctx run context (QPC/common/runio.py:25) and QuantumPhantoms/research_runs layout.
+  Reuse the run_isa pattern (persist job id, resume) rather than the whole Ctx machinery.
+  Memory note: picking QPU by name + fit check is Peter's own refactor (do not redesign).
+CalibrationGuidedHighYieldQRNG/old/code/stage_a_selection.py: qubit_is_good:43 (ro<=5%, sx<=1e-3,
+  T1,T2>=30 us), select_qubits(backend, "all"|"good"|"list:..."):60; calibration_snapshot.py:read_snapshot:51
+  (per-qubit t1/t2/readout/sx/reset). Single-qubit only (no edge errors) -> allocate.py supersedes it for
+  best/median/worst tiers. CalibrationGuidedHighYieldQRNG/new/ is EMPTY.
+Other QiskitRuntimeService users (pattern only): THESIS/CriticalQuantumLife (5 files), THESIS/NPQuantumAdvantage/
+  problems/_drivers.py:_counts_hw:194, QuantumLife/code, ErrorDetectionVSRawBits/qrng_*.py.
+
+
+5. EXACT JS SIMULATOR (browser demo)
+------------------------------------
+QH/plans/demo-quantum-leap-race.html (410 lines) == study-ideas/qh-18-prototype/quantum-leap-race.html
+(byte-identical, cmp). Published privately at https://claude.ai/artifact/LLtRPYSLYdJRGPEQ6C7rgd.
+  mulberry32:177 PRNG, gauss:178, makeConfig(kind,rows,cols,seed):180 -- kinds: "glass" (SK, all pairs N(0,1),
+  h N(0,1)), "frustrated" (grid +-1 random signs), "islands" (ferro grid), "checker" (antiferro grid);
+  boards 3x3 / 2x5 / 3x4 (n = 9, 10, 12). energies(cfg):197 same convention as Python (bit 1 -> -1).
+  makeQuantum(cfg,E,g,t):209 -- state-vector evolution, FIRST-order symmetric split (phase/2, mix, phase/2)
+  with K = ceil(t/0.5) steps (dt <= 0.5), alpha = Layden; cached CDF per start state, binary-search sampling.
+  "exact" = exact state vector of the Trotterized unitary, NOT exact exp(-iHt) (Trotter error at dt=0.5).
+  proposer(method):235 -- local, uniform, quantum, and "decohered" = independent per-qubit flips with prob
+  sin^2(g*dt) repeated K times. NOTE: this decohered control IGNORES the energy term (pure mixer random walk),
+  whereas qmc.decohered_Q dephases the FULL generator every slice. They are different controls; pick one
+  and say which.
+  run():336 -- metric = Metropolis steps to first hit of the ground state, CAP=3000, 10/20/40 trials, median +
+  IQR on log scale; sliders T 0.2-2, t 1-16, gamma 0.1-0.9.  No noise channels yet (Study.txt "to add").
+
+
+6. INSTANCE GENERATORS
+----------------------
+  SK:          qmc.sk_instance:30; RE/B_mapping/repro/layden.py:sk:15; JS makeConfig("glass").
+  EA (grid):   qmc.ea_instance:51 (+lattice_edges:39); JS "frustrated"; ferro: qmc.ferro_instance:64.
+  Hardware-native graphs: QPC allocate.patch / qhard.faces (heavy-hex hexagon) / nighthawk_rows (square) ->
+               combine with random +-J for heavy-hex EA instances (not yet written).
+  QUBO:        THESIS/NPQuantumAdvantage/problems/_drivers.py:QUBO:45 (dataclass: linear dict, quadratic dict,
+               num_vars); to_qubo(instance) in p1_betweenness, p2_numerical_matching (n*n vars), p3, p4, p5
+               instance.py; generate(n, seed) protocol. Needs THESIS/NPQuantumAdvantage on sys.path
+               (`from problems._drivers import QUBO`). These are permutation/assignment QUBOs with big penalty
+               terms -- not natural Boltzmann targets; usable as "optimisation-flavoured" energies only.
+  Potts / MRF / Wolff / Swendsen-Wang / cluster moves: NONE in code. Potts appears only as plan text
+               (QuantumPhantoms/plans/feature-QLONG-*.md A1: "Potts clone x phenotype patch"; qlong/ package
+               was never built -- no qlong dir exists).
+  number-partitioning/ (memory says repo-root project): DOES NOT EXIST in the working tree any more.
+
+
+7. DATA SETS FOR REAL APPLICATION ENERGIES
+------------------------------------------
+  TCGA mutations, weather stations, fMRI: NONE present in the repo or /home/peter/data. Only mentioned in notes:
+    QH/plans/study-idea-qh-17-...-CLOSED.md:28 (TCGA LUAD driver-mutation Ising via cBioPortal, pseudo-likelihood
+    fit, KRAS-EGFR mutual exclusivity = antiferro), QH/plans/use-cases-ideas.md (6 domain agents: meteorology,
+    maps, genomics, fMRI energy landscapes Watanabe/Ezaki, materials, infrastructure -- all "pending", no results
+    in the file), study-ideas/Perun-5-cancer-research.md (TCGA/GTEx microRNA, different topic).
+  Present but lung/CT-specific (qh-17 CLOSED, lungs went classical):
+    /home/peter/data/LIDC-IDRI (CT, outside repo); RE/B_mapping/data/lidc_counts.json, class_prior.json;
+    RE/shared/stubs/anatomy_masks/*.nii.gz (stub masks used by tumor_energy.build).
+  -> Any real-application energy must be downloaded/fitted fresh.
+
+
+8. PLOTTING HELPERS
+-------------------
+  No shared plotting module. Patterns: RE/B_mapping/repro/layden.py:53-62 (semilogy gap vs n, Agg backend),
+  RE/B_mapping/src/qemcmc_figure.py (grouped bars), THESIS/QuantumEvolutionFrontier/analysis/figures.py:26
+  (paper rcParams: serif 7 pt, ink colours). Web viz craft: artificial-life/web/, QH demo HTML.
+
+
+9. PREVIOUS QeMCMC RESULTS (files and numbers)
+----------------------------------------------
+  RE/B_mapping/data/layden_result.json (simulated: ideal, SK, n=3..8, 100 inst/n, M=64, T=1, seed 11):
+    <delta> quantum: .1423 .1259 .1175 .0864 .0735 .0623
+            local:   .1395 .0545 .0233 .0156 .0060 .0041
+            uniform: .2210 .1159 .0645 .0320 .0169 .0085
+    k_quantum 0.2496 (paper 0.264), k_local 1.0166 (0.94), k_uniform 0.9392 (0.948) -- all "match".
+    Figure: RE/B_mapping/figures/layden_gap_scaling.png (copy in RE/site/B_mapping/figures/).
+  Tumour patch, site S001, 8 mm, stub masks (numbers only in the dossier; run JSONs gitignored and gone):
+    2x2x2 (8 spins) ideal M=64:      delta q/local/uniform = 0.0180 / 0.0121 / 0.0084
+    2x3x1 (6 spins) ideal M=64:      0.0392 / 0.0379 / 0.0469   (no advantage)
+    2x3x1 ideal 4-point grid:        0.0397
+    2x3x1 FakeMarrakesh noisy Q:     0.0536; asymmetry |Q-Q^T|/Q = 0.135; TVD(Q_noisy, Q_ideal_grid) = 0.21;
+                                     256 circuits, 1024 shots, mean depth 885, mean 359 CZ.
+    Figure: RE/B_mapping/figures/qemcmc_tumor_gap.png.
+  Use-case harness calibration (QH/plans/use-cases-ideas.md, SK seed=n, T=1, one instance, ideal):
+    n=8: 4 valleys, gap q/local 29.3, q/best-classical 6.1, q/decohered 4.6, steps-to-leave-valley q/local/unif
+         5.3/66.5/182.3;  n=10: 7 valleys, 40.1, 11.3, 11.3, 26.3/154.3/382.3.
+    The harness script (qhop_harness.py in session scratchpad e9ded90a-...) is LOST (directory no longer
+    exists); the 6 domain agents' results never landed in the repo.
+  No CSV/PNG/JSON QeMCMC results exist elsewhere (find for *qemcmc*, *layden*, *qmcmc*).
+
+
+10. DECISIONS / RULED-OUT APPROACHES (notes)
+--------------------------------------------
+  * Noisy Heron-class Q is asymmetric (0.135) -> plain Metropolis no longer exact; its larger gap (0.054 > 0.040)
+    is noise flattening Q toward uniform, NOT quantum benefit (RE dossier 02 == QH/plans/re-dossier-02-*.md).
+    Claim recorded: "correct sampler with quantum proposals; any speedup is ideal-simulation only". No claim level.
+  * 8-spin Heron arm abandoned after > 1 h (full Q estimation = 2^n x grid circuits); replaced by 6 spins.
+  * Coarse-grained QeMCMC (Ferguson-Wallden B12): "noted, not built" in RE B (feature-B-mapping.md:128).
+  * qh-17 (quantum-proposed tumour, TCGA genotype Ising) CLOSED 2026-11-19: "no quantum point in any lung stage;
+    lungs go classical" (study-ideas/README.md:27; memory post-phantoms-direction). QeMCMC line moved to QHop
+    (qh-15 eps* threshold + qh-18 game). Risk noted there: IP -- rebuild from public RE material if QP code is
+    Siemens-owned.
+  * Honesty frame (use-cases-ideas.md, qh-18): advantage is PER STEP only; exact enumeration (2^12) and strong
+    classical samplers (PT, cluster) win wall-clock at n<=12; classical makes ~1e4x more proposals/s; tuning
+    (gamma,t,T) per instance favours quantum and must be reported; quantum must beat the DECOHERED control.
+  * Adversaries named: Christmann 2024 (2411.17821, quantum-inspired TN proposals, chi<=8; "unconverged TN keeps
+    the scaling" -> dequantisation risk), Orfi-Sels 2024 (2408.07881, advantage needs fine-tuned intermediate
+    quench; tumour energies are structured, not glassy), Marshall 2026 (2602.06171, 117-var QeMCMC optimisation
+    on IBM -- closest prior hardware work), Kawamata-Fujii 2611.05883 (Heron r2), Claudon 2603.08395.
+  * QLONG break-even table (feature-QLONG:127): vs local Metropolis at 1e3/1e6/1e9x classical step speed ->
+    n ~ 15 / 30 / 44 spins (Layden exponents). Q-HARD: exact contraction of a 5-step heavy-hex proposal ~2^20.
+  * Planned but unbuilt: qh-18 bounds protocol (n=6..12, 50-100 inst/n, bootstrap CI, noise types one at a time:
+    depolarizing, dephasing, amplitude damping, readout 1->0, coherent over-rotation; density matrix n<=10,
+    trajectories n=12; Hastings correction; QRNG-vs-PRNG null arm); qh-15 large-n IAT chains, gate folding,
+    calibration tiers best/median/worst.
+  * QH/plans/README.md "Next": /plan-epic for QHop; first experiment = add depolarizing and T1 noise to the
+    simulator and compare curves. PDFs in QH/plans/papers are not gitignored.
+  * Unrelated hits for "decohered" (QuantumLife teleport depth, artificial-life) are not QeMCMC.
+
+
+11. TOP REUSE LIST (ranked)
+---------------------------
+  1. QH/experiments/qmcmc/common/qmc.py -- exact harness (Q, decohered, coarse-grained, MH+Hastings, fast gap,
+     PT, IAT, SK/EA instances). import qmc.
+  2. RE/B_mapping/src/qemcmc.py:98 trotter_circuit + :128 noisy_Q -- the only Trotter circuit + Q-from-counts code.
+  3. RE/B_mapping/repro/layden.py -- validated SK reproduction + fit_k; layden_result.json as regression target.
+  4. QPC/common/targets.py:83 get() -- 4 fake backends (r2, r3, Nighthawk) as calibration records.
+  5. QPC/common/allocate.py:67 prune / :181 patch -- calibration-tier qubit/patch selection, hardware graphs.
+  6. QPC/common/pauli_noise.py:41 noise_model -- per-qubit/per-edge Aer noise from a Target; extend per noise type.
+  7. QPC/common/quantum.py:123 run_isa -- SamplerV2 submission with persisted job ids, DD, resume.
+  8. RE/shared/simbackend.py:52 transpile_heron + count_ops CZ idiom; calibration_snapshot for provenance.
+  9. QPC/common/qhard.py:122 faces (12-qubit hexagon lens) and :546 edge_layers (parallel CZ layers).
+ 10. QH/plans/demo-quantum-leap-race.html:180-243 -- JS instance kinds + state-vector proposal + decohered
+     random-walk control (note Trotter dt=0.5 and different decohered definition).

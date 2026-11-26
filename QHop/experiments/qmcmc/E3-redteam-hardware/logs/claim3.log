@@ -1,0 +1,45 @@
+n8_native_short_s0 S_true 1.423 N    64 shots 1.64e+04 $8  S_hat 1.138 +- 0.292
+n8_native_short_s0 S_true 1.423 N   256 shots 6.55e+04 $31  S_hat 1.414 +- 0.193
+n8_native_short_s0 S_true 1.423 N  1024 shots 2.62e+05 $126  S_hat 1.378 +- 0.065
+n8_native_short_s0 S_true 1.423 N  4096 shots 1.05e+06 $503  S_hat 1.417 +- 0.047
+n8_native_short_s0 S_true 1.423 N 16384 shots 4.19e+06 $2013  S_hat 1.419 +- 0.024
+n8_native_short_s1 S_true 1.976 N    64 shots 1.64e+04 $8  S_hat 1.663 +- 0.474
+n8_native_short_s1 S_true 1.976 N   256 shots 6.55e+04 $31  S_hat 1.968 +- 0.419
+n8_native_short_s1 S_true 1.976 N  1024 shots 2.62e+05 $126  S_hat 1.964 +- 0.158
+n8_native_short_s1 S_true 1.976 N  4096 shots 1.05e+06 $503  S_hat 1.977 +- 0.074
+n8_native_short_s1 S_true 1.976 N 16384 shots 4.19e+06 $2013  S_hat 1.980 +- 0.038
+n8_native_short_s2 S_true 0.902 N    64 shots 1.64e+04 $8  S_hat 0.541 +- 0.340
+n8_native_short_s2 S_true 0.902 N   256 shots 6.55e+04 $31  S_hat 0.868 +- 0.192
+n8_native_short_s2 S_true 0.902 N  1024 shots 2.62e+05 $126  S_hat 0.901 +- 0.111
+n8_native_short_s2 S_true 0.902 N  4096 shots 1.05e+06 $503  S_hat 0.899 +- 0.062
+n8_native_short_s2 S_true 0.902 N 16384 shots 4.19e+06 $2013  S_hat 0.901 +- 0.024
+n8_native_short_s3 S_true 2.081 N    64 shots 1.64e+04 $8  S_hat 1.431 +- 0.421
+n8_native_short_s3 S_true 2.081 N   256 shots 6.55e+04 $31  S_hat 2.040 +- 0.252
+n8_native_short_s3 S_true 2.081 N  1024 shots 2.62e+05 $126  S_hat 2.056 +- 0.160
+n8_native_short_s3 S_true 2.081 N  4096 shots 1.05e+06 $503  S_hat 2.073 +- 0.089
+n8_native_short_s3 S_true 2.081 N 16384 shots 4.19e+06 $2013  S_hat 2.078 +- 0.040
+n8_native_short_s4 S_true 1.296 N    64 shots 1.64e+04 $8  S_hat 1.008 +- 0.295
+n8_native_short_s4 S_true 1.296 N   256 shots 6.55e+04 $31  S_hat 1.319 +- 0.181
+n8_native_short_s4 S_true 1.296 N  1024 shots 2.62e+05 $126  S_hat 1.304 +- 0.108
+n8_native_short_s4 S_true 1.296 N  4096 shots 1.05e+06 $503  S_hat 1.278 +- 0.050
+n8_native_short_s4 S_true 1.296 N 16384 shots 4.19e+06 $2013  S_hat 1.295 +- 0.025
+n6_marrakesh_s100 S_true 1.095 N    64 shots 4.10e+03 $2  S_hat 0.971 +- 0.237
+n6_marrakesh_s100 S_true 1.095 N   256 shots 1.64e+04 $8  S_hat 1.082 +- 0.115
+n6_marrakesh_s100 S_true 1.095 N  1024 shots 6.55e+04 $31  S_hat 1.071 +- 0.058
+n6_marrakesh_s100 S_true 1.095 N  4096 shots 2.62e+05 $126  S_hat 1.092 +- 0.022
+n6_marrakesh_s100 S_true 1.095 N 16384 shots 1.05e+06 $503  S_hat 1.094 +- 0.012
+n6_marrakesh_s101 S_true 0.861 N    64 shots 4.10e+03 $2  S_hat 0.838 +- 0.152
+n6_marrakesh_s101 S_true 0.861 N   256 shots 1.64e+04 $8  S_hat 0.896 +- 0.063
+n6_marrakesh_s101 S_true 0.861 N  1024 shots 6.55e+04 $31  S_hat 0.902 +- 0.033
+n6_marrakesh_s101 S_true 0.861 N  4096 shots 2.62e+05 $126  S_hat 0.883 +- 0.021
+n6_marrakesh_s101 S_true 0.861 N 16384 shots 1.05e+06 $503  S_hat 0.889 +- 0.012
+n6_marrakesh_s102 S_true 1.168 N    64 shots 4.10e+03 $2  S_hat 1.166 +- 0.576
+n6_marrakesh_s102 S_true 1.168 N   256 shots 1.64e+04 $8  S_hat 1.169 +- 0.274
+n6_marrakesh_s102 S_true 1.168 N  1024 shots 6.55e+04 $31  S_hat 1.160 +- 0.110
+n6_marrakesh_s102 S_true 1.168 N  4096 shots 2.62e+05 $126  S_hat 1.202 +- 0.062
+n6_marrakesh_s102 S_true 1.168 N 16384 shots 1.05e+06 $503  S_hat 1.174 +- 0.037
+chain {'case': 'n8_native_short_s0', 'iat_q_med': 30.752, 'iat_q_cv': 0.538, 'iat_c_med': 34.1, 'iat_c_cv': 0.498, 'frac_q_faster': 0.59}
+chain {'case': 'n8_native_short_s1', 'iat_q_med': 42.66, 'iat_q_cv': 0.517, 'iat_c_med': 59.118, 'iat_c_cv': 0.578, 'frac_q_faster': 0.58}
+chain {'case': 'n8_native_short_s2', 'iat_q_med': 47.732, 'iat_q_cv': 0.525, 'iat_c_med': 48.157, 'iat_c_cv': 0.531, 'frac_q_faster': 0.5}
+chain {'case': 'n8_native_short_s3', 'iat_q_med': 26.51, 'iat_q_cv': 0.531, 'iat_c_med': 39.289, 'iat_c_cv': 0.508, 'frac_q_faster': 0.7}
+chain {'case': 'n8_native_short_s4', 'iat_q_med': 48.545, 'iat_q_cv': 0.475, 'iat_c_med': 46.195, 'iat_c_cv': 0.546, 'frac_q_faster': 0.49}

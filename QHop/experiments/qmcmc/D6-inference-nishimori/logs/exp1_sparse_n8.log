@@ -1,0 +1,13 @@
+alpha=1.0 inst=0 t=9s
+alpha=1.0 inst=1 t=14s
+alpha=1.0 inst=2 t=24s
+alpha=1.0 inst=3 t=36s
+alpha=1.0 inst=4 t=44s
+alpha=1.0 inst=5 t=50s
+alpha=2.0 inst=0 t=58s
+alpha=2.0 inst=1 t=74s
+alpha=2.0 inst=2 t=85s
+alpha=2.0 inst=3 t=94s
+alpha=2.0 inst=4 t=101s
+alpha=2.0 inst=5 t=116s
+done 192 117s

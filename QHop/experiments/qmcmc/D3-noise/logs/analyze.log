@@ -1,0 +1,42 @@
+cache/skn6_s100.npz done
+cache/skn6_s101.npz done
+cache/skn6_s102.npz done
+cache/skn6_s103.npz done
+cache/skn6_s104.npz done
+cache/skn8_s100.npz done
+cache/skn8_s101.npz done
+cache/skn8_s102.npz done
+cache/skn8_s103.npz done
+cache/skn8_s104.npz done
+cache/fake_boston_n6_s100.npz done
+cache/fake_boston_n6_s101.npz done
+cache/fake_marrakesh_n6_s100.npz done
+cache/fake_marrakesh_n6_s101.npz done
+cache/fake_marrakesh_n6_s102.npz done
+cache/fake_marrakesh_n6_s103.npz done
+cache/fake_marrakesh_n6_s104.npz done
+model sk 6 100
+model sk 6 101
+model sk 6 102
+model sk 6 103
+model sk 6 104
+model sk 8 100
+model sk 8 101
+model sk 8 102
+model sk 8 103
+model sk 8 104
+model sk 10 100
+model sk 10 101
+model sk 10 102
+model sk 10 103
+model sk 10 104
+model ea 9 200
+model ea 9 201
+model ea 9 202
+model ea 9 203
+model ea 9 204
+rows 1455
+
+real	3m51.076s
+user	5m34.841s
+sys	0m2.567s

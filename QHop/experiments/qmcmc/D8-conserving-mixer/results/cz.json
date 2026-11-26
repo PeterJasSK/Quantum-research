@@ -1,0 +1,28 @@
+{
+ "heavyhex_FakeMarrakesh|ring|cuau": {
+  "N_r2": 1290,
+  "N_r3": 2007,
+  "per_step": 717
+ },
+ "heavyhex_FakeMarrakesh|ring|dense": {
+  "N_r2": 1395,
+  "N_r3": 2123,
+  "per_step": 728
+ },
+ "heavyhex_FakeMarrakesh|grid|cuau": {
+  "N_r2": 1584,
+  "N_r3": 2449,
+  "per_step": 865
+ },
+ "heavyhex_FakeMarrakesh|grid|dense": {
+  "N_r2": 1637,
+  "N_r3": 2547,
+  "per_step": 910
+ },
+ "heavyhex_FakeMarrakesh|complete|cuau": {
+  "N_r2": 1895,
+  "N_r3": 2870,
+  "per_step": 975
+ },
+ "note": "partial: heavy-hex only (FakeMarrakesh, opt level 3, best of 3 seeds); complete|dense and all FakeNighthawk square runs CUT (machine overload). N(r)=N(2)+(r-2)*per_step."
+}

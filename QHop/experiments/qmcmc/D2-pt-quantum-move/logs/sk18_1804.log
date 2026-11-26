@@ -1,0 +1,7 @@
+[sk18s1804      33s] LOW metro 70.0 24.5
+[sk18s1804      34s] LOW PT R 4 swap [0.34 0.29 0.4 ] tau(flips) 2111 2472
+[sk18s1804      41s] MED metro 607.2 4940.1
+[sk18s1804      43s] MED PT R 3 swap [0.35 0.34] tau(flips) 449 1486
+[sk18s1804      70s] HIGH metro 28.6 107.1
+[sk18s1804      70s] HIGH PT R 1 swap [0.] tau(flips) 32 107
+[sk18s1804      70s] done

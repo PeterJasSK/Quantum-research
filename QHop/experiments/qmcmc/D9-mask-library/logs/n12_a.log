@@ -1,0 +1,14 @@
+ea n=12 s=1 beta=bc done 1133s
+ea n=12 s=1 beta=1 done 1404s
+ea n=12 s=1 beta=3 done 6700s
+wrote /home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/D9-mask-library/raw/ea_n12_s1.json in 6700s
+ea n=12 s=2 beta=bc done 651s
+ea n=12 s=2 beta=1 done 783s
+ea n=12 s=2 beta=3 done 1183s
+wrote /home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/D9-mask-library/raw/ea_n12_s2.json in 1183s
+ea n=12 s=3 beta=bc done 689s
+ea n=12 s=3 beta=1 done 847s
+ea n=12 s=3 beta=3 done 3690s
+wrote /home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/D9-mask-library/raw/ea_n12_s3.json in 3690s
+ea n=12 s=4 beta=bc done 937s
+ea n=12 s=4 beta=1 done 1180s

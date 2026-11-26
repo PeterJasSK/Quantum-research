@@ -1,0 +1,44 @@
+fam size regime method | tauE_s med  resE | tauq_s med  resq | <E> med   <|q|> med | s/rec    | t_lib_s | extra
+ea   8 MEDIUM metro  | 2.06e-04 5/5 | 2.86e-03 5/5 |   -72.89 0.553 | 3.5e-06 | 0.000 |  | minima 256/256 masklen 32.1
+ea   8 MEDIUM pt     | 1.11e-04 5/5 | 5.46e-04 5/5 |   -72.93 0.558 | 2.1e-05 | 0.000 | swap 0.56 R=6 | minima 256/256 masklen 32.1
+ea   8 MEDIUM mask   | 1.34e-03 5/5 | 2.64e-03 5/5 |   -72.80 0.550 | 3.4e-05 | 0.045 | acc_mask 0.001 | minima 256/256 masklen 32.1
+ea   8 MEDIUM ptmask | 1.44e-03 5/5 | 3.62e-03 5/5 |   -72.95 0.555 | 1.9e-04 | 0.045 | swap 0.55 R=6 | minima 256/256 masklen 32.1
+ea   8 LOW    metro  | 5.42e-03 3/5 | 6.97e-02 1/5 |   -77.30 0.461 | 2.9e-06 | 0.000 |  | minima 256/256 masklen 32.1
+ea   8 LOW    pt     | 1.99e-04 5/5 | 2.20e-03 5/5 |   -77.57 0.757 | 1.9e-05 | 0.000 | swap 0.37 R=6 | minima 256/256 masklen 32.1
+ea   8 LOW    mask   | 6.80e-03 5/5 | 3.81e-02 0/5 |   -77.11 0.758 | 3.3e-05 | 0.045 | acc_mask 0.000 | minima 256/256 masklen 32.1
+ea   8 LOW    ptmask | 3.09e-03 5/5 | 1.74e-02 4/5 |   -77.57 0.767 | 1.8e-04 | 0.045 | swap 0.37 R=6 | minima 256/256 masklen 32.1
+ea  12 MEDIUM metro  | 1.96e-03 5/5 | 1.39e-02 5/5 |  -178.05 0.493 | 6.9e-06 | 0.000 |  | minima 256/256 masklen 72.3
+ea  12 MEDIUM pt     | 5.96e-04 5/5 | 5.45e-03 5/5 |  -178.03 0.489 | 6.6e-05 | 0.000 | swap 0.52 R=8 | minima 256/256 masklen 72.3
+ea  12 MEDIUM mask   | 5.28e-02 2/5 | 1.51e-01 0/5 |  -175.38 0.354 | 1.5e-04 | 0.052 | acc_mask 0.000 | minima 256/256 masklen 72.3
+ea  12 MEDIUM ptmask | 2.11e-02 3/5 | 6.43e-02 2/5 |  -178.35 0.611 | 1.3e-03 | 0.052 | swap 0.52 R=8 | minima 256/256 masklen 72.3
+ea  12 LOW    metro  | 7.56e-03 4/5 | 8.76e-02 1/5 |  -186.50 0.453 | 6.9e-06 | 0.000 |  | minima 256/256 masklen 72.3
+ea  12 LOW    pt     | 4.61e-04 5/5 | 1.52e-02 4/5 |  -188.84 0.763 | 7.7e-05 | 0.000 | swap 0.45 R=10 | minima 256/256 masklen 72.3
+ea  12 LOW    mask   | 3.80e-02 1/5 | 1.26e-01 0/5 |  -182.15 0.308 | 1.2e-04 | 0.052 | acc_mask 0.000 | minima 256/256 masklen 72.3
+ea  12 LOW    ptmask | 2.63e-02 3/5 | 6.54e-02 2/5 |  -188.01 0.732 | 1.4e-03 | 0.052 | swap 0.44 R=10 | minima 256/256 masklen 72.3
+sk  32 MEDIUM metro  | 1.12e-05 5/5 | 1.92e-05 5/5 |   -88.24 0.345 | 2.4e-06 | 0.000 |  | minima 84/256 masklen 15.9
+sk  32 MEDIUM pt     | 3.36e-05 5/5 | 5.32e-05 5/5 |   -87.95 0.345 | 1.3e-05 | 0.000 | swap 0.53 R=4 | minima 84/256 masklen 15.9
+sk  32 MEDIUM mask   | 2.05e-04 5/5 | 2.60e-04 5/5 |   -88.19 0.345 | 3.9e-05 | 0.047 | acc_mask 0.042 | minima 84/256 masklen 15.9
+sk  32 MEDIUM ptmask | 5.63e-04 5/5 | 5.37e-04 5/5 |   -88.83 0.349 | 1.3e-04 | 0.047 | swap 0.53 R=4 | minima 84/256 masklen 15.9
+sk  32 LOW    metro  | 2.05e-05 4/5 | 5.74e-04 5/5 |  -124.21 0.636 | 1.6e-06 | 0.000 |  | minima 84/256 masklen 15.9
+sk  32 LOW    pt     | 5.05e-05 5/5 | 3.38e-04 5/5 |  -124.21 0.666 | 1.7e-05 | 0.000 | swap 0.41 R=6 | minima 84/256 masklen 15.9
+sk  32 LOW    mask   | 3.21e-04 5/5 | 6.67e-04 5/5 |  -124.16 0.674 | 4.0e-05 | 0.047 | acc_mask 0.008 | minima 84/256 masklen 15.9
+sk  32 LOW    ptmask | 8.50e-04 5/5 | 1.71e-03 5/5 |  -124.11 0.643 | 2.1e-04 | 0.047 | swap 0.41 R=6 | minima 84/256 masklen 15.9
+sk  64 MEDIUM metro  | 3.44e-05 5/5 | 6.64e-05 5/5 |  -247.25 0.297 | 6.4e-06 | 0.000 |  | minima 229/256 masklen 31.4
+sk  64 MEDIUM pt     | 1.27e-04 5/5 | 2.54e-04 5/5 |  -246.90 0.294 | 3.3e-05 | 0.000 | swap 0.38 R=4 | minima 229/256 masklen 31.4
+sk  64 MEDIUM mask   | 2.50e-03 5/5 | 4.41e-03 5/5 |  -245.70 0.293 | 2.8e-04 | 0.046 | acc_mask 0.002 | minima 229/256 masklen 31.4
+sk  64 MEDIUM ptmask | 6.58e-03 5/5 | 1.08e-02 5/5 |  -244.63 0.297 | 9.7e-04 | 0.046 | swap 0.38 R=4 | minima 229/256 masklen 31.4
+sk  64 LOW    metro  | 6.03e-04 4/5 | 5.83e-03 3/5 |  -365.36 0.716 | 3.9e-06 | 0.000 |  | minima 229/256 masklen 31.4
+sk  64 LOW    pt     | 5.24e-04 5/5 | 1.99e-03 5/5 |  -365.39 0.772 | 5.1e-05 | 0.000 | swap 0.39 R=8 | minima 229/256 masklen 31.4
+sk  64 LOW    mask   | 9.32e-03 3/5 | 8.87e-02 1/5 |  -365.80 0.768 | 2.1e-04 | 0.046 | acc_mask 0.000 | minima 229/256 masklen 31.4
+sk  64 LOW    ptmask | 1.46e-02 1/5 | 4.85e-02 0/5 |  -366.49 0.778 | 2.1e-03 | 0.046 | swap 0.39 R=8 | minima 229/256 masklen 31.4
+
+mask vs best(metro,pt) per CPU second, per instance (obs: verdict ratio tau_mask/tau_best):
+('ea', 8, 'MEDIUM') {'win': 0, 'lose': 10, 'undet': 0} median ratio 7.0 range [3.6,56.2]
+('ea', 8, 'LOW') {'win': 0, 'lose': 10, 'undet': 0} median ratio 25.0 range [8.4,87.1]
+('ea', 12, 'MEDIUM') {'win': 0, 'lose': 10, 'undet': 0} median ratio 24.8 range [8.5,155.7]
+('ea', 12, 'LOW') {'win': 0, 'lose': 10, 'undet': 0} median ratio 26.8 range [2.2,449.0]
+('sk', 32, 'MEDIUM') {'win': 0, 'lose': 10, 'undet': 0} median ratio 13.3 range [6.8,27.2]
+('sk', 32, 'LOW') {'win': 0, 'lose': 10, 'undet': 0} median ratio 12.2 range [1.4,37.4]
+('sk', 64, 'MEDIUM') {'win': 0, 'lose': 10, 'undet': 0} median ratio 68.1 range [50.6,93.3]
+('sk', 64, 'LOW') {'win': 0, 'lose': 10, 'undet': 0} median ratio 38.5 range [7.4,144.8]
+TOTAL: win 0 lose 80 undet 0 of 80

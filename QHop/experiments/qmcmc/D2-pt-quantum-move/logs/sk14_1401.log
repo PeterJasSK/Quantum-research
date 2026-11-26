@@ -1,0 +1,25 @@
+[sk14s1401      18s] LOW metro 209.4 1310.7
+[sk14s1401      20s] LOW PT R 4 swap [0.38 0.35 0.36] tau(flips) 325 849
+[sk14s1401     141s] LOW QeMCMC tau 40.1 44.5 N 19800 acc 0.104 teq nan {'n_row': 79, 'n_single': 489, 't_row': 61.20894908905029, 't_single': 59.322715520858765, 'cached_states': 72}
+[sk14s1401     218s] LOW decohered tau 237.5 394.9 N 5800 acc 0.006
+[sk14s1401     238s] LOW PT+Q pq=0.01 tau 5.33 15.37 N 50000 qacc 0.212
+[sk14s1401     314s] LOW PT+Q pq=0.1 tau 4.93 13.11 N 20464 qacc 0.195
+[sk14s1401     389s] LOW PT+Q pq=0.5 tau 4.54 11.5 N 7103 qacc 0.192
+[sk14s1401     464s] LOW PT+Q pq=1.0 tau 4.78 10.5 N 4584 qacc 0.187
+[sk14s1401     540s] LOW PT+D pq=0.1 tau 6.36 18.72 N 24692 qacc 0.024
+[sk14s1401     615s] LOW PT+D pq=1.0 tau 4.54 12.59 N 2731 qacc 0.023
+[sk14s1401     621s] MED metro 94.2 375.6
+[sk14s1401     622s] MED PT R 3 swap [0.46 0.46] tau(flips) 144 322
+[sk14s1401     849s] MED QeMCMC tau 26.5 28.6 N 4800 acc 0.327 teq nan {'n_row': 390, 'n_single': 2161, 't_row': 320.39758133888245, 't_single': 265.5459358692169, 'cached_states': 375}
+[sk14s1401     925s] MED decohered tau 84.2 125.9 N 5500 acc 0.077
+[sk14s1401     979s] MED PT+Q pq=0.01 tau 3.53 8.65 N 50000 qacc 0.448
+[sk14s1401    1054s] MED PT+Q pq=0.1 tau 3.92 6.94 N 6202 qacc 0.415
+[sk14s1401    1129s] MED PT+Q pq=0.5 tau 4.06 6.99 N 1179 qacc 0.434
+[sk14s1401    1204s] MED PT+Q pq=1.0 tau 4.35 8.65 N 572 qacc 0.42
+[sk14s1401    1279s] MED PT+D pq=0.1 tau 3.35 7.07 N 27288 qacc 0.135
+[sk14s1401    1354s] MED PT+D pq=1.0 tau 3.56 7.16 N 2742 qacc 0.135
+[sk14s1401    1381s] HIGH metro 15.3 35.7
+[sk14s1401    1382s] HIGH PT R 1 swap [0.] tau(flips) 20 38
+[sk14s1401    1616s] HIGH QeMCMC tau 10.4 6.9 N 1080 acc 0.692 teq nan {'n_row': 612, 'n_single': 4668, 't_row': 509.20185112953186, 't_single': 586.901843547821, 'cached_states': 597}
+[sk14s1401    1691s] HIGH decohered tau 11.3 18.2 N 5300 acc 0.456
+[sk14s1401    1691s] done

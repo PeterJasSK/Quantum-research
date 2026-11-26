@@ -1,0 +1,290 @@
+C1 SCREENING NOTES (Wave 3), screening agent C1, QHop QeMCMC applied review, 2026-11-21
+Scope: B1-01..B1-20, K4..K7 (from B1-optimization.txt) and B4-01..B4-20 (from B4-telecom.txt). 44 rows in C1-rows.txt.
+Labels: [P1] Layden 2023, [P2] Ferguson-Wallden 2025, [PILOT] team pilot, [LIT-V] verified this session (URL), [LIT-R] cited
+from memory by ideation and not re-verified (downgraded), [OWN] own calculation, [SPEC] speculation.
+
+======================================================================================================================
+1. CONVENTIONS USED FOR EVERY ROW
+======================================================================================================================
+1.1 Break-even (exactly as BRIEF-screening): S* = t_Q / t_C with t_C = t_propose_C + t_energy and t_Q = t_latency + t_energy.
+    optimistic t_latency = 0.03 s (D-Wave reverse-anneal step) for any row whose H_prob is 2-body (QUBO-embeddable);
+      0.1 s (Helios in-program loop, estimate) for rows that need multi-body H_prob (LABS, LDPC checks, polar, protograph,
+      d_min search), where an annealer needs aux spins and the gate model is the natural fit. Caveat: the annealer step is a
+      DIFFERENT proposal (Arai-Kadowaki type, arXiv:2502.08060); its S is not the pilot S. So the optimistic column is a
+      device-latency bound, not a like-for-like proposal.
+    realistic t_latency = 3 s (IBM Heron session per step, Marshall 2026 derived). No row is annealer-native in the brief's
+      sense, so the 0.5 s D-Wave realistic figure is not used.
+    pessimistic = S*_realistic / F, F = (1 - 2e-3)^N_2q.
+1.2 N_2q rule [OWN, anchored on the brief default N_2q = 800 at 10-12 dense spins]:
+      dense couplings: N_2q = 800 x (g/11)^2 ; sparse/local couplings: N_2q = 800 x (g/11) ; g = qubits in one proposal
+      circuit (coarse-grained group size where one is used, the smallest group the ideation agent named, to give each idea its
+      best shot). This is GENEROUS to quantum: the repo's 5-spin SK Trotter circuit is already 823 CZ, and B4's own swap-network
+      estimate (1.5 n^2 CNOT per layer x 10-100 layers) gives 3.6e3-3.6e4 at n = 16. Multi-body rows use the dense rule as a
+      lower bound; LABS gets an explicit estimate (section 2).
+1.3 F caveat [OWN]: a depolarised proposal is roughly F x Q_ideal + (1 - F) x Q_near-uniform, and at HIGH/MEDIUM T the uniform
+    part is not useless, so S/F over-states the erosion there. The convention is applied anyway for comparability; it never
+    changes a verdict below, because every verdict is already decided by the realistic column or by the classical competitor.
+1.4 "Beats best classical?" column = wall-clock win at a size an engineer cares about. "N (steps UNKNOWN)" marks science rows
+    where the iteration-count question is open but wall-clock is closed by S*.
+1.5 Batching (up to 4,000 circuits/s on IBM, t_Q per chain-step about 2.5e-4 s) is applied only where the application
+    genuinely needs many independent chains: B4-05 (labels over many channel draws) and B4-20 (SNR sweep). It is irrelevant for
+    expensive-energy rows (t_E dominates) and is stated where used.
+1.6 Measured/estimated S: pilot SK n=10 vs best(local, uniform) HIGH 1.3x, MEDIUM 3-8x, LOW 25-40x [PILOT]; vs PT/cluster/
+    specialised solver UNKNOWN everywhere (no published comparison). No row has a measured S against its best classical method.
+
+======================================================================================================================
+2. PER-ROW ARITHMETIC AND JUSTIFICATION
+======================================================================================================================
+Format: t_C | t_Q opt / real | g, N_2q, F | S* opt/real/pess | justification (and verdict vs ideation).
+
+B1-01 job shop. t_C = 1e-6 s (makespan decode, energy dominated) | 0.03 / 3 s | g=50 dense, N_2q = 1.65e4, F = 4e-15 |
+  3e4/3e6/7e20 | optimisation not sampling; CP-SAT propagation is the bottleneck; penalised one-hot space makes Hamming-far
+  proposals infeasible. KILL (agree).
+B1-02 rostering. t_C = 1e-6 | 0.03 / 3 | g=112 sparse (one nurse-month, mostly day-local rules), N_2q = 8.1e3, F = 8e-8 |
+  3e4/3e6/4e13 | classical shift-swap moves preserve coverage exactly. KILL (agree).
+B1-03 timetabling. t_C = 1e-6 | 0.03 / 3 | g=50 dense, F = 4e-15 | 3e4/3e6/7e20 | 1e5-1e6 binaries, MIP/MaxSAT finalists.
+  KILL (agree).
+B1-04 VRP ensemble. t_C = 1e-6 | 0.03 / 3 | g=100 dense, N_2q = 6.6e4, F = 3e-58 | 3e4/3e6/>1e30 | HGS-CVRP; permutation
+  encoding wastes proposals. KILL (agree).
+B1-05 QAP. t_C = 1e-7 (O(N) swap delta at N=30) | 0.03 / 3 | g=36 dense, N_2q = 8.6e3, F = 3.5e-8 | 3e5/3e7/8e14 | ideation
+  said QUANTUM-INSPIRED ONLY, but a block of 4-6 facilities has at most 6! = 720 permutations, so exact classical block Gibbs
+  (enumerate, sample from the conditional) is the ideal block proposal; nothing quantum-inspired is left to gain. CHANGED to KILL.
+B1-06 netlist bipartitioning. t_C = 3e-8 | 0.03 / 3 | g=20 dense, N_2q = 2.6e3, F = 5e-3 | 1e6/1e8/2e10 | multilevel
+  coarsening + FM. KILL (agree).
+B1-07 placement. t_C = 1e-8 (GPU analytic step per cell) | 0.03 / 3 | g=30 hypothetical bin block, N_2q = 6.0e3, F = 7e-6 |
+  3e6/3e8/4e13 | continuous problem; hardware fit 0. KILL (agree).
+B1-08 topology optimiser. t_C = t_E = 0.1 s (2D FEM) | 0.13 / 3.1 s | g=30 dense, F = 7e-6 | 1.3/3e1/5e6 | per-call S* is
+  small but gradient methods (SIMP+MMA, TOBS) need 1e2-1e3 FEM calls vs 1e4-1e6 for any MCMC. KILL (agree).
+B1-09 topology ensembles. t_C = t_E = 1 s | 1.03 / 4 s | g=20 dense, N_2q = 2.6e3, F = 5e-3 | 1.03/4/8e2 | Classical
+  dominance argument [OWN, extends B1 section 0.3b]: with t_E = 1 s a CPU runs about 3e7 surrogate flips (30 ns) per true call,
+  so surrogate transition with an inner classical chain of k steps can realise ANY desired proposal locality (k small = local,
+  k large = independence draw from pi_surr) at zero wall-clock cost. A quantum proposal therefore only wins if pi_surr is
+  classically hard at the design size, which at n = 1e3-1e4 elements MEDIUM T with a sensitivity surrogate is not expected.
+  Sensitivities are local, so the residual on topological changes is large (beta sigma above 1, acceptance below 0.5 by
+  a = 2 Phi(-beta sigma / sqrt 2)). Same test as B1-10 decides it. CHANGED from SIMULATE MORE to KILL (standalone; reopen if
+  B1-10 test is positive).
+B1-10 pixel antenna / metasurface. t_C = t_E = 600 s (10 min EM; ideation range 1-30 min) | 600.03 / 603 s | g=16 dense,
+  N_2q = 1.69e3, F = 0.034 | 1.00005/1.005/3e1 | The only family where S* is O(1): any S above 1.005 over the best classical
+  kernel converts to wall-clock (with QPU cost). But the best classical kernel is surrogate transition with a classical inner
+  chain or exact independence draw from pi_FM (n 64-400, MEDIUM T: classically easy [SPEC, strong]), not local Metropolis.
+  Estimated S vs that kernel 0.5-1.5. Still the cleanest place to KILL the whole surrogate-in-U family with one cheap
+  classical emulation (Wave 4 nomination 2). Native binary, published FMQA pipeline (Kitai 2020, verified by ideation).
+  SIMULATE MORE (agree; likelihood lowered from 10-15% to wall-clock 1% / steps 5%).
+B1-11 heat sink with CFD. t_C = t_E = 3600 s | 3600.03 / 3603 s | g=16, F = 0.034 | 1.00001/1.0008/3e1 | S* about 1 but 3D CFD
+  budgets are 1e2-1e3 calls in total, so no MCMC is ever run; BO and adjoint gradients win. KILL (agree).
+B1-12 SPICE sizing (yield-aware). t_C = t_E = 1 s | 1.03 / 4 s | g=16, F = 0.034 | 1.03/4/1e2 (plain SPICE t_E = 5 ms gives
+  S* about 7/6e2) | ideation said QUANTUM-INSPIRED ONLY, but there is no evidence of any gain to inspire: 80-120 bits, surrogate
+  classically trivial, industrial flows are BO/GA. Same dominance argument as B1-09. CHANGED to KILL.
+B1-13 BO acquisition. t_C = 1e-7 (n up to 400 dense QUBO) | 0.03 / 3 | g=16, F = 0.034 | 3e5/3e7/9e8 | cheap inner problem;
+  p-bit / SB / DA machines. KILL (agree).
+B1-14 PT with quantum cold-replica moves. t_C = t_E = 600 s per replica step | 600.03 / 603 | g=16, F = 0.034 |
+  1.00005/1.005/3e1 | prior art: Marshall et al. arXiv:2602.06171 (QeMCMC + PT, 117 q) and Ferguson-Wallden arXiv:2602.01353
+  (QePT) [LIT-V, abstracts re-fetched this session, neither names baselines in a way that includes PT+ICM, neither gives
+  wall-clock]. Novelty only in the expensive-energy twist. SIMULATE MORE, but only as the PT arm of the B1-10 test (agree).
+B1-15 nested quantum inner chain. inner t_C = 3e-7 (n = 200 dense) | 0.03 / 3 | g=200 full, N_2q = 2.6e5, F = 1e-230 |
+  1e5/1e7/>1e30 | requires an inner step advantage of 1e5-1e8 over PT+ICM at n of hundreds; the P1 exponents (0.264 vs 0.94 vs
+  local) make that conceivable in principle, nothing vs PT+ICM. No roadmapped device runs a coherent 200-1000 spin dense
+  proposal within 3 years. Structural risk: classically hard surrogate means low T, which collapses outer acceptance unless
+  the surrogate residual is tiny. WAIT FOR HARDWARE (agree), wall-clock 0.1%.
+B1-16 robust design. t_C = t_E = 60 s | 60.03 / 63 | (hypothetical g=16, F = 0.034) | 1.0005/1.05/3e1 | independent sampling
+  has tau = 1, so S is at most 1 and S* is above 1. KILL (agree).
+B1-17 N-k contingency. t_C = t_E = 1 s (AC cascade) | 1.03 / 4 | g=16, F = 0.034 | 1.03/4/1e2 (DC flow t_E = 1 ms: S* 3e1/3e3)
+  | Two problems: (a) the same surrogate-transition dominance as B1-09 (1 s buys about 3e7 classical LODF-surrogate steps);
+  (b) target states have 2-10 outages out of 100-3000 with strong prior fields, while a transverse-field quench on a 16-spin
+  group proposes high-Hamming-weight moves unless H_prob fields pin it [OWN]; plus LODF-screened enumeration for k up to 3 is
+  very good. CHANGED from SIMULATE MORE to KILL (reopen if B1-10 positive).
+B1-18 density of states. t_C = 3e-8 | 0.03 / 3 | g=16, F = 0.034 | 1e6/1e8/3e9 | low-energy tails are the LOW-T regime where
+  the pilot gain is largest, and a classically simulated group proposal inside WL can capture it. QUANTUM-INSPIRED ONLY (agree).
+B1-19 microstructure. t_C = 1e-7 | 0.03 / 3 | g=16, F = 0.034 | 3e5/3e7/9e8 | quartic objective, 1e4-1e7 voxels. KILL (agree).
+B1-20 HIGH-T training sets. t_C = 1e-8 (one independent draw) | 0.03 / 3 | g=16 sparse, N_2q = 1.16e3, F = 0.097 | 3e6/3e8/3e9 |
+  direct independent sampling has tau = 1. KILL (agree).
+K4 zoning lens. t_C = 1e-7 (quota-preserving swap) | 0.03 / 3 | g=128 sparse (4x4 parcels x 8), N_2q = 9.3e3, F = 8e-9 |
+  3e5/3e7/4e15 | MEDIUM pilot 3-8x vs local/uniform; vs swaps unknown; 8^16 block too large for exact block Gibbs, so a
+  simulated block proposal could add something classically. QUANTUM-INSPIRED ONLY (agree), demo-only for quantum.
+K5 redistricting. t_C = 1e-3 s (one ReCom step: spanning tree on a merged pair, range 1e-4-1e-2 s [OWN estimate]) | 0.03 / 3 |
+  g=20 sparse, N_2q = 1.45e3, F = 0.054 | 3e1/3e3/6e4 | the lowest cheap-energy S* in this set because ReCom steps are costly,
+  but S is below 1: Hamming-far proposals break contiguity and 1% balance, acceptance about 0 [SPEC, highly likely]. ReCom/SMC
+  (DeFord-Duchin-Solomon arXiv:1911.05725; McCartan-Imai arXiv:2008.06131, verified by ideation). KILL (agree).
+K6 WFC level layouts. t_C = 1e-7 | 0.03 / 3 | g=90 sparse (3x3 x 10 tiles), N_2q = 6.5e3, F = 2e-6 | 3e5/3e7/1e13 | for 3x3
+  blocks the valid fillings given the frozen boundary are enumerable, so exact block Gibbs is the ideal proposal and the
+  quantum block move is strictly worse at equal block size. Ideation said BUILD NOW as a demo. The master table judges QeMCMC
+  value, not demo value, so CHANGED to KILL; a demo with an explicit "no advantage, each move is a real circuit sample" label is
+  fine and costs nothing in this review.
+K7 site placement. t_C = 1e-6 (union over precomputed coverage maps) | 0.03 / 3 | g=50 dense, F = 4e-15 | 3e4/3e6/7e20 |
+  submodular greedy + ILP. KILL (agree).
+B4-01 hard MIMO. t_C = 1e-7 (n about 64, O(dN)) | 0.03 / 3 | g=16 dense, F = 0.034 (B4 own estimate 3.6e3-3.6e4 CNOT, F 7e-4 to
+  2e-32) | 3e5/3e7/9e8 | throughput wall: about 9e7 problems/s per 100 MHz carrier (B4 section 2.2 [OWN, checked:
+  3,276 x 14 / 0.5 ms = 9.2e7]) vs at most 33 quantum calls/s. KILL (agree).
+B4-02 soft MIMO. same arithmetic, 3e5/3e7/9e8 | Nishimori line = no RSB (Nishimori cond-mat/0111003, checked by ideation).
+  KILL (agree).
+B4-03 overloaded CDMA window. t_C = 3e-8 | 0.03 / 3 | g=12 dense, N_2q = 952, F = 0.15 | 1e6/1e8/7e8 | science only;
+  first-order window from Arai-Ohzeki-Tanaka arXiv:2004.11066 (checked by ideation); the alpha_s about 1.49 location is
+  [LIT-R] (not re-verified), so the experiment scans alpha 0.5-3 instead of assuming it. SIMULATE MORE (agree), fold into
+  B4-04.
+B4-04 Nishimori transfer test. t_C = 3e-8 | 0.03 / 3 | g=12 dense, F = 0.15 | 1e6/1e8/7e8 (hardware hypothetical) |
+  simulation-only and decisive for the inference vertical. A web search this session (query: quantum-enhanced MCMC planted
+  inference Nishimori MIMO) found no QeMCMC study on planted posteriors, consistent with the ideation claim [LIT-V, absence of
+  hits is weak evidence]. Verdict category CHANGED from BUILD NOW to SIMULATE MORE because BUILD NOW in the master table means
+  build the application; this is a simulation. It is my Wave 4 nomination 1.
+B4-05 MIMO labels. t_C = 1e-8 (GPU PT flip) | 0.03 / 3 | g=16, F = 0.034 | 3e6/3e8/9e9; batched 2.5e-4 / 1e-8 = 2.5e4 realistic
+  | labels up to N about 24-28 come from exact enumeration (2^24 = 1.7e7 states, seconds on a GPU [OWN]); above that GPU PT.
+  No demonstrated gain on matched posteriors, so QUANTUM-INSPIRED ONLY is premature. CHANGED to KILL (reopen if B4-04 positive).
+B4-06 LDPC MAP Gibbs. t_C = 1e-8 | 0.1 / 3 | g=16 (lower bound for d_c-body terms), F = 0.034 | 1e7/3e8/9e9 | throughput wall;
+  spatial coupling [LIT-R]. KILL (agree).
+B4-07 error floor. t_C = t_E = 1e-5 s (BP run, range 1-100 us) | 0.03 / 3 | g=12 sparse (parity-check-graph surrogate),
+  N_2q = 873, F = 0.17 | 3e3/3e5/2e6 | Range: t_E 1 us gives 3e4/3e6, 100 us gives 3e2/3e4. Group of 12 bits is classically
+  simulable [P2], so the best end state is a quantum-inspired move; must beat trapping-set swap moves and DAIS (Holzlohner 2005,
+  cs/0605051, checked by ideation). Low-weight error patterns with strong prior fields raise the same Hamming-weight concern as
+  B1-17 (the P1 quench tends to propose states of similar H_prob energy, which partly protects it [P1 heuristic]). SIMULATE MORE
+  (agree, low priority, not nominated).
+B4-08 d_min search. t_C = 1e-8 | 0.1 / 3 | g=16 lower bound | 1e7/3e8/9e9 | ISD dominates; no gain to inspire. CHANGED from
+  QUANTUM-INSPIRED ONLY to KILL.
+B4-09 polar SCL. t_C = 1e-7 | 0.1 / 3 | g=32 dense, N_2q = 6.8e3, F = 1e-6 | 1e6/3e7/2e13 | KILL (agree).
+B4-10 protograph lifting. t_C = t_E = 1e-5 (cycle count) | 0.1 / 3 | g=16, F = 0.034 | 1e4/3e5/9e6 | PEG/ACE work; no evidence
+  mixing limits design quality. CHANGED from QUANTUM-INSPIRED ONLY to KILL.
+B4-11 sparse support recovery. t_C = 1e-6 (O(K^2) rank-1 update) | 0.03 / 3 | g=16, F = 0.034 | 3e4/3e6/9e7 | non-quadratic
+  marginal; AMP near-optimal outside a narrow window [LIT-R Krzakala et al.]. CHANGED from SIMULATE MORE (as B4-04 arm) to KILL;
+  adding it to B4-04 costs extra code (log-det accept) that is not justified until the simpler ensembles show an effect.
+B4-12 semi-blind. t_C = 1e-6 | 0.03 / 3 | 3e4/3e6/9e7 | KILL (agree).
+B4-13 1-bit ADC. t_C = 1e-7 | 3e5/3e7/9e8 | KILL (agree).
+B4-14 MCMCDA. t_C = 1e-7 | 3e5/3e7/9e8 | FPRAS for single-scan JPDA (Oh-Russell-Sastry, IEEE TAC 2009, checked by ideation).
+  KILL (agree).
+B4-15 LABS. t_C = 3e-8 (O(N) incremental with tables) | 0.1 (Helios; 4-body) / 3 | N=14: about N^3/12 = 229 4-body terms x
+  about 6 CNOT = 1.4e3 per Trotter layer x 10 layers = 1.4e4 N_2q (dense rule lower bound 1.3e3), F = 7e-13 | 3e6/1e8/1e20 |
+  Verified: Shaydulin et al. arXiv:2308.02342 report TTS bases QAOA (p=12) 1.46^N, QAOA+QMF 1.21^N, MTS 1.35^N in their
+  reproduction (literature 1.34^N), Gurobi branch-and-bound 1.615^N; hardware Quantinuum H1-1/H2 up to N = 18 with about 1e3
+  two-qubit gates [LIT-V]. QMF is a Grover-type subroutine, so the 1.21 base is a fault-tolerant claim. New precedent found:
+  QE-MTS (DCQO-seeded memetic tabu) reports 1.24^N for N 27-37, arXiv:2511.04553 [LIT-V via search snippet, preprint, not
+  refereed]. So a quantum-improves-LABS-scaling story already has two precedents; a QeMCMC proposal-kernel exponent is still
+  new but less striking. SIMULATE MORE (agree), Wave 4 nomination 3.
+B4-16 scheduling per TTI. 3e5/3e7/9e8 | KILL (agree).
+B4-17 colouring / PCI. t_C = 1e-8 | 0.03 / 3 | g=16 sparse, F = 0.097 | 3e6/3e8/3e9 | geometric interference graphs are far from
+  the colourability threshold [SPEC]; tabu/DSATUR/ILP. CHANGED from QUANTUM-INSPIRED ONLY to KILL.
+B4-18 VP precoding. 3e5/3e7/9e8 | KILL (agree).
+B4-19 reconciliation. t_C = 1e-8 | 3e6/3e8/9e9 | KILL (agree).
+B4-20 many-SNR one circuit. t_C = 1e-7 | 0.03 / 3 | 3e5/3e7/9e8; batched 2.5e-4 / 1e-7 = 2.5e3 | parametric compile removes
+  only t_compile. Ideation already said KILL standalone. KILL (agree). Keep the "one temperature-free circuit per H" trick
+  as an engineering note for any hardware run.
+
+======================================================================================================================
+3. CITATIONS VERIFIED OR DOWNGRADED THIS SESSION
+======================================================================================================================
+Verified (WebFetch/WebSearch 2026-11-21):
+  Shaydulin et al., Evidence of scaling advantage for QAOA on a classically intractable problem, Sci. Adv. 2024,
+    arXiv:2308.02342, https://arxiv.org/html/2308.02342v2 : QAOA 1.46^N (CI 1.42-1.50), QAOA+QMF 1.21^N (CI 1.19-1.23), MTS 1.35^N
+    reproduced (lit 1.34^N), B&B 1.615^N to optimum, 1.76^N to certificate; H1-1/H2 runs to N=18, about 1e3 2q gates. This
+    upgrades B4's [LIT-recalled] MTS 1.34^N to verified.
+  QE-MTS, Scaling advantage with quantum-enhanced memetic tabu search for LABS, arXiv:2511.04553,
+    https://arxiv.org/abs/2511.04553 : DCQO-seeded MTS, 1.24^N for N in [27,37]; preprint (search snippet). Missed by ideation.
+  Ferguson and Wallden, Methods for non-variational heuristic quantum optimisation, arXiv:2602.01353,
+    https://arxiv.org/abs/2602.01353 : QeSA/QePT on hard SK, "superior scaling over classical benchmarks", baselines and sizes
+    not in abstract, no wall-clock claim.
+  Search for QeMCMC on planted / Nishimori / MIMO posteriors: no hit (results only P1, P2, arXiv:2411.17821, arXiv:2602.06171,
+    and classical MIMO-MCMC arXiv:1310.7305, arXiv:0705.0742). Supports B4-04 novelty, weakly.
+Downgraded to [LIT-R] (not verdict-critical, verdicts follow from break-even or from the own-derived dominance argument):
+  Liu 2001 surrogate transition (textbook attribution; the dominance argument in B1-09 is [OWN] and does not depend on it);
+  Montanari-Tse alpha_s about 1.49 onset (B4-03 scans alpha instead); CP-SAT JSSP dominance; hMETIS/KaHyPar; Taillard tabu;
+  LKH-3; Burke rostering review; Borrvall-Petersson; Nemhauser-Wolsey-Fisher; Au-Beck subset simulation; Giles MLMC;
+  Yeong-Torquato; Merrell model synthesis; Machta PA; Roberts-Rosenthal; spatial coupling (Kudekar-Richardson-Urbanke); ISD;
+  PEG/ACE; SCL near-ML; 3GPP TS 38.214 N1/N2 tables (the throughput wall in B4-01/02 does not need them: 9e7 problems/s is
+  from the slot structure alone).
+Accepted as checked by ideation (not re-fetched; not verdict-hinging beyond what is said): Kitai FMQA PRR 2 013319; BOCS;
+  Aadit p-bit; Zhu-Ochoa-Katzgraber ICM arXiv:1501.05630; HGS-CVRP; ReCom; SMC redistricting; Karth-Smith WFC; Arai-Ohzeki-
+  Tanaka arXiv:2004.11066; Nishimori cond-mat/0111003; Hassibi arXiv:1310.7305; ParaMax arXiv:2103.10561; Holzlohner DAIS;
+  Oh-Russell-Sastry MCMCDA.
+
+======================================================================================================================
+4. VERDICT CHANGES VS IDEATION (12)
+======================================================================================================================
+  B1-05 QUANTUM-INSPIRED ONLY -> KILL (exact classical block enumeration is the ideal block proposal)
+  B1-09 SIMULATE MORE -> KILL (classical surrogate-transition dominance; subsumed by B1-10 test)
+  B1-12 QUANTUM-INSPIRED ONLY -> KILL (no gain exists to inspire; BO/GA flows)
+  B1-17 SIMULATE MORE -> KILL (same dominance + enumeration; Hamming-weight mismatch)
+  K6 BUILD NOW (demo) -> KILL (exact block Gibbs dominates; demo allowed with no-advantage label)
+  B4-04 BUILD NOW -> SIMULATE MORE (category only; still top priority)
+  B4-05 QUANTUM-INSPIRED ONLY -> KILL (exact enumeration/GPU PT; reopen if B4-04 positive)
+  B4-08 QUANTUM-INSPIRED ONLY -> KILL (ISD)
+  B4-10 QUANTUM-INSPIRED ONLY -> KILL (no evidence mixing limits design)
+  B4-11 SIMULATE MORE / QI -> KILL (AMP; reopen as B4-04 arm only if B4-04 positive)
+  B4-17 QUANTUM-INSPIRED ONLY -> KILL (real graphs far from threshold)
+  B4-20 SIMULATE MORE note / KILL -> KILL (made explicit)
+Rule applied: QUANTUM-INSPIRED ONLY is reserved for rows where a real step gain is plausible from pilot-backed regime
+evidence and a classical simulation of the group proposal would capture it (B1-18, K4). Rows where an exact or specialised
+classical move dominates the quantum proposal at the same block size are KILL.
+Likelihoods lowered vs ideation: B1-10 (10-15% -> wall-clock 1% / steps 5%), B4-03 (15% -> steps 8%), B4-15 (25% publishable
+exponent -> steps 8% real advantage vs best classical), B4-07 (5% -> wall-clock 0.1% / steps 4%).
+
+Counts: KILL 35, SIMULATE MORE 6 (B1-10, B1-14, B4-03, B4-04, B4-07, B4-15), WAIT FOR HARDWARE 1 (B1-15), QUANTUM-INSPIRED ONLY 2
+(B1-18, K4), BUILD NOW 0.
+Ranking (wall-clock likelihood, then steps): 1 B1-10 (1% / 5%), 2 B1-14 (0.3% / 3%), 3 B1-09 (0.3% / 2%, KILL standalone),
+4 B1-17 (0.2% / 2%, KILL standalone), 5 B4-15 (0.1% / 8%). Programme priority (what to run) differs: B4-04, B1-10, B4-15.
+
+======================================================================================================================
+5. WAVE 4 NOMINATIONS (3)
+======================================================================================================================
+All three are classical/statevector simulations with common/qmc.py (put .../QHop/experiments/qmcmc/common on sys.path, import
+qmc). Detailed balance check in every run: qmc.asymmetry(Q) below 1e-10 for every proposal matrix, and for composite kernels
+max |pi_i P_ij - pi_j P_ji| below 1e-10.
+
+N1. B4-04 (+ B4-03 slice): Nishimori-line transfer test.
+  Instances (20 per point, fixed seeds):
+    (i) planted MIMO BPSK: x0 uniform in {+1,-1}^n, H real Gaussian entries N(0, 1/N_r), N_r = round(n/alpha),
+        alpha in {0.5, 1.0, 1.5, 2.0, 3.0}; y = H x0 + w, w ~ N(0, sigma^2 I), sigma^2 in {0.05, 0.1, 0.2, 0.5, 1.0};
+        E(x) = ||y - Hx||^2, beta_m = 1/(2 sigma^2).
+    (ii) planted Sourlas 3-spin code: M = 2n random triples, J_ijk = x0_i x0_j x0_k flipped with prob p in {0.05, 0.1, 0.2},
+        E = -sum J_ijk s_i s_j s_k, beta_m = 0.5 ln((1-p)/p).
+    (iii) SK control: qmc.sk_instance, beta in {0.3, 1.0} (reproduce pilot).
+  n in {6, 8, 10, 12}. Temperatures beta/beta_m in {0.5, 1, 2, 4} (4 = ML-like off-Nishimori control).
+  Proposals: quantum_Q with H_prob = diagonal E (alpha from qmc.alpha_from_energy, gamma U[0.25,0.6], t U[2,20], averaged over
+    the qmc.draw_params set used in the pilot); short-time quantum control t U[0.3,1.5]; local_Q; uniform_Q; mixture_Q 0.5 local
+    + 0.5 uniform. PT (4 replicas, geometric from beta_m/4 to target) via qmc.parallel_tempering on chains.
+  Observables: exact spectral gap (qmc.gap) per proposal; R = gap_Q / max(gap_local, gap_uniform, gap_mix); fitted exponent
+    k from gap about 2^(-k n) over n = 6..12; at n = 12, IAT (qmc.iat) of overlap q = x.x0/n and of E per energy evaluation
+    for the quantum chain vs PT (count all replica evaluations), 1e5 steps, 10 chains; bimodality of q histogram for alpha
+    at least 1.5 (B4-03 window).
+  KILL criterion: at beta = beta_m, median R at most 1.5 for every alpha up to 1.5 in ensembles (i) and (ii) AND
+    k_Q/k_best at least 0.8 -> close the telecom/inference sampling vertical (B4-02/03/05/07/11 final KILL).
+  CONFIRM criterion: median R at least 3 at beta_m with k_Q at most 0.6 k_best on at least one ensemble/alpha slice AND
+    IAT_PT / IAT_Q at least 2 per energy evaluation at n = 12 -> promote B4-03, reopen B4-05/B4-11 as quantum-inspired arms.
+    Wall-clock stays closed (S* 1e8 realistic) regardless.
+  Cost: 4096-state eigenproblems at n = 12; days of CPU.
+
+N2. B1-10 kill test for the whole surrogate-in-U, expensive-energy family (covers B1-09/11/12/14/17, informs B4-07).
+  Instances: synthetic proxy, because no EM data sets are on disk: E_FM(s) = rank-8 factorisation-machine QUBO with random
+    Gaussian factors and linear terms (dense J); E_true(s) = E_FM(s) + sigma_r R(s), R = random 3-body plus 4-body terms
+    normalised to unit variance under uniform s. Every evaluation of E_true counts as one expensive call. 10 instances.
+  n = 12 exact (4096 states); n = 64 chains with P2 coarse-grained random groups of g = 12 (rest frozen as effective fields
+    for the FM part).
+  Temperatures: beta_c = specific-heat peak of E_true at n = 12 (MEDIUM) and 2 beta_c; sigma_r chosen so that
+    beta sigma_r in {0.25, 0.5, 1, 2}.
+  Kernels (all target pi_true exactly): (a) DA with quantum_Q(H_prob = E_FM), stage 1 on E_FM, stage 2 on
+    pi(s')pi_FM(s)/(pi(s)pi_FM(s')); (b) DA with local_Q; (c) DA with uniform_Q; (d) surrogate transition: proposal
+    P_FM^k (classical Metropolis on E_FM at the same beta), k in {1, 10, 100, 1000}, one expensive call per proposal;
+    (e) independence draw from exact pi_FM (k to infinity); (f, B1-14 arm) 4-replica PT on pi_true with kernel (a) or (d) in
+    the two coldest replicas.
+  Observables: n = 12: exact spectral gap of the composite pi_true kernel divided by expected expensive calls per step (gap per
+    call); outer acceptance vs beta sigma_r against a = 2 Phi(-beta sigma_r / sqrt 2). n = 64: IAT in expensive calls of
+    E_true and of design overlap, 2e4 calls x 10 chains.
+  KILL criterion: best classical kernel (b-e) reaches at least 0.8 x the quantum gap per call at every (beta, beta sigma_r)
+    -> B1-10/B1-14 final KILL and the whole family closes.
+  CONFIRM criterion: quantum gap per call at least 2x best classical at some beta sigma_r up to 1 at n = 12, AND IAT ratio at
+    least 2 at n = 64 -> fund a real pilot (openEMS 8x8 pixel patch, FM refit epochs, then hardware with g = 12-16).
+  Code: about 50 lines for DA and surrogate-transition matrices on top of qmc.mh_matrix / qmc.spectral_gap.
+
+N3. B4-15 LABS proposal-kernel exponent study.
+  Instances: LABS for N = 6..14 (exact gaps; one instance per N, E = sum_{k=1}^{N-1} C_k^2, ground energies from the known
+    optimum table); TTS runs for N = 10..18.
+  Temperatures: beta in {0.05, 0.1, 0.2, 0.5, 1.0} (E integer units); LOW defined per N as the betas where the local gap is
+    below 1e-3 at N = 14.
+  Proposals: quantum_Q with the true diagonal (2-body plus 4-body) E; quantum_Q with the 2-body-only part of E as surrogate
+    (terms with j = i + k, still exact accept); local_Q; uniform_Q; mixture 0.5/0.5.
+  Observables: exact gaps -> exponent k per proposal and beta; TTS: 8-replica PT, quantum proposal (statevector sampled,
+    cached per state) in the 2 coldest replicas vs all-local PT, steps to first ground-state hit, 50 seeds per N, fitted base
+    b of steps-to-solution.
+  KILL criterion: k_Q at least 0.8 k_local at LOW beta, or PT+Q steps base b at least 1.30 (no margin over MTS literature 1.34)
+    -> B4-15 final KILL.
+  CONFIRM criterion: k_Q at most 0.5 k_local and b at most 1.25 at N up to 18 -> write up as a quantum-inspired LABS kernel
+    result, explicitly comparing to arXiv:2308.02342 and arXiv:2511.04553; wall-clock still lost (S* 1e8 realistic).
+  Caveat: MTS steps and PT steps are not the same unit; the comparison to 1.34 is context, the falsifiable part is vs local PT.
+
+Not nominated: B4-07 (only after N1 or N2 is positive), B1-15 (hardware), B1-18/K4 (quantum-inspired, low payoff).

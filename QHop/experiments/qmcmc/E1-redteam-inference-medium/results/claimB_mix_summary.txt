@@ -1,0 +1,5 @@
+6 10 S_MED 0.434 [np.float64(0.301), np.float64(0.849)] mixgain med 0.892 max 1.324 S by ratio [np.float64(0.212), np.float64(0.379), np.float64(1.021)]
+8 10 S_MED 0.94 [np.float64(0.555), np.float64(1.379)] mixgain med 0.876 max 1.379 S by ratio [np.float64(0.301), np.float64(0.908), np.float64(2.339)]
+9 10 S_MED 1.085 [np.float64(0.718), np.float64(1.506)] mixgain med 0.929 max 1.809 S by ratio [np.float64(0.377), np.float64(1.177), np.float64(2.997)]
+10 6 S_MED 1.015 [np.float64(0.761), np.float64(1.349)] mixgain med 0.95 max 1.745 S by ratio [np.float64(0.274), np.float64(0.833), np.float64(4.054)]
+11 3 S_MED 1.027 [np.float64(0.734), np.float64(1.067)] mixgain med 0.895 max 1.819 S by ratio [np.float64(0.272), np.float64(0.964), np.float64(3.468)]

@@ -1,0 +1,5 @@
+coulomb n=12 seed=0 Tc=0.4949 D=924 sym_maxdev=5.6e-17 478s
+coulomb n=12 seed=1 Tc=0.3994 D=924 sym_maxdev=5.6e-17 231s
+coulomb n=12 seed=2 Tc=0.4279 D=924 sym_maxdev=5.6e-17 213s
+coulomb n=12 seed=3 Tc=0.4383 D=924 sym_maxdev=5.6e-17 200s
+coulomb n=12 seed=4 Tc=0.4076 D=924 sym_maxdev=4.2e-17 195s

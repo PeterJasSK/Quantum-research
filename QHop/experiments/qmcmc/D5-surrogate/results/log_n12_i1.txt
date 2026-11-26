@@ -1,0 +1,4 @@
+n=12 inst=1 fam=a rho=0.1 rho_act=0.100 bc=0.355 t=2153.1s
+n=12 inst=1 fam=a rho=0.3 rho_act=0.300 bc=0.355 t=2687.4s
+n=12 inst=1 fam=a rho=0.6 rho_act=0.600 bc=0.355 t=2282.1s
+inst 1 done in 7123s

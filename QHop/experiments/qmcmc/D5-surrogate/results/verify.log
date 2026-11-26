@@ -1,0 +1,136 @@
+2phi {'beta_sigma': 0.25, 'integral': 0.8596837951986661, 'two_phi': 0.8596837951986662}
+2phi {'beta_sigma': 0.5, 'integral': 0.7236736098317632, 'two_phi': 0.7236736098317631}
+2phi {'beta_sigma': 1.0, 'integral': 0.4795001221869534, 'two_phi': 0.4795001221869535}
+2phi {'beta_sigma': 2.0, 'integral': 0.15729920705028513, 'two_phi': 0.15729920705028516}
+2phi {'beta_sigma': 3.0, 'integral': 0.033894853524689274, 'two_phi': 0.03389485352468927}
+2phi {'beta_sigma': 5.0, 'integral': 0.00040695201744495886, 'two_phi': 0.00040695201744495886}
+n=8 a HIGH   quantum_sur_in_U (1)                   stat=2.1e-16 db=1.6e-16 TV=3.3e-15
+n=8 a HIGH   DA_local_K1 (4)                        stat=1.1e-16 db=1.3e-16 TV=2.4e-15
+n=8 a HIGH   DA_local_K10 (4)                       stat=2.8e-16 db=2.9e-16 TV=4.2e-16
+n=8 a HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=3.0e-16 db=3.4e-16 TV=4.3e-16
+n=8 a HIGH   nested_quantum_inner_K10 (5)           stat=2.4e-16 db=4.2e-16 TV=5.7e-16
+n=8 a HIGH   CONTROL_DA_K10_naive_ratio             stat=3.4e-01 db=5.7e-01 TV=3.9e-01
+n=8 a HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=2.0e-02 db=3.3e-02 TV=2.3e-02
+n=8 a MEDIUM quantum_sur_in_U (1)                   stat=2.2e-16 db=4.8e-17 TV=2.9e-14
+n=8 a MEDIUM DA_local_K1 (4)                        stat=1.2e-16 db=2.7e-17 TV=1.3e-13
+n=8 a MEDIUM DA_local_K10 (4)                       stat=1.3e-16 db=1.0e-16 TV=5.1e-14
+n=8 a MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=2.0e-16 db=1.1e-16 TV=6.3e-15
+n=8 a MEDIUM nested_quantum_inner_K10 (5)           stat=3.2e-16 db=2.6e-16 TV=3.3e-15
+n=8 a MEDIUM CONTROL_DA_K10_naive_ratio             stat=4.3e-01 db=5.4e-01 TV=4.5e-01
+n=8 a MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=5.3e-03 db=7.5e-03 TV=1.6e-02
+n=8 a LOW    quantum_sur_in_U (1)                   stat=2.2e-16 db=1.8e-18 TV=2.7e-13
+n=8 a LOW    DA_local_K1 (4)                        stat=1.4e-17 db=1.9e-18 TV=1.0e-10
+n=8 a LOW    DA_local_K10 (4)                       stat=1.3e-16 db=7.5e-18 TV=1.7e-11
+n=8 a LOW    DA_exact_surrogate_draw_Kinf (4)       stat=2.3e-16 db=1.1e-17 TV=3.6e-11
+n=8 a LOW    nested_quantum_inner_K10 (5)           stat=2.2e-17 db=1.2e-17 TV=4.5e-12
+n=8 a LOW    CONTROL_DA_K10_naive_ratio             stat=9.8e-02 db=1.0e-01 TV=9.4e-02
+n=8 a LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=5.4e-04 db=5.6e-04 TV=7.6e-03
+n=8 b HIGH   quantum_sur_in_U (1)                   stat=2.6e-16 db=2.3e-16 TV=1.2e-15
+n=8 b HIGH   DA_local_K1 (4)                        stat=1.8e-16 db=2.1e-16 TV=1.1e-15
+n=8 b HIGH   DA_local_K10 (4)                       stat=2.7e-16 db=3.1e-16 TV=5.2e-16
+n=8 b HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=3.0e-16 db=3.6e-16 TV=5.6e-16
+n=8 b HIGH   nested_quantum_inner_K10 (5)           stat=2.9e-16 db=4.6e-16 TV=5.6e-16
+n=8 b HIGH   CONTROL_DA_K10_naive_ratio             stat=2.8e-01 db=4.3e-01 TV=2.6e-01
+n=8 b HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=2.7e-02 db=4.6e-02 TV=2.5e-02
+n=8 b MEDIUM quantum_sur_in_U (1)                   stat=1.6e-16 db=5.2e-17 TV=1.0e-13
+n=8 b MEDIUM DA_local_K1 (4)                        stat=3.6e-17 db=3.9e-17 TV=2.7e-13
+n=8 b MEDIUM DA_local_K10 (4)                       stat=1.8e-16 db=1.1e-16 TV=2.5e-15
+n=8 b MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=1.6e-16 db=1.1e-16 TV=6.1e-15
+n=8 b MEDIUM nested_quantum_inner_K10 (5)           stat=2.0e-16 db=1.4e-16 TV=4.6e-15
+n=8 b MEDIUM CONTROL_DA_K10_naive_ratio             stat=2.1e-01 db=3.0e-01 TV=3.5e-01
+n=8 b MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=5.4e-03 db=8.7e-03 TV=2.4e-02
+n=8 b LOW    quantum_sur_in_U (1)                   stat=2.3e-16 db=8.4e-20 TV=1.2e-13
+n=8 b LOW    DA_local_K1 (4)                        stat=1.2e-16 db=2.6e-18 TV=8.6e-11
+n=8 b LOW    DA_local_K10 (4)                       stat=1.3e-16 db=7.9e-18 TV=3.1e-12
+n=8 b LOW    DA_exact_surrogate_draw_Kinf (4)       stat=1.1e-16 db=3.5e-19 TV=1.1e-14
+n=8 b LOW    nested_quantum_inner_K10 (5)           stat=1.3e-16 db=2.4e-18 TV=6.1e-14
+n=8 b LOW    CONTROL_DA_K10_naive_ratio             stat=1.9e-02 db=2.0e-02 TV=3.5e-02
+n=8 b LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=1.1e-04 db=1.1e-04 TV=2.1e-03
+n=8 c HIGH   quantum_sur_in_U (1)                   stat=2.5e-16 db=2.8e-16 TV=1.5e-15
+n=8 c HIGH   DA_local_K1 (4)                        stat=2.1e-16 db=2.7e-16 TV=2.0e-15
+n=8 c HIGH   DA_local_K10 (4)                       stat=2.8e-16 db=3.7e-16 TV=1.3e-15
+n=8 c HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=3.5e-16 db=4.2e-16 TV=1.2e-15
+n=8 c HIGH   nested_quantum_inner_K10 (5)           stat=3.0e-16 db=5.6e-16 TV=1.4e-15
+n=8 c HIGH   CONTROL_DA_K10_naive_ratio             stat=2.3e-01 db=3.5e-01 TV=2.1e-01
+n=8 c HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=3.4e-02 db=5.9e-02 TV=2.6e-02
+n=8 c MEDIUM quantum_sur_in_U (1)                   stat=1.6e-16 db=1.0e-16 TV=6.8e-14
+n=8 c MEDIUM DA_local_K1 (4)                        stat=1.7e-16 db=8.0e-17 TV=1.6e-14
+n=8 c MEDIUM DA_local_K10 (4)                       stat=3.5e-16 db=2.1e-16 TV=2.2e-15
+n=8 c MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=3.3e-16 db=2.2e-16 TV=2.4e-15
+n=8 c MEDIUM nested_quantum_inner_K10 (5)           stat=2.1e-16 db=3.5e-16 TV=4.0e-15
+n=8 c MEDIUM CONTROL_DA_K10_naive_ratio             stat=1.5e-01 db=2.7e-01 TV=2.8e-01
+n=8 c MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=1.1e-02 db=1.7e-02 TV=2.0e-02
+n=8 c LOW    quantum_sur_in_U (1)                   stat=3.6e-16 db=4.3e-18 TV=2.3e-14
+n=8 c LOW    DA_local_K1 (4)                        stat=1.1e-16 db=2.2e-17 TV=2.3e-09
+n=8 c LOW    DA_local_K10 (4)                       stat=2.0e-16 db=3.0e-17 TV=9.7e-13
+n=8 c LOW    DA_exact_surrogate_draw_Kinf (4)       stat=3.0e-17 db=8.8e-17 TV=2.2e-15
+n=8 c LOW    nested_quantum_inner_K10 (5)           stat=2.5e-16 db=1.9e-16 TV=6.7e-15
+n=8 c LOW    CONTROL_DA_K10_naive_ratio             stat=2.0e-02 db=2.1e-02 TV=5.7e-02
+n=8 c LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=2.9e-03 db=3.2e-03 TV=5.9e-03
+n=10 a HIGH   quantum_sur_in_U (1)                   stat=4.2e-16 db=2.7e-16 TV=8.9e-16
+n=10 a HIGH   DA_local_K1 (4)                        stat=2.0e-16 db=2.6e-16 TV=9.5e-16
+n=10 a HIGH   DA_local_K10 (4)                       stat=4.5e-16 db=3.7e-16 TV=6.1e-16
+n=10 a HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=4.8e-16 db=4.6e-16 TV=6.3e-16
+n=10 a HIGH   nested_quantum_inner_K10 (5)           stat=4.2e-16 db=4.6e-16 TV=6.2e-16
+n=10 a HIGH   CONTROL_DA_K10_naive_ratio             stat=3.0e-01 db=4.8e-01 TV=3.0e-01
+n=10 a HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=3.2e-02 db=5.3e-02 TV=2.5e-02
+n=10 a MEDIUM quantum_sur_in_U (1)                   stat=3.6e-16 db=1.1e-16 TV=5.6e-14
+n=10 a MEDIUM DA_local_K1 (4)                        stat=9.0e-17 db=9.2e-17 TV=1.3e-14
+n=10 a MEDIUM DA_local_K10 (4)                       stat=4.5e-16 db=2.7e-16 TV=9.2e-16
+n=10 a MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=4.2e-16 db=2.6e-16 TV=1.2e-15
+n=10 a MEDIUM nested_quantum_inner_K10 (5)           stat=4.6e-16 db=4.1e-16 TV=1.6e-15
+n=10 a MEDIUM CONTROL_DA_K10_naive_ratio             stat=2.9e-01 db=4.9e-01 TV=4.3e-01
+n=10 a MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=1.1e-02 db=1.8e-02 TV=2.1e-02
+n=10 a LOW    quantum_sur_in_U (1)                   stat=4.2e-16 db=2.1e-17 TV=1.1e-13
+n=10 a LOW    DA_local_K1 (4)                        stat=1.3e-16 db=7.0e-18 TV=1.2e-12
+n=10 a LOW    DA_local_K10 (4)                       stat=6.0e-16 db=1.1e-16 TV=2.0e-14
+n=10 a LOW    DA_exact_surrogate_draw_Kinf (4)       stat=4.7e-16 db=5.2e-17 TV=4.8e-15
+n=10 a LOW    nested_quantum_inner_K10 (5)           stat=4.3e-16 db=1.9e-16 TV=1.7e-14
+n=10 a LOW    CONTROL_DA_K10_naive_ratio             stat=3.1e-01 db=3.7e-01 TV=4.6e-01
+n=10 a LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=3.2e-03 db=5.0e-03 TV=1.6e-02
+n=10 b HIGH   quantum_sur_in_U (1)                   stat=3.9e-16 db=2.2e-16 TV=1.0e-15
+n=10 b HIGH   DA_local_K1 (4)                        stat=1.6e-16 db=1.8e-16 TV=5.9e-15
+n=10 b HIGH   DA_local_K10 (4)                       stat=4.2e-16 db=3.1e-16 TV=5.9e-16
+n=10 b HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=4.6e-16 db=3.9e-16 TV=5.2e-16
+n=10 b HIGH   nested_quantum_inner_K10 (5)           stat=4.6e-16 db=3.8e-16 TV=5.3e-16
+n=10 b HIGH   CONTROL_DA_K10_naive_ratio             stat=3.2e-01 db=5.2e-01 TV=3.7e-01
+n=10 b HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=2.4e-02 db=3.9e-02 TV=2.5e-02
+n=10 b MEDIUM quantum_sur_in_U (1)                   stat=3.4e-16 db=3.4e-17 TV=3.0e-14
+n=10 b MEDIUM DA_local_K1 (4)                        stat=1.2e-16 db=2.3e-17 TV=4.2e-13
+n=10 b MEDIUM DA_local_K10 (4)                       stat=4.5e-16 db=9.2e-17 TV=2.1e-14
+n=10 b MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=3.0e-16 db=1.0e-16 TV=9.2e-15
+n=10 b MEDIUM nested_quantum_inner_K10 (5)           stat=3.6e-16 db=1.5e-16 TV=1.0e-14
+n=10 b MEDIUM CONTROL_DA_K10_naive_ratio             stat=1.9e-01 db=2.8e-01 TV=3.4e-01
+n=10 b MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=3.9e-03 db=6.1e-03 TV=2.3e-02
+n=10 b LOW    quantum_sur_in_U (1)                   stat=1.4e-16 db=7.0e-19 TV=7.0e-13
+n=10 b LOW    DA_local_K1 (4)                        stat=7.4e-18 db=6.5e-20 TV=2.8e-08
+n=10 b LOW    DA_local_K10 (4)                       stat=3.6e-16 db=4.9e-19 TV=9.8e-10
+n=10 b LOW    DA_exact_surrogate_draw_Kinf (4)       stat=1.3e-16 db=1.3e-18 TV=3.3e-13
+n=10 b LOW    nested_quantum_inner_K10 (5)           stat=5.1e-16 db=2.6e-18 TV=1.3e-13
+n=10 b LOW    CONTROL_DA_K10_naive_ratio             stat=3.5e-03 db=3.9e-03 TV=1.1e-01
+n=10 b LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=1.9e-04 db=2.0e-04 TV=5.2e-03
+n=10 c HIGH   quantum_sur_in_U (1)                   stat=4.3e-16 db=3.1e-16 TV=1.9e-15
+n=10 c HIGH   DA_local_K1 (4)                        stat=2.4e-16 db=3.0e-16 TV=8.1e-16
+n=10 c HIGH   DA_local_K10 (4)                       stat=4.4e-16 db=3.8e-16 TV=5.9e-16
+n=10 c HIGH   DA_exact_surrogate_draw_Kinf (4)       stat=4.7e-16 db=4.6e-16 TV=5.3e-16
+n=10 c HIGH   nested_quantum_inner_K10 (5)           stat=4.2e-16 db=4.7e-16 TV=5.2e-16
+n=10 c HIGH   CONTROL_DA_K10_naive_ratio             stat=2.3e-01 db=3.5e-01 TV=2.2e-01
+n=10 c HIGH   CONTROL_quantum_sur_T1_decay_p0.02     stat=3.9e-02 db=6.6e-02 TV=2.6e-02
+n=10 c MEDIUM quantum_sur_in_U (1)                   stat=3.1e-16 db=1.2e-16 TV=5.5e-14
+n=10 c MEDIUM DA_local_K1 (4)                        stat=1.5e-16 db=1.1e-16 TV=9.1e-14
+n=10 c MEDIUM DA_local_K10 (4)                       stat=2.7e-16 db=2.2e-16 TV=6.5e-15
+n=10 c MEDIUM DA_exact_surrogate_draw_Kinf (4)       stat=3.8e-16 db=2.3e-16 TV=3.7e-15
+n=10 c MEDIUM nested_quantum_inner_K10 (5)           stat=4.3e-16 db=4.2e-16 TV=4.6e-15
+n=10 c MEDIUM CONTROL_DA_K10_naive_ratio             stat=1.1e-01 db=2.6e-01 TV=3.2e-01
+n=10 c MEDIUM CONTROL_quantum_sur_T1_decay_p0.02     stat=1.2e-02 db=1.9e-02 TV=2.0e-02
+n=10 c LOW    quantum_sur_in_U (1)                   stat=6.2e-16 db=2.2e-17 TV=1.6e-13
+n=10 c LOW    DA_local_K1 (4)                        stat=8.8e-17 db=3.6e-17 TV=1.1e-13
+n=10 c LOW    DA_local_K10 (4)                       stat=2.3e-16 db=1.8e-16 TV=2.1e-14
+n=10 c LOW    DA_exact_surrogate_draw_Kinf (4)       stat=3.2e-16 db=2.1e-16 TV=5.2e-16
+n=10 c LOW    nested_quantum_inner_K10 (5)           stat=2.1e-16 db=3.7e-16 TV=4.9e-15
+n=10 c LOW    CONTROL_DA_K10_naive_ratio             stat=2.3e-01 db=3.0e-01 TV=2.5e-01
+n=10 c LOW    CONTROL_quantum_sur_T1_decay_p0.02     stat=4.9e-03 db=5.4e-03 TV=1.0e-02
+{'n': 8, 'fam': 'a', 'rho': 0.3, 'beta': 0.6683439175686149, 'K': 10, 'corrected_ratio': True, 'steps': 200000, 'TV_hist_vs_pi_true': 0.012210645807005564}
+{'n': 8, 'fam': 'a', 'rho': 0.3, 'beta': 0.6683439175686149, 'K': 10, 'corrected_ratio': False, 'steps': 200000, 'TV_hist_vs_pi_true': 0.4505535839415532}
+{'note': 'iid sample of pi_true, same size (noise floor)', 'TV': 0.005318332158602905}
+runtime 332.1234495639801

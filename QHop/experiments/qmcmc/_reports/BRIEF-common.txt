@@ -1,0 +1,90 @@
+COMMON BRIEF FOR ALL QeMCMC REVIEW SUB-AGENTS (read fully)
+Today 2026-11-20. Repo /home/peter/PycharmProjects/Quantum-research, project QHop. Team = applied quantum information research group,
+hard-nosed reviewers: an idea killed early for a clear reason is a result. No hype. Never present a step-count advantage as a speedup
+without break-even arithmetic.
+
+ALGORITHM (P1, Layden et al., Nature 619, 282 (2023), arXiv:2203.12497). Each MCMC step: prepare basis state |s>, apply
+U=exp(-iHt), H=(1-gamma)*alpha*H_prob + gamma*sum_j X_j, alpha = sqrt(n)/sqrt(sum J^2 + sum h^2), gamma~U[0.25,0.6], t~U[2,20]
+drawn per step ("ad hoc, trial and error"); measure s'; classical Metropolis accept min(1, pi(s')/pi(s)). H real symmetric -> U=U^T
+-> proposal symmetric -> exact Boltzmann stationarity for ANY H_prob (even a wrong one); noise breaks exact symmetry (P1 SI p.17,22:
+needed twirling; small bias possible). H_prob is not divided by T: the proposal is temperature-independent.
+P1 results: exact sim only n=3..10, SK instances, T=1: gap ~ 2^(-k n), k_quantum=0.264(4), k_local=0.94(4), k_uniform=0.948(7)
+(Fig 2c). Advantage only for T <~ 1; at high T uniform gap -> 1 while quantum gap stays ~0.3 (Fig 2a). Hardware: ibmq_mumbai, n=8-10,
+1D instances, chains run OFFLINE from cached shots because the control stack was "impractically slow"; hardware gap ~3x below ideal.
+Baselines compared: local, uniform; Swendsen-Wang/Wolff/Houdayer only on 3 instances; NO parallel tempering, NO wall-clock numbers.
+P2 (Ferguson & Wallden, Phys. Rev. Research 7, 013231 (2025), arXiv:2405.04247): coarse-grained QeMCMC. Pick a group g of spins,
+rest frozen as effective field h~_j = h_j + sum_{i not in g} J_ji s_i, quantum proposal on the group only (~sqrt(n) qubits). Groups =
+consecutive index blocks at random start. Gap exponents at T=1 (n=4..10): uniform 0.97, local 0.92, full QeMCMC 0.335, single group
+0.64-0.77, sequential multi-group sweep 0.50. Single-group strategies are symmetric; the fixed-order sequential multi-group sweep is
+NOT symmetric in general (no proof in P2) and needs random order or per-group accept. Noise untested; "quantum inspired" at small
+group size because the group proposal is classically simulable. Evidence = noiseless statevector, n<=10 fits, 1 instance at 16/25/36.
+
+TEAM PILOT (own simulation, exact, ideal): SK n=10 (J,h~N(0,1) unscaled, so T_c ~ sqrt(n); specific heat peak at beta~0.3),
+3 instances, median spectral-gap ratio quantum / best of (local, uniform):
+  beta 0.1 (HIGH): 1.29x | beta 0.2: 1.84x | beta 0.3 (critical, MEDIUM): 2.8x | beta 0.5: 8.2x | beta 1.0 (=P1's T=1, LOW): 25x |
+  beta 3 (LOW): 39x. Short-time "closer" quantum proposal (t~U[0.3,1.5]) does NOT help (0.5-1.3x of best classical).
+These ratios are STEPS vs WEAK baselines (local, uniform), not vs parallel tempering or cluster moves, not wall-clock.
+
+TEMPERATURE REGIMES (defined per instance, not by raw number):
+LOW = below glass/ordering transition, local proposals trapped (P1/P2 claim advantage here).
+MEDIUM = around transition/crossover, critical slowing down; classical tools = cluster moves (Wolff, Swendsen-Wang) where they
+apply, parallel tempering.
+HIGH = well above transition, single-spin Metropolis already mixes fast (gap near max). Here a quantum case can only come from:
+very expensive energy evaluation, need for decorrelated samples per step, mixing across hard constraints, or many-temperature ensembles.
+
+BREAK-EVEN MODEL: wall-clock speedup = (tau_C/tau_Q) x (t_C/t_Q); t_C = t_propose_C + t_energy;
+t_Q = t_latency + t_compile/amortized + t_shot + t_readout + t_energy. Energy is evaluated in the accept step in BOTH chains, so if
+t_energy dominates, per-step time ratio -> 1 and step advantage S = tau_C/tau_Q becomes wall-clock. Break-even S* = t_Q/t_C.
+Rough hardware context (to be replaced by the team's sourced hardware scan): classical single-spin flip ~1-100 ns on CPU/GPU, p-bit
+and FPGA faster; a sequential QeMCMC step on cloud gate-based hardware costs ~0.1 s to seconds or more (latency dominated; shot itself
+~1e-4 to 1e-3 s on superconducting; ms-to-s on ions and neutral atoms); P1 had to run offline. So for cheap energies S* ~ 1e6-1e9.
+
+RULES: label every claim: shown in P1 / shown in P2 / literature (cite with URL or arXiv ID; verify with WebSearch/WebFetch, load via
+ToolSearch if deferred) / own calculation / speculation. Never invent numbers; give labelled ranges. Compare to the BEST classical method
+for the regime. Every implementation idea must say whether detailed balance holds and how you know. Plain text output, no markdown
+symbols, no emoji.
+
+HARDWARE UPDATE (team scan A4, sourced in _reports/A4-hardware.txt; supersedes the rough context above):
+Per sequential QeMCMC step (one new start state per step):
+ IBM Heron r2/r3 gate-based: best ~2 s (documented ~2 s per sub-job overhead, IBM docs "estimate job run time"); typical ~3 s
+   (derived from Marshall et al. 2026, arXiv:2602.06171v3, ibm_aachen, queue excluded); ~4,000 circuits/s throughput; median 2q
+   error ~2e-3; heavy-hex. Nighthawk r2: 120 q square lattice. Price $48-96 per QPU minute.
+ Quantinuum Helios: 98 q all-to-all, 2q error 8e-4, 55 ms per depth-1 layer; real-time control flow + RNG allow the whole
+   accept/reject loop inside one program: ESTIMATE 0.1-0.5 s per step small problems, 1-5 s at 20-50 all-to-all spins.
+ D-Wave Advantage2: ~4,400 q Zephyr, reverse annealing from a programmed state; best ~30-50 ms per step (16 ms QPU access +
+   10-20 ms overhead, D-Wave timing docs); typical ESTIMATE 0.2-1 s; ~80 us per extra sample.
+ Neutral-atom analog (QuEra Aquila, Pasqal): <10 shots/s, new task per start state, ESTIMATE 1-10 s best, ~1 min typical;
+   couplings fixed by geometry (no arbitrary spin glass).
+ Many independent chains per job (batching) is the only way around the per-job floor: throughput ~4,000 circuits/s on IBM.
+Repo gotchas: put .../QHop/experiments/qmcmc/common on sys.path and `import qmc` (not `from common import qmc`); RE B
+ trotter_circuit at QuantumPhantoms/plans/relatedPapers/reverse-engineering/B_mapping/src/qemcmc.py:98 (5-spin SK -> 823 CZ);
+ fake backends via QuantumPhantoms/code/common/targets.py:83 get() (FakeMarrakesh, FakeKingston, FakeBoston, FakeNighthawk).
+ No Wolff/SW/Potts/MRF code exists yet. No real-application data sets on disk.
+
+LITERATURE UPDATE (team scan A3, full list in _reports/A3-literature.txt, IDs verified on arXiv):
+ Orfi & Sels arXiv:2408.07881 (PRA 110, 052434): gap advantage needs a fine-tuned intermediate quench; quench into ergodic -> none.
+ Orfi & Sels arXiv:2403.03087: no speedup on worst-case unstructured problems for any quantum proposal.
+ Christmann et al. arXiv:2411.17821 (PRA 111, 042615): classical tensor-network emulation (bond dim 4, n<=9) keeps the scaling
+   advantage -> small-n results are quantum-inspired-reproducible.
+ Hsieh, Orfi & Sels arXiv:2603.28076: adiabatic ramp instead of quench: SK k 0.614 -> 0.146 (low T).
+ Marshall et al. arXiv:2602.06171 (IBM): 117 q hardware, MIS optimisation, T=0.1; CPLEX solves the instances easily.
+ Kawamata & Fujii arXiv:2611.05883: Heron r2, N=1064 with neural surrogates; per-step gains vs weak baseline (Kawasaki).
+ Cui et al. arXiv:2606.23350: irreversible (non-reversible) variant, polynomial gain over QeMCMC; hardware n=3, T=10.
+ Arai & Kadowaki arXiv:2502.08060: quantum-annealing proposal, sim N=10, gap vs T scan: gain largest below T=1, present 1<=T<10,
+   vanishes T>=10 (target ~uniform).
+ Incudini & Mazzola arXiv:2607.22818: coherent quantum walk, ~6th-degree query speedup, fault-tolerant only.
+ Mazumder & Towe arXiv:2607.09893: PT closes the sampling gap to ~1.8x and wall-clock favours classical (different quantum sampler).
+ Chen et al. arXiv:2509.23945: classical TN-MCMC samples 3D spin glasses to 64^3 on one CPU.
+ P2 App. B.3 at T=10: fitted k QeMCMC 0.087, local 0.26, uniform 0.341 (n<=10, weak evidence).
+ NOBODY has compared QeMCMC to tuned PT + cluster moves, nor studied it near the transition temperature. NOTE: P1 hardware was n=10 on
+ 27-qubit ibmq_mumbai (not n=27).
+
+CLASSICAL BASELINE UPDATE (team scan A5, _reports/A5-classical-baselines.txt; bench at QHop/experiments/qmcmc/bench/sk_bench.c):
+ t_C dense Ising, cached local fields, laptop scalar C (upper bounds): ~20-50 ns/proposal n<=100; 30-140 ns n=300; 0.04-0.55 us n=1000.
+ Fastest per flip (sparse lattices): CPU 6.65 flips/ns 1 thread (Isakov 2015, arXiv:1401.1084); GPU ~418-454 flips/ns per V100
+   (arXiv:1906.06297); FPGA Janus II ~2 ps/flip; p-bit FPGA 143.8 flips/ns (arXiv:2110.02481).
+ MEDIUM-T tools: Swendsen-Wang/Wolff z~0.22-0.25 vs Metropolis 2.17 for ferromagnets (fail with frustration, first-order);
+   2D EA PT+Houdayer/ICM: 2^16 vs 2^25 sweeps at N=1024 (arXiv:1501.05630); PT equilibrates SK N<=4096 at T>=0.4 (arXiv:1003.6086);
+   Houdayer gives no gain on SK (inference). Hard-instance tail heavy (0.6% of L=10 3D EA not equilibrated after 2^30 sweeps).
+ Ising machines (DA, SBM, CIM) are optimisers, not certified Boltzmann samplers.
+ => With t_Q ~2 s (IBM) and t_C ~30 ns, cheap-energy S* ~ 7e7; with D-Wave 30 ms, S* ~ 1e6.

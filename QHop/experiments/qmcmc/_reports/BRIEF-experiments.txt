@@ -1,0 +1,31 @@
+EXPERIMENT BRIEF (Wave 4). Read BRIEF-common.txt first (algorithm, regimes, break-even, hardware, literature).
+
+HARNESS: /home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/common/qmc.py (read it; do NOT edit it — copy
+functions into your own folder if you need changes). Import:
+  import sys; sys.path.insert(0, "/home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/common"); import qmc
+Provides: spins, ising_energies, sk_instance(n,seed) (J,h~N(0,1) unscaled: T_c~sqrt(n)), ea_instance(L1,L2,seed), ferro_instance,
+quantum_Q(Hprob, gammas, ts) (any real energy vector inside U; eigh per distinct gamma is cached -> use a small gamma grid to save
+time), decohered_Q, local_Q, uniform_Q, mixture_Q, coarse_grained_Q(J,h,groups,gammas,ts) (state-independent group choice, symmetric),
+mh_matrix(Q,E,beta,hastings), gap(Q,E,beta), spectral_gap(P,pi) (fast symmetric form), acceptance, mean_hamming, asymmetry,
+thermo (exact specific heat), local_gap_curve, iat (Sokal window), run_chain(Q,E,beta,steps,seed), parallel_tempering(...),
+ising_flip_fn, ising_E_fn. Verified: reproduces SK n=8 gap ratio q/local 29.25, q/best 6.14 (seed=n, draw seed 0, m=16).
+Timing: quantum_Q at n=10 ~7 s for 16 draws; n=12 ~15 s per distinct gamma (eigh 4096). n=13-14 only if essential.
+Pilot result: QHop/experiments/qmcmc/pilot/pilot_sk_gap_vs_beta.txt.
+Fake backends for transpilation/noise: QuantumPhantoms/code/common/targets.py:83 get() (FakeMarrakesh heavy-hex Heron r2,
+FakeKingston, FakeBoston r3, FakeNighthawk square); or qiskit_ibm_runtime.fake_provider directly. Trotter circuit example:
+QuantumPhantoms/plans/relatedPapers/reverse-engineering/B_mapping/src/qemcmc.py:98 (put RE path BEFORE QPC on sys.path).
+
+MACHINE: 8 cores, 31 GB, shared by up to 6 experiment agents in parallel. Set OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
+MKL_NUM_THREADS=2 for every python run. Keep each single run under ~20 min; run long jobs with run_in_background and wait for
+completion notification (do not poll in tight loops). Fixed seeds everywhere.
+
+DELIVERABLES in your folder QHop/experiments/qmcmc/<candidate-id>/:
+  code (*.py), raw results (CSV or JSON), plots (PNG, matplotlib, label axes, log scales where natural), and README.txt with:
+  what was run EXACTLY (commands to reproduce), parameters, seeds, run times, results table, what was only reasoned (not run),
+  and your conclusion labelled "shown by own simulation (ideal/noisy)" vs "speculation".
+Regime boundaries must be reported per instance family: beta_c from specific-heat peak and from where the local-proposal gap
+starts to collapse; define LOW/MEDIUM/HIGH betas explicitly.
+Always compare against the BEST classical method for the regime you can implement (not just local/uniform), and always include
+the decohered control for any quantum claim. Report step advantage S = tau_C/tau_Q (or gap ratio) with spread over >=5 instances
+(median and IQR). Never call a step advantage a speedup; give break-even S* per BRIEF-screening.txt convention
+(_reports/BRIEF-screening.txt).

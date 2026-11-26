@@ -1,0 +1,119 @@
+D1 TEMPERATURE MAP - summary (own simulation, ideal, exact unless marked sampled)
+Regimes per instance: HIGH beta/beta_c <= 0.5, MEDIUM 0.5 < beta/beta_c <= 2, LOW > 2; beta_c = specific-heat peak.
+SK n=10 (with field): instances 10, beta_c median 0.411 [range 0.323-0.546], local-gap collapse (gap<10% of its max) beta median 0.360
+2D EA +-J 3x3 periodic (n=9): instances 6, beta_c median 0.645 [range 0.554-0.951], local-gap collapse (gap<10% of its max) beta median 0.512
+2D ferromagnet 3x4 periodic (n=12): instances 1, beta_c median 0.409 [range 0.409-0.409]
+2D ferromagnet 3x3 periodic (n=9): instances 1, beta_c median 0.403 [range 0.403-0.403], local-gap collapse (gap<10% of its max) beta median 0.359
+
+S = gap ratio, per instance geometric mean over the regime's beta points, then median [IQR] over instances
+
+SK n=10 (with field)
+           layden/local          HIGH:      2.07 [1.92,2.47] N=10 MEDIUM:      8.54 [4.6,12.8] N=10 LOW:  4.89e+05 [1.89e+03,2.45e+06] N=10
+           layden/uniform        HIGH:      1.26 [1.13,1.34] N=10 MEDIUM:      7.79 [6.77,8.52] N=10 LOW:      26.6 [18.2,30.3] N=10
+           layden/bestmix        HIGH:     0.896 [0.811,0.964] N=10 MEDIUM:      3.01 [2.29,3.36] N=10 LOW:      9.85 [8.66,18.6] N=10
+           layden/bestclassical  HIGH:     0.896 [0.811,0.964] N=10 MEDIUM:      3.01 [2.29,3.36] N=10 LOW:      9.85 [8.66,18.6] N=10
+            tuned/bestmix        HIGH:      1.27 [1.19,1.33] N=10 MEDIUM:      3.59 [2.8,4.11] N=10 LOW:      15.1 [13.3,24.6] N=10
+            tuned/bestclassical  HIGH:      1.27 [1.19,1.33] N=10 MEDIUM:      3.59 [2.8,4.11] N=10 LOW:      15.1 [13.3,24.6] N=10
+        decohered/bestclassical  HIGH:     0.858 [0.839,0.866] N=10 MEDIUM:     0.645 [0.606,0.732] N=10 LOW:     0.441 [0.315,1.05] N=10
+  decohered_tuned/bestclassical  HIGH:     0.912 [0.9,0.94] N=10 MEDIUM:      0.71 [0.661,0.752] N=10 LOW:      1.03 [0.694,1.36] N=10
+           layden/decohered      HIGH:      1.04 [0.923,1.12] N=10 MEDIUM:      4.52 [3.09,5.39] N=10 LOW:      23.1 [19.4,33] N=10
+            tuned/decohered_tuned HIGH:      1.41 [1.3,1.45] N=10 MEDIUM:      5.34 [3.64,6.28] N=10 LOW:      19.5 [16.6,19.7] N=10
+              cg3/bestclassical  HIGH:     0.305 [0.28,0.309] N=10 MEDIUM:     0.374 [0.301,0.512] N=10 LOW:   0.00503 [0.000238,0.015] N=10
+              cg5/bestclassical  HIGH:     0.526 [0.506,0.554] N=10 MEDIUM:     0.753 [0.707,0.992] N=10 LOW:    0.0239 [0.00571,0.0909] N=10
+              cg3/layden         HIGH:     0.342 [0.309,0.38] N=10 MEDIUM:     0.109 [0.0879,0.241] N=10 LOW:  0.000509 [2.08e-05,0.000858] N=10
+
+2D EA +-J 3x3 periodic (n=9)
+           layden/local          HIGH:      1.78 [1.75,1.9] N=6 MEDIUM:      7.96 [7.61,8.37] N=6 LOW:   1.6e+06 [6.44e+05,1.43e+08] N=6
+           layden/uniform        HIGH:     0.882 [0.864,0.905] N=6 MEDIUM:      2.97 [2.51,3.62] N=6 LOW:      4.15 [4.06,4.25] N=6
+           layden/bestmix        HIGH:     0.722 [0.675,0.765] N=6 MEDIUM:         1 [0.938,1.04] N=6 LOW:      1.21 [1.02,1.31] N=6
+           layden/bestclassical  HIGH:     0.223 [0.216,0.227] N=6 MEDIUM:     0.424 [0.359,0.606] N=6 LOW:      1.21 [1.02,1.31] N=6
+            tuned/bestmix        HIGH:      1.11 [1.06,1.12] N=6 MEDIUM:      1.34 [1.29,1.39] N=6 LOW:      1.65 [1.49,1.72] N=6
+            tuned/bestclassical  HIGH:     0.348 [0.328,0.349] N=6 MEDIUM:     0.571 [0.477,0.839] N=6 LOW:      1.65 [1.49,1.72] N=6
+        decohered/bestclassical  HIGH:     0.235 [0.233,0.246] N=6 MEDIUM:    0.0801 [0.0776,0.0875] N=6 LOW:    0.0303 [0.0207,0.0412] N=6
+  decohered_tuned/bestclassical  HIGH:     0.262 [0.248,0.284] N=6 MEDIUM:     0.143 [0.142,0.168] N=6 LOW:     0.286 [0.237,0.32] N=6
+           layden/decohered      HIGH:     0.965 [0.894,0.996] N=6 MEDIUM:      5.29 [4.61,5.39] N=6 LOW:      40.2 [32.2,48.6] N=6
+            tuned/decohered_tuned HIGH:       1.3 [1.25,1.33] N=6 MEDIUM:      4.01 [3.34,4.89] N=6 LOW:      5.63 [5.34,5.76] N=6
+               SW/bestmix        HIGH:      3.19 [3.05,3.26] N=6 MEDIUM:      1.86 [1.16,2.17] N=6 LOW:  1.89e-05 [4.73e-06,8.45e-05] N=6
+            Wolff/bestmix        HIGH:      1.35 [1.31,1.43] N=6 MEDIUM:       1.9 [1.75,2.05] N=6 LOW:  4.78e-06 [1.17e-07,9.09e-06] N=6
+              cg3/bestclassical  HIGH:     0.101 [0.0963,0.103] N=6 MEDIUM:    0.0576 [0.0495,0.072] N=6 LOW:  1.75e-06 [2.46e-07,2.97e-06] N=6
+              cg3/layden         HIGH:     0.452 [0.444,0.455] N=6 MEDIUM:     0.135 [0.117,0.143] N=6 LOW:  1.27e-06 [1.1e-07,2.44e-06] N=6
+
+2D ferromagnet 3x4 periodic (n=12)
+           layden/local          HIGH:      1.22 [1.22,1.22] N=1 MEDIUM:      5.74 [5.74,5.74] N=1 LOW:   2.2e+09 [2.2e+09,2.2e+09] N=1
+           layden/uniform        HIGH:     0.979 [0.979,0.979] N=1 MEDIUM:      9.39 [9.39,9.39] N=1 LOW:      24.4 [24.4,24.4] N=1
+           layden/bestmix        HIGH:     0.464 [0.464,0.464] N=1 MEDIUM:     0.353 [0.353,0.353] N=1 LOW:     0.985 [0.985,0.985] N=1
+           layden/bestclassical  HIGH:     0.109 [0.109,0.109] N=1 MEDIUM:    0.0261 [0.0261,0.0261] N=1 LOW:    0.0241 [0.0241,0.0241] N=1
+            tuned/bestmix        HIGH:     0.824 [0.824,0.824] N=1 MEDIUM:     0.416 [0.416,0.416] N=1 LOW:     0.887 [0.887,0.887] N=1
+            tuned/bestclassical  HIGH:     0.194 [0.194,0.194] N=1 MEDIUM:    0.0307 [0.0307,0.0307] N=1 LOW:    0.0217 [0.0217,0.0217] N=1
+        decohered/bestclassical  HIGH:     0.176 [0.176,0.176] N=1 MEDIUM:   0.00509 [0.00509,0.00509] N=1 LOW:  5.54e-05 [5.54e-05,5.54e-05] N=1
+           layden/decohered      HIGH:      0.62 [0.62,0.62] N=1 MEDIUM:      5.13 [5.13,5.13] N=1 LOW:       435 [435,435] N=1
+               SW/bestmix        HIGH:      4.25 [4.25,4.25] N=1 MEDIUM:      13.5 [13.5,13.5] N=1 LOW:      40.9 [40.9,40.9] N=1
+            Wolff/bestmix        HIGH:      1.03 [1.03,1.03] N=1 MEDIUM:      4.94 [4.94,4.94] N=1 LOW:  3.61e-06 [3.61e-06,3.61e-06] N=1
+              cg3/bestclassical  HIGH:    0.0691 [0.0691,0.0691] N=1 MEDIUM:   0.00313 [0.00313,0.00313] N=1 LOW:  9.27e-12 [9.27e-12,9.27e-12] N=1
+              cg4/bestclassical  HIGH:    0.0898 [0.0898,0.0898] N=1 MEDIUM:   0.00391 [0.00391,0.00391] N=1 LOW: 9.82e-107 [9.82e-107,9.82e-107] N=1
+              cg6/bestclassical  HIGH:     0.109 [0.109,0.109] N=1 MEDIUM:     0.005 [0.005,0.005] N=1 LOW: 5.61e-106 [5.61e-106,5.61e-106] N=1
+              cg3/layden         HIGH:     0.634 [0.634,0.634] N=1 MEDIUM:      0.12 [0.12,0.12] N=1 LOW:  3.85e-10 [3.85e-10,3.85e-10] N=1
+              cg6/layden         HIGH:     0.997 [0.997,0.997] N=1 MEDIUM:     0.192 [0.192,0.192] N=1 LOW: 6.77e-105 [6.77e-105,6.77e-105] N=1
+
+2D ferromagnet 3x3 periodic (n=9)
+           layden/local          HIGH:     0.981 [0.981,0.981] N=1 MEDIUM:      4.18 [4.18,4.18] N=1 LOW:  1.75e+66 [1.75e+66,1.75e+66] N=1
+           layden/uniform        HIGH:     0.535 [0.535,0.535] N=1 MEDIUM:      2.13 [2.13,2.13] N=1 LOW:      4.37 [4.37,4.37] N=1
+           layden/bestmix        HIGH:     0.379 [0.379,0.379] N=1 MEDIUM:     0.287 [0.287,0.287] N=1 LOW:     0.184 [0.184,0.184] N=1
+           layden/bestclassical  HIGH:     0.116 [0.116,0.116] N=1 MEDIUM:    0.0356 [0.0356,0.0356] N=1 LOW:    0.0344 [0.0344,0.0344] N=1
+            tuned/bestmix        HIGH:     0.839 [0.839,0.839] N=1 MEDIUM:     0.476 [0.476,0.476] N=1 LOW:     0.336 [0.336,0.336] N=1
+            tuned/bestclassical  HIGH:     0.258 [0.258,0.258] N=1 MEDIUM:    0.0591 [0.0591,0.0591] N=1 LOW:    0.0629 [0.0629,0.0629] N=1
+        decohered/bestclassical  HIGH:     0.234 [0.234,0.234] N=1 MEDIUM:    0.0119 [0.0119,0.0119] N=1 LOW:  0.000632 [0.000632,0.000632] N=1
+  decohered_tuned/bestclassical  HIGH:     0.249 [0.249,0.249] N=1 MEDIUM:     0.019 [0.019,0.019] N=1 LOW:   0.00787 [0.00787,0.00787] N=1
+           layden/decohered      HIGH:     0.498 [0.498,0.498] N=1 MEDIUM:      2.98 [2.98,2.98] N=1 LOW:      54.5 [54.5,54.5] N=1
+            tuned/decohered_tuned HIGH:      1.04 [1.04,1.04] N=1 MEDIUM:      3.11 [3.11,3.11] N=1 LOW:      7.99 [7.99,7.99] N=1
+               SW/bestmix        HIGH:      3.25 [3.25,3.25] N=1 MEDIUM:      8.05 [8.05,8.05] N=1 LOW:      5.35 [5.35,5.35] N=1/home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/D1-temperature-map/analyze.py:253: RuntimeWarning: invalid value encountered in log
+  f"{reg} {np.median([np.exp(np.mean(np.log(np.array(e['gaps']['SW'])[m] / np.array(e['gaps']['mixbest'])[m]))) for e in ex]):.3g}"
+
+            Wolff/bestmix        HIGH:      1.07 [1.07,1.07] N=1 MEDIUM:      3.01 [3.01,3.01] N=1 LOW:  1.27e-06 [1.27e-06,1.27e-06] N=1
+              cg3/bestclassical  HIGH:    0.0888 [0.0888,0.0888] N=1 MEDIUM:   0.00559 [0.00559,0.00559] N=1 LOW:  7.65e-11 [7.65e-11,7.65e-11] N=1
+              cg3/layden         HIGH:     0.762 [0.762,0.762] N=1 MEDIUM:     0.157 [0.157,0.157] N=1 LOW:  2.22e-09 [2.22e-09,2.22e-09] N=1
+
+Which classical method is best (count of instance-beta points) and tuned-cell choice
+  sk10 HIGH: best classical {'bestmix': 50}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'3': 19, '2': 17, '1': 14}
+  sk10 MEDIUM: best classical {'bestmix': 30}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'3': 15, '2': 15}
+  sk10 LOW: best classical {'bestmix': 50}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'3': 26, '2': 24}
+  ea33 HIGH: best classical {'SW': 27, 'Wolff': 3}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'1': 30}
+  ea33 MEDIUM: best classical {'Wolff': 10, 'bestmix': 6, 'SW': 2}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'1': 11, '3': 6, '2': 1}
+  ea33 LOW: best classical {'bestmix': 30}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'1': 10, '3': 15, '2': 5}
+  fe34 HIGH: best classical {'SW': 3}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'2': 3}
+  fe34 MEDIUM: best classical {'SW': 3}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'2': 3}
+  fe34 LOW: best classical {'SW': 3}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'2': 3}
+  fe33 HIGH: best classical {'SW': 5}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'0': 5}
+  fe33 MEDIUM: best classical {'SW': 3}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'1': 2, '3': 1}
+  fe33 LOW: best classical {'SW': 5}; tuned t-window index (0:[.3,1.5] 1:[1.5,6] 2:[6,24] 3:[24,96]) {'3': 5}
+
+SK GAP SCALING gap ~ 2^(-k n), n = [6, 7, 8, 9, 10, 11], instances per n = [10, 10, 10, 10, 10, 5]; fit on all instance points, 95% CI from 2000 bootstrap resamples of instances within each n; also split fits n<=9 and n>=9
+  HIGH (0.5 beta_c)  local      k =  0.247 [ 0.181, 0.310]  R2 0.42  k(n6-9)  0.266  k(n9-12)  0.306
+  HIGH (0.5 beta_c)  uniform    k =  0.531 [ 0.432, 0.627]  R2 0.71  k(n6-9)  0.572  k(n9-12)  0.502
+  HIGH (0.5 beta_c)  bestmix    k =  0.274 [ 0.217, 0.330]  R2 0.57  k(n6-9)  0.318  k(n9-12)  0.242
+  HIGH (0.5 beta_c)  layden     k =  0.126 [ 0.086, 0.166]  R2 0.33  k(n6-9)  0.154  k(n9-12)  0.069
+  HIGH (0.5 beta_c)  tuned      k =  0.185 [ 0.148, 0.222]  R2 0.56  k(n6-9)  0.239  k(n9-12)  0.082
+  HIGH (0.5 beta_c)  cg_sqrt_n  k =  0.158 [ 0.104, 0.212]  R2 0.26  k(n6-9)  0.292  k(n9-12)  0.024
+  MEDIUM (1 beta_c)  local      k =  0.359 [ 0.212, 0.495]  R2 0.27  k(n6-9)  0.387  k(n9-12)  0.570
+  MEDIUM (1 beta_c)  uniform    k =  0.787 [ 0.670, 0.904]  R2 0.76  k(n6-9)  0.869  k(n9-12)  0.665
+  MEDIUM (1 beta_c)  bestmix    k =  0.457 [ 0.388, 0.526]  R2 0.65  k(n6-9)  0.532  k(n9-12)  0.403
+  MEDIUM (1 beta_c)  layden     k =  0.235 [ 0.163, 0.304]  R2 0.36  k(n6-9)  0.292  k(n9-12)  0.142
+  MEDIUM (1 beta_c)  tuned      k =  0.246 [ 0.188, 0.306]  R2 0.43  k(n6-9)  0.332  k(n9-12)  0.077
+  MEDIUM (1 beta_c)  cg_sqrt_n  k =  0.317 [ 0.198, 0.438]  R2 0.24  k(n6-9)  0.530  k(n9-12)  0.194
+  LOW (3 beta_c)     local      k =  0.793 [ 0.179, 1.370]  R2 0.10  k(n6-9)  0.886  k(n9-12)  2.038
+  LOW (3 beta_c)     uniform    k =  0.965 [ 0.877, 1.051]  R2 0.89  k(n6-9)  1.046  k(n9-12)  0.821
+  LOW (3 beta_c)     bestmix    k =  0.822 [ 0.693, 0.946]  R2 0.72  k(n6-9)  0.875  k(n9-12)  0.780
+  LOW (3 beta_c)     layden     k =  0.347 [ 0.236, 0.458]  R2 0.40  k(n6-9)  0.369  k(n9-12)  0.483
+  LOW (3 beta_c)     tuned      k =  0.300 [ 0.213, 0.389]  R2 0.43  k(n6-9)  0.328  k(n9-12)  0.344
+  LOW (3 beta_c)     cg_sqrt_n  k =  0.947 [ 0.352, 1.514]  R2 0.14  k(n6-9)  1.585  k(n9-12)  0.868
+
+SK n=6 with field, EXACT SW/Wolff (ghost spin), median over 10 instances, per beta/beta_c:
+  ratio      0.10    0.15    0.22    0.32    0.46    0.68    1.00    1.47    2.15    3.16    4.64    6.81   10.00
+  SW       0.8979  0.8494  0.7783  0.6614  0.4904  0.2899  0.1286  0.0348  0.0054  0.0004  0.0000  0.0000  0.0000
+  Wolff    0.4405  0.5008  0.5750  0.6421  0.6240  0.4459  0.2227  0.0662  0.0106  0.0008  0.0000  0.0000  0.0000
+  local    0.1673  0.2055  0.1751  0.1296  0.0850  0.0486  0.0250  0.0116  0.0040  0.0009  0.0001  0.0000  0.0000
+  uniform  0.5935  0.4763  0.3544  0.2424  0.1518  0.0905  0.0538  0.0355  0.0260  0.0207  0.0177  0.0163  0.0158
+  mixbest  0.5962  0.4831  0.3656  0.2577  0.1735  0.1120  0.0721  0.0530  0.0463  0.0444  0.0447  0.0451  0.0450
+  layden   0.2685  0.2389  0.2000  0.1610  0.1288  0.0999  0.0856  0.0825  0.0808  0.0870  0.0906  0.0926  0.0968
+  tunedbest 0.4817  0.4214  0.3474  0.2788  0.2092  0.1561  0.1234  0.1070  0.1035  0.1081  0.1191  0.1253  0.1291
+  SW/mixbest per regime: HIGH 2.06, MEDIUM 1.48, LOW nan

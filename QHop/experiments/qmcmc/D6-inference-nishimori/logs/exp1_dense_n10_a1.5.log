@@ -1,0 +1,7 @@
+alpha=1.5 inst=0 t=219s
+alpha=1.5 inst=1 t=441s
+alpha=1.5 inst=2 t=632s
+alpha=1.5 inst=3 t=798s
+alpha=1.5 inst=4 t=998s
+alpha=1.5 inst=5 t=1179s
+done 120 1179s

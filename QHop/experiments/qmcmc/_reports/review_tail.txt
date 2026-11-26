@@ -1,0 +1,262 @@
+
+
+5. IMPLEMENTATION VARIANTS (B7 inventor, tested in D1-D9, attacked in E1-E3)
+------------------------------------------------------------------------------
+General results used below [CALC + SIM, B7 G1-G3, D3, E2]:
+G1 Any real diagonal H_prob (true energy, surrogate, native-coupling subset), any real symmetric mixer (sum X, XY hopping)
+   and a palindromic schedule give U^T = U, so Q is symmetric and Metropolis with the TRUE energy is exact.
+G2 Unital Pauli noise with a time-symmetric profile keeps Q exactly symmetric (D3: asymmetry ~5e-16 for depolarizing and
+   dephasing in a palindromic circuit). T1, leakage, readout error and non-palindromic compilation break it.
+G3 Q(s'|s) cannot be computed or estimated beyond toy n, so any correction needing Q values (Hastings for an asymmetric
+   kernel) is infeasible at scale.
+G4 Block bound [CALC D7, proof checked by red team E2, sharp]: with a state-independent random choice of group, ANY
+   Metropolis group proposal (quantum or not) has spectral gap <= 2x that of exact block heat-bath on the same group.
+   Coarse-grained QeMCMC can never beat classical block Gibbs by more than 2x per step; measured 0.11-0.35x at SK n=10.
+   Caveat: fixed-order sweeps are not covered (a classical Metropolized-Gibbs sweep reached 2.24x, E2).
+
+Columns: ID | Variant | Detailed balance | Regimes where it helps | Qubits and depth | Hardware fit | Evidence | Verdict
+V01 | Hardware-tuned coarse-grained groups (prompt item 1): size from device, groups by coupling/frustration/cluster | proved for state-independent groups; frustration-selected broken (TV 0.035-0.064), corrected by p(g|s')/p(g|s); Wolff/FK groups not computable | none vs block heat-bath (G4) | k qubits, e.g. k=8: 924 CZ heavy-hex, F 0.08 (D4) | IBM 2, Helios 2 | SIMULATED (B7, D7, E2) | KILL (G4: <=2x block Gibbs, measured 0.11-0.35x)
+V02 | P2 sequential multi-group sweep, fixed | P2 fixed order broken (TV 0.061); random forward/reverse order or per-group accept proved (err 1e-16) | LOW | sqrt(n) qubits per group | IBM 2 | SIMULATED (B7) | BUILD NOW as a correctness fix for anyone using P2; no advantage (G4 caveat: classical sweep also gains)
+V03 | Several QPUs on disjoint groups in parallel | naive broken (TV 3e-3); proved if inter-group couplings are dropped from U | LOW | k per QPU | multi-QPU | SIMULATED (B7) | KILL in practice (each group capped by G4)
+V04 | Quantum move as one move type inside local/PT (prompt item 2) | proved (mixture/composition of reversible kernels) | LOW only, step terms | full n | IBM 1 | SIMULATED (B7, D2) | KILL: best quantum fraction p_q = 0 for move cost >= 1e6 flips in every regime (at 1e3, 1 of 5 SK n=12 LOW instances prefers p_q = 0.01) (D2)
+V05 | Surrogate H_prob in U, true energy in accept (prompt item 3) | proved (G1); stationarity err <= 6e-16 (D5) | LOW with large surrogate error only | full n | IBM 1 | SIMULATED (D5, E2) | SIMULATE MORE only as a scaling question; at n<=12 classical delayed acceptance with ~100 inner surrogate steps or a hotter surrogate draw matches or beats it
+V06 | Temperature-aware gamma, t, alpha (prompt item 4) | proved (fixed random mixture over a grid; adaptation in burn-in only) | all, small | same | same | SIMULATED (D1, E1) | BUILD NOW as practice; gain only 1.2-1.6x even with oracle tuning by exact gap
+V07 | Rydberg analog proposal (prompt item 5) | proved if ideal and palindromic sweep; one-way sweep broken (TV 0.16) | LOW | geometry-fixed couplings | QuEra/Pasqal 1 | SIMULATED (B7) | WAIT FOR HARDWARE (no arbitrary couplings, ~1 s+ per task)
+V08 | D-Wave reverse anneal from s (prompt item 5) | broken under open-system dynamics; partial Gibbs correction worse (TV 0.99); Hastings needs Q (G3) | none valid | Zephyr native | D-Wave 2 | SIMULATED (B7) | KILL as an exact sampler
+V09 | Shot batching: multiple-try / multi-proposal Metropolis (prompt item 6) | proved for proper MTM (needs reference draws = second circuit); naive best-of-K broken (TV 0.21) | LOW | 2 circuits per step | IBM 1 | SIMULATED (B7) | SIMULATE MORE (low priority; halves nothing on latency)
+V10 | Shallow / first-order palindromic Trotter, native-coupling subset in U (prompt item 7) | proved (G1); random-angle QAOA proposals broken (TV 0.045) | LOW | native subset cuts CZ 6-19x (D4) | IBM 2 | SIMULATED (D4, E3) | KILL as advantage: vs tuned mixture 1.67x ideal, 0.91-1.11 noisy; classical moves on the same native tree win 4-5x (E3); keep as low-CZ calibration circuit
+V11 | Potts encodings (prompt item 8): one-hot + XY mixer, binary log2 q, qudits | XY one-hot, reject-infeasible and binary proved; post-select broken | LOW | Potts 3x3 q=3: 8,682 CZ heavy-hex, F 2e-10 (D4) | IBM 0 | SIMULATED (B7, D4) | KILL on hardware (no Potts case reaches F >= 0.1)
+V12 | Noise handling (prompt item 9): Pauli twirl + palindrome, gauge averaging, input/readout flip sandwich | twirl + palindrome exact; gauge averaging NOT exact for T1 (cuts asymmetry ~30x); readout twirl + mirrored pre-flip exact | all | +1q gates | IBM 2 | SIMULATED (B7, D3) | BUILD NOW (mandatory for any hardware run)
+V13 | Classical statevector emulation of small-group proposals (prompt item 10) | proved | none | CPU: k=8 0.6-0.8 ms, k=12 15-18 ms per move | CPU | SIMULATED (D7) | KILL: 0 of 702 resolved CPU-time comparisons won vs Metropolis/PT; block heat-bath 30-1000x faster per second
+V14 | Generic lifted non-reversible QeMCMC | proved | LOW | 2x circuits | IBM 1 | SIMULATED (B7) | KILL (2x slower); replicate Cui et al. arXiv:2606.23350 only if needed
+V15 | Adiabatic-dressed proposals (Hsieh-Orfi-Sels arXiv:2603.28076) | palindromic ramp proved; one-way broken | LOW | deeper | IBM 0-1 | SIMULATED (B7) + LIT | SIMULATE MORE (LOW only; depth cost)
+V16 | Delayed acceptance with a surrogate (classical) | proved | expensive-energy problems, all T | none | CPU | SIMULATED (D5, E2) | QUANTUM-INSPIRED ONLY in the sense that it is the classical method that beats V05; use it
+V17 | In-device accept loop (Helios mid-circuit + RNG) | reasoned exact with V12 sandwich | LOW | full n | Helios 1 | REASONED + D4 timing | WAIT FOR HARDWARE (D4: ~8 s per step SK n=10 from gate times)
+V18 | Partial readout (implicit coarse-graining) | broken, not correctable | none | - | - | SIMULATED (B7) | KILL
+V19 | Energy-window post-selection | broken (rejection version exact but useless) | none | - | - | SIMULATED (B7) | KILL
+V20 | Many independent chains per job / population annealing | proved | apps needing many chains | full n | IBM 2 | CALC (B7) | BUILD NOW as the only latency fix (S* ~3e4 per chain-step); no step gain by itself
+V21 | Block super-spin flips | proved | LOW | - | IBM 1 | SIMULATED (B7) | SIMULATE MORE (low priority)
+V22 | Conserved-quantity XY mixers (fixed composition, charge balance) | proved; non-palindromic Trotter biased (TV 0.002-0.17), forward/reverse fix exact | LOW; MEDIUM vs weak swaps only | n=12: 717-975 CZ per Trotter step, ~2.2e4 per proposal (D8) | IBM 0 | SIMULATED (D8) | KILL vs PT (0.95-1.6 at 1.1 Tc per proposal, 5-8x worse per PT round)
+V23 | Quantum-trained neural proposal | proved | LOW | offline | any | REASONED (B7) | QUANTUM-INSPIRED ONLY
+V24 | Mask donation / fixed quantum mask library (QPU in throughput mode) | proved (state-independent masks, err <3e-17) | none vs classical libraries | L x circuits once | IBM 2 | SIMULATED (D9) | KILL: classical weight-matched or basin-difference masks within 1.5x everywhere; k drifts to uniform
+V25 | Quantum Houdayer (quantum proposal on replica-difference clusters) | proved (err 3.5e-18) | LOW/MEDIUM 2D | cluster-sized | IBM 1 | SIMULATED (B7, existence only) | SIMULATE MORE (untested against ICM; note G4-type bound applies to the cluster block)
+
+
+6. TOP 10 APPLICATIONS (by ranking, with how each would be built)
+-----------------------------------------------------------------
+None has a credible wall-clock path within 3 years; the highest wall-clock likelihood in the table is 0.5%. The ten
+below are the rows worth keeping open, mostly as science or calibration.
+
+1. K0 / QHop thesis core: SK QeMCMC noise and bias calibration (BUILD NOW, calibration only). Build: n = 6-8 SK
+   instances; proposal circuits = palindromic second-order Trotter with Pauli twirling and the readout flip sandwich
+   (V12); IBM Heron r2/r3 (or Nighthawk), estimate the full proposal matrix by tomography over all start states (~$126 of
+   QPU time at n=8, E3), then compute the exact Metropolis gap and the stationary bias classically. Per-step time is not
+   the point (offline). What it can show: a fidelity-collapse curve (eps_half ~ 0.39/N_2q, E3) and a measurable T1/readout
+   bias with and without the V12 fixes. What it cannot show: an advantage (ideal S vs strong small classical moves is
+   0.62-1.06 at n=6-8, E3; FakeMarrakesh n=6: 0.30-0.66).
+2. B3-04: heavy-hex-native exact calibration bed (BUILD NOW, calibration only). Same pipeline on a 12-qubit hexagon with
+   native couplings only (360 CZ, F 0.31 on Heron, D4): the cleanest hardware test of G1/G2 symmetry and of noise bias.
+3. B2-18: neural-network quantum states, VMC sampling (SIMULATE MORE). Data flow: GPU evaluates the network amplitude
+   ratio (t_E ~1e-5 s per walker batched), IBM batch of ~1000 walkers per job proposes with H_prob = classical ZZ part,
+   Metropolis on |psi|^2 ratio. S* 3e1/3e2/2e3 (batched). Kill: autoregressive ansatze sample iid (tau = 1); prior art
+   arXiv:2502.20799.
+4. B1-10: pixel-antenna / metasurface design ensembles with full-wave EM in the accept (SIMULATE MORE, scaling question).
+   Build: factorisation-machine QUBO surrogate (rank 8-16) inside U on 16-25-pixel groups, EM solver (1-30 min) in the
+   accept; S* ~1. D5/E2: classical delayed acceptance with ~100 surrogate steps matches it at n<=10.
+5. B5-08: N-k cascading-outage rare-event sampling (SIMULATE MORE). LODF Ising surrogate in U on 10-30-branch groups,
+   DC cascade simulation (0.3-0.5 s, arXiv:1405.4213) in the accept, S* 1.3/8.5/40. Must beat Random Chemistry and
+   classical delayed acceptance with the same surrogate.
+6. B2-02: mode-hopping moves for RBMs in phase coexistence (SIMULATE MORE, science). Exact simulation n<=20 against
+   parallel trajectory tempering (arXiv:2405.15376); group variants capped by G4.
+7. B4-15: LABS radar/sonar sequence design (SIMULATE MORE, LOW-T optimisation). Exact gap exponents with the true
+   4-body energy at N<=14; competitor memetic tabu 1.34^N; 4-body Trotter ~1.4e4 CZ at N=14, so no hardware.
+8. B5-12: multicanonical tail estimation with quantum proposals (SIMULATE MORE, information only); cheap energy, S* 1e8.
+9. B4-07: LDPC error-floor rare-event estimation, surrogate in U, BP decoder in accept (SIMULATE MORE, low priority);
+   S* 3e3/3e5/2e6.
+10. B3-09: charge-balanced ionic (Coulomb) ordering with an XY charge-conserving mixer (QUANTUM-INSPIRED ONLY). D8: 4.28x
+    vs swap moves at 1.1 Tc, but 1.0-1.6x vs PT per proposal and 5-8x worse per PT round; ~2.2e4 CZ per proposal.
+
+
+7. TEMPERATURE MAP
+------------------
+HIGH. Applications: matched-temperature Bayesian posteriors at typical loads (telecom detection, imaging, genomics:
+Nishimori line), data-fitted health/ecology Ising models, robust-design sampling, early RBM training. Best classical:
+single-spin Metropolis / Gibbs (mixes in a few sweeps). Quantum: no step advantage in any family (D1: 0.90 vs best
+mixture on SK n=10, decohered control matches coherent on lattices; D2 1.1-3.5 flips per quantum step). S > S*: never.
+
+MEDIUM. Applications: MRF segmentation, ordering transitions in alloys and battery cathodes, RBMs at mode-forming
+transitions, design ensembles. Best classical: Swendsen-Wang/Wolff where unfrustrated, PT, canonical swaps.
+Quantum: vs weak baselines 3-8x (SK), but at parity with exact cluster moves on SK n=8-11 (S 0.94-1.09; clusters win
+below beta_c, QeMCMC 2.3-4x ahead at 1.47 beta_c; E1), 0.4-0.6 on 2D EA and ~0.03 on ferromagnets (D1); vs tuned PT one
+quantum step is worth 3.7-5.9 flips (D2). S > S*: never (S* ~1e8).
+
+LOW. Applications: spin-glass ground-state-near sampling, LABS, coexistence in RBMs, cold sampling of overloaded
+inference. Best classical: PT + Houdayer/ICM, population annealing, structure-aware proposals. Quantum: the only regime
+with a real step gain: 10-25x vs best mixture (D1, SK n=10), 8-18 flips per step vs tuned PT (D2, n=12-14), k 0.35 vs
+0.82 (D1), but 0.62-1.06 vs exact 2-3-spin heat-bath at n=6-8 (E3), and gone on FakeMarrakesh. S > S*: never at
+reachable n (S* ~1e8 vs S ~10).
+
+Regime | Typical applications | Best classical | Quantum S > 1 vs best classical? | S > S*?
+HIGH | matched posteriors, fitted data Ising, early RBMs | Metropolis/Gibbs | no (0.9-1.3) | no
+MEDIUM | MRF, alloy/cathode ordering, design ensembles | SW/Wolff, PT, swaps | parity vs clusters on SK (0.94-1.09); 3.7-5.9 flip-equivalents vs PT | no (S* ~1e8)
+LOW | spin glasses, LABS, RBM coexistence | PT+ICM, population annealing | yes per step (8-25 at n=10-14), small-n block heat-bath ties | no (S ~10 vs S* ~1e8)
+
+
+8. TARGET SPECIFICATION FOR THE SURVIVORS
+-----------------------------------------
+Columns: Target | Required step advantage S | n | Time per quantum step | 2q error | Connectivity | Baseline to beat |
+Where P1 / P2 / today's hardware are
+Cheap-energy sampling (K0-type SK, B3-09, B4-15) | >= 7e7 (IBM) or >= 1e6 (D-Wave-class latency) | >= ~40-100 (where PT relaxation exceeds ~5e7 flips; C3 bound S*/2) | <= 30 ns to need S ~1; 2-3 s today | <= ~1e-4 for ~1e4 CZ at F >= 0.3 | all-to-all or square with swap networks | tuned PT + Houdayer/ICM, population annealing | P1: S vs local only, n<=10 exact; P2: n<=10 fits; today: S ~10 vs PT at n=12-14 ideal, F >= 0.1 only to SK n~7 (IBM) / ~11 (Helios), 2-3 s per step
+Expensive-energy surrogate (B1-10, B5-08) | 1.005-8.5 realistic (t_E 0.4-600 s) | groups 12-25 within systems of 64-3000 | any <= t_E | ~2e-3 OK for groups of 8-12 if circuits ~300-900 CZ | heavy-hex OK at group scale | classical delayed acceptance / PT on the SAME surrogate | P1/P2: not studied; D5/E2: classical matches with ~100 inner surrogate steps at n<=10
+Many-chain ML / VMC (B2-18) | 3e1-3e2 (batched) | 16-100 | ~1 ms per chain-step batched | ~1e-3 | heavy-hex/square | autoregressive NQS (iid), global moves | prior art QA-VMC arXiv:2502.20799; no fair comparison measured
+Calibration (K0, B3-04, K3) | none (measurement) | 6-12 | offline | today's (2e-3) | native | n/a | ready to run (Section 11)
+
+
+9. RED-TEAM LOG (Wave 5)
+------------------------
+E1-A Overloaded CDMA window (B4-03, D6 S 2.7-5.3): attack = tempering with exact log Z, pair flips, TAP-guided
+     independence, mode-jumping among greedy minima. Result S 0.17 (n=8), 0.20 (n=10), 0.02-0.15 (n=12); S<1 in 48/54
+     cells; posterior has only 1-4 basins 2.5-4 flips apart. Revised: KILL. Coherence still beats decohered 2.3-9x.
+E1-B "MEDIUM T belongs to cluster moves" (D1, n=6): attack = exact SW/Wolff via vertex-subset DP up to n=11, wider QeMCMC
+     tuning. Result S 0.43 (n=6), 0.94-1.09 (n=8-11); clusters win below beta_c, QeMCMC 2.3-4x ahead at 1.47 beta_c.
+     Revised: WEAKENED to "parity at MEDIUM on SK"; still no wall-clock relevance.
+E2-1 Block bound G4: proof checked, holds for the absolute gap and any state-independent group probabilities, factor 2
+     sharp (max 1.885 in 852 adversarial cases; quantum max 0.72). Caveat: fixed-order sweeps (2.24x classical). Survives.
+E2-2 Surrogate kill (D5) re-scored with realistic K-step classical inner chains instead of exact draws: quantum wins
+     180/182 cells at K=1, 89/182 at K=10, 4/182 at K=100 (max 1.43). Survives at n<=10; open only at sizes not
+     simulable exactly.
+E2-3 Classical basin-difference mask library (D9 side finding): 0 wins / 80 vs PT/Metropolis per CPU second at SK
+     n=32/64 and EA L=8/12 (7-68x slower); not new (Houdayer, ICM, DE-MCMC). Revised: KILL (row N-S1).
+E3-1 Noise threshold (D3): under global depolarizing Q_noisy = F Q + (1-F) U exactly, so eps* is a circuit-depth
+     number (eps_half x N_2q = 0.39 at n=6 and 8), not an MCMC property; vs strong small classical moves the ideal S is
+     0.62-1.06 at n=6-8. Revised: the qh-15 thesis measurement will show a fidelity-collapse curve plus a removable
+     bias, not an advantage threshold.
+E3-2 Native-coupling subset (D4 2.6-3.3x): vs tuned mixture 1.67-1.68x; with noise 0.91-1.11; classical moves on the same
+     native tree win 4-5x. Revised: no advantage; CZ reduction only.
+E3-3 Calibration BUILD NOW items: tomography at n=8 ~$126 resolves S to sd 0.07-0.16; a 1000-step sequential chain is
+     uninterpretable at $1.6k-4.8k; K3 full 4096-start tomography ~$30k. Revised: K0/B3-04 as calibration only, K3 small.
+
+
+10. EXECUTIVE SUMMARY
+---------------------
+1. 144 ideas (24 KNOWN): 128 KILL, 7 SIMULATE MORE, 5 QUANTUM-INSPIRED ONLY, 3 BUILD NOW (calibration), 1 WAIT; best wall-clock 0.5%.
+2. HIGH T: no quantum step advantage anywhere. MEDIUM T: parity with exact cluster moves on SK, losses on lattices.
+3. LOW T keeps a real step advantage (8-25x vs PT or best mixtures at n=10-14, ideal), consistent with P1.
+4. A quantum step is worth 1-20 classical flips (D2); break-even ~1e8 on IBM (2-3 s vs ~30 ns); optimal PT fraction is zero.
+5. Surrogate in U with the true energy in the accept is exact but beaten at n<=12 by classical delayed acceptance.
+6. Coarse-grained QeMCMC is capped at 2x classical block Gibbs per step (proved, sharp); measured 0.11-0.35x.
+7. Matched-temperature Bayesian inference sits on the Nishimori line: no glass phase, no advantage.
+8. Depolarizing slows without bias; T1/readout/non-palindromic compilation bias (twirl + palindrome fix); Heron noise kills n=6 gain.
+9. Useful now: the calibration study (K0/B3-04) and the correctness fixes (V02, V12) for anyone running QeMCMC.
+10. Biggest single risk: the LOW-T gain needs ~100x deeper circuits than today's fidelity allows; it may wait for fault tolerance.
+
+11. CHEAPEST NEXT EXPERIMENT PER TOP BET
+----------------------------------------
+K0 calibration: run D3/E3 pipeline on ibm Heron r2 (or r3) at n=6 and n=8, 2 instances, 2 parameter points, twirled +
+   sandwich vs bare; full proposal tomography. Cost ~1-2 QPU minutes per (n, instance, point) -> ~$100-500 total, 1-2 days.
+   Confirms: measured asymmetry and stationary bias vs the D3 density-matrix prediction; kills: bias not reduced by V12.
+B3-04 bed: same on the 12-qubit native hexagon (360 CZ). ~$150, 1 day. Same kill/confirm logic.
+B2-18 NQS: CPU-only test: RBM or small CNN ansatz on a 4x4 frustrated J1-J2 lattice, QeMCMC proposal emulated exactly
+   (n=16) vs global moves and an autoregressive ansatz; IAT of the local energy. ~1 CPU-day. Kill: autoregressive tau=1
+   wins per network evaluation.
+B1-10 / B5-08 surrogate scaling: exact-matrix is impossible past n~14; run statevector proposals at n=16-20 vs classical
+   delayed acceptance with K = 1e2-1e4 inner PT steps on the same surrogate, IAT per true-energy call. ~2 CPU-days.
+   Kill: classical matches at K <= 1e3 for n = 20.
+B2-02 RBM coexistence: exact n<=20 (statevector proposals) vs parallel trajectory tempering on a trained small RBM with
+   two coexisting modes; ~1 CPU-day. Kill: PTT inter-mode rate within 2x.
+B4-15 LABS: exact gap exponents N<=14 with the 4-body energy (D1 harness + 4-body diagonal); ~0.5 CPU-day.
+   Kill: k_Q >= 0.8 k_local or steps base >= 1.30.
+B5-12 multicanonical: swap the accept rule in pilot/pilot_sk_gap_vs_beta.py for fixed converged multicanonical
+   weights; round-trip times at n=10-12; hours. Kill: round trip >= 0.5x of replica-exchange Wang-Landau.
+LOW-T scaling (the one real effect): D2 extended to SK n=16-20 with statevector proposals vs PT+ICM at beta = 3 beta_c,
+   IAT of overlap; ~3 CPU-days on an unloaded machine. Kill: S vs PT stops growing with n.
+
+
+12. CHANGES SUGGESTED FOR QHop/plans/use-cases-ideas.md (file not edited)
+--------------------------------------------------------------------------
+Criterion: replace "fewer steps than local/uniform" with "fewer steps than the best classical method for the regime
+(PT, cluster moves, block heat-bath, delayed acceptance)"; local/uniform baselines inflate S by 1.4x-5e4x on SK n=10 and up to ~1e11x on lattices (D1).
+Drop as applications (KILL, reasons in master table): K1, K2, K5, K7, K8, K9, K10, K11, K13, K14 (keep only as the harness
+negative control), K15, K16, K17, K18, K19 (keep only as exact ground truth for B5-08), K20, K21, K22, K23.
+Merge: K2 and K20 into B5-12 (multicanonical tails); K16 and K18 into one spin-ice/ice-rule demo if a demo is wanted;
+K15 into B3-09 (charge-balanced Coulomb, quantum-inspired only).
+Keep: K0 (BUILD NOW, calibration/thesis), K3 (BUILD NOW, small calibration demo only), K4 and K12 (QUANTUM-INSPIRED ONLY,
+demo value), K6 (game demo with no advantage claim; screening verdict KILL as an application).
+Update the "Honesty notes": the old FakeMarrakesh asymmetry 0.135 was about half shot noise; exact value 0.056-0.075
+(D3). Fill the empty "Ranked use cases" section with a pointer to this review.
+Update the harness path: the old scratchpad harness is lost; use QHop/experiments/qmcmc/common/qmc.py.
+
+
+APPENDIX A. CODE LOCATIONS AND HOW TO RUN
+------------------------------------------
+All under QHop/experiments/qmcmc/. Each folder has README.txt with exact commands, seeds, parameters and cuts.
+Set OMP_NUM_THREADS=2 for parallel runs. Python: /home/peter/anaconda3/bin/python.
+common/qmc.py                 shared exact harness (import: sys.path.insert(0, ".../qmcmc/common"); import qmc)
+pilot/                        python pilot/pilot_sk_gap_vs_beta.py (SK n=10 gap vs beta)
+bench/sk_bench.c              classical per-proposal cost benchmark (A5)
+B7-checks/                    b7_checks.py, b7_mask_scaling.py (variant stationarity checks)
+D1-temperature-map/           gap vs beta, all proposals, SK/EA/ferro; scaling fits
+D2-pt-quantum-move/           QeMCMC vs tuned PT, hybrid PT + quantum move (IAT)
+D3-noise/                     density-matrix noise channels, bias, gauge/twirl
+D4-compilation/               Trotter r(t), transpilation N_2q/depth/F per topology, native subset
+D5-surrogate/                 surrogate-driven proposals vs delayed acceptance
+D6-inference-nishimori/       planted posteriors, tomography, genomics, MRF control (run analyze.py for tables)
+D7-quantum-inspired-cg/       CG move emulated classically vs block heat-bath and PT (C kernel)
+D8-conserving-mixer/          XY fixed-composition mixer, symmetry of Trotter orders
+D9-mask-library/              mask-donation variant vs classical libraries
+E1-redteam-inference-medium/, E2-redteam-costmodel/, E3-redteam-hardware/   red-team code and results
+_reports/                     all agent reports, briefs, screening rows; assemble_master.py rebuilds the master table
+
+
+APPENDIX B. SOURCES (verified by the agents; full lists in _reports/A3-literature.txt, A4-hardware.txt,
+A5-classical-baselines.txt, C1-C4 notes)
+P1 Layden et al., Nature 619, 282 (2023), https://arxiv.org/abs/2203.12497
+P2 Ferguson and Wallden, Phys. Rev. Research 7, 013231 (2025), https://arxiv.org/abs/2405.04247
+Orfi and Sels, https://arxiv.org/abs/2408.07881 and https://arxiv.org/abs/2403.03087
+Christmann et al., PRA 111, 042615, https://arxiv.org/abs/2411.17821
+Hsieh, Orfi and Sels, https://arxiv.org/abs/2603.28076
+Marshall et al. (IBM), https://arxiv.org/abs/2602.06171
+Kawamata and Fujii, https://arxiv.org/abs/2611.05883
+Cui et al., https://arxiv.org/abs/2606.23350
+Arai and Kadowaki, https://arxiv.org/abs/2502.08060
+Incudini and Mazzola, https://arxiv.org/abs/2607.22818
+Mazumder and Towe, https://arxiv.org/abs/2607.09893
+Chen et al. (TN-MCMC 3D glasses), https://arxiv.org/abs/2509.23945
+Zdeborova and Krzakala, statistical physics of inference, https://arxiv.org/abs/1511.02476
+Isakov et al. (CPU spin flips), https://arxiv.org/abs/1401.1084
+GPU multispin Ising, https://arxiv.org/abs/1906.06297
+Zhu, Ochoa, Katzgraber (ICM / Houdayer 2D EA), https://arxiv.org/abs/1501.05630
+Houdayer replica cluster move, https://arxiv.org/abs/cond-mat/0101116
+p-bit FPGA (Aadit et al.), https://arxiv.org/abs/2110.02481
+Parallel trajectory tempering for RBMs, https://arxiv.org/abs/2405.15376
+QA-VMC prior art, https://arxiv.org/abs/2502.20799
+N-k cascades / Random Chemistry timing, https://arxiv.org/abs/1405.4213
+LABS scaling (QAOA vs MTS), https://arxiv.org/abs/2308.02342; quantum-seeded MTS https://arxiv.org/abs/2511.04553
+IBM job run time docs, https://quantum.cloud.ibm.com/docs/en/guides/estimate-job-run-time
+D-Wave operation timing, https://docs.dwavequantum.com/en/latest/quantum_research/operation_timing.html
+Quantinuum Helios data sheet, https://docs.quantinuum.com/systems/_static/assets/data_sheets/Quantinuum%20Helios%20Product%20Data%20Sheet.pdf
+
+
+APPENDIX C. SUB-AGENTS USED (one line each)
+A1 P1 analyst: full read of Layden + SI; advantage only T<~1; no PT, no wall-clock; chains offline.
+A2 P2 analyst: effective-field formula; detailed balance asserted only; sequential sweep not symmetric; noise open.
+A3 literature scout: ~50 papers verified; strongest critique Orfi-Sels + Christmann; nobody compared vs PT+cluster.
+A4 hardware scout: per-step latency floor 2 s IBM, 30-50 ms D-Wave; batching is the only latency fix.
+A5 classical-baseline scout: ~30 ns per dense proposal (own bench); PT equilibrates SK to T~0.4.
+A6 repository mapper: reusable code inventory; old harness and runs lost; import gotchas.
+B1-B6 domain ideation (optimisation, ML, physics, telecom, power/finance/stats, medical): 118 ideas + KNOWN assessments.
+B7 implementation inventor: 25 variants, 23 with numerical stationarity checks; G1-G3.
+C1-C4 screening: 142 rows with break-even arithmetic; ~80% KILL before experiments.
+D1 temperature map: no HIGH-T advantage; MEDIUM loses to cluster moves on lattices; LOW 10-25x vs mixtures.
+D2 PT comparison: quantum step worth 1-20 flips vs tuned PT; optimal quantum fraction in PT = 0.
+D3 noise: depolarizing unbiased, T1/readout biased; gauge averaging not exact; twirl + palindrome exact.
+D4 compilation: SK n=10 2,160 CZ on heavy-hex; F >= 0.1 only to n~7 (IBM), ~11 (Helios); Helios ~8 s per step.
+D5 surrogate: exact but dominated by classical delayed acceptance / hotter surrogate draws at n<=12.
+D6 inference: Nishimori prediction confirmed; one overloaded window (later killed by E1).
+D7 quantum-inspired CG: KILL; proved 2x block heat-bath bound; 0/702 CPU-time wins.
+D8 conserving mixer: symmetric if palindromic; 1.7-11.5x vs swaps, ~1x vs PT; ~2.2e4 CZ per proposal.
+D9 mask library: KILL; classical libraries match; gain drifts to uniform with n.
+E1 red team inference/medium: killed the CDMA window; weakened the cluster-moves claim to parity on SK.
+E2 red team cost model: block bound holds (sharp); surrogate kill holds at n<=10; classical mask spin-off killed.
+E3 red team hardware: eps* is a depth number; native subset no advantage; calibration costs.
+F1 verification: ~260 numbers checked, 242 OK, 11 mismatches fixed, 7 planning estimates not sourced (Section 13).

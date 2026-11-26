@@ -1,0 +1,25 @@
+gap check 0.3 0.06994590931628497 0.0699459093162863 0.029757650874299713 0.02975765087429838
+gap check 1.0 0.06280517920366491 0.06280517920366468 0.0021474320658482204 0.0021474320658495527
+gap check 3.0 0.07826188447161098 0.07826188447161098 7.356509317490989e-06 7.356509317268944e-06
+q/local n8 beta1 (harness says 29.25): 29.24664309639901
+layden iid vs stratified 0.1 0.16418235875663778 0.16313171898728585
+layden iid vs stratified 0.3 0.05643873299636415 0.05962144953823556
+layden iid vs stratified 1.0 0.05328081343855762 0.06213263082071219
+layden iid vs stratified 3.0 0.06486336418812222 0.08496101249854482
+decohered diff 0.001075537171359775 0.011890212440563652 0.011866987195499279
+CG diff 1.6653345369377348e-16 asym 3.6723960461157446e-17 times 0.46137070655822754 0.47270655632019043
+fe33 beta=0.2: rows 5.6e-16 4.4e-16 stat 1.4e-17 asym 0.0e+00 2.8e-17 pi-chk 0.0e+00 | SW exact 0.6935 sampled 0.6936+-0.0010 | Wolff exact 0.3778 sampled 0.3773+-0.0001  build 0.5s
+fe33 beta=0.5: rows 6.7e-16 4.4e-16 stat 7.8e-16 asym 0.0e+00 1.4e-17 pi-chk 0.0e+00 | SW exact 0.4314 sampled 0.4290+-0.0008 | Wolff exact 0.1080 sampled 0.1068+-0.0009  build 0.5s
+fe33 beta=1.0: rows 5.6e-16 4.4e-16 stat 1.1e-16 asym 0.0e+00 6.9e-18 pi-chk 0.0e+00 | SW exact 0.4944 sampled 0.4924+-0.0006 | Wolff exact 0.0013 sampled 0.0008+-0.0004  build 0.5s
+ea33 beta=0.2: rows 6.7e-16 4.4e-16 stat 1.0e-17 asym 0.0e+00 3.5e-17 pi-chk 0.0e+00 | SW exact 0.7233 sampled 0.7235+-0.0009 | Wolff exact 0.3607 sampled 0.3606+-0.0003  build 0.2s
+ea33 beta=0.5: rows 6.7e-16 2.2e-16 stat 1.4e-17 asym 0.0e+00 2.1e-17 pi-chk 0.0e+00 | SW exact 0.2069 sampled 0.2079+-0.0011 | Wolff exact 0.2692 sampled 0.2696+-0.0008  build 0.2s
+ea33 beta=1.0: rows 7.8e-16 5.6e-16 stat 1.9e-16 asym 0.0e+00 6.9e-18 pi-chk 0.0e+00 | SW exact 0.0160 sampled 0.0161+-0.0002 | Wolff exact 0.0108 sampled 0.0111+-0.0005  build 0.2s
+sk5g beta=0.2: rows 3.3e-16 1.1e-16 stat 2.1e-17 asym 0.0e+00 5.6e-17 pi-chk 4.2e-17 | SW exact 0.6330 sampled 0.6326+-0.0011 | Wolff exact 0.6736 sampled 0.6755+-0.0011  build 0.0s
+sk5g beta=0.5: rows 4.4e-16 2.2e-16 stat 4.2e-17 asym 0.0e+00 1.9e-16 pi-chk 1.9e-16 | SW exact 0.2037 sampled 0.2047+-0.0013 | Wolff exact 0.3505 sampled 0.3507+-0.0016  build 0.0s
+sk5g beta=1.0: rows 8.9e-16 3.3e-16 stat 2.8e-17 asym 0.0e+00 1.4e-16 pi-chk 6.1e-16 | SW exact 0.0247 sampled 0.0238+-0.0005 | Wolff exact 0.0481 sampled 0.0477+-0.0007  build 0.0s
+
+real	5m14.451s
+user	3m2.969s
+sys	0m3.375s
+
+[exited with code 0]

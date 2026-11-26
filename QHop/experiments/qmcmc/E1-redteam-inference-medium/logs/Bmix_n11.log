@@ -1,0 +1,6 @@
+0 r0.68:lay/clmix=0.21(SW+Wolff),gain=0.81 r1.00:lay/clmix=0.44(Wolff0.75+mix(u=0.5)),gain=0.87 r1.47:lay/clmix=1.33(Wolff0.75+mix(u=0.5)),gain=1.25
+1 r0.68:lay/clmix=0.33(Wolff0.75+mix(u=0.5)),gain=0.82 r1.00:lay/clmix=1.08(Wolff0.75+mix(u=0.0)),gain=0.90 r1.47:lay/clmix=5.17(Wolff0.25+mix(u=0.5)),gain=1.07
+2 r0.68:lay/clmix=0.36(Wolff0.75+mix(u=0.1)),gain=0.82 r1.00:lay/clmix=1.13(Wolff0.75+mix(u=0.0)),gain=0.94 r1.47:lay/clmix=3.47(Wolff0.25+mix(u=0.5)),gain=1.82
+/home/peter/PycharmProjects/Quantum-research/QHop/experiments/qmcmc/E1-redteam-inference-medium/claimB_mix.py:50: RuntimeWarning: All-NaN slice encountered
+  f" tuned/best {np.nanmedian(gt):.3g}")
+n=11 MEDIUM layden/best(incl cluster mixtures) median 1.12 IQR [0.808,1.17] tuned/best nan

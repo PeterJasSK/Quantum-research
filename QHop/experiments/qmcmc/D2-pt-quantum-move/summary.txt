@@ -1,0 +1,293 @@
+D2 summary (own simulation, ideal/noiseless proposal). Medians over instances [IQR]. tau = integrated autocorrelation time
+(Sokal window, qmc.iat). Classical tau in single-spin-flip proposals (PT: tau_sweeps x n x R x copies [+ n R Houdayer]);
+quantum tau in quantum proposal steps. tau_max = max(tau_E, tau_q), q = overlap with ground state (|q| for EA).
+
+==== EA n=12: 5 instances, seeds [520, 521, 522, 523, 524]
+  beta_c (C peak): 0.671, 0.799, 0.779, 1.013, 1.131
+  -- LOW (beta = 2.4 [2.34,3.04])
+     PT ladder (seed 520): betas [0.201, 0.614, 2.012] swap [0.22, 0.25]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.22 max 0.29
+     Metropolis   tauE_flips 347 [168,394]  tauQ_flips 3.75e+03 [1.67e+03,5.67e+03]  equilibrated 5/5  t_eq_flips 576 [336,6.72e+03]  N/tau_min 7.2e+03 [4.76e+03,1.61e+04]
+     PT           tauE_flips 239 [155,253]  tauQ_flips 632 [513,768]  equilibrated 5/5  t_eq_flips 288 [288,1.15e+03]  N/tau_min 1.14e+04 [9.38e+03,1.4e+04]
+     PT+Houdayer  tauE_flips 348 [219,361]  tauQ_flips 927 [749,1.05e+03]  equilibrated 5/5  t_eq_flips 864 [864,1.73e+03]  N/tau_min 2.33e+04 [2.05e+04,2.88e+04]
+     QeMCMC       tauE_steps 24.5 [23.2,43.4]  tauQ_steps 33.3 [17.2,50.9]  equilibrated 5/5  acc 0.0948 [0.0909,0.0971]  N 1.98e+04 [1.98e+04,1.98e+04]  t_eq_steps 128 [96,128]
+     Decohered    tauE_steps 126 [93.2,269]  tauQ_steps 170 [153,274]  equilibrated 4/5  acc 0.0108 [0.0108,0.0114]  N 5.8e+03 [5.7e+03,6.3e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 17.7 [7.02,18.1] | vs best classical 17.7 [7.02,18.1] | vs Metropolis 86.5 [77.6,110] | decohered vs PT 2.31 [0.746,3.42]
+     PT+Q0.01 tau_sweeps/tau_PT 1 [0.911,1.03]  qacc 0.204 [0.204,0.21]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.914 [0.876,0.961]  qacc 0.213 [0.213,0.22]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.748 [0.678,0.811]  qacc 0.215 [0.204,0.223]  N_sweeps 2.51e+04 [1.63e+04,2.54e+04]
+     PT+Q1.0  tau_sweeps/tau_PT 0.577 [0.528,0.758]  qacc 0.212 [0.201,0.217]  N_sweeps 2.36e+04 [1.38e+04,2.44e+04]
+     PT+D0.1  tau_sweeps/tau_PT 0.911 [0.825,1.02]  qacc 0.0463 [0.0458,0.0488]  N_sweeps 2.49e+04 [2.42e+04,2.79e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.861 [0.538,0.906]  qacc 0.051 [0.0501,0.0525]  N_sweeps 2.67e+03 [2.61e+03,2.86e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 0 [0,171] flips
+     break-even R* PT+Q0.1: 17.2 [7.15,25.1] flips
+     break-even R* PT+Q0.5: 12.1 [8.42,17.1] flips
+     break-even R* PT+Q1.0: 13.2 [5.75,16.1] flips
+     break-even R* PT+D0.1: 17 [0,36.8] flips
+     break-even R* PT+D1.0: 2.9 [1.88,15.4] flips
+  -- MED (beta = 0.799 [0.779,1.01])
+     PT ladder (seed 520): betas [0.201, 0.426, 0.671] swap [0.49, 0.51]
+     PT replicas R: 3 [2,3]; all swap rates: min 0.23 max 0.54
+     Metropolis   tauE_flips 62.9 [37.3,78.4]  tauQ_flips 111 [108,134]  equilibrated 5/5  t_eq_flips 768 [768,768]  N/tau_min 2.43e+05 [2.02e+05,2.51e+05]
+     PT           tauE_flips 113 [62.6,123]  tauQ_flips 155 [149,155]  equilibrated 5/5  t_eq_flips 576 [384,768]  N/tau_min 3.22e+04 [3.09e+04,4.64e+04]
+     PT+Houdayer  tauE_flips 193 [116,201]  tauQ_flips 228 [225,229]  equilibrated 5/5  t_eq_flips 6.91e+03 [1.15e+03,6.91e+03]  N/tau_min 6.41e+04 [6.3e+04,9.49e+04]
+     QeMCMC       tauE_steps 47 [20.6,60.7]  tauQ_steps 40.9 [13.2,41.4]  equilibrated 4/5  acc 0.326 [0.29,0.328]  N 1.98e+04 [1.98e+04,1.98e+04]  t_eq_steps 128 [128,128]
+     Decohered    tauE_steps 111 [103,123]  tauQ_steps 126 [118,160]  equilibrated 0/5  acc 0.075 [0.0612,0.0924]  N 5.6e+03 [5.5e+03,6e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 5.86 [2.55,7.53] | vs best classical 5.22 [1.83,5.86] | vs Metropolis 5.22 [1.83,7.24] | decohered vs PT 1.1 [0.969,1.23]
+     PT+Q0.01 tau_sweeps/tau_PT 0.979 [0.969,0.992]  qacc 0.403 [0.387,0.497]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.981 [0.957,0.996]  qacc 0.423 [0.384,0.493]  N_sweeps 4.83e+04 [3.63e+04,5e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.873 [0.726,0.926]  qacc 0.422 [0.375,0.503]  N_sweeps 1.42e+04 [7.89e+03,1.44e+04]
+     PT+Q1.0  tau_sweeps/tau_PT 0.693 [0.674,0.782]  qacc 0.413 [0.378,0.495]  N_sweeps 5.92e+03 [4.38e+03,1.06e+04]
+     PT+D0.1  tau_sweeps/tau_PT 0.987 [0.974,0.993]  qacc 0.168 [0.139,0.237]  N_sweeps 2.63e+04 [2.61e+04,2.84e+04]
+     PT+D1.0  tau_sweeps/tau_PT 1.01 [0.875,1.13]  qacc 0.158 [0.143,0.236]  N_sweeps 2.66e+03 [2.52e+03,2.72e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 38.2 [10.4,56.8] flips
+     break-even R* PT+Q0.1: 2.3 [0.76,8.13] flips
+     break-even R* PT+Q0.5: 3.51 [2.94,9.04] flips
+     break-even R* PT+Q1.0: 5.8 [5.03,7.98] flips
+     break-even R* PT+D0.1: 2.34 [1.36,4.74] flips
+     break-even R* PT+D1.0: 0 [0,1.72] flips
+  -- HIGH (beta = 0.24 [0.234,0.304])
+     PT ladder (seed 520): betas [0.201] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 11.1 [11,11.2]  tauQ_flips 13.5 [13.4,14.2]  equilibrated 5/5  t_eq_flips 3.07e+03 [3.07e+03,1.23e+04]  N/tau_min 1.48e+05 [1.41e+05,1.5e+05]
+     PT           tauE_flips 15.5 [14.9,15.6]  tauQ_flips 17.5 [17.4,17.8]  equilibrated 5/5  t_eq_flips 3.07e+03 [768,3.07e+03]  N/tau_min 1.37e+05 [1.35e+05,1.38e+05]
+     PT+Houdayer  tauE_flips 38.3 [38.2,38.4]  tauQ_flips 38.8 [38.7,39.5]  equilibrated 5/5  t_eq_flips 4.61e+03 [4.61e+03,9.22e+03]  N/tau_min 1.86e+05 [1.82e+05,1.86e+05]
+     QeMCMC       tauE_steps 16.8 [15.5,17.6]  tauQ_steps 6.76 [4.06,7.48]  equilibrated 3/5  acc 0.676 [0.674,0.707]  N 8.7e+03 [8.4e+03,1e+04]  t_eq_steps 128 [128,128]
+     Decohered    tauE_steps 9.67 [8.99,12.7]  tauQ_steps 12 [11.3,13]  equilibrated 1/5  acc 0.412 [0.405,0.468]  N 5.9e+03 [5.9e+03,6.4e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 1.07 [0.994,1.27] | vs best classical 0.82 [0.761,1.08] | vs Metropolis 0.82 [0.761,1.08] | decohered vs PT 1.38 [1.35,1.41]
+     PT+Q0.01 tau_sweeps/tau_PT 0.984 [0.974,0.998]  qacc 0.661 [0.65,0.703]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 1.01 [1,1.03]  qacc 0.673 [0.669,0.708]  N_sweeps 2.9e+04 [2.22e+04,3.23e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.944 [0.908,0.958]  qacc 0.661 [0.653,0.714]  N_sweeps 5.1e+03 [4.14e+03,7.32e+03]
+     PT+Q1.0  tau_sweeps/tau_PT 0.887 [0.845,0.935]  qacc 0.669 [0.656,0.709]  N_sweeps 2.86e+03 [2.81e+03,4.13e+03]
+     PT+D0.1  tau_sweeps/tau_PT 0.993 [0.992,0.997]  qacc 0.401 [0.394,0.467]  N_sweeps 2.85e+04 [2.79e+04,2.89e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.959 [0.891,1.05]  qacc 0.4 [0.4,0.473]  N_sweeps 2.6e+03 [2.57e+03,2.86e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 18.4 [2.95,33.4] flips
+     break-even R* PT+Q0.1: 0 [0,0] flips
+     break-even R* PT+Q0.5: 1.43 [1.06,2.52] flips
+     break-even R* PT+Q1.0: 1.53 [0.835,2.2] flips
+     break-even R* PT+D0.1: 0.898 [0.343,0.983] flips
+     break-even R* PT+D1.0: 0.512 [0,1.47] flips
+
+==== EA n=16: 5 instances, seeds [500, 501, 502, 503, 504]
+  beta_c (C peak): 0.720, 0.730, 0.666, 0.636, 0.862
+  -- LOW (beta = 2.16 [2,2.19])
+     PT ladder (seed 500): betas [0.216, 0.5, 0.885, 2.16] swap [0.34, 0.35, 0.35]
+     PT replicas R: 4 [4,4]; all swap rates: min 0.32 max 0.37
+     Metropolis   tauE_flips 3.19e+03 [850,9.01e+03]  tauQ_flips 2.08e+04 [1.59e+03,4.37e+04]  equilibrated 5/5  t_eq_flips 8.19e+03 [8.19e+03,8.19e+03]  N/tau_min 1.73e+03 [824,2.26e+04]
+     PT           tauE_flips 448 [415,571]  tauQ_flips 1.03e+03 [811,1.11e+03]  equilibrated 5/5  t_eq_flips 1.02e+03 [1.02e+03,1.02e+03]  N/tau_min 1.24e+04 [1.15e+04,1.58e+04]
+     PT+Houdayer  tauE_flips 601 [559,761]  tauQ_flips 1.3e+03 [1.21e+03,1.51e+03]  equilibrated 5/5  t_eq_flips 3.07e+03 [3.07e+03,3.07e+03]  N/tau_min 2.95e+04 [2.55e+04,3.18e+04]
+  -- MED (beta = 0.72 [0.666,0.73])
+     PT ladder (seed 500): betas [0.216, 0.437, 0.72] swap [0.46, 0.43]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.43 max 0.50
+     Metropolis   tauE_flips 65.3 [64.6,83.1]  tauQ_flips 146 [144,149]  equilibrated 5/5  t_eq_flips 1.02e+03 [512,1.02e+03]  N/tau_min 2.47e+05 [2.42e+05,2.49e+05]
+     PT           tauE_flips 129 [128,147]  tauQ_flips 221 [218,226]  equilibrated 5/5  t_eq_flips 1.54e+03 [768,3.07e+03]  N/tau_min 4.33e+04 [4.26e+04,4.41e+04]
+     PT+Houdayer  tauE_flips 227 [224,247]  tauQ_flips 353 [332,355]  equilibrated 5/5  t_eq_flips 4.61e+03 [4.61e+03,9.22e+03]  N/tau_min 8.15e+04 [8.12e+04,8.68e+04]
+  -- HIGH (beta = 0.216 [0.2,0.219])
+     PT ladder (seed 500): betas [0.216] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 15.1 [14,15.7]  tauQ_flips 18.6 [16.5,18.6]  equilibrated 5/5  t_eq_flips 1.64e+04 [2.05e+03,1.64e+04]  N/tau_min 1.08e+05 [1.08e+05,1.21e+05]
+     PT           tauE_flips 20.7 [19.8,21.1]  tauQ_flips 23.4 [21.6,23.5]  equilibrated 5/5  t_eq_flips 8.19e+03 [4.1e+03,1.64e+04]  N/tau_min 1.37e+05 [1.36e+05,1.48e+05]
+     PT+Houdayer  tauE_flips 51.9 [51.5,51.9]  tauQ_flips 52.2 [51.9,53.4]  equilibrated 5/5  t_eq_flips 2.46e+04 [1.23e+04,2.46e+04]  N/tau_min 1.84e+05 [1.8e+05,1.85e+05]
+
+==== SK n=12: 5 instances, seeds [1200, 1201, 1202, 1203, 1204]
+  beta_c (C peak): 0.506, 0.406, 1.268, 0.410, 0.345
+  -- LOW (beta = 1.23 [1.22,1.52])
+     PT ladder (seed 1200): betas [0.152, 0.452, 1.519] swap [0.19, 0.22]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.19 max 0.35
+     Metropolis   tauE_flips 94.3 [48.4,1.03e+04]  tauQ_flips 1.81e+04 [210,5.51e+04]  equilibrated 4/5  t_eq_flips 2.3e+03 [1.92e+03,2.69e+03]  N/tau_min 1.49e+03 [490,1.28e+05]
+     PT           tauE_flips 458 [159,565]  tauQ_flips 1.03e+03 [297,1.52e+03]  equilibrated 5/5  t_eq_flips 576 [288,576]  N/tau_min 7.02e+03 [4.73e+03,2.43e+04]
+     QeMCMC       tauE_steps 22.7 [22.3,66.1]  tauQ_steps 19.7 [17.2,130]  equilibrated 5/5  acc 0.0623 [0.0104,0.0796]  N 1.98e+04 [1.98e+04,1.98e+04]  t_eq_steps 64 [64,80]
+     Decohered    tauE_steps 178 [51.7,258]  tauQ_steps 248 [52.9,309]  equilibrated 3/5  acc 0.00739 [0.00613,0.0143]  N 3.5e+03 [3.4e+03,3.8e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 7.91 [4.5,13.3] | vs best classical 7.91 [2.41,9.44] | vs Metropolis 139 [9.44,992] | decohered vs PT 3.95 [1.93,5.07]
+     PT+Q0.01 tau_sweeps/tau_PT 0.949 [0.939,0.95]  qacc 0.221 [0.148,0.232]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.973 [0.817,1]  qacc 0.21 [0.138,0.227]  N_sweeps 3.49e+04 [2.83e+04,5e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.87 [0.597,0.91]  qacc 0.202 [0.136,0.226]  N_sweeps 8.14e+03 [7.9e+03,2.71e+04]
+     PT+Q1.0  tau_sweeps/tau_PT 0.688 [0.575,0.729]  qacc 0.206 [0.132,0.222]  N_sweeps 6e+03 [5.9e+03,2.19e+04]
+     PT+D0.1  tau_sweeps/tau_PT 0.821 [0.755,0.831]  qacc 0.0549 [0.0342,0.057]  N_sweeps 1.69e+04 [1.66e+04,1.85e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.611 [0.592,0.691]  qacc 0.0555 [0.0371,0.057]  N_sweeps 1.8e+03 [1.78e+03,2.2e+03]
+     best p_q (Q) at R=1e+03: 0x4, 0.01x1  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 103 [92.1,114] flips
+     break-even R* PT+Q0.1: 5.01 [0,40.4] flips
+     break-even R* PT+Q0.5: 5.38 [3.53,24.4] flips
+     break-even R* PT+Q1.0: 8.15 [6.68,13.3] flips
+     break-even R* PT+D0.1: 40 [36.5,58.9] flips
+     break-even R* PT+D1.0: 11.5 [8.04,12.4] flips
+  -- MED (beta = 0.41 [0.406,0.506])
+     PT ladder (seed 1200): betas [0.152, 0.292, 0.506] swap [0.48, 0.45]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.43 max 0.58
+     Metropolis   tauE_flips 85.7 [76.4,109]  tauQ_flips 242 [210,536]  equilibrated 5/5  t_eq_flips 768 [768,3.07e+03]  N/tau_min 1.12e+05 [5.04e+04,1.28e+05]
+     PT           tauE_flips 126 [122,145]  tauQ_flips 251 [202,378]  equilibrated 5/5  t_eq_flips 1.15e+03 [1.15e+03,4.61e+03]  N/tau_min 2.87e+04 [1.9e+04,3.56e+04]
+     QeMCMC       tauE_steps 59.5 [51.6,76.2]  tauQ_steps 46.2 [41.7,49.9]  equilibrated 5/5  acc 0.32 [0.216,0.343]  N 1.98e+04 [1.98e+04,1.98e+04]  t_eq_steps nan
+     Decohered    tauE_steps 173 [72.3,197]  tauQ_steps 207 [183,284]  equilibrated 1/5  acc 0.0803 [0.0445,0.0872]  N 3.1e+03 [3e+03,3.3e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 4.22 [2.86,7.38] | vs best classical 4.06 [2.65,7.38] | vs Metropolis 4.06 [2.76,12.8] | decohered vs PT 1.26 [1.12,2.43]
+     PT+Q0.01 tau_sweeps/tau_PT 1.03 [0.964,1.05]  qacc 0.414 [0.324,0.434]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 1.01 [0.934,1.04]  qacc 0.427 [0.326,0.427]  N_sweeps 3.65e+04 [3e+04,5e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.751 [0.715,0.858]  qacc 0.425 [0.335,0.427]  N_sweeps 9.65e+03 [7e+03,1.38e+04]
+     PT+Q1.0  tau_sweeps/tau_PT 0.73 [0.514,0.763]  qacc 0.423 [0.323,0.424]  N_sweeps 4.57e+03 [4.28e+03,9.54e+03]
+     PT+D0.1  tau_sweeps/tau_PT 1.06 [0.973,1.07]  qacc 0.133 [0.107,0.162]  N_sweeps 1.63e+04 [1.56e+04,1.83e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.841 [0.702,0.995]  qacc 0.147 [0.11,0.159]  N_sweeps 1.68e+03 [1.6e+03,1.8e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 0 [0,63.7] flips
+     break-even R* PT+Q0.1: 0 [0,12.9] flips
+     break-even R* PT+Q0.5: 11.9 [5.99,14.4] flips
+     break-even R* PT+Q1.0: 6.64 [5.6,17] flips
+     break-even R* PT+D0.1: 0 [0,4.91] flips
+     break-even R* PT+D1.0: 3.4 [0.0903,7.65] flips
+  -- HIGH (beta = 0.123 [0.122,0.152])
+     PT ladder (seed 1200): betas [0.152] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 15.5 [12.6,15.8]  tauQ_flips 28.7 [28.5,31.9]  equilibrated 5/5  t_eq_flips 3.07e+03 [1.54e+03,1.23e+04]  N/tau_min 6.96e+04 [6.27e+04,7.01e+04]
+     PT           tauE_flips 19.1 [16.4,19.6]  tauQ_flips 30.3 [30.3,33.8]  equilibrated 5/5  t_eq_flips 6.14e+03 [1.54e+03,6.14e+03]  N/tau_min 7.92e+04 [7.1e+04,7.93e+04]
+     QeMCMC       tauE_steps 23.7 [14.5,25.1]  tauQ_steps 6.19 [5.49,8.92]  equilibrated 2/5  acc 0.723 [0.645,0.728]  N 4.5e+03 [3.6e+03,6e+03]  t_eq_steps nan
+     Decohered    tauE_steps 11.8 [10.6,14.2]  tauQ_steps 13.4 [12.3,17.5]  equilibrated 0/5  acc 0.471 [0.374,0.482]  N 3.7e+03 [3.6e+03,4.1e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 2.08 [1.2,2.34] | vs best classical 1.96 [1.12,2.2] | vs Metropolis 1.96 [1.12,2.2] | decohered vs PT 2.5 [2.46,2.53]
+     PT+Q0.01 tau_sweeps/tau_PT 1.01 [0.998,1.07]  qacc 0.723 [0.601,0.733]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.946 [0.917,0.947]  qacc 0.729 [0.66,0.74]  N_sweeps 1.31e+04 [1.3e+04,1.83e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.742 [0.707,0.831]  qacc 0.731 [0.649,0.735]  N_sweeps 2.26e+03 [2.26e+03,3.86e+03]
+     PT+Q1.0  tau_sweeps/tau_PT 0.723 [0.562,0.762]  qacc 0.733 [0.645,0.734]  N_sweeps 1.41e+03 [1.16e+03,2.08e+03]
+     PT+D0.1  tau_sweeps/tau_PT 1.01 [0.936,1.01]  qacc 0.458 [0.39,0.466]  N_sweeps 1.9e+04 [1.88e+04,2e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.835 [0.708,0.951]  qacc 0.461 [0.361,0.476]  N_sweeps 1.98e+03 [1.44e+03,1.99e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 0 [0,2.29] flips
+     break-even R* PT+Q0.1: 6.9 [6.89,10.8] flips
+     break-even R* PT+Q0.5: 8.42 [4.9,9.78] flips
+     break-even R* PT+Q1.0: 4.6 [3.75,9.36] flips
+     break-even R* PT+D0.1: 0 [0,8.49] flips
+     break-even R* PT+D1.0: 2.38 [0.622,4.96] flips
+
+==== SK n=14: 5 instances, seeds [1400, 1401, 1402, 1403, 1404]
+  beta_c (C peak): 0.362, 0.353, 0.259, 0.414, 0.283
+  -- LOW (beta = 1.06 [0.849,1.09])
+     PT ladder (seed 1400): betas [0.109, 0.244, 0.449, 1.086] swap [0.35, 0.34, 0.34]
+     PT replicas R: 4 [4,4]; all swap rates: min 0.32 max 0.39
+     Metropolis   tauE_flips 78.6 [74.5,203]  tauQ_flips 106 [100,452]  equilibrated 5/5  t_eq_flips 7.62e+03 [4.26e+03,1.1e+04]  N/tau_min 2.97e+05 [6.96e+04,3.15e+05]
+     PT           tauE_flips 199 [185,266]  tauQ_flips 225 [224,493]  equilibrated 5/5  t_eq_flips 896 [896,896]  N/tau_min 4.97e+04 [2.27e+04,5e+04]
+     QeMCMC       tauE_steps 28.3 [22.8,40.1]  tauQ_steps 25.4 [16.4,36.6]  equilibrated 5/5  acc 0.0418 [0.0411,0.104]  N 1.98e+04 [1.98e+04,1.98e+04]  t_eq_steps nan
+     Decohered    tauE_steps 237 [196,241]  tauQ_steps 246 [183,395]  equilibrated 1/5  acc 0.00833 [0.0061,0.0102]  N 5.8e+03 [5.7e+03,5.8e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 10.2 [7.97,19.1] | vs best classical 7.74 [3.53,19.1] | vs Metropolis 7.74 [3.53,19.9] | decohered vs PT 1.14 [0.915,2.15]
+     PT+Q0.01 tau_sweeps/tau_PT 1.01 [1,1.02]  qacc 0.171 [0.123,0.212]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.975 [0.908,0.993]  qacc 0.177 [0.152,0.195]  N_sweeps 2.93e+04 [2.05e+04,2.96e+04]
+     PT+Q0.5  tau_sweeps/tau_PT 0.774 [0.768,1]  qacc 0.178 [0.147,0.192]  N_sweeps 8.42e+03 [7.1e+03,9.15e+03]
+     PT+Q1.0  tau_sweeps/tau_PT 0.734 [0.693,0.931]  qacc 0.18 [0.145,0.187]  N_sweeps 6.13e+03 [4.58e+03,6.46e+03]
+     PT+D0.1  tau_sweeps/tau_PT 1.03 [1.01,1.08]  qacc 0.0268 [0.0236,0.0271]  N_sweeps 2.83e+04 [2.61e+04,3.04e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.909 [0.831,1.17]  qacc 0.0283 [0.0233,0.0314]  N_sweeps 2.98e+03 [2.73e+03,3.05e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 0 [0,0] flips
+     break-even R* PT+Q0.1: 7.14 [1.89,27.8] flips
+     break-even R* PT+Q0.5: 16.3 [0,16.6] flips
+     break-even R* PT+Q1.0: 10.2 [2.09,12.4] flips
+     break-even R* PT+D0.1: 0 [0,0] flips
+     break-even R* PT+D1.0: 2.79 [0,5.69] flips
+  -- MED (beta = 0.353 [0.283,0.362])
+     PT ladder (seed 1400): betas [0.109, 0.214, 0.362] swap [0.45, 0.42]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.42 max 0.50
+     Metropolis   tauE_flips 107 [94.2,108]  tauQ_flips 272 [260,376]  equilibrated 5/5  t_eq_flips 1.79e+03 [896,7.17e+03]  N/tau_min 1.16e+05 [8.39e+04,1.21e+05]
+     PT           tauE_flips 144 [140,145]  tauQ_flips 224 [210,263]  equilibrated 5/5  t_eq_flips 2.69e+03 [2.69e+03,5.38e+03]  N/tau_min 3.74e+04 [3.19e+04,3.99e+04]
+     QeMCMC       tauE_steps 67.8 [37.2,70.4]  tauQ_steps 43.6 [30.4,47.9]  equilibrated 1/5  acc 0.328 [0.327,0.397]  N 5.8e+03 [4.8e+03,7.8e+03]  t_eq_steps nan
+     Decohered    tauE_steps 83 [81.2,84.2]  tauQ_steps 126 [116,147]  equilibrated 1/5  acc 0.077 [0.0668,0.1]  N 6.2e+03 [5.9e+03,7.2e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 3.74 [2.63,5.66] | vs best classical 3.74 [1.96,5.66] | vs Metropolis 5.7 [2.31,6.98] | decohered vs PT 1.88 [1.68,1.93]
+     PT+Q0.01 tau_sweeps/tau_PT 0.967 [0.954,1.08]  qacc 0.448 [0.418,0.49]  N_sweeps 5e+04 [5e+04,5e+04]
+     PT+Q0.1  tau_sweeps/tau_PT 0.903 [0.844,0.903]  qacc 0.415 [0.415,0.502]  N_sweeps 8.23e+03 [6.2e+03,9.36e+03]
+     PT+Q0.5  tau_sweeps/tau_PT 0.873 [0.834,0.912]  qacc 0.434 [0.4,0.494]  N_sweeps 1.84e+03 [1.29e+03,2.15e+03]
+     PT+Q1.0  tau_sweeps/tau_PT 1.13 [0.622,1.17]  qacc 0.42 [0.387,0.488]  N_sweeps 802 [669,950]
+     PT+D0.1  tau_sweeps/tau_PT 0.958 [0.922,1.06]  qacc 0.14 [0.135,0.188]  N_sweeps 3.02e+04 [2.75e+04,3.19e+04]
+     PT+D1.0  tau_sweeps/tau_PT 0.934 [0.844,0.934]  qacc 0.135 [0.126,0.179]  N_sweeps 3.03e+03 [3.02e+03,3.39e+03]
+     best p_q (Q) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (Q) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+03: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+06: 0x5  cost(best)/cost(PT) 1 [1,1]
+     best p_q (D) at R=1e+08: 0x5  cost(best)/cost(PT) 1 [1,1]
+     break-even R* PT+Q0.01: 77.2 [0,103] flips
+     break-even R* PT+Q0.1: 23 [22.9,37.3] flips
+     break-even R* PT+Q0.5: 6.12 [4.03,8.49] flips
+     break-even R* PT+Q1.0: 0 [0,12.8] flips
+     break-even R* PT+D0.1: 9.09 [0,17.8] flips
+     break-even R* PT+D1.0: 1.49 [1.48,3.87] flips
+  -- HIGH (beta = 0.106 [0.0849,0.109])
+     PT ladder (seed 1400): betas [0.109] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 16.3 [15.3,17.8]  tauQ_flips 35.7 [32.3,37.7]  equilibrated 5/5  t_eq_flips 5.38e+03 [3.58e+03,7.17e+03]  N/tau_min 5.6e+04 [5.31e+04,6.19e+04]
+     PT           tauE_flips 20.9 [20.2,22.9]  tauQ_flips 38.2 [35.1,38.5]  equilibrated 5/5  t_eq_flips 7.17e+03 [7.17e+03,1.43e+04]  N/tau_min 7.34e+04 [7.28e+04,7.97e+04]
+     QeMCMC       tauE_steps 10.4 [8.95,10.5]  tauQ_steps 5.98 [5.36,6.37]  equilibrated 0/5  acc 0.717 [0.692,0.757]  N 1.26e+03 [1.26e+03,1.26e+03]  t_eq_steps 32 [32,32]
+     Decohered    tauE_steps 11.3 [10.9,11.3]  tauQ_steps 16.2 [14.9,18]  equilibrated 1/5  acc 0.456 [0.452,0.55]  N 6.1e+03 [5.4e+03,6.2e+03]
+     S vs PT (tau_PT flips / tau_Q steps) 3.45 [3.34,3.67] | vs best classical 3.25 [3.07,3.43] | vs Metropolis 3.25 [3.07,3.43] | decohered vs PT 2.13 [2.09,2.72]
+
+==== SK n=16: 5 instances, seeds [1600, 1601, 1602, 1603, 1604]
+  beta_c (C peak): 0.321, 0.362, 0.293, 0.363, 0.323
+  -- LOW (beta = 0.97 [0.964,1.08])
+     PT ladder (seed 1600): betas [0.096, 0.22, 0.377, 0.964] swap [0.3, 0.34, 0.3]
+     PT replicas R: 4 [4,4]; all swap rates: min 0.29 max 0.35
+     Metropolis   tauE_flips 141 [103,422]  tauQ_flips 208 [121,571]  equilibrated 5/5  t_eq_flips 3.07e+03 [2.05e+03,7.17e+03]  N/tau_min 1.73e+05 [6.3e+04,2.98e+05]
+     PT           tauE_flips 433 [219,596]  tauQ_flips 766 [254,1.14e+03]  equilibrated 5/5  t_eq_flips 1.02e+03 [512,1.02e+03]  N/tau_min 1.67e+04 [1.13e+04,5.05e+04]
+  -- MED (beta = 0.323 [0.321,0.362])
+     PT ladder (seed 1600): betas [0.096, 0.19, 0.321] swap [0.42, 0.36]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.36 max 0.47
+     Metropolis   tauE_flips 100 [97.8,102]  tauQ_flips 269 [181,383]  equilibrated 5/5  t_eq_flips 1.02e+03 [512,4.1e+03]  N/tau_min 1.34e+05 [9.41e+04,1.99e+05]
+     PT           tauE_flips 167 [157,185]  tauQ_flips 303 [238,375]  equilibrated 5/5  t_eq_flips 3.07e+03 [1.54e+03,6.14e+03]  N/tau_min 3.17e+04 [2.56e+04,4.03e+04]
+  -- HIGH (beta = 0.097 [0.0964,0.108])
+     PT ladder (seed 1600): betas [0.096] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 18 [16.9,19.8]  tauQ_flips 36.5 [36.2,39.7]  equilibrated 5/5  t_eq_flips 2.05e+03 [2.05e+03,8.19e+03]  N/tau_min 5.47e+04 [5.04e+04,5.52e+04]
+     PT           tauE_flips 23.4 [22.2,25.2]  tauQ_flips 40.6 [38.6,41.5]  equilibrated 5/5  t_eq_flips 8.19e+03 [8.19e+03,8.19e+03]  N/tau_min 7.89e+04 [7.71e+04,8.29e+04]
+
+==== SK n=18: 5 instances, seeds [1800, 1801, 1802, 1803, 1804]
+  beta_c (C peak): 0.287, 0.276, 0.382, 0.282, 0.549
+  -- LOW (beta = 0.862 [0.847,1.15])
+     PT ladder (seed 1800): betas [0.086, 0.216, 0.363, 0.862] swap [0.26, 0.31, 0.27]
+     PT replicas R: 4 [4,4]; all swap rates: min 0.25 max 0.40
+     Metropolis   tauE_flips 171 [87.3,1.38e+04]  tauQ_flips 1.13e+03 [72.6,1.3e+05]  equilibrated 5/5  t_eq_flips 1.84e+04 [1.84e+04,1.84e+04]  N/tau_min 3.58e+04 [312,4.64e+05]
+     PT           tauE_flips 544 [294,1.01e+03]  tauQ_flips 1.49e+03 [480,2.47e+03]  equilibrated 5/5  t_eq_flips 1.15e+03 [1.15e+03,2.3e+03]  N/tau_min 4.85e+03 [2.91e+03,1.5e+04]
+  -- MED (beta = 0.287 [0.282,0.382])
+     PT ladder (seed 1800): betas [0.086, 0.185, 0.287] swap [0.38, 0.41]
+     PT replicas R: 3 [3,3]; all swap rates: min 0.34 max 0.44
+     Metropolis   tauE_flips 150 [95.6,187]  tauQ_flips 889 [721,959]  equilibrated 5/5  t_eq_flips 2.3e+03 [1.15e+03,2.3e+03]  N/tau_min 4.55e+04 [4.22e+04,5.61e+04]
+     PT           tauE_flips 225 [188,254]  tauQ_flips 638 [556,664]  equilibrated 5/5  t_eq_flips 3.46e+03 [3.46e+03,3.46e+03]  N/tau_min 8.46e+03 [8.14e+03,9.72e+03]
+  -- HIGH (beta = 0.0862 [0.0847,0.115])
+     PT ladder (seed 1800): betas [0.086] swap [0.0]
+     PT replicas R: 1 [1,1]; all swap rates: min 0.00 max 0.00
+     Metropolis   tauE_flips 19.6 [18.4,21.9]  tauQ_flips 46.9 [46,57.4]  equilibrated 5/5  t_eq_flips 9.22e+03 [9.22e+03,9.22e+03]  N/tau_min 4.26e+04 [3.48e+04,4.35e+04]
+     PT           tauE_flips 24.7 [24.6,26.9]  tauQ_flips 49.8 [49.3,56.7]  equilibrated 5/5  t_eq_flips 6.91e+03 [3.6e+03,1.15e+04]  N/tau_min 3.61e+04 [3.17e+04,3.65e+04]
+
+==== Wall-clock check (cost in single-flip equivalents, quantum move = R flips)
+  R=1e+03: 2 (instance,regime,sampler) wins over best classical: [('sk', 12, 1202, 'LOW', 'pure'), ('sk', 12, 1202, 'LOW', 'Q0.01')]
+  R=1e+06: 0 (instance,regime,sampler) wins over best classical: []
+  R=1e+08: 0 (instance,regime,sampler) wins over best classical: []
